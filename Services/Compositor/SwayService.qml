@@ -38,7 +38,6 @@ Item {
 
     try {
       I3.refreshWorkspaces()
-      I3.dispatch('(["input"])')
       Qt.callLater(() => {
                      safeUpdateWorkspaces()
                      safeUpdateWindows()
@@ -109,16 +108,6 @@ Item {
         // Clear accumulated output for next query
         accumulatedOutput = ""
       }
-    }
-  }
-
-  Timer {
-    id: keyboardLayoutUpdateTimer
-    interval: 1000
-    running: true
-    repeat: true
-    onTriggered: {
-      queryKeyboardLayout()
     }
   }
 
@@ -293,22 +282,17 @@ Item {
 
   function handleInputEvent(ev) {
     try {
-      let beforeParenthesis
-      const parenthesisPos = ev.lastIndexOf('(')
-
-      if (parenthesisPos === -1) {
-        beforeParenthesis = ev
-      } else {
-        beforeParenthesis = ev.substring(0, parenthesisPos)
+      const eventData = JSON.parse(ev)
+      if (eventData.change == "xkb_layout" && eventData.input != null) {
+        const input = eventData.input
+        if (input.type == "keyboard" && input.xkb_active_layout_name != null) {
+          const layoutName = input.xkb_active_layout_name
+          KeyboardLayoutService.setCurrentLayout(layoutName)
+          Logger.d("SwayService", "Keyboard layout switched:", layoutName)
+        }
       }
-
-      const layoutNameStart = beforeParenthesis.lastIndexOf(',') + 1
-      const layoutName = ev.substring(layoutNameStart)
-
-      KeyboardLayoutService.setCurrentLayout(layoutName)
-      Logger.d("HyprlandService", "Keyboard layout switched:", layoutName)
     } catch (e) {
-      Logger.e("HyprlandService", "Error handling activelayout:", e)
+      Logger.e("SwayService", "Error handling input event:", e)
     }
   }
 
@@ -341,10 +325,13 @@ Item {
       if (event.type === "output") {
         Qt.callLater(queryDisplayScales)
       }
+    }
+  }
 
-      if (event.type == "get_inputs") {
-        handleInputEvent(event.data)
-      }
+  I3IpcListener {
+    subscriptions: ["input"]
+    onIpcEvent: function (event) {
+      handleInputEvent(event.data)
     }
   }
 
