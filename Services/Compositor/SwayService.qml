@@ -38,7 +38,7 @@ Item {
 
     try {
       I3.refreshWorkspaces()
-      I3.dispatch('(["input"])')
+      I3.subscribe('["input"]')
       Qt.callLater(() => {
                      safeUpdateWorkspaces()
                      safeUpdateWindows()
@@ -109,16 +109,6 @@ Item {
         // Clear accumulated output for next query
         accumulatedOutput = ""
       }
-    }
-  }
-
-  Timer {
-    id: keyboardLayoutUpdateTimer
-    interval: 1000
-    running: true
-    repeat: true
-    onTriggered: {
-      queryKeyboardLayout()
     }
   }
 
@@ -293,22 +283,17 @@ Item {
 
   function handleInputEvent(ev) {
     try {
-      let beforeParenthesis
-      const parenthesisPos = ev.lastIndexOf('(')
-
-      if (parenthesisPos === -1) {
-        beforeParenthesis = ev
-      } else {
-        beforeParenthesis = ev.substring(0, parenthesisPos)
+      const inputData = JSON.parse(ev)
+      if (inputData.change == "xkb_layout") {
+        const input = inputData.input
+        if (input.type == "keyboard") {
+          const layoutName = input.xkb_active_layout_name
+          KeyboardLayoutService.setCurrentLayout(layoutName)
+          Logger.d("SwayService", "Keyboard layout switched:", layoutName)
+        }
       }
-
-      const layoutNameStart = beforeParenthesis.lastIndexOf(',') + 1
-      const layoutName = ev.substring(layoutNameStart)
-
-      KeyboardLayoutService.setCurrentLayout(layoutName)
-      Logger.d("HyprlandService", "Keyboard layout switched:", layoutName)
     } catch (e) {
-      Logger.e("HyprlandService", "Error handling activelayout:", e)
+      Logger.e("SwayService", "Error handling input event:", e)
     }
   }
 
@@ -342,7 +327,7 @@ Item {
         Qt.callLater(queryDisplayScales)
       }
 
-      if (event.type == "get_inputs") {
+      if (event.type == "input") {
         handleInputEvent(event.data)
       }
     }
