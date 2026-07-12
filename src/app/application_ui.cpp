@@ -324,11 +324,13 @@ void Application::initLockScreenAndSession() {
       [this]() {
         m_idleGraceOverlay.hide();
         m_lockscreenWidgetsController.onLockStateChanged();
+        m_idleManager.setSessionLocked(true);
         m_hookManager.fire(HookKind::SessionLocked);
       },
       [this]() {
         m_idleGraceOverlay.hide();
         m_lockscreenWidgetsController.onLockStateChanged();
+        m_idleManager.setSessionLocked(false);
         m_hookManager.fire(HookKind::SessionUnlocked);
         requestAllSurfacesRedraw();
         if (m_logindService != nullptr) {

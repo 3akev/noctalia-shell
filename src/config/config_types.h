@@ -259,6 +259,8 @@ struct IdleBehaviorConfig {
   std::string resumeCommand;
   /// When `action` is `suspend`, lock the session before running suspend so lock surfaces are ready (recommended).
   bool lockBeforeSuspend = true;
+  /// Shorter timeout (seconds) applied only while the session is locked; 0 = always use timeoutSeconds.
+  double lockedTimeoutSeconds = 0.0;
 
   bool operator==(const IdleBehaviorConfig&) const = default;
 };
