@@ -131,11 +131,18 @@ namespace {
   };
 
   // Stage every per-monitor wallpaper so the greeter can pick by connector name.
+  // File wallpapers are copied as wallpaper-<connector>.*; solid color: specs are
+  // kept as sourcePath only (no file) so the wallpapers map can still reference them.
   [[nodiscard]] std::vector<StagedOutputWallpaper>
   stageAllOutputWallpapers(const std::filesystem::path& staging, const ConfigService& configService) {
     std::vector<StagedOutputWallpaper> staged;
     for (const auto& [connector, sourcePath] : configService.monitorWallpaperPaths()) {
-      if (connector.empty() || sourcePath.empty() || sourcePath.starts_with("color:")) {
+      if (connector.empty() || sourcePath.empty()) {
+        continue;
+      }
+      if (sourcePath.starts_with("color:")) {
+        staged.push_back(StagedOutputWallpaper{connector, /*installedName=*/{}, sourcePath});
+        kLog.info("greeter sync: color wallpaper for '{}' -> {}", connector, sourcePath);
         continue;
       }
       std::error_code ec;
@@ -156,6 +163,10 @@ namespace {
       kLog.info("greeter sync: staged wallpaper for '{}' -> {}", connector, installedName);
       staged.push_back(StagedOutputWallpaper{connector, installedName, sourcePath});
     }
+    // unordered_map iteration order is unspecified; keep map/fallback deterministic.
+    std::ranges::sort(staged, [](const StagedOutputWallpaper& a, const StagedOutputWallpaper& b) {
+      return a.connector < b.connector;
+    });
     return staged;
   }
 
@@ -263,19 +274,28 @@ namespace {
     }
     root["wallpaper"] = wallpaper;
 
-    // Per-output wallpapers (connector name -> installed path). Greeter views select by output.
+    // Per-output wallpapers (connector name -> installed path or color:). Greeter views select by output.
     if (!outputWallpapers.empty()) {
       nlohmann::json byOutput = nlohmann::json::object();
       for (const auto& entry : outputWallpapers) {
         nlohmann::json item;
-        item["path"] = (std::filesystem::path("/var/lib/noctalia-greeter") / entry.installedName).string();
+        if (!entry.installedName.empty()) {
+          item["path"] = (std::filesystem::path("/var/lib/noctalia-greeter") / entry.installedName).string();
+        } else if (!entry.sourcePath.empty()) {
+          // color:#RRGGBB (or other non-staged specs) — preserve as-is.
+          item["path"] = entry.sourcePath;
+        } else {
+          continue;
+        }
         item["fill_mode"] = wallpaper["fill_mode"];
         if (wallpaper.contains("fill_color")) {
           item["fill_color"] = wallpaper["fill_color"];
         }
         byOutput[entry.connector] = std::move(item);
       }
-      root["wallpapers"] = std::move(byOutput);
+      if (!byOutput.empty()) {
+        root["wallpapers"] = std::move(byOutput);
+      }
     }
     root["corner_radius_scale"] = config.shell.cornerRadiusScale;
     appendSessionManifest(root, config.shell.session);
@@ -498,20 +518,33 @@ namespace greeter {
     const auto outputWallpapers = stageAllOutputWallpapers(staging, configService);
     std::string wallpaperPath = resolveSyncWallpaperPath(configService);
     std::string installedWallpaperName = stageWallpaper(staging, wallpaperPath);
-    // Prefer a staged per-output file as the legacy single wallpaper fallback when pin matched one.
+    // Prefer a staged per-output entry for the legacy single wallpaper when needed.
     if (installedWallpaperName.empty() && !outputWallpapers.empty()) {
-      if (const auto pin = readGreeterConfiguredOutput(); pin.has_value()) {
+      auto preferEntry = [&](const StagedOutputWallpaper& entry) {
+        wallpaperPath = entry.sourcePath;
+        installedWallpaperName = entry.installedName;
+      };
+      bool pinResolved = false;
+      if (const auto pin = readGreeterConfiguredOutput(); pin.has_value() && !pin->empty()) {
         for (const auto& entry : outputWallpapers) {
           if (entry.connector == *pin) {
-            wallpaperPath = entry.sourcePath;
-            installedWallpaperName = entry.installedName;
+            preferEntry(entry);
+            pinResolved = true;
             break;
           }
         }
       }
-      if (installedWallpaperName.empty()) {
-        wallpaperPath = outputWallpapers.front().sourcePath;
-        installedWallpaperName = outputWallpapers.front().installedName;
+      // Pin hit (file or color:): keep it. Otherwise pick first staged file, else first entry.
+      if (!pinResolved) {
+        for (const auto& entry : outputWallpapers) {
+          if (!entry.installedName.empty()) {
+            preferEntry(entry);
+            break;
+          }
+        }
+        if (installedWallpaperName.empty() && wallpaperPath.empty()) {
+          preferEntry(outputWallpapers.front());
+        }
       }
     }
     if (!writeManifest(
