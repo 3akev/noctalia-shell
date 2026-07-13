@@ -263,7 +263,7 @@ namespace {
 
     nlohmann::json wallpaper;
     if (!installedWallpaperName.empty()) {
-      wallpaper["path"] = (std::filesystem::path("/var/lib/noctalia-greeter") / installedWallpaperName).string();
+      wallpaper["path"] = (std::filesystem::path(kDefaultGreeterStateDir) / installedWallpaperName).string();
     } else if (!wallpaperPath.empty()) {
       wallpaper["path"] = wallpaperPath;
     }
@@ -280,7 +280,7 @@ namespace {
       for (const auto& entry : outputWallpapers) {
         nlohmann::json item;
         if (!entry.installedName.empty()) {
-          item["path"] = (std::filesystem::path("/var/lib/noctalia-greeter") / entry.installedName).string();
+          item["path"] = (std::filesystem::path(kDefaultGreeterStateDir) / entry.installedName).string();
         } else if (!entry.sourcePath.empty()) {
           // color:#RRGGBB (or other non-staged specs) — preserve as-is.
           item["path"] = entry.sourcePath;
