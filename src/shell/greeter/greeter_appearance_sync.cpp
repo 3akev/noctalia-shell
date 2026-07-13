@@ -13,6 +13,7 @@
 #include "util/string_utils.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -95,17 +96,67 @@ namespace {
     }
   }
 
-  [[nodiscard]] std::string resolveSyncWallpaperPath(const ConfigService& configService) {
-    const Config& config = configService.config();
-    if (config.theme.source != PaletteSource::Wallpaper) {
-      if (const auto output = readGreeterConfiguredOutput(); output.has_value() && !output->empty()) {
-        const std::string path = configService.getWallpaperPath(*output);
-        if (!path.empty()) {
-          return path;
-        }
+  [[nodiscard]] std::string sanitizeConnectorFileToken(std::string_view name) {
+    std::string out;
+    out.reserve(name.size());
+    for (const unsigned char c : name) {
+      if (std::isalnum(c) || c == '-' || c == '_' || c == '.') {
+        out.push_back(static_cast<char>(c));
+      } else {
+        out.push_back('_');
       }
     }
+    return out.empty() ? std::string("unknown") : out;
+  }
+
+  // Fallback single wallpaper when no per-output map is usable.
+  [[nodiscard]] std::string resolveSyncWallpaperPath(const ConfigService& configService) {
+    if (const auto output = readGreeterConfiguredOutput(); output.has_value() && !output->empty()) {
+      const std::string path = configService.getWallpaperPath(*output);
+      if (!path.empty()) {
+        return path;
+      }
+    }
+    const std::string defaultPath = configService.getDefaultWallpaperPath();
+    if (!defaultPath.empty()) {
+      return defaultPath;
+    }
     return configService.getGreeterSyncWallpaperPath();
+  }
+
+  struct StagedOutputWallpaper {
+    std::string connector;
+    std::string installedName;
+    std::string sourcePath;
+  };
+
+  // Stage every per-monitor wallpaper so the greeter can pick by connector name.
+  [[nodiscard]] std::vector<StagedOutputWallpaper>
+  stageAllOutputWallpapers(const std::filesystem::path& staging, const ConfigService& configService) {
+    std::vector<StagedOutputWallpaper> staged;
+    for (const auto& [connector, sourcePath] : configService.monitorWallpaperPaths()) {
+      if (connector.empty() || sourcePath.empty() || sourcePath.starts_with("color:")) {
+        continue;
+      }
+      std::error_code ec;
+      const std::filesystem::path source(sourcePath);
+      if (!std::filesystem::is_regular_file(source, ec) || ec) {
+        kLog.warn("greeter sync: skip missing wallpaper for '{}': {}", connector, sourcePath);
+        continue;
+      }
+      const std::string extension = source.extension().string();
+      const std::string installedName =
+          "wallpaper-" + sanitizeConnectorFileToken(connector) + (extension.empty() ? "" : extension);
+      const auto destination = staging / installedName;
+      std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing, ec);
+      if (ec) {
+        kLog.warn("greeter sync: failed to stage wallpaper for '{}': {}", connector, ec.message());
+        continue;
+      }
+      kLog.info("greeter sync: staged wallpaper for '{}' -> {}", connector, installedName);
+      staged.push_back(StagedOutputWallpaper{connector, installedName, sourcePath});
+    }
+    return staged;
   }
 
   [[nodiscard]] std::string findApplyHelper() {
@@ -173,7 +224,8 @@ namespace {
 
   [[nodiscard]] bool writeManifest(
       const std::filesystem::path& staging, const Config& config, std::string_view resolvedMode,
-      const std::string& wallpaperPath, const std::string& installedWallpaperName
+      const std::string& wallpaperPath, const std::string& installedWallpaperName,
+      const std::vector<StagedOutputWallpaper>& outputWallpapers
   ) {
     nlohmann::json root;
     root["version"] = 1;
@@ -209,7 +261,22 @@ namespace {
     if (fillColor.a > 0.0f) {
       wallpaper["fill_color"] = formatRgbHex(fillColor);
     }
-    root["wallpaper"] = std::move(wallpaper);
+    root["wallpaper"] = wallpaper;
+
+    // Per-output wallpapers (connector name -> installed path). Greeter views select by output.
+    if (!outputWallpapers.empty()) {
+      nlohmann::json byOutput = nlohmann::json::object();
+      for (const auto& entry : outputWallpapers) {
+        nlohmann::json item;
+        item["path"] = (std::filesystem::path("/var/lib/noctalia-greeter") / entry.installedName).string();
+        item["fill_mode"] = wallpaper["fill_mode"];
+        if (wallpaper.contains("fill_color")) {
+          item["fill_color"] = wallpaper["fill_color"];
+        }
+        byOutput[entry.connector] = std::move(item);
+      }
+      root["wallpapers"] = std::move(byOutput);
+    }
     root["corner_radius_scale"] = config.shell.cornerRadiusScale;
     appendSessionManifest(root, config.shell.session);
 
@@ -428,9 +495,28 @@ namespace greeter {
       kLog.info("greeter sync: no compositor platform provided; skipping output layout sync");
     }
 
-    const std::string wallpaperPath = resolveSyncWallpaperPath(configService);
-    const std::string installedWallpaperName = stageWallpaper(staging, wallpaperPath);
-    if (!writeManifest(staging, config, resolvedThemeMode, wallpaperPath, installedWallpaperName)) {
+    const auto outputWallpapers = stageAllOutputWallpapers(staging, configService);
+    std::string wallpaperPath = resolveSyncWallpaperPath(configService);
+    std::string installedWallpaperName = stageWallpaper(staging, wallpaperPath);
+    // Prefer a staged per-output file as the legacy single wallpaper fallback when pin matched one.
+    if (installedWallpaperName.empty() && !outputWallpapers.empty()) {
+      if (const auto pin = readGreeterConfiguredOutput(); pin.has_value()) {
+        for (const auto& entry : outputWallpapers) {
+          if (entry.connector == *pin) {
+            wallpaperPath = entry.sourcePath;
+            installedWallpaperName = entry.installedName;
+            break;
+          }
+        }
+      }
+      if (installedWallpaperName.empty()) {
+        wallpaperPath = outputWallpapers.front().sourcePath;
+        installedWallpaperName = outputWallpapers.front().installedName;
+      }
+    }
+    if (!writeManifest(
+            staging, config, resolvedThemeMode, wallpaperPath, installedWallpaperName, outputWallpapers
+        )) {
       finish(false);
       return GreeterSyncLaunch::Failed;
     }
