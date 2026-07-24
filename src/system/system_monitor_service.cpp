@@ -233,17 +233,25 @@ namespace {
     return score;
   }
 
+  bool isInactiveRuntimeStatus(const std::string& status) {
+    const std::string normalized = StringUtils::toLower(status);
+    return normalized == "suspended" || normalized == "suspending";
+  }
+
+  // A runtime-suspended GPU has no reading to give, and a sysfs attribute that goes through the
+  // driver resumes it. power/runtime_status is served by the PM core, so asking never wakes it.
+  // Devices without runtime PM report "unsupported" and are read normally.
+  bool isDeviceRuntimeSuspended(const std::filesystem::path& devicePath) {
+    const auto status = FileUtils::readSmallTextFile(devicePath / "power" / "runtime_status");
+    return status.has_value() && isInactiveRuntimeStatus(*status);
+  }
+
   bool isGpuHwmonAwake(const std::filesystem::path& hwmonPath) {
-    namespace fs = std::filesystem;
     const auto deviceLink = hwmonPath / "device";
-    if (!fs::exists(deviceLink)) {
+    if (!std::filesystem::exists(deviceLink)) {
       return true;
     }
-    const auto status = FileUtils::readSmallTextFile(deviceLink / "power" / "runtime_status");
-    if (!status.has_value()) {
-      return true;
-    }
-    return *status == "active";
+    return !isDeviceRuntimeSuspended(deviceLink);
   }
 
   bool isDrmCardName(const std::string& name) {
@@ -296,6 +304,12 @@ namespace {
 
       const fs::path driverLink = fs::read_symlink(devicePath / "driver", ec);
       if (ec || driverLink.filename().string() != "amdgpu") {
+        continue;
+      }
+
+      // Skipping a suspended card leaves multi-GPU systems reading the one that is awake, which is
+      // the one doing the rendering.
+      if (isDeviceRuntimeSuspended(devicePath)) {
         continue;
       }
 
@@ -472,11 +486,6 @@ namespace {
     }
 
     return probe;
-  }
-
-  bool isInactiveRuntimeStatus(const std::string& status) {
-    const std::string normalized = StringUtils::toLower(status);
-    return normalized == "suspended" || normalized == "suspending";
   }
 
   constexpr int kNvmlSuccess = 0;
@@ -1263,9 +1272,19 @@ void SystemMonitorService::samplingLoop() {
     }
     cpuCoresWasEnabled = cpuCoresEnabled;
 
+    const bool pollGpuTemp = m_gpuTempRefs.load(std::memory_order_relaxed) > 0;
+    const bool pollGpuUsage = m_gpuUsageRefs.load(std::memory_order_relaxed) > 0;
+    const bool pollGpuVram = m_gpuVramRefs.load(std::memory_order_relaxed) > 0;
+    const bool gpuRetained = pollGpuTemp || pollGpuUsage || pollGpuVram;
+
     if (!gpuEnabled) {
       releaseGpuReaders();
       m_gpuSourcesLogged = false;
+    } else if (!gpuRetained) {
+      // An initialized NVML or ROCm SMI session is a live handle on the GPU, which on hybrid
+      // graphics can hold a discrete card awake on its own. Drop the readers once nothing displays
+      // a GPU stat; the next consumer re-creates them.
+      releaseGpuReaders();
     }
 
     const auto cpuInterval = pollDuration(pollCfg.cpuPollSeconds);
@@ -1393,11 +1412,7 @@ void SystemMonitorService::samplingLoop() {
     }
 
     if (gpuEnabled && now >= nextGpu) {
-      const bool pollGpuTemp = m_gpuTempRefs.load(std::memory_order_relaxed) > 0;
-      const bool pollGpuUsage = m_gpuUsageRefs.load(std::memory_order_relaxed) > 0;
-      const bool pollGpuVram = m_gpuVramRefs.load(std::memory_order_relaxed) > 0;
-
-      if (pollGpuTemp || pollGpuUsage || pollGpuVram) {
+      if (gpuRetained) {
         const NvidiaDisplayDeviceState nvidiaDisplayState = detectNvidiaPciDisplayDeviceState();
         // The first probe doubles as source detection: it reports what each retained stat resolved to.
         const bool logSources = !m_gpuSourcesLogged;
