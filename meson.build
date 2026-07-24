@@ -1486,11 +1486,13 @@ plugin_manifest_test = executable('plugin_manifest_test',
     'tests/plugin_manifest_test.cpp',
     'src/scripting/plugin_manifest.cpp',
     'src/scripting/plugin_panel_shell.cpp',
+    'src/core/input/key_chord.cpp',
     'src/core/log.cpp',
   ),
   include_directories: _noctalia_inc,
   dependencies: [
     tomlplusplus_dep,
+    xkbcommon_dep,
   ],
 )
 

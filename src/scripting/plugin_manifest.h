@@ -124,6 +124,12 @@ namespace scripting {
     // true: live outside PanelManager's single active-panel slot, so opening another
     // panel leaves this one on screen. Requires panelDismissOnOutsideClick = false.
     bool panelPersistent = false;
+    // Key chord specs ("space", "ctrl+r") this panel takes over while it holds keyboard
+    // focus. Each is validated as a chord at parse time. While focused, a matching press
+    // or release is delivered to the script's onKey(chord, pressed) and not handled by
+    // the host, so the panel can drive its own key interactions. Verbatim spec strings:
+    // the script is called back with the same text declared here.
+    std::vector<std::string> panelCaptureKeys;
   };
 
   struct PluginManifest {

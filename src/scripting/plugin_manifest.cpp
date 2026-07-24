@@ -1,5 +1,6 @@
 #include "scripting/plugin_manifest.h"
 
+#include "core/input/key_chord.h"
 #include "core/log.h"
 #include "core/toml.h" // IWYU pragma: keep
 #include "scripting/plugin_api.h"
@@ -465,6 +466,41 @@ namespace scripting {
             // panel outside the active-panel slot has no relationship to.
             if (entry.panelPlacementDefault == "attached") {
               error = "panel entry '" + entry.id + R"(': persistent = true requires placement = "floating")";
+              return false;
+            }
+          }
+          if ((*entryTable)["capture_keys"]) {
+            if (manifest.pluginApiVersion < kPanelCaptureKeysPluginApiVersion) {
+              error = "panel entry '"
+                  + entry.id
+                  + "': capture_keys requires plugin_api >= "
+                  + std::to_string(kPanelCaptureKeysPluginApiVersion);
+              return false;
+            }
+            if ((*entryTable)["capture_keys"].as_array() == nullptr) {
+              error = "panel entry '" + entry.id + "': capture_keys must be an array of key chord strings";
+              return false;
+            }
+            entry.panelCaptureKeys = tableStringArray(*entryTable, "capture_keys");
+            for (const std::string& spec : entry.panelCaptureKeys) {
+              // parseKeyChordSpec throws on a Super-family modifier, which belongs to the
+              // compositor rather than to a panel.
+              bool parsed = false;
+              try {
+                parsed = parseKeyChordSpec(spec).has_value();
+              } catch (const std::exception& e) {
+                error = "panel entry '" + entry.id + "': capture_keys entry '" + spec + "': " + e.what();
+                return false;
+              }
+              if (!parsed) {
+                error = "panel entry '" + entry.id + "': capture_keys entry '" + spec + "' is not a valid key chord";
+                return false;
+              }
+            }
+            // A panel that never takes focus never receives a key to capture.
+            if (entry.panelKeyboardFocus == "none") {
+              error =
+                  "panel entry '" + entry.id + R"(': capture_keys requires keyboard_focus "on_demand" or "exclusive")";
               return false;
             }
           }

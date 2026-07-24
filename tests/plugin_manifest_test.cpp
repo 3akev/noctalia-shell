@@ -827,6 +827,140 @@ int main() {
     ok = expect(hasPosition, "persistent panel should still seed a position setting") && ok;
   }
 
+  const auto oldApiCapturePath = root / "old-api-capture/plugin.toml";
+  ok = writeText(
+           oldApiCapturePath,
+           "id = \"me/old-api-capture\"\n"
+           "name = \"Old API Capture\"\n"
+           "plugin_api = 12\n"
+           "[[panel]]\n"
+           "id = \"panel\"\n"
+           "entry = \"panel.luau\"\n"
+           "capture_keys = [\"space\"]\n"
+       )
+      && ok;
+  error.clear();
+  ok = expect(
+           !scripting::parsePluginManifest(oldApiCapturePath, &error).has_value(),
+           "capture_keys should require plugin API 13"
+       )
+      && ok;
+  ok = expectEq(error, "panel entry 'panel': capture_keys requires plugin_api >= 13", "capture_keys API gate error")
+      && ok;
+
+  const auto badCapturePath = root / "bad-capture/plugin.toml";
+  ok = writeText(
+           badCapturePath,
+           "id = \"me/bad-capture\"\n"
+           "name = \"Bad Capture\"\n"
+           "plugin_api = 13\n"
+           "[[panel]]\n"
+           "id = \"panel\"\n"
+           "entry = \"panel.luau\"\n"
+           "capture_keys = [\"space\", \"nonsensekey\"]\n"
+       )
+      && ok;
+  error.clear();
+  ok = expect(!scripting::parsePluginManifest(badCapturePath, &error).has_value(), "an invalid key chord should fail")
+      && ok;
+  ok = expectEq(
+           error, "panel entry 'panel': capture_keys entry 'nonsensekey' is not a valid key chord",
+           "capture_keys chord error"
+       )
+      && ok;
+
+  // A Super chord belongs to the compositor; parseKeyChordSpec throws rather than returning
+  // nullopt for it, so this covers the other rejection path.
+  const auto superCapturePath = root / "super-capture/plugin.toml";
+  ok = writeText(
+           superCapturePath,
+           "id = \"me/super-capture\"\n"
+           "name = \"Super Capture\"\n"
+           "plugin_api = 13\n"
+           "[[panel]]\n"
+           "id = \"panel\"\n"
+           "entry = \"panel.luau\"\n"
+           "capture_keys = [\"super+space\"]\n"
+       )
+      && ok;
+  error.clear();
+  ok = expect(!scripting::parsePluginManifest(superCapturePath, &error).has_value(), "a Super chord should be rejected")
+      && ok;
+  ok = expect(
+           error.starts_with("panel entry 'panel': capture_keys entry 'super+space': "),
+           "Super chord error should name the entry and spec"
+       )
+      && ok;
+
+  const auto captureNoFocusPath = root / "capture-no-focus/plugin.toml";
+  ok = writeText(
+           captureNoFocusPath,
+           "id = \"me/capture-no-focus\"\n"
+           "name = \"Capture No Focus\"\n"
+           "plugin_api = 13\n"
+           "[[panel]]\n"
+           "id = \"panel\"\n"
+           "entry = \"panel.luau\"\n"
+           "keyboard_focus = \"none\"\n"
+           "dismiss_on_outside_click = false\n"
+           "capture_keys = [\"space\"]\n"
+       )
+      && ok;
+  error.clear();
+  ok = expect(
+           !scripting::parsePluginManifest(captureNoFocusPath, &error).has_value(),
+           R"(capture_keys should be rejected with keyboard_focus "none")"
+       )
+      && ok;
+  ok = expectEq(
+           error, R"(panel entry 'panel': capture_keys requires keyboard_focus "on_demand" or "exclusive")",
+           "capture_keys focus pairing error"
+       )
+      && ok;
+
+  const auto capturePath = root / "capture/plugin.toml";
+  ok = writeText(
+           capturePath,
+           "id = \"me/capture\"\n"
+           "name = \"Capture\"\n"
+           "plugin_api = 13\n"
+           "[[panel]]\n"
+           "id = \"panel\"\n"
+           "entry = \"panel.luau\"\n"
+           "capture_keys = [\"space\", \"ctrl+r\"]\n"
+       )
+      && ok;
+  error.clear();
+  const auto capture = scripting::parsePluginManifest(capturePath, &error);
+  ok = expect(capture.has_value(), error.empty() ? "valid capture_keys should parse" : error.c_str()) && ok;
+  if (capture.has_value() && !capture->entries.empty()) {
+    const auto& keys = capture->entries.front().panelCaptureKeys;
+    ok = expect(keys.size() == 2, "both capture_keys entries should parse") && ok;
+    if (keys.size() == 2) {
+      // Stored verbatim: the script is called back with the exact spec it declared.
+      ok = expectEq(keys[0], "space", "first capture_keys entry") && ok;
+      ok = expectEq(keys[1], "ctrl+r", "second capture_keys entry") && ok;
+    }
+  }
+
+  const auto noCapturePath = root / "no-capture/plugin.toml";
+  ok = writeText(
+           noCapturePath,
+           "id = \"me/no-capture\"\n"
+           "name = \"No Capture\"\n"
+           "plugin_api = 13\n"
+           "[[panel]]\n"
+           "id = \"panel\"\n"
+           "entry = \"panel.luau\"\n"
+       )
+      && ok;
+  error.clear();
+  const auto noCapture = scripting::parsePluginManifest(noCapturePath, &error);
+  ok = expect(noCapture.has_value(), "a panel without capture_keys should parse") && ok;
+  if (noCapture.has_value() && !noCapture->entries.empty()) {
+    ok = expect(noCapture->entries.front().panelCaptureKeys.empty(), "capture_keys should default to empty") && ok;
+  }
+
   std::error_code ec;
   std::filesystem::remove_all(root, ec);
   return ok ? 0 : 1;

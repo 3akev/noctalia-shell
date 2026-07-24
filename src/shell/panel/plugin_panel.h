@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/files/file_watcher.h"
+#include "core/input/key_chord.h"
 #include "core/timer_manager.h"
 #include "scripting/plugin_ipc.h"
 #include "scripting/plugin_panel_shell.h"
@@ -39,6 +40,8 @@ struct PluginPanelOptions {
   // One of scripting::kPanelKeyboardFocusModes.
   std::string keyboardFocus = "on_demand";
   bool persistent = false;
+  // Key chord specs the panel takes over while focused, verbatim from the manifest.
+  std::vector<std::string> captureKeys;
   scripting::PluginPanelShellConfig shellConfig;
 };
 
@@ -68,6 +71,11 @@ public:
   [[nodiscard]] bool panelOpenNearClick() const override { return m_shellConfig.openNearClick; }
   [[nodiscard]] InputArea* takePendingFocusArea() override { return std::exchange(m_pendingFocusArea, nullptr); }
 
+  // Delivers a manifest-declared capture_keys chord to the script's onKey(chord, pressed) and
+  // reports it consumed. Declared chords only: everything else keeps its host behaviour, and a
+  // focused text input still wins printable keys (PanelManager reserves those before calling).
+  [[nodiscard]] bool handleGlobalKey(std::uint32_t sym, std::uint32_t modifiers, bool pressed, bool preedit) override;
+
   // PluginIpcEndpoint
   [[nodiscard]] std::string_view ipcEntryId() const override { return m_entryId; }
   [[nodiscard]] std::string_view ipcOutputName() const override { return {}; }
@@ -82,6 +90,7 @@ private:
   void handleScriptResult(scripting::ScriptResult result);
   [[nodiscard]] scripting::ScriptSnapshot makeScriptSnapshot() const;
   [[nodiscard]] std::string resolvePluginPath(const std::string& path) const;
+  void releaseCapturedKeys();
   void startScript();
   void startTickTimer();
   void setupScriptWatch();
@@ -93,6 +102,15 @@ private:
   std::filesystem::path m_pluginDir;
   scripting::ScriptApiContext& m_scriptApi;
   std::unordered_map<std::string, WidgetSettingValue> m_settings;
+  // Parsed capture_keys, paired with the verbatim spec the script is called back with.
+  struct CaptureKey {
+    KeyChord chord;
+    std::string spec;
+    // Physically down. Key repeat re-sends press events, which a hold-to-act interaction must
+    // not see as new presses, so a repeat is consumed without a second onKey call.
+    bool held = false;
+  };
+  std::vector<CaptureKey> m_captureKeys;
   std::shared_ptr<scripting::ScriptRuntime> m_runtime;
   scripting::ScriptRuntime::SubscriberId m_runtimeSubscription = 0;
   FileWatcher* m_fileWatcher = nullptr;

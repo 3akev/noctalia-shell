@@ -12,7 +12,8 @@ namespace scripting {
   inline constexpr std::uint32_t kPanelKeyboardFocusPluginApiVersion = 10;
   inline constexpr std::uint32_t kPersistentPanelPluginApiVersion = 11;
   inline constexpr std::uint32_t kSystemStatsPluginApiVersion = 12;
-  inline constexpr std::uint32_t kCurrentPluginApiVersion = kSystemStatsPluginApiVersion;
+  inline constexpr std::uint32_t kPanelCaptureKeysPluginApiVersion = 13;
+  inline constexpr std::uint32_t kCurrentPluginApiVersion = kPanelCaptureKeysPluginApiVersion;
 
   static_assert(kOldestSupportedPluginApiVersion <= kCurrentPluginApiVersion);
 
