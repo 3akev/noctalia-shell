@@ -3233,10 +3233,6 @@
           "description": "Second gradient color in the visualizer",
           "label": "Color 2"
         },
-        "command": {
-          "description": "Shell command run when left-clicking this button",
-          "label": "Left Click Command"
-        },
         "custom-image": {
           "description": "Path to a custom image; leave empty to use the icon glyph",
           "dialog-title": "Select custom image",
@@ -3471,10 +3467,6 @@
           "description": "Regular expression for microphone app names to ignore",
           "label": "Microphone Filter Regex"
         },
-        "middle-command": {
-          "description": "Shell command run when middle-clicking this button. When set, middle-click opens this command instead of widget settings.",
-          "label": "Middle Click Command"
-        },
         "min-length": {
           "description": "Minimum widget length in pixels",
           "label": "Min Length"
@@ -3531,10 +3523,6 @@
           "description": "Opacity of pinned apps that are not currently running",
           "label": "Pinned App Opacity"
         },
-        "right-command": {
-          "description": "Shell command run when right-clicking this button",
-          "label": "Right Click Command"
-        },
         "scale": {
           "description": "Scale this widget relative to the bar content scale",
           "label": "Scale"
@@ -3546,14 +3534,6 @@
         "script": {
           "description": "Path to the lua script",
           "label": "Script"
-        },
-        "scroll-down-command": {
-          "description": "Shell command run when scrolling down over this button",
-          "label": "Scroll Down Command"
-        },
-        "scroll-up-command": {
-          "description": "Shell command run when scrolling up over this button",
-          "label": "Scroll Up Command"
         },
         "show-active-indicator": {
           "description": "Show a small dot below the active window icon in the taskbar",

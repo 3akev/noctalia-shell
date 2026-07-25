@@ -210,7 +210,8 @@ enable_scroll = false
 [widget.keyboard_layout]
 cycle_command = "hyprctl switchxkblayout all next"
 
-[widget.custom_button]
+[widget.plugin_thing]
+type = "someone/plugin:entry"
 enable_scroll = false
 )");
     noctalia::config::LegacyConfigIssues issues;
@@ -255,9 +256,9 @@ enable_scroll = false
         "cycle_command was not dropped"
     );
 
-    // Widgets that still own their scroll keep the key.
+    // Plugin widgets still gate their own onScroll handler, so the key survives for them.
     expect(
-        config["widget"]["custom_button"]["enable_scroll"].value<bool>() == std::optional<bool>{false},
+        config["widget"]["plugin_thing"]["enable_scroll"].value<bool>() == std::optional<bool>{false},
         "enable_scroll was dropped from a widget that still uses it"
     );
 
@@ -339,6 +340,70 @@ primary_click = "region"
     noctalia::config::LegacyConfigIssues secondPassIssues;
     noctalia::config::normalizeLegacyConfig(config, secondPassIssues);
     expect(secondPassIssues.empty(), "remaining widget gesture normalization was not idempotent");
+  }
+
+  void checkCustomButtonCommandsMigration() {
+    toml::table config = toml::parse(R"(
+[widget.custom_button]
+command = "notify-send 'hello world'"
+right_command = "playerctl next"
+scroll_up_command = "brightnessctl set +5%"
+
+[widget.dead_scroll]
+type = "custom_button"
+enable_scroll = false
+scroll_up_command = "echo up"
+
+[widget.explicit]
+type = "custom_button"
+command = "echo old"
+
+[widget.explicit.actions]
+left = "media toggle"
+)");
+    noctalia::config::LegacyConfigIssues issues;
+    noctalia::config::normalizeLegacyConfig(config, issues);
+
+    // Quoting survives verbatim: the widget ran these through the same call `exec` uses.
+    expect(
+        config["widget"]["custom_button"]["actions"]["left"].value<std::string>()
+            == std::optional<std::string>{"exec notify-send 'hello world'"},
+        "command did not become a left exec binding"
+    );
+    expect(
+        config["widget"]["custom_button"]["actions"]["right"].value<std::string>()
+            == std::optional<std::string>{"exec playerctl next"},
+        "right_command did not become a right exec binding"
+    );
+    expect(
+        config["widget"]["custom_button"]["actions"]["scroll_up"].value<std::string>()
+            == std::optional<std::string>{"exec brightnessctl set +5%"},
+        "scroll_up_command did not become a scroll_up exec binding"
+    );
+    for (const std::string_view key : {"command", "right_command", "scroll_up_command"}) {
+      expect(
+          !config["widget"]["custom_button"][key].value<std::string>().has_value(),
+          "a custom_button command key was not dropped"
+      );
+    }
+
+    // enable_scroll = false used to beat the scroll commands, and still does.
+    expect(
+        config["widget"]["dead_scroll"]["actions"]["scroll_up"].value<std::string>()
+            == std::optional<std::string>{"none"},
+        "a disabled scroll command was migrated as if it were live"
+    );
+
+    // An explicit binding always wins over a migrated key.
+    expect(
+        config["widget"]["explicit"]["actions"]["left"].value<std::string>()
+            == std::optional<std::string>{"media toggle"},
+        "the migration overwrote an explicit left binding"
+    );
+
+    noctalia::config::LegacyConfigIssues secondPassIssues;
+    noctalia::config::normalizeLegacyConfig(config, secondPassIssues);
+    expect(secondPassIssues.empty(), "custom_button command normalization was not idempotent");
   }
 
   void checkVersionGating() {
@@ -484,6 +549,7 @@ int main() {
   checkWidgetActionsMigration();
   checkWidgetGestureSettingsMigration();
   checkRemainingWidgetGesturesMigration();
+  checkCustomButtonCommandsMigration();
   checkVersionGating();
   checkReminderFingerprint();
   checkRegistryOrdering();

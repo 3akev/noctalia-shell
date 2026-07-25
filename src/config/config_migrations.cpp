@@ -18,6 +18,7 @@ namespace noctalia::config {
     constexpr int kWidgetActionsMigrationVersion = 3;
     constexpr int kWidgetGestureSettingsMigrationVersion = 4;
     constexpr int kRemainingWidgetGesturesMigrationVersion = 5;
+    constexpr int kCustomButtonCommandsMigrationVersion = 6;
     constexpr std::int64_t kMaxBarRadius = 500;
     constexpr std::array<std::string_view, 5> kBarRadiusKeys = {
         "radius", "radius_top_left", "radius_top_right", "radius_bottom_left", "radius_bottom_right",
@@ -266,6 +267,63 @@ namespace noctalia::config {
       }
     }
 
+    // custom_button's per-gesture command keys are exactly what `exec` bindings express, and the
+    // widget ran them through the same process::runAsync the `exec` verb uses.
+    template <typename OnChanged> void migrateCustomButtonCommands(toml::table& root, OnChanged&& onChanged) {
+      static constexpr std::array<std::pair<std::string_view, std::string_view>, 5> kCommandKeys{{
+          {"command", "left"},
+          {"right_command", "right"},
+          {"middle_command", "middle"},
+          {"scroll_up_command", "scroll_up"},
+          {"scroll_down_command", "scroll_down"},
+      }};
+
+      auto* widgets = root["widget"].as_table();
+      if (widgets == nullptr) {
+        return;
+      }
+
+      for (auto& [widgetName, widgetNode] : *widgets) {
+        auto* widget = widgetNode.as_table();
+        if (widget == nullptr) {
+          continue;
+        }
+        if ((*widget)["type"].value_or(std::string(widgetName.str())) != "custom_button") {
+          continue;
+        }
+        const std::string path = "widget." + std::string(widgetName.str());
+
+        // Disabled scroll used to win over the scroll commands, so unbind before they migrate.
+        if (widget->contains("enable_scroll")) {
+          const bool wasEnabled = (*widget)["enable_scroll"].value_or(true);
+          widget->erase("enable_scroll");
+          if (!wasEnabled) {
+            bindAction(*widget, "scroll_up", "none");
+            bindAction(*widget, "scroll_down", "none");
+          }
+          onChanged(path, "enable_scroll is now the scroll_up/scroll_down gesture bindings");
+        }
+
+        for (const auto& [key, gesture] : kCommandKeys) {
+          if (!widget->contains(key)) {
+            continue;
+          }
+          const auto command = (*widget)[key].value_or(std::string{});
+          widget->erase(key);
+          if (!command.empty()) {
+            bindAction(*widget, gesture, "exec " + command);
+          }
+          onChanged(path, std::string(key) + " is now the " + std::string(gesture) + " gesture binding");
+        }
+      }
+    }
+
+    void migrateCustomButtonCommandsSidecar(toml::table& root, schema::Diagnostics& diag) {
+      migrateCustomButtonCommands(root, [&diag](const std::string& path, std::string_view message) {
+        diag.warn(path, std::string(message));
+      });
+    }
+
     void migrateRemainingWidgetGesturesSidecar(toml::table& root, schema::Diagnostics& diag) {
       migrateRemainingWidgetGestures(root, [&diag](const std::string& path, std::string_view message) {
         diag.warn(path, std::string(message));
@@ -345,6 +403,11 @@ namespace noctalia::config {
             .toVersion = kRemainingWidgetGesturesMigrationVersion,
             .summary = "widget: move scroll_step and primary_click to gesture actions",
             .apply = migrateRemainingWidgetGesturesSidecar,
+        },
+        {
+            .toVersion = kCustomButtonCommandsMigrationVersion,
+            .summary = "widget: move custom_button commands to gesture actions",
+            .apply = migrateCustomButtonCommandsSidecar,
         },
     };
     return migrations;
@@ -429,6 +492,13 @@ namespace noctalia::config {
     migrateRemainingWidgetGestures(root, [&issues](const std::string& path, std::string_view message) {
       issues.push_back({
           .migrationVersion = kRemainingWidgetGesturesMigrationVersion,
+          .path = path,
+          .message = std::string(message),
+      });
+    });
+    migrateCustomButtonCommands(root, [&issues](const std::string& path, std::string_view message) {
+      issues.push_back({
+          .migrationVersion = kCustomButtonCommandsMigrationVersion,
           .path = path,
           .message = std::string(message),
       });
