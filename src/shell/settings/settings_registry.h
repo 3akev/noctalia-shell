@@ -95,6 +95,8 @@ namespace settings {
     std::string placeholder;
     std::string emptyText;
     float preferredHeight = 240.0f;
+    // When set, replaces the default commit for the setting path.
+    std::function<void(const std::string&)> onSelect;
   };
 
   struct SliderSetting {

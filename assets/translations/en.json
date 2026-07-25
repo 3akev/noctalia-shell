@@ -3054,6 +3054,13 @@
       "success": "Private storage was reset successfully."
     },
     "widgets": {
+      "actions": {
+        "command-placeholder": "Shell command",
+        "default": "Default",
+        "disabled": "Disabled",
+        "run-command": "Run a command…",
+        "unset": "Not set"
+      },
       "gestures": {
         "back": "Back Button",
         "forward": "Forward Button",
@@ -3076,9 +3083,7 @@
         "temp": "Temperature"
       },
       "map-placeholders": {
-        "action": "Action",
         "effects-profile-name": "Profile name",
-        "gesture": "Gesture",
         "glyph-name": "Glyph name",
         "key": "Key",
         "label": "Label",
@@ -3144,7 +3149,7 @@
       },
       "settings": {
         "actions": {
-          "description": "Bind mouse gestures to actions. Keys are left, right, middle, back, forward, scroll_up, scroll_down, scroll_left, scroll_right. Values are a command from `noctalia msg --help` (e.g. \"media toggle\"), \"exec <shell command>\", or \"none\" to unbind.",
+          "description": "What each mouse gesture does on this widget. Pick a command, run a shell command, or disable it.",
           "label": "Gesture Actions"
         },
         "active-color": {

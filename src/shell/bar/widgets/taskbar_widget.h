@@ -71,10 +71,6 @@ public:
   void create() override;
   [[nodiscard]] bool onPointerEvent(const PointerEvent& event) override;
   [[nodiscard]] bool wantsBarHoverHighlight() const noexcept override { return false; }
-  // Left and middle activate and close individual tasks, so they are not whole-widget gestures.
-  [[nodiscard]] noctalia::bar::GestureMask reservedGestures() const noexcept override {
-    return {noctalia::bar::Gesture::Left, noctalia::bar::Gesture::Middle};
-  }
 
 private:
   struct TaskModel {

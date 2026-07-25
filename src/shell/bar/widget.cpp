@@ -1,6 +1,7 @@
 #include "shell/bar/widget.h"
 
 #include "core/log.h"
+#include "cursor-shape-v1-client-protocol.h"
 #include "render/animation/animation_manager.h"
 #include "render/scene/input_area.h"
 #include "render/scene/node.h"
@@ -103,6 +104,8 @@ std::unique_ptr<Node> Widget::releaseRoot() {
 
 void Widget::setRoot(std::unique_ptr<Node> root) {
   m_innerRoot = root.get();
+  m_innerArea = dynamic_cast<InputArea*>(m_innerRoot);
+  m_innerBaseButtons = m_innerArea != nullptr ? m_innerArea->acceptedButtons() : 0;
 
   auto gestureArea = std::make_unique<InputArea>();
   m_gestureArea = gestureArea.get();
@@ -184,7 +187,7 @@ void Widget::resolveGestureBindings(
           .widgetDefaults = noctalia::bar::gestureDefaultsForType(widgetType),
           .barActions = barActions,
           .widgetActions = noctalia::bar::findActionTable(widgetConfig),
-          .reserved = reservedGestures(),
+          .reserved = noctalia::bar::reservedGesturesForType(widgetType),
           .widgetContext = widgetContext,
           .barContext = barContext,
           .widgetName = m_configName,
@@ -212,6 +215,17 @@ void Widget::installGestureHandlers() {
   }
   m_gestureArea->setAcceptedButtons(mask);
   updateGestureAreaEnabled();
+
+  if (m_innerArea != nullptr) {
+    // The dispatcher's ancestor walk stops at the first area accepting the button, so the widget's
+    // own root must give up whatever the wrapper is bound to. This is what lets a config binding
+    // override a gesture the widget still handles itself.
+    m_innerArea->setAcceptedButtons(m_innerBaseButtons & ~mask);
+    // Hover resolves to the innermost area, so it carries the pointer cursor for the wrapper.
+    if (mask != 0 && m_innerArea->cursorShape() == 0) {
+      m_innerArea->setCursorShape(WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_POINTER);
+    }
+  }
 
   // Runs once per widget per reload; the resolved set is the first thing to check when a binding
   // does not fire.

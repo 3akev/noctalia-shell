@@ -50,10 +50,6 @@ public:
   ~WorkspacesWidget() override;
 
   void create() override;
-  // Left activates an individual workspace, so it is not a whole-widget gesture.
-  [[nodiscard]] noctalia::bar::GestureMask reservedGestures() const noexcept override {
-    return {noctalia::bar::Gesture::Left};
-  }
   [[nodiscard]] bool wantsBarHoverHighlight() const noexcept override { return false; }
 
 private:

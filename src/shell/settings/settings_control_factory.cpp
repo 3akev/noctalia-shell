@@ -432,7 +432,7 @@ namespace settings {
         .radius = Style::scaledRadiusMd(scale),
         .onClick = [openPopup = ctx.openSearchPickerPopup, title = std::move(title), options = setting.options,
                     selectedValue = setting.selectedValue, placeholder = setting.placeholder,
-                    emptyText = setting.emptyText, path = std::move(path)]() {
+                    emptyText = setting.emptyText, path = std::move(path), onSelect = setting.onSelect]() {
           if (openPopup) {
             openPopup(
                 SearchPickerOpenRequest{
@@ -442,6 +442,7 @@ namespace settings {
                     .placeholder = placeholder,
                     .emptyText = emptyText,
                     .settingPath = path,
+                    .onSelect = onSelect,
                 }
             );
           }

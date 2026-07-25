@@ -59,10 +59,6 @@ public:
     return false;
   }
 
-  // Gestures this widget handles on its individual items (workspace pills, taskbar tasks, slider
-  // tracks) rather than as a whole. They are never bindable; a config entry for one is an error.
-  [[nodiscard]] virtual noctalia::bar::GestureMask reservedGestures() const noexcept { return {}; }
-
   [[nodiscard]] virtual bool noGapAroundMe() const noexcept { return false; }
   // Layout-only or non-interactive bar widgets: clicks pass through to bar dead-zone handlers.
   [[nodiscard]] virtual bool isBarClickThrough() const noexcept { return m_nonInteractive; }
@@ -187,6 +183,9 @@ private:
   Node* m_outerPtr = nullptr;
   Node* m_innerRoot = nullptr;
   InputArea* m_gestureArea = nullptr;
+  // The widget's own root area and the buttons it claimed before any binding was applied.
+  InputArea* m_innerArea = nullptr;
+  std::uint32_t m_innerBaseButtons = 0;
   noctalia::bar::WidgetActionBindings m_gestureBindings;
   const noctalia::bar::WidgetActionDispatcher* m_actionDispatcher = nullptr;
   IpcInvocationContext m_actionContext;
