@@ -77,7 +77,7 @@ namespace settings {
         .renamingWidgetName = ctx.renamingWidgetName,
         .pendingGestureKey = ctx.pendingGestureKey,
         .pendingGestureVerb = ctx.pendingGestureVerb,
-        .actionsExpanded = ctx.actionsExpanded,
+        .actionsExpandedFor = ctx.actionsExpandedFor,
         .actionCatalog = ctx.actionCatalog,
         .requestRebuild = ctx.requestRebuild,
         .resetContentScroll = ctx.resetContentScroll,

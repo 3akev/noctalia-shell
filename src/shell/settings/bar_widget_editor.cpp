@@ -295,10 +295,11 @@ namespace settings {
     constexpr std::string_view kGestureActionsGroup = "actions";
 
     // The actions group is long (one row per bindable gesture) and most widgets never need it, so it
-    // folds. `ctx.actionsExpanded` lives on the settings window: editing a binding rebuilds the
-    // scene, and a local flag would fold the group back up on every edit.
-    std::unique_ptr<Node>
-    makeGestureActionsSection(const BarWidgetEditorContext& ctx, std::unique_ptr<Node> body, bool withSeparator) {
+    // starts folded. The open state lives on the settings window keyed by widget name: editing a
+    // binding rebuilds the scene, and a local flag would fold the group back up on every edit.
+    std::unique_ptr<Node> makeGestureActionsSection(
+        const BarWidgetEditorContext& ctx, const std::string& widgetName, std::unique_ptr<Node> body, bool withSeparator
+    ) {
       // Same padding and gap as makeMiniSectionHeader, so this section sits like every other one.
       auto section = ui::column({
           .align = FlexAlign::Stretch,
@@ -318,8 +319,10 @@ namespace settings {
           colorSpecFromRole(ColorRole::Secondary), FontWeight::Bold
       ));
       collapsible->setBody(std::move(body));
-      collapsible->setExpandedImmediate(ctx.actionsExpanded);
-      collapsible->setOnToggle([expanded = &ctx.actionsExpanded](bool value) { *expanded = value; });
+      collapsible->setExpandedImmediate(ctx.actionsExpandedFor == widgetName);
+      collapsible->setOnToggle([expandedFor = &ctx.actionsExpandedFor, widgetName](bool value) {
+        *expandedFor = value ? widgetName : std::string{};
+      });
       section->addChild(std::move(collapsible));
       return section;
     }
@@ -1913,7 +1916,7 @@ namespace settings {
             addGestureActionRows(
                 *body, ctx, entry, defaults, configured, noctalia::bar::reservedGesturesForType(widgetType)
             );
-            panel->addChild(makeGestureActionsSection(ctx, std::move(body), visibleSpecs > 0));
+            panel->addChild(makeGestureActionsSection(ctx, widgetName, std::move(body), visibleSpecs > 0));
             break;
           }
           const bool customLabels = spec.schema.key == "custom_labels";

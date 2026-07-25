@@ -56,7 +56,7 @@ namespace settings {
     std::string& renamingWidgetName;
     std::string& pendingGestureKey;
     std::string& pendingGestureVerb;
-    bool& actionsExpanded;
+    std::string& actionsExpandedFor;
     // Bindable IPC commands for the gesture action picker: value = command, label = usage,
     // description = the command's --help text.
     std::vector<GestureActionOption> actionCatalog;

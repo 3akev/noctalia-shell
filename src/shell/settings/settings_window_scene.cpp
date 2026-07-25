@@ -899,7 +899,7 @@ settings::SettingsContentContext SettingsWindow::makeContentContext(
       .renamingWidgetName = m_renamingWidgetName,
       .pendingGestureKey = m_pendingGestureKey,
       .pendingGestureVerb = m_pendingGestureVerb,
-      .actionsExpanded = m_actionsExpanded,
+      .actionsExpandedFor = m_actionsExpandedFor,
       .actionCatalog = gestureActionCatalog(),
       .requestRebuild = requestRebuild,
       .requestContentRebuild = requestContent,

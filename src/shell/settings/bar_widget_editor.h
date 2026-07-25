@@ -34,7 +34,7 @@ namespace settings {
     std::string& renamingWidgetName;
     std::string& pendingGestureKey;
     std::string& pendingGestureVerb;
-    bool& actionsExpanded;
+    std::string& actionsExpandedFor;
     std::vector<GestureActionOption> actionCatalog;
 
     std::function<void()> requestRebuild;
