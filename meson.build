@@ -1673,6 +1673,28 @@ config_widget_test = executable('config_widget_test',
 
 test('config_widget', config_widget_test)
 
+capsule_group_reconcile_test = executable('capsule_group_reconcile_test',
+  sources: files(
+    'tests/capsule_group_reconcile_test.cpp',
+    'src/config/widget_config.cpp',
+    'src/config/config_types.cpp',
+    'src/render/core/color.cpp',
+    'src/ui/palette.cpp',
+    'src/theme/builtin_palettes.cpp',
+    'src/theme/fixed_palette.cpp',
+    'src/theme/color.cpp',
+    'src/theme/contrast.cpp',
+    'src/core/input/key_chord.cpp',
+  ),
+  include_directories: _noctalia_inc,
+  dependencies: [
+    xkbcommon_dep,
+    tomlplusplus_dep,
+  ],
+)
+
+test('capsule_group_reconcile', capsule_group_reconcile_test)
+
 widget_definition_test = executable('widget_definition_test',
   sources: files(
     'tests/widget_definition_test.cpp',

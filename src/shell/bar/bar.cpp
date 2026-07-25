@@ -2254,7 +2254,11 @@ void Bar::populateWidgets(BarInstance& instance) {
     for (const auto& name : names) {
       if (isCapsuleGroupToken(name)) {
         const BarCapsuleGroupStyle* group = findBarCapsuleGroupStyle(instance.barConfig, capsuleGroupTokenId(name));
-        if (group == nullptr || !group->enabled) {
+        if (group == nullptr) {
+          kLog.warn("bar.{}: lane entry \"{}\" has no matching capsule_group", instance.barConfig.name, name);
+          continue;
+        }
+        if (!group->enabled) {
           continue;
         }
         const WidgetBarCapsuleSpec groupSpec = capsuleSpecFromGroup(instance.barConfig, *group);

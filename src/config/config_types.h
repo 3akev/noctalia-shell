@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -396,6 +397,20 @@ struct WidgetConfig {
 
 // Builds the capsule spec a group's member widgets render with (style taken from the group).
 [[nodiscard]] WidgetBarCapsuleSpec capsuleSpecFromGroup(const BarConfig& bar, const BarCapsuleGroupStyle& group);
+
+// Group ids the scope's lanes reference. A monitor override with no capsule_group of its own reads
+// the bar's array, so its lanes belong to the bar scope's reference set.
+[[nodiscard]] std::set<std::string> capsuleGroupRefsForBarScope(const BarConfig& bar);
+[[nodiscard]] std::set<std::string>
+capsuleGroupRefsForMonitorScope(const BarConfig& bar, const BarMonitorOverride& monitorOverride);
+
+// Rebuilds an overriding capsule_group array against the config-file array, in file order: an
+// overridden group keeps its edited style, a file group the lanes reference again comes back, and a
+// GUI-created group survives only while a lane still references it (nothing can reach it otherwise).
+[[nodiscard]] std::vector<BarCapsuleGroupStyle> reconcileCapsuleGroups(
+    const std::vector<BarCapsuleGroupStyle>& current, const std::vector<BarCapsuleGroupStyle>& base,
+    const std::set<std::string>& referenced
+);
 [[nodiscard]] float
 resolveWidgetContentScale(float barScale, const WidgetConfig* widget, std::string_view context = "widget.scale");
 
