@@ -722,10 +722,13 @@ void Application::initIpc() {
           for (const auto& s : m_pluginManager.list(scripting::CatalogAccess::LocalOnly)) {
             const std::string dependencies =
                 s.dependencies.empty() ? std::string{} : " requires " + StringUtils::join(s.dependencies, ", ");
+            const std::string heldBack = s.heldBack
+                ? std::format(" held-back (v{} needs plugin API {})", s.latestVersion, s.latestPluginApiVersion)
+                : std::string{};
             out += std::format(
-                "{} [{}] {}{}{}{}{}\n", s.id, s.source, s.version.empty() ? "-" : s.version,
-                s.enabled ? " enabled" : "", s.compatible ? "" : " incompatible", s.deprecated ? " deprecated" : "",
-                dependencies
+                "{} [{}] {}{}{}{}{}{}\n", s.id, s.source, s.version.empty() ? "-" : s.version,
+                s.enabled ? " enabled" : "", s.compatible ? "" : " incompatible", heldBack,
+                s.deprecated ? " deprecated" : "", dependencies
             );
           }
           return out.empty() ? "(no plugins)\n" : out;

@@ -1435,6 +1435,35 @@ plugin_source_paths_test = executable('plugin_source_paths_test',
 
 test('plugin_source_paths', plugin_source_paths_test)
 
+plugin_catalog_test = executable('plugin_catalog_test',
+  sources: files(
+    'tests/plugin_catalog_test.cpp',
+    'src/scripting/plugin_catalog.cpp',
+    'src/scripting/plugin_git.cpp',
+    'src/scripting/plugin_manifest.cpp',
+    'src/scripting/plugin_panel_shell.cpp',
+    'src/scripting/plugin_source_locks.cpp',
+    'src/scripting/plugin_source_paths.cpp',
+    'src/config/config_types.cpp',
+    'src/core/input/key_chord.cpp',
+    'src/core/log.cpp',
+    'src/core/process/process.cpp',
+    'src/render/core/color.cpp',
+    'src/theme/builtin_palettes.cpp',
+    'src/theme/color.cpp',
+    'src/theme/contrast.cpp',
+    'src/theme/fixed_palette.cpp',
+    'src/ui/palette.cpp',
+  ),
+  include_directories: _noctalia_inc,
+  dependencies: [
+    tomlplusplus_dep,
+    xkbcommon_dep,
+  ],
+)
+
+test('plugin_catalog', plugin_catalog_test)
+
 plugin_source_locks_test = executable('plugin_source_locks_test',
   sources: files(
     'tests/plugin_source_locks_test.cpp',

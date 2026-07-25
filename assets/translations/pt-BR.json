@@ -2711,10 +2711,6 @@
           "label": "Comando de Launcher Personalizado",
           "placeholder": "$CMD"
         },
-        "middle-click-opens-widget-settings": {
-          "description": "Abra as configurações de um widget da barra clicando com o botão do meio do mouse",
-          "label": "Clique do Meio Abre as Configurações do Widget"
-        },
         "niri-overview-type-to-launch": {
           "description": "Abra o launcher ao digitar na visão geral do Niri; utiliza uma pequena superfície de foco do teclado enquanto a visão geral estiver aberta",
           "label": "Digitar para Abrir Launcher"
@@ -3116,8 +3112,6 @@
         "rate": "Consumo",
         "regular": "Normal",
         "replace": "Substituir",
-        "screenshot-primary-fullscreen": "Tela Cheia",
-        "screenshot-primary-region": "Região",
         "shared": "Compartilhado",
         "short": "Curto",
         "swap-percent": "Porcentagem de Swap",
@@ -3212,10 +3206,6 @@
           "description": "Segunda cor de gradiente no visualizador",
           "label": "Cor 2"
         },
-        "command": {
-          "description": "O comando do shell é executado ao clicar com o botão esquerdo do mouse neste botão",
-          "label": "Comando de Clique Esquerdo"
-        },
         "custom-image": {
           "description": "Caminho para uma imagem personalizada; deixe em branco para usar o símbolo padrão",
           "dialog-title": "Selecionar imagem personalizada",
@@ -3228,10 +3218,6 @@
         "custom-labels": {
           "description": "Mapeia nomes de layouts de teclado para rótulos personalizados",
           "label": "Rótulos Personalizados"
-        },
-        "cycle-command": {
-          "description": "O comando é executado ao alternar entre os layouts de teclado",
-          "label": "Comando de Ciclo"
         },
         "detached-panel": {
           "description": "Abre o drawer como um painel flutuante com seu próprio fundo, em vez de se mesclar com a barra",
@@ -3454,10 +3440,6 @@
           "description": "Expressões regulares para ignorar nomes dos apps de microfone",
           "label": "Regex de Filtro de Microfone"
         },
-        "middle-command": {
-          "description": "O comando do shell é executado ao clicar com o botão do meio neste botão. Quando configurado, clicar com o botão do meio abre este comando em vez das configurações do widget.",
-          "label": "Clique No Botão do Meio"
-        },
         "min-length": {
           "description": "Comprimento mínimo do widget em pixels",
           "label": "Comprimento Mínimo"
@@ -3514,14 +3496,6 @@
           "description": "Opacidade dos apps fixados que não estão em execução",
           "label": "Opacidade do App Fixado"
         },
-        "primary-click": {
-          "description": "Ação executada ao clicar com o botão esquerdo do mouse no botão da barra",
-          "label": "Clique Primário"
-        },
-        "right-command": {
-          "description": "O comando do shell é executado ao clicar com o botão direito do mouse neste botão",
-          "label": "Comando do Clique no Botão Direito"
-        },
         "scale": {
           "description": "Dimensionar este widget em relação à escala do conteúdo da barra",
           "label": "Escala"
@@ -3533,18 +3507,6 @@
         "script": {
           "description": "Caminho para o script lua",
           "label": "Script"
-        },
-        "scroll-down-command": {
-          "description": "O comando do shell é executado ao rolar a página para baixo sobre este botão",
-          "label": "Comando de Scroll Down"
-        },
-        "scroll-step": {
-          "description": "Variação percentual aplicada a cada passo da rolagem do mouse",
-          "label": "Graduação de Rolagem"
-        },
-        "scroll-up-command": {
-          "description": "O comando do shell é executado ao rolar para cima sobre este botão",
-          "label": "Comando de Scroll Up"
         },
         "show-active-indicator": {
           "description": "Exibir um pequeno ponto abaixo do ícone da janela ativa na barra de tarefas",
@@ -3865,6 +3827,7 @@
       "sort-date-desc": "Ordenar por data (mais recentes primeiro)",
       "sort-name-asc": "Ordenar por nome (A-Z)",
       "sort-name-desc": "Ordenar por nome (Z-A)",
+      "sort-random": "Ordenar aleatoriamente (embaralhar)",
       "title": "Papel de Parede"
     }
   },
