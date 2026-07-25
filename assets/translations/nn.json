@@ -2532,10 +2532,6 @@
           "label": "Sjølvvald veljarkommando",
           "placeholder": "$CMD"
         },
-        "middle-click-opens-widget-settings": {
-          "description": "Opna innstillingane åt ein stongnøytel frå stonga med midttrykk",
-          "label": "Midttrykk opnar nøytelinnstillingar"
-        },
         "niri-overview-type-to-launch": {
           "description": "Opna programveljaren når du skriv i niri-oversyn; brukar ei lita tastatur-åtgaumsflate medan oversyna er open",
           "label": "Skriv for å køyra"
@@ -2887,8 +2883,6 @@
         "output": "Utdata",
         "ram-percent": "Minneprosent",
         "ram-used": "Minne bruka",
-        "screenshot-primary-fullscreen": "Fullskjerm",
-        "screenshot-primary-region": "Område",
         "shared": "Dela",
         "short": "Kort",
         "swap-percent": "Swapprosent",
@@ -2978,10 +2972,6 @@
           "description": "Andre gradientlet i framsyninga",
           "label": "Let 2"
         },
-        "command": {
-          "description": "Skalkommando som køyrer når du venstretrykkjer denne knappen",
-          "label": "Venstretrykk-kommando"
-        },
         "custom-image": {
           "description": "Bane til eit sjølvvalt bilete. Haldt dette tomt for å bruka merkesymbolet.",
           "dialog-title": "Vel eit bilete",
@@ -2994,10 +2984,6 @@
         "custom-labels": {
           "description": "Bitt tastaturoppsettsnamn til sjølvvalde merkelappar",
           "label": "Sjølvvalde merkelappar"
-        },
-        "cycle-command": {
-          "description": "Kommando som køyrer når du brigdar tastaturoppsett",
-          "label": "Brigdekommando"
         },
         "detached-panel": {
           "description": "Opna ilåtet som ei flytande fjøl med eigen bakgrunn heller enn å vera bunde til stonga.",
@@ -3200,10 +3186,6 @@
           "description": "Regex som mikrofonprosessnamn overser",
           "label": "Mikrofonvilkår-regex"
         },
-        "middle-command": {
-          "description": "Skalkommando som køyrer når du midttrykkjer denne knappen. Når dette er sett, opnar midttrykk denne kommandoen, ikkje nøytelinnstillingar.",
-          "label": "Midttrykk-kommando"
-        },
         "min-length": {
           "description": "Minste tillaten nøytellengd i piksel",
           "label": "Minste lengd"
@@ -3254,14 +3236,6 @@
           "description": "Korgting-ID som held seg synleg på stonga når ilåtsmodus er på",
           "label": "Feste ting"
         },
-        "primary-click": {
-          "description": "Det som skjer ved venstretrykk på stongknappen",
-          "label": "Primærtrykk"
-        },
-        "right-command": {
-          "description": "Skalkommandoen som køyrer ved høgretrykk på denne knappen",
-          "label": "Høgretrykk-kommando"
-        },
         "scale": {
           "description": "Brigda storleiken på denne nøytelen i høve til innhaldsskala på stonga",
           "label": "Skala"
@@ -3273,18 +3247,6 @@
         "script": {
           "description": "Bane til lua-skrifta",
           "label": "Skrift"
-        },
-        "scroll-down-command": {
-          "description": "Skalkommandoen som køyrer når du blader ned over denne knappen",
-          "label": "Kommando på nedblad"
-        },
-        "scroll-step": {
-          "description": "Prosentbrigde gjort med kvart musehjulsteg",
-          "label": "Bladsteg"
-        },
-        "scroll-up-command": {
-          "description": "Skalkommandoen som køyrer når du blader opp over denne knappen",
-          "label": "Kommando på oppblad"
         },
         "show-active-indicator": {
           "description": "Vis ein liten prikk under rutemerket med åtgaum på oppgåvelina.",
