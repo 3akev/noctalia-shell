@@ -713,7 +713,7 @@
       "config-migration-title": "Atualiação de configuração necessária",
       "dbus-disabled": "Notificações DBus desabilitadas",
       "desktop-widgets-editor": "Editor de Widget",
-      "desktop-widgets-editor-enabled": "O editor de widgets da área de trabalho está ativado. Alterne para uma área de trabalho vazia para visualizar a sobreposição do editor.",
+      "desktop-widgets-editor-enabled": "O editor de widgets da área de trabalho está ativo. Alterne para uma área de trabalho vazia para visualizar a sobreposição do editor.",
       "greeter-sync": "Noctalia Greeter",
       "greeter-sync-pending": "Aguardando aprovação do administrador para gravar no greeter.",
       "greeter-sync-pending-console": "Aguardando aprovação do administrador. Aprove o prompt do polkit no Noctalia, em um TTY ou console, ou execute o pkexec manualmente.",
@@ -730,7 +730,7 @@
       "launcher-usage-reset-success": "Dados de uso limpos.",
       "lockscreen-widgets-editor": "Editor de widgets da tela de bloqueio",
       "lockscreen-widgets-editor-blocked-locked": "Desbloqueie a sessão antes de editar os widgets da tela de bloqueio.",
-      "lockscreen-widgets-editor-enabled": "O editor de widgets da tela de bloqueio está ativado. Organize os widgets na sobreposição de visualização e, em seguida, bloqueie a sessão para verificar o layout.",
+      "lockscreen-widgets-editor-enabled": "O editor de widgets da tela de bloqueio está ativo. Organize os widgets na sobreposição de visualização e, em seguida, bloqueie a sessão para verificar o layout.",
       "mpris-disabled": "MPRIS desabilitado",
       "polkit-agent": "Agente de Autenticação",
       "polkit-no-session": "Agente Polkit precisa de logind, elogind or XDG_SESSION_ID. Em configurações que utilizam apenas o seatd, ele não consegue se registrar para solicitações gráficas. Use o pkexec no terminal para sincronizar o greeter ou instale o elogind para autenticação durante a sessão.",
@@ -795,7 +795,7 @@
       "body-error": "{plugin}: {error}",
       "body-incompatible": "O plugin {plugin} requer a versão {version} da API de plugins; este Noctalia suporta as APIs {oldest}–{current}",
       "body-timeout": "A instalação do {plugin} demorou muito.",
-      "title": "Plugin não está ativado"
+      "title": "Plugin não ativado"
     }
   },
   "power": {
@@ -1024,7 +1024,7 @@
         "settings": {
           "empty": "Nenhuma configuração corresponde aos filtros atuais.",
           "groups": {
-            "actions": "Entradas",
+            "actions": "Ações",
             "grouping": "Agrupamento",
             "presentation": "Apresentação",
             "runtime": "Tempo de Execução",
@@ -2306,7 +2306,7 @@
           "label": "Abrir Próximo ao Clique"
         },
         "panel-anchor-bar": {
-          "description": "A quais barras os painéis se anexam quando abertos por um atalho ou pelo dock. Deixe vazio para seguir o widget que os abriu",
+          "description": "Barra à qual os painéis se anexam quando abertos. Deixe vazio para seguir o widget, atalho ou dock que os abriu",
           "label": "Barra Âncora"
         },
         "placement-clipboard": {
@@ -3047,7 +3047,8 @@
         "command-placeholder": "Comando do shell",
         "default": "Padrão",
         "disabled": "Desativado",
-        "run-command": "Executar um comando..."
+        "run-command": "Executar um comando...",
+        "unset": "Não definido"
       },
       "gestures": {
         "back": "Botão Voltar",
