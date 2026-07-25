@@ -1284,10 +1284,10 @@ void LockSurface::rebuildSessionButtons() {
     raw->setText(labelText);
     raw->setGlyph(cfg.glyph.has_value() && !cfg.glyph->empty() ? *cfg.glyph : session_action::defaultGlyph(cfg.action));
     raw->setVariant(lockscreenSessionVariant(cfg.variant));
-    raw->setDirection(FlexDirection::Vertical);
+    raw->setDirection(FlexDirection::Horizontal);
     raw->setAlign(FlexAlign::Center);
     raw->setJustify(FlexJustify::Center);
-    raw->setGap(2.0f);
+    raw->setGap(Style::spaceXs);
     raw->setContentAlign(ButtonContentAlign::Center);
     raw->setFontSize(Style::fontSizeCaption);
     raw->setGlyphSize(16.0f);
