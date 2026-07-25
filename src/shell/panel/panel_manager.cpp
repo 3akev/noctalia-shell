@@ -131,8 +131,8 @@ namespace {
   }
 
   // Resolves the bar a panel should attach to / position relative to.
-  // `barName` is the opening source bar when present. Otherwise `shell.panel_anchor_bar`
-  // is used when set. A named bar that does not exist fails loudly (nullopt).
+  // `shell.panel_anchor_bar` wins when set; otherwise `barName` is the opening
+  // source bar. A named bar that does not exist fails loudly (nullopt).
   // Prefer an enabled bar on the output; if none is enabled there (e.g. a bar-less
   // monitor), still return a resolved bar so openPanel can fall back to centered
   // floating via attached-panel availability.
@@ -144,8 +144,8 @@ namespace {
     }
 
     const auto& bars = configService->config().bars;
-    const std::string_view effectiveName =
-        !barName.empty() ? barName : std::string_view(configService->config().shell.panelAnchorBar);
+    const std::string_view panelAnchorBar = configService->config().shell.panelAnchorBar;
+    const std::string_view effectiveName = !panelAnchorBar.empty() ? panelAnchorBar : barName;
 
     const WaylandOutput* wlOutput = nullptr;
     if (platform != nullptr && output != nullptr) {
@@ -525,7 +525,7 @@ void PanelManager::openPanel(const std::string& panelId, PanelOpenRequest reques
 
   auto panelWidth = static_cast<std::uint32_t>(m_activePanel->preferredWidth());
   auto panelHeight = static_cast<std::uint32_t>(m_activePanel->preferredHeight());
-  m_sourceBarName = request.sourceBarName.empty() ? barConfig.name : std::string(request.sourceBarName);
+  m_sourceBarName = barConfig.name;
   if (m_attachedPanelLayerProvider != nullptr) {
     if (auto layer = m_attachedPanelLayerProvider(request.output, m_sourceBarName); layer.has_value()) {
       barConfig.layer = *layer;

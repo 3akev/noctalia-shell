@@ -7,14 +7,33 @@
 #include "ui/palette.h"
 #include "ui/style.h"
 
+#include <algorithm>
 #include <memory>
 #include <string_view>
 
 namespace {
 
   constexpr float kLoginGlyphSize = 16.0f;
-  constexpr float kRegularInfoHeight = 56.0f;
-  constexpr float kRegularSessionHeight = 58.0f;
+  constexpr float kRegularInfoMinHeight = 40.0f;
+  constexpr float kRegularInfoIdealHeight = 56.0f;
+  constexpr float kRegularSessionMinHeight = 44.0f;
+  constexpr float kRegularSessionIdealHeight = 58.0f;
+
+  [[nodiscard]] float resolveGhostInfoHeight(float available, bool showSession) {
+    if (!showSession) {
+      return std::max(0.0f, available);
+    }
+    if (available >= kRegularInfoIdealHeight + kRegularSessionIdealHeight) {
+      return kRegularInfoIdealHeight + (available - kRegularInfoIdealHeight - kRegularSessionIdealHeight) * 0.4f;
+    }
+    if (available <= kRegularInfoMinHeight + kRegularSessionMinHeight) {
+      const float total = std::max(1.0f, kRegularInfoMinHeight + kRegularSessionMinHeight);
+      return available * (kRegularInfoMinHeight / total);
+    }
+    const float infoShare =
+        available * (kRegularInfoIdealHeight / (kRegularInfoIdealHeight + kRegularSessionIdealHeight));
+    return std::clamp(infoShare, kRegularInfoMinHeight, available - kRegularSessionMinHeight);
+  }
 
   [[nodiscard]] bool isStyleSetting(std::string_view key) {
     return key == "background_color"
@@ -117,14 +136,27 @@ void DesktopLoginBoxWidget::doLayout(Renderer& renderer) {
     );
   }
 
-  const float pad = Style::spaceMd;
-  float contentTop = pad;
+  const float padV = Style::spaceSm;
+  const float padH = Style::spaceLg;
+  const bool showSession = regular && style.showSessionButtons;
+  int visibleRows = 1; // password
   if (regular) {
-    const float infoHeight = std::min(kRegularInfoHeight, panelHeight * 0.3f);
+    ++visibleRows;
+  }
+  if (showSession) {
+    ++visibleRows;
+  }
+  const float rowGaps = Style::spaceSm * static_cast<float>(std::max(0, visibleRows - 1));
+  const float flexibleBudget = std::max(0.0f, panelHeight - padV * 2.0f - rowGaps - Style::controlHeight);
+  const float infoHeight = regular ? resolveGhostInfoHeight(flexibleBudget, showSession) : 0.0f;
+  const float sessionHeight = showSession ? std::max(0.0f, flexibleBudget - infoHeight) : 0.0f;
+
+  float contentTop = padV;
+  if (regular) {
     if (m_infoGhost != nullptr) {
       m_infoGhost->setVisible(true);
-      m_infoGhost->setPosition(pad, contentTop);
-      m_infoGhost->setSize(panelWidth - pad * 2.0f, infoHeight);
+      m_infoGhost->setPosition(padH, contentTop);
+      m_infoGhost->setSize(panelWidth - padH * 2.0f, infoHeight);
       m_infoGhost->setStyle(
           RoundedRectStyle{
               .fill = colorForRole(ColorRole::Surface, 0.35f),
@@ -134,11 +166,11 @@ void DesktopLoginBoxWidget::doLayout(Renderer& renderer) {
       );
     }
     const float halfGap = Style::spaceSm;
-    const float halfWidth = std::max(40.0f, (panelWidth - pad * 2.0f - halfGap) * 0.5f);
+    const float halfWidth = std::max(40.0f, (panelWidth - padH * 2.0f - halfGap) * 0.5f);
     if (m_mediaGhost != nullptr) {
       m_mediaGhost->setVisible(true);
-      m_mediaGhost->setPosition(pad + Style::spaceXs, contentTop + Style::spaceXs);
-      m_mediaGhost->setSize(halfWidth - Style::spaceXs, infoHeight - Style::spaceXs * 2.0f);
+      m_mediaGhost->setPosition(padH + Style::spaceXs, contentTop + Style::spaceXs);
+      m_mediaGhost->setSize(halfWidth - Style::spaceXs, std::max(0.0f, infoHeight - Style::spaceXs * 2.0f));
       m_mediaGhost->setStyle(
           RoundedRectStyle{
               .fill = colorForRole(ColorRole::Primary, 0.18f),
@@ -149,8 +181,8 @@ void DesktopLoginBoxWidget::doLayout(Renderer& renderer) {
     }
     if (m_weatherGhost != nullptr) {
       m_weatherGhost->setVisible(true);
-      m_weatherGhost->setPosition(pad + halfWidth + halfGap + Style::spaceXs, contentTop + Style::spaceXs);
-      m_weatherGhost->setSize(halfWidth - Style::spaceXs, infoHeight - Style::spaceXs * 2.0f);
+      m_weatherGhost->setPosition(padH + halfWidth + halfGap + Style::spaceXs, contentTop + Style::spaceXs);
+      m_weatherGhost->setSize(halfWidth - Style::spaceXs, std::max(0.0f, infoHeight - Style::spaceXs * 2.0f));
       m_weatherGhost->setStyle(
           RoundedRectStyle{
               .fill = colorForRole(ColorRole::Secondary, 0.18f),
@@ -172,12 +204,10 @@ void DesktopLoginBoxWidget::doLayout(Renderer& renderer) {
     }
   }
 
-  const float sessionReserve = regular && style.showSessionButtons ? kRegularSessionHeight + Style::spaceSm : 0.0f;
-  const float passwordAreaHeight = std::max(Style::controlHeight, panelHeight - contentTop - sessionReserve - pad);
   const lockscreen_login_box::PanelContentLayout layout = lockscreen_login_box::panelContentLayout(
-      panelWidth, passwordAreaHeight + Style::spaceSm * 2.0f, style.showLoginButton
+      panelWidth, Style::controlHeight + Style::spaceSm * 2.0f, style.showLoginButton
   );
-  const float passwordTop = contentTop + std::max(0.0f, (passwordAreaHeight - layout.controlHeight) * 0.5f);
+  const float passwordTop = contentTop;
 
   if (m_passwordGhost != nullptr) {
     m_passwordGhost->setPosition(layout.contentLeft, passwordTop);
@@ -219,10 +249,9 @@ void DesktopLoginBoxWidget::doLayout(Renderer& renderer) {
     }
   }
 
-  const bool showSession = regular && style.showSessionButtons;
-  const float sessionTop = panelHeight - pad - kRegularSessionHeight;
+  const float sessionTop = passwordTop + Style::controlHeight + (showSession ? Style::spaceSm : 0.0f);
   const float sessionGap = Style::spaceSm;
-  const float sessionWidth = (panelWidth - pad * 2.0f - sessionGap * static_cast<float>(m_sessionGhosts.size() - 1))
+  const float sessionWidth = (panelWidth - padH * 2.0f - sessionGap * static_cast<float>(m_sessionGhosts.size() - 1))
       / static_cast<float>(m_sessionGhosts.size());
   for (std::size_t i = 0; i < m_sessionGhosts.size(); ++i) {
     Box* ghost = m_sessionGhosts[i];
@@ -233,8 +262,8 @@ void DesktopLoginBoxWidget::doLayout(Renderer& renderer) {
     if (!showSession) {
       continue;
     }
-    ghost->setPosition(pad + static_cast<float>(i) * (sessionWidth + sessionGap), sessionTop);
-    ghost->setSize(sessionWidth, kRegularSessionHeight);
+    ghost->setPosition(padH + static_cast<float>(i) * (sessionWidth + sessionGap), sessionTop);
+    ghost->setSize(sessionWidth, sessionHeight);
     ghost->setStyle(
         RoundedRectStyle{
             .fill = colorForRole(ColorRole::Surface, 0.55f),

@@ -142,7 +142,7 @@ namespace lockscreen_login_box {
     if (layout != LayoutMode::Regular) {
       return 70.0f;
     }
-    return showSessionButtons ? 248.0f : 248.0f - kRegularSessionBlockHeight;
+    return showSessionButtons ? 232.0f : 232.0f - kRegularSessionBlockHeight;
   }
 
   float resolvePanelWidth(float screenWidth, float boxWidth, LayoutMode layout) {

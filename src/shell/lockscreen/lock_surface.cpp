@@ -43,14 +43,48 @@ namespace {
       .configure = &LockSurface::handleConfigure,
   };
 
-  constexpr float kMediaArtSize = 40.0f;
+  constexpr float kMediaArtIdealSize = 40.0f;
+  constexpr float kMediaArtMinSize = 28.0f;
+  constexpr float kMediaArtMaxSize = 64.0f;
   constexpr float kWeatherGlyphSize = 28.0f;
   constexpr float kForecastGlyphSize = 18.0f;
-  constexpr float kInfoRowMinHeight = 56.0f;
-  constexpr float kSessionRowMinHeight = 58.0f;
+  constexpr float kInfoRowMinHeight = 40.0f;
+  constexpr float kInfoRowIdealHeight = 56.0f;
+  constexpr float kSessionRowMinHeight = 44.0f;
+  constexpr float kSessionRowIdealHeight = 58.0f;
   constexpr float kForecastMinWeatherBudget = 280.0f;
   constexpr float kLayoutChipMaxWidth = 96.0f;
   constexpr int kForecastDayCount = 3;
+
+  struct RegularRowHeights {
+    float info = kInfoRowIdealHeight;
+    float session = kSessionRowIdealHeight;
+  };
+
+  [[nodiscard]] RegularRowHeights resolveRegularRowHeights(float available, bool showSession) {
+    RegularRowHeights heights;
+    if (!showSession) {
+      heights.info = std::max(0.0f, available);
+      heights.session = 0.0f;
+      return heights;
+    }
+    if (available >= kInfoRowIdealHeight + kSessionRowIdealHeight) {
+      const float extra = available - (kInfoRowIdealHeight + kSessionRowIdealHeight);
+      heights.info = kInfoRowIdealHeight + extra * 0.4f;
+      heights.session = kSessionRowIdealHeight + extra * 0.6f;
+      return heights;
+    }
+    if (available <= kInfoRowMinHeight + kSessionRowMinHeight) {
+      const float total = std::max(1.0f, kInfoRowMinHeight + kSessionRowMinHeight);
+      heights.info = available * (kInfoRowMinHeight / total);
+      heights.session = std::max(0.0f, available - heights.info);
+      return heights;
+    }
+    const float infoShare = available * (kInfoRowIdealHeight / (kInfoRowIdealHeight + kSessionRowIdealHeight));
+    heights.info = std::clamp(infoShare, kInfoRowMinHeight, available - kSessionRowMinHeight);
+    heights.session = std::max(0.0f, available - heights.info);
+    return heights;
+  }
 
   bool parseColorWallpaperPath(std::string_view path, Color& out) {
     constexpr std::string_view kPrefix = "color:";
@@ -143,7 +177,7 @@ LockSurface::LockSurface(WaylandConnection& connection, ConfigService* config) :
               .align = FlexAlign::Stretch,
               .justify = FlexJustify::Start,
               .gap = Style::spaceSm,
-              .paddingV = Style::spaceMd,
+              .paddingV = Style::spaceSm,
               .paddingH = Style::spaceLg,
               .configure = [](Flex& flex) { flex.setZIndex(2); },
           }
@@ -186,9 +220,9 @@ LockSurface::LockSurface(WaylandConnection& connection, ConfigService* config) :
       ui::image({
           .out = &m_mediaArt,
           .fit = ImageFit::Cover,
-          .radius = kMediaArtSize * 0.5f,
-          .width = kMediaArtSize,
-          .height = kMediaArtSize,
+          .radius = kMediaArtIdealSize * 0.5f,
+          .width = kMediaArtIdealSize,
+          .height = kMediaArtIdealSize,
           .visible = false,
       })
   );
@@ -961,11 +995,53 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
   const bool showForecast = showWeather && weatherBudget >= kForecastMinWeatherBudget;
   const bool showLayoutChip =
       loginVisible && loginStyle.showKeyboardLayout && m_layoutChip != nullptr && m_layoutChip->visible();
+  const bool showSession = regular && loginStyle.showSessionButtons && !m_sessionButtons.empty();
+  const bool showStatus = m_statusPanel != nullptr && m_statusPanel->visible();
+
+  float statusHeight = 0.0f;
+  if (showStatus) {
+    LayoutConstraints statusConstraints;
+    statusConstraints.setMaxWidth(contentWidth);
+    statusHeight = m_statusPanel->measure(*renderer, statusConstraints).height;
+  }
+
+  const float panelPadV = Style::spaceSm;
+  const float panelGap = Style::spaceSm;
+  int visibleRows = loginVisible ? 1 : 0; // password row
+  if (regular) {
+    ++visibleRows;
+  }
+  if (showStatus) {
+    ++visibleRows;
+  }
+  if (showSession) {
+    ++visibleRows;
+  }
+  const float rowGaps = panelGap * static_cast<float>(std::max(0, visibleRows - 1));
+  const float fixedChrome = panelPadV * 2.0f + rowGaps + (loginVisible ? Style::controlHeight : 0.0f) + statusHeight;
+  const float flexibleBudget = std::max(0.0f, panelHeight - fixedChrome);
+  const RegularRowHeights rowHeights =
+      regular ? resolveRegularRowHeights(flexibleBudget, showSession) : RegularRowHeights{};
+  const float mediaArtSize =
+      regular ? std::clamp(rowHeights.info - Style::spaceSm, kMediaArtMinSize, kMediaArtMaxSize) : kMediaArtIdealSize;
 
   if (m_infoRow != nullptr) {
     m_infoRow->setVisible(regular);
-    m_infoRow->setMinHeight(regular ? kInfoRowMinHeight : 0.0f);
+    if (regular) {
+      m_infoRow->setMinHeight(rowHeights.info);
+      m_infoRow->setMaxHeight(rowHeights.info);
+    } else {
+      m_infoRow->setMinHeight(0.0f);
+      m_infoRow->setMaxHeight(0.0f);
+    }
     m_infoRow->setMaxWidth(contentWidth);
+  }
+  if (m_mediaArt != nullptr) {
+    m_mediaArt->setSize(mediaArtSize, mediaArtSize);
+    m_mediaArt->setRadius(mediaArtSize * 0.5f);
+  }
+  if (m_mediaFallbackGlyph != nullptr) {
+    m_mediaFallbackGlyph->setGlyphSize(std::clamp(mediaArtSize * 0.45f, 14.0f, 28.0f));
   }
   if (m_mediaBlock != nullptr) {
     m_mediaBlock->setVisible(showMedia);
@@ -982,22 +1058,35 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
   }
 
   if (m_sessionRow != nullptr) {
-    const bool showSession = regular && loginStyle.showSessionButtons && !m_sessionButtons.empty();
     m_sessionRow->setVisible(showSession);
-    m_sessionRow->setMinHeight(showSession ? kSessionRowMinHeight : 0.0f);
+    if (showSession) {
+      m_sessionRow->setMinHeight(rowHeights.session);
+      m_sessionRow->setMaxHeight(rowHeights.session);
+    } else {
+      m_sessionRow->setMinHeight(0.0f);
+      m_sessionRow->setMaxHeight(0.0f);
+    }
     m_sessionRow->setMaxWidth(contentWidth);
     if (showSession && !m_sessionButtons.empty()) {
       const float gaps = Style::spaceSm * static_cast<float>(m_sessionButtons.size() - 1);
       const float buttonMaxWidth = std::max(48.0f, (contentWidth - gaps) / static_cast<float>(m_sessionButtons.size()));
+      const float glyphSize = std::clamp(rowHeights.session * 0.28f, 14.0f, 22.0f);
+      const float fontSize = std::clamp(rowHeights.session * 0.22f, 11.0f, Style::fontSizeCaption);
       for (Button* button : m_sessionButtons) {
-        if (button != nullptr) {
-          button->setMaxWidth(buttonMaxWidth);
+        if (button == nullptr) {
+          continue;
         }
+        button->setMaxWidth(buttonMaxWidth);
+        button->setMinHeight(0.0f);
+        button->setMaxHeight(0.0f);
+        button->setFillHeight(true);
+        button->setGlyphSize(glyphSize);
+        button->setFontSize(fontSize);
       }
     }
   }
 
-  const float mediaTextMax = std::max(48.0f, mediaBudget - kMediaArtSize - Style::spaceSm);
+  const float mediaTextMax = std::max(48.0f, mediaBudget - mediaArtSize - Style::spaceSm);
   if (m_mediaTitle != nullptr) {
     m_mediaTitle->setMaxWidth(mediaTextMax);
     m_mediaTitle->setEllipsize(TextEllipsize::End);
@@ -1080,13 +1169,13 @@ void LockSurface::updateCopy() {
   }
 
   if (m_layoutChip != nullptr) {
-    // Show whenever enabled; cycling still requires multiple layouts.
-    const bool show = m_locked && !m_blackout && style.showKeyboardLayout && isLoginBoxEnabled();
+    const bool show =
+        m_locked && !m_blackout && style.showKeyboardLayout && m_hasMultipleLayouts && isLoginBoxEnabled();
     m_layoutChip->setVisible(show);
     if (show) {
       m_layoutChip->setGlyph("keyboard");
       m_layoutChip->setText(m_layoutLabel.empty() ? "—" : m_layoutLabel);
-      m_layoutChip->setEnabled(m_layoutSwitchable && m_hasMultipleLayouts);
+      m_layoutChip->setEnabled(m_layoutSwitchable);
     }
   }
 }
@@ -1204,8 +1293,9 @@ void LockSurface::rebuildSessionButtons() {
     raw->setFontSize(Style::fontSizeCaption);
     raw->setGlyphSize(16.0f);
     raw->setPadding(Style::spaceXs, Style::spaceSm);
-    raw->setMinHeight(kSessionRowMinHeight);
-    raw->setMaxHeight(kSessionRowMinHeight);
+    raw->setFillHeight(true);
+    raw->setMinHeight(0.0f);
+    raw->setMaxHeight(0.0f);
     raw->setRadius(Style::scaledRadiusMd());
     raw->setFlexGrow(1.0f);
     raw->setOnClick([this, cfg]() {
@@ -1252,7 +1342,7 @@ void LockSurface::syncRegularExtras(Renderer& renderer) {
       }
       if (artChanged || (m_mediaArt != nullptr && !artUrl.empty() && !m_mediaArt->hasImage())) {
         m_lastArtUrl = artUrl;
-        const int targetPx = static_cast<int>(std::round(kMediaArtSize));
+        const int targetPx = static_cast<int>(std::round(kMediaArtIdealSize));
         bool hasArt = false;
         if (m_mediaArt != nullptr) {
           if (!artUrl.empty()) {

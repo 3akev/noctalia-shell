@@ -2323,7 +2323,7 @@
           "label": "Along Bar"
         },
         "panel-anchor-bar": {
-          "description": "Which bar panels attach to when opened from a shortcut or the dock. Leave empty to follow the widget that opened them",
+          "description": "Bar panels attach to when opened. Leave empty to follow the widget, shortcut, or dock that opened them",
           "label": "Anchor Bar"
         },
         "placement-clipboard": {

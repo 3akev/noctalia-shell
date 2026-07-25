@@ -66,9 +66,10 @@ namespace lockscreen_login_box {
   // Min width for media + weather; forecast needs more.
   constexpr float kRegularMinPanelWidth = 720.0f;
   constexpr float kCompactMinPanelHeight = 64.0f;
-  // Session row height plus the gap above it.
+  // Ideal session row height plus the gap above it (used when toggling session buttons).
   constexpr float kRegularSessionBlockHeight = 66.0f;
-  constexpr float kRegularMinPanelHeight = 236.0f;
+  // Fits shrinkable info/session rows plus password/status with spaceSm padding/gaps.
+  constexpr float kRegularMinPanelHeight = 190.0f;
   constexpr float kRegularMinPanelHeightNoSession = kRegularMinPanelHeight - kRegularSessionBlockHeight;
   constexpr float kCompactMaxPanelHeight = 120.0f;
   constexpr float kRegularMaxPanelHeight = 300.0f;
