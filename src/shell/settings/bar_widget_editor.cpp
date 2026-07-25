@@ -5,6 +5,7 @@
 #include "cursor-shape-v1-client-protocol.h"
 #include "i18n/i18n.h"
 #include "render/scene/node.h"
+#include "shell/bar/widget_gesture.h"
 #include "shell/settings/color_spec_picker.h"
 #include "shell/settings/font_weight_catalog.h"
 #include "shell/settings/settings_content.h"
@@ -102,6 +103,16 @@ namespace settings {
           makeLabel(title, Style::fontSizeCaption * scale, colorSpecFromRole(ColorRole::Secondary), FontWeight::Bold)
       );
       return header;
+    }
+
+    // Ordered gesture keys, offered as completions in the generic actions map editor.
+    std::vector<std::string> gestureActionKeySuggestions() {
+      std::vector<std::string> keys;
+      keys.reserve(noctalia::bar::kGestureCount);
+      for (const auto gesture : noctalia::bar::allGestures()) {
+        keys.emplace_back(noctalia::bar::gestureConfigKey(gesture));
+      }
+      return keys;
     }
 
     std::string widgetSettingGroupTitle(std::string_view groupKey) {
@@ -1678,30 +1689,42 @@ namespace settings {
         case WidgetControlKind::StringMap: {
           const bool customLabels = spec.schema.key == "custom_labels";
           const bool effectsProfileGlyphs = spec.schema.key == "effects_profile_glyphs";
+          const bool gestureActions = spec.schema.key == "actions";
           WidgetSettingStringMap entries;
+          if (const auto* defaults = std::get_if<WidgetSettingStringMap>(&spec.schema.defaultValue)) {
+            entries = *defaults;
+          }
           if (widgetConfig != nullptr) {
             if (const auto tableIt = widgetConfig->tables.find(spec.schema.key);
                 tableIt != widgetConfig->tables.end()) {
-              entries = tableIt->second;
-            } else if (const auto* defaults = std::get_if<WidgetSettingStringMap>(&spec.schema.defaultValue)) {
-              entries = *defaults;
+              if (gestureActions) {
+                // Gesture bindings layer over the defaults rather than replacing them, so an
+                // unbound gesture still shows what it currently does.
+                for (const auto& [key, value] : tableIt->second) {
+                  entries[key] = value;
+                }
+              } else {
+                entries = tableIt->second;
+              }
             }
-          } else if (const auto* defaults = std::get_if<WidgetSettingStringMap>(&spec.schema.defaultValue)) {
-            entries = *defaults;
           }
           ctx.makeStringMapBlock(
               *panel, entry,
               StringMapSetting{
                   .entries = std::move(entries),
-                  .suggestedKeys = customLabels ? ctx.keyboardLayoutNames : std::vector<std::string>{},
+                  .suggestedKeys = customLabels ? ctx.keyboardLayoutNames
+                      : gestureActions          ? gestureActionKeySuggestions()
+                                                : std::vector<std::string>{},
                   .keyPlaceholder = i18n::tr(
                       customLabels               ? "settings.widgets.map-placeholders.layout-name"
                           : effectsProfileGlyphs ? "settings.widgets.map-placeholders.effects-profile-name"
+                          : gestureActions       ? "settings.widgets.map-placeholders.gesture"
                                                  : "settings.widgets.map-placeholders.key"
                   ),
                   .valuePlaceholder = i18n::tr(
                       customLabels               ? "settings.widgets.map-placeholders.label"
                           : effectsProfileGlyphs ? "settings.widgets.map-placeholders.glyph-name"
+                          : gestureActions       ? "settings.widgets.map-placeholders.action"
                                                  : "settings.widgets.map-placeholders.value"
                   ),
               }

@@ -7,11 +7,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
-#include <numeric>
+#include <string_view>
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <sys/un.h>
 #include <unistd.h>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -42,6 +43,13 @@ namespace {
   }
 
 } // namespace
+
+IpcService::InvocationScope::InvocationScope(const IpcService& ipc, std::optional<IpcInvocationContext> context)
+    : m_ipc(ipc), m_previous(std::move(ipc.m_invocationContext)) {
+  m_ipc.m_invocationContext = std::move(context);
+}
+
+IpcService::InvocationScope::~InvocationScope() { m_ipc.m_invocationContext = std::move(m_previous); }
 
 IpcService::~IpcService() {
   if (m_listenFd >= 0) {
@@ -102,6 +110,29 @@ void IpcService::registerHandler(
   // Remove existing entry for this command if re-registering
   std::erase_if(m_handlers, [&command](const auto& e) { return e.first == command; });
   m_handlers.push_back({command, {std::move(handler), std::move(usage), std::move(description), visibility}});
+}
+
+std::vector<IpcService::HandlerInfo> IpcService::handlers() const {
+  std::vector<HandlerInfo> infos;
+  infos.reserve(m_handlers.size());
+  for (const auto& [command, entry] : m_handlers) {
+    if (entry.visibility == HandlerVisibility::Hidden) {
+      continue;
+    }
+    infos.push_back(
+        HandlerInfo{
+            .command = command,
+            .usage = entry.usage.empty() ? std::string_view(command) : std::string_view(entry.usage),
+            .description = entry.description,
+        }
+    );
+  }
+  std::ranges::sort(infos, {}, &HandlerInfo::command);
+  return infos;
+}
+
+bool IpcService::hasHandler(std::string_view command) const noexcept {
+  return std::ranges::any_of(m_handlers, [command](const auto& entry) { return entry.first == command; });
 }
 
 void IpcService::dispatch() {
@@ -203,6 +234,9 @@ void IpcService::handleConnection(int connFd) {
     return;
   }
 
+  // A socket command has no in-process origin, even when the dispatch re-enters from a handler
+  // that pumped the event loop.
+  const InvocationScope socketScope(*this, std::nullopt);
   const std::string response = execute(command);
   std::size_t sent = 0;
   while (sent < response.size()) {
@@ -215,34 +249,21 @@ void IpcService::handleConnection(int connFd) {
 }
 
 std::string IpcService::buildHelp() const {
-  std::vector<std::size_t> order(m_handlers.size());
-  std::ranges::iota(order, 0);
-  std::ranges::sort(order, [this](std::size_t lhs, std::size_t rhs) {
-    return m_handlers[lhs].first < m_handlers[rhs].first;
-  });
+  const auto infos = handlers();
 
-  // Find the longest usage string for alignment
+  // Longest usage string, for description alignment.
   std::size_t maxUsage = 0;
-  for (const auto& [cmd, entry] : m_handlers) {
-    if (entry.visibility == HandlerVisibility::Hidden) {
-      continue;
-    }
-    const auto& u = entry.usage.empty() ? cmd : entry.usage;
-    maxUsage = std::max(maxUsage, u.size());
+  for (const auto& info : infos) {
+    maxUsage = std::max(maxUsage, info.usage.size());
   }
 
   std::string out = "Usage: noctalia msg <command> [args]\n\nCommands:\n";
-  for (const auto index : order) {
-    const auto& [cmd, entry] = m_handlers[index];
-    if (entry.visibility == HandlerVisibility::Hidden) {
-      continue;
-    }
-    const auto& u = entry.usage.empty() ? cmd : entry.usage;
+  for (const auto& info : infos) {
     out += "  ";
-    out += u;
-    if (!entry.description.empty()) {
-      out += std::string(maxUsage - u.size() + 2, ' ');
-      out += entry.description;
+    out += info.usage;
+    if (!info.description.empty()) {
+      out += std::string(maxUsage - info.usage.size() + 2, ' ');
+      out += info.description;
     }
     out += '\n';
   }

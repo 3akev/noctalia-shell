@@ -124,6 +124,77 @@ sunrise = "07:30"
     );
   }
 
+  void checkWidgetActionsMigration() {
+    // The setting is now the built-in `middle` binding, so an enabled config just drops the key.
+    toml::table enabled = toml::parse(R"(
+[shell]
+middle_click_opens_widget_settings = true
+)");
+    noctalia::config::LegacyConfigIssues enabledIssues;
+    noctalia::config::normalizeLegacyConfig(enabled, enabledIssues);
+    expect(
+        !enabled["shell"]["middle_click_opens_widget_settings"].value<bool>().has_value(),
+        "an enabled middle_click_opens_widget_settings was not dropped"
+    );
+    expect(enabled["bar"].as_table() == nullptr, "an enabled config gained a spurious bar actions table");
+
+    // A disabled config has to keep behaving the same, which now means unbinding the gesture.
+    toml::table disabled = toml::parse(R"(
+[shell]
+middle_click_opens_widget_settings = false
+
+[bar.default]
+position = "top"
+
+[bar.secondary]
+position = "bottom"
+)");
+    noctalia::config::LegacyConfigIssues disabledIssues;
+    noctalia::config::normalizeLegacyConfig(disabled, disabledIssues);
+    expect(
+        !disabled["shell"]["middle_click_opens_widget_settings"].value<bool>().has_value(),
+        "a disabled middle_click_opens_widget_settings was not dropped"
+    );
+    for (const std::string_view barName : {"default", "secondary"}) {
+      expect(
+          disabled["bar"][barName]["actions"]["middle"].value<std::string>() == std::optional<std::string>{"none"},
+          "a disabled config did not unbind middle on every bar"
+      );
+    }
+
+    // With no [bar] table the built-in default bar is still in play, so it must be seeded.
+    toml::table noBars = toml::parse(R"(
+[shell]
+middle_click_opens_widget_settings = false
+)");
+    noctalia::config::LegacyConfigIssues noBarIssues;
+    noctalia::config::normalizeLegacyConfig(noBars, noBarIssues);
+    expect(
+        noBars["bar"]["default"]["actions"]["middle"].value<std::string>() == std::optional<std::string>{"none"},
+        "a disabled config without a [bar] table did not seed the default bar"
+    );
+
+    // An existing explicit binding wins over the migration.
+    toml::table explicitBinding = toml::parse(R"(
+[shell]
+middle_click_opens_widget_settings = false
+
+[bar.default.actions]
+middle = "media toggle"
+)");
+    noctalia::config::LegacyConfigIssues explicitIssues;
+    noctalia::config::normalizeLegacyConfig(explicitBinding, explicitIssues);
+    expect(
+        explicitBinding["bar"]["default"]["actions"]["middle"].value<std::string>()
+            == std::optional<std::string>{"media toggle"},
+        "the migration overwrote an explicit middle binding"
+    );
+
+    noctalia::config::LegacyConfigIssues secondPassIssues;
+    noctalia::config::normalizeLegacyConfig(disabled, secondPassIssues);
+    expect(secondPassIssues.empty(), "widget action normalization was not idempotent");
+  }
+
   void checkVersionGating() {
     toml::table legacy = toml::parse(R"(
 [bar.main]
@@ -264,6 +335,7 @@ int main() {
   checkNegativeRadiusMigration();
   checkExtremeNegativeRadius();
   checkCustomScheduleMigration();
+  checkWidgetActionsMigration();
   checkVersionGating();
   checkReminderFingerprint();
   checkRegistryOrdering();

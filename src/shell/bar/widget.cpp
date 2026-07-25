@@ -1,14 +1,21 @@
 #include "shell/bar/widget.h"
 
+#include "core/log.h"
 #include "render/animation/animation_manager.h"
+#include "render/scene/input_area.h"
 #include "render/scene/node.h"
+#include "shell/bar/widget_action_dispatcher.h"
+#include "shell/bar/widget_gesture_defaults.h"
 #include "ui/palette.h"
 
 #include <algorithm>
+#include <array>
+#include <format>
 
 namespace {
 
   constexpr float kCapsuleInkEpsilon = 0.5f;
+  constexpr Logger kLog("bar.actions");
 
 } // namespace
 
@@ -73,25 +80,55 @@ void Widget::setBarCapsuleScene(Node* shell, Box* box) noexcept {
 
 void Widget::setNonInteractive(bool nonInteractive) noexcept {
   m_nonInteractive = nonInteractive;
-  if (Node* r = root(); r != nullptr) {
-    r->setHitTestVisible(!m_nonInteractive);
+  if (Node* outer = outerNode(); outer != nullptr) {
+    outer->setHitTestVisible(!m_nonInteractive);
+  }
+  updateGestureAreaEnabled();
+}
+
+void Widget::updateGestureAreaEnabled() noexcept {
+  if (m_gestureArea != nullptr) {
+    m_gestureArea->setEnabled(!m_nonInteractive && !m_gestureBindings.empty());
   }
 }
 
-float Widget::width() const noexcept { return root() ? root()->width() : 0.0f; }
+float Widget::width() const noexcept { return outerNode() != nullptr ? outerNode()->width() : 0.0f; }
 
-float Widget::height() const noexcept { return root() ? root()->height() : 0.0f; }
+float Widget::height() const noexcept { return outerNode() != nullptr ? outerNode()->height() : 0.0f; }
 
 std::unique_ptr<Node> Widget::releaseRoot() {
-  m_rootPtr = m_root.get();
-  return std::move(m_root);
+  m_outerPtr = m_outer.get();
+  return std::move(m_outer);
 }
 
 void Widget::setRoot(std::unique_ptr<Node> root) {
-  m_root = std::move(root);
-  if (m_root != nullptr) {
-    m_root->setHitTestVisible(!m_nonInteractive);
+  m_innerRoot = root.get();
+
+  auto gestureArea = std::make_unique<InputArea>();
+  m_gestureArea = gestureArea.get();
+  // Nothing is bound until resolveGestureBindings() runs, and an area with no accepted buttons
+  // never wins the dispatcher's ancestor walk.
+  m_gestureArea->setAcceptedButtons(0);
+  if (root != nullptr) {
+    m_gestureArea->addChild(std::move(root));
   }
+
+  m_outer = std::move(gestureArea);
+  m_outer->setHitTestVisible(!m_nonInteractive);
+  // Bindings are resolved before create() runs, so install them here too: whichever of the two
+  // happens last is the one that wires the area up.
+  installGestureHandlers();
+  syncOuterFromRoot();
+}
+
+void Widget::syncOuterFromRoot() noexcept {
+  Node* outer = outerNode();
+  if (outer == nullptr || m_innerRoot == nullptr) {
+    return;
+  }
+  outer->setSize(m_innerRoot->width(), m_innerRoot->height());
+  outer->setVisible(m_innerRoot->visible());
+  outer->setParticipatesInLayout(m_innerRoot->participatesInLayout());
 }
 
 void Widget::setAnimationManager(AnimationManager* mgr) noexcept { m_animations = mgr; }
@@ -126,9 +163,124 @@ void Widget::requestFrameTick() {
 
 void Widget::requestPanelToggle(
     std::string_view panelId, std::string_view context, std::optional<float> anchorSurfaceX,
-    std::optional<float> anchorSurfaceY
+    std::optional<float> anchorSurfaceY, PanelActivation activation
 ) {
   if (m_panelToggleCallback) {
-    m_panelToggleCallback(panelId, context, anchorSurfaceX, anchorSurfaceY);
+    m_panelToggleCallback(panelId, context, anchorSurfaceX, anchorSurfaceY, activation);
   }
+}
+
+void Widget::resolveGestureBindings(
+    std::string_view widgetType, const WidgetConfig* widgetConfig,
+    const noctalia::bar::WidgetActionBindings::ActionTable* barActions, std::string_view barContext,
+    const noctalia::bar::WidgetActionDispatcher* dispatcher
+) {
+  m_actionDispatcher = dispatcher;
+
+  const std::string widgetContext = std::format("widget.{}", m_configName);
+  m_gestureBindings.resolve(
+      noctalia::bar::WidgetActionBindings::Inputs{
+          .builtinDefaults = noctalia::bar::builtinGestureDefaults(),
+          .widgetDefaults = noctalia::bar::gestureDefaultsForType(widgetType),
+          .barActions = barActions,
+          .widgetActions = noctalia::bar::findActionTable(widgetConfig),
+          .reserved = reservedGestures(),
+          .widgetContext = widgetContext,
+          .barContext = barContext,
+          .widgetName = m_configName,
+      }
+  );
+
+  installGestureHandlers();
+}
+
+void Widget::installGestureHandlers() {
+  if (m_gestureArea == nullptr) {
+    return;
+  }
+
+  const auto bound = m_gestureBindings.boundGestures();
+
+  std::uint32_t mask = 0;
+  for (const auto gesture : noctalia::bar::allGestures()) {
+    if (!bound.contains(gesture)) {
+      continue;
+    }
+    for (const auto button : noctalia::bar::buttonsForGesture(gesture)) {
+      mask |= InputArea::buttonMask(button);
+    }
+  }
+  m_gestureArea->setAcceptedButtons(mask);
+  updateGestureAreaEnabled();
+
+  // Runs once per widget per reload; the resolved set is the first thing to check when a binding
+  // does not fire.
+  std::string summary;
+  for (const auto gesture : noctalia::bar::allGestures()) {
+    const auto* action = m_gestureBindings.find(gesture);
+    if (action == nullptr) {
+      continue;
+    }
+    if (!summary.empty()) {
+      summary += ", ";
+    }
+    summary += std::format(
+        "{}={}", gestureConfigKey(gesture),
+        action->kind == noctalia::bar::WidgetAction::Kind::Exec ? std::format("exec {}", action->args)
+                                                                : action->commandLine()
+    );
+  }
+  kLog.debug("widget.{}: {}", m_configName, summary.empty() ? "no gesture bindings" : summary);
+
+  if (mask != 0) {
+    m_gestureArea->setOnClick([this](const InputArea::PointerData& data) {
+      if (const auto gesture = noctalia::bar::gestureForButton(data.button)) {
+        dispatchGesture(*gesture);
+      }
+    });
+  }
+
+  m_gestureArea->setOnAxisHandler([this](const InputArea::PointerData& data) {
+    const auto gesture = noctalia::bar::gestureForScroll(data.axis, data.scrollSteps());
+    if (!gesture.has_value()) {
+      // Report a scroll gesture we own as consumed even between detents, so a partly accumulated
+      // flick does not leak to an ancestor mid-gesture.
+      return m_gestureBindings.find(noctalia::bar::Gesture::ScrollUp) != nullptr
+          || m_gestureBindings.find(noctalia::bar::Gesture::ScrollDown) != nullptr;
+    }
+    return dispatchGesture(*gesture);
+  });
+}
+
+bool Widget::dispatchGesture(noctalia::bar::Gesture gesture) {
+  const auto* action = m_gestureBindings.find(gesture);
+  if (action == nullptr) {
+    return false;
+  }
+
+  // Panel actions re-enter through the bar's panel callback so the panel anchors at this widget
+  // rather than at the compositor's focused output.
+  if (action->kind == noctalia::bar::WidgetAction::Kind::Ipc && noctalia::bar::isAnchoredPanelVerb(action->verb)) {
+    const auto args = noctalia::bar::parsePanelVerbArgs(action->args);
+    if (args.panelId.empty()) {
+      kLog.error(
+          "widget.{}.actions.{}: \"{}\" needs a panel id", m_configName, gestureConfigKey(gesture), action->verb
+      );
+      return false;
+    }
+    const auto activation =
+        action->verb == "panel-open" ? Widget::PanelActivation::Open : Widget::PanelActivation::Toggle;
+    requestPanelToggle(args.panelId, args.panelContext, std::nullopt, std::nullopt, activation);
+    return true;
+  }
+
+  if (m_actionDispatcher == nullptr) {
+    return false;
+  }
+
+  if (!m_actionDispatcher->run(*action, m_actionContext)) {
+    kLog.error("widget.{}.actions.{}: action failed", m_configName, gestureConfigKey(gesture));
+    return false;
+  }
+  return true;
 }

@@ -14,6 +14,7 @@ namespace noctalia::config {
 
     constexpr int kNegativeBarRadiusMigrationVersion = 1;
     constexpr int kCustomScheduleMigrationVersion = 2;
+    constexpr int kWidgetActionsMigrationVersion = 3;
     constexpr std::int64_t kMaxBarRadius = 500;
     constexpr std::array<std::string_view, 5> kBarRadiusKeys = {
         "radius", "radius_top_left", "radius_top_right", "radius_bottom_left", "radius_bottom_right",
@@ -106,6 +107,56 @@ namespace noctalia::config {
       });
     }
 
+    // `shell.middle_click_opens_widget_settings` became a gesture binding. Only the disabled case
+    // needs carrying over: opening widget settings on middle click is now the built-in default.
+    template <typename OnChanged> void migrateWidgetActions(toml::table& root, OnChanged&& onChanged) {
+      auto* shell = root["shell"].as_table();
+      if (shell == nullptr || !shell->contains("middle_click_opens_widget_settings")) {
+        return;
+      }
+
+      const bool wasEnabled = (*shell)["middle_click_opens_widget_settings"].value_or(true);
+      shell->erase("middle_click_opens_widget_settings");
+      onChanged("shell");
+      if (wasEnabled) {
+        return;
+      }
+
+      // Unbind it on every configured bar, since the setting used to be global. A config with no
+      // [bar] table at all uses the built-in default bar, so seed that one.
+      auto* bars = root["bar"].as_table();
+      if (bars == nullptr) {
+        root.insert_or_assign("bar", toml::table{});
+        bars = root["bar"].as_table();
+      }
+      if (bars->empty()) {
+        bars->insert_or_assign("default", toml::table{});
+      }
+
+      for (auto& [barName, barNode] : *bars) {
+        auto* bar = barNode.as_table();
+        if (bar == nullptr) {
+          continue;
+        }
+        auto* actions = (*bar)["actions"].as_table();
+        if (actions == nullptr) {
+          bar->insert_or_assign("actions", toml::table{});
+          actions = (*bar)["actions"].as_table();
+        }
+        if (actions->contains("middle")) {
+          continue;
+        }
+        actions->insert_or_assign("middle", "none");
+        onChanged("bar." + std::string(barName.str()) + ".actions");
+      }
+    }
+
+    void migrateWidgetActionsSidecar(toml::table& root, schema::Diagnostics& diag) {
+      migrateWidgetActions(root, [&diag](const std::string& path) {
+        diag.warn(path, "middle_click_opens_widget_settings is now the `middle` widget gesture binding");
+      });
+    }
+
     std::uint64_t stableIssueHash(int migrationVersion, std::string_view path) {
       constexpr std::uint64_t kOffset = 14695981039346656037ULL;
       constexpr std::uint64_t kPrime = 1099511628211ULL;
@@ -152,6 +203,11 @@ namespace noctalia::config {
             .toVersion = kCustomScheduleMigrationVersion,
             .summary = "location: opt legacy sunset/sunrise schedules into custom_schedule",
             .apply = migrateCustomScheduleSidecar,
+        },
+        {
+            .toVersion = kWidgetActionsMigrationVersion,
+            .summary = "bar: move middle_click_opens_widget_settings to widget gesture actions",
+            .apply = migrateWidgetActionsSidecar,
         },
     };
     return migrations;
@@ -217,6 +273,13 @@ namespace noctalia::config {
           .migrationVersion = kCustomScheduleMigrationVersion,
           .path = path,
           .message = "sunset/sunrise no longer schedule on their own; set custom_schedule = true",
+      });
+    });
+    migrateWidgetActions(root, [&issues](const std::string& path) {
+      issues.push_back({
+          .migrationVersion = kWidgetActionsMigrationVersion,
+          .path = path,
+          .message = "middle_click_opens_widget_settings is now the `middle` bar widget gesture binding",
       });
     });
   }

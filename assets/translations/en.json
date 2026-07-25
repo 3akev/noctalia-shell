@@ -1023,6 +1023,7 @@
         "settings": {
           "empty": "No settings match the current filters.",
           "groups": {
+            "actions": "Actions",
             "grouping": "Grouping",
             "presentation": "Presentation",
             "runtime": "Runtime",
@@ -2715,10 +2716,6 @@
           "label": "Custom App Launch Command",
           "placeholder": "$CMD"
         },
-        "middle-click-opens-widget-settings": {
-          "description": "Open a bar widget's settings from the bar with middle click",
-          "label": "Middle Click Opens Widget Settings"
-        },
         "niri-overview-type-to-launch": {
           "description": "Open the launcher when typing in niri overview; uses a tiny keyboard-focus surface while overview is open",
           "label": "Type to Launch"
@@ -3057,6 +3054,17 @@
       "success": "Private storage was reset successfully."
     },
     "widgets": {
+      "gestures": {
+        "back": "Back Button",
+        "forward": "Forward Button",
+        "left": "Left Click",
+        "middle": "Middle Click",
+        "right": "Right Click",
+        "scroll-down": "Scroll Down",
+        "scroll-left": "Scroll Left",
+        "scroll-right": "Scroll Right",
+        "scroll-up": "Scroll Up"
+      },
       "instances": {
         "cpu": "CPU",
         "date": "Date",
@@ -3068,7 +3076,9 @@
         "temp": "Temperature"
       },
       "map-placeholders": {
+        "action": "Action",
         "effects-profile-name": "Profile name",
+        "gesture": "Gesture",
         "glyph-name": "Glyph name",
         "key": "Key",
         "label": "Label",
@@ -3133,6 +3143,10 @@
         "workspace-label-inside": "Inside Pill"
       },
       "settings": {
+        "actions": {
+          "description": "Bind mouse gestures to actions. Keys are left, right, middle, back, forward, scroll_up, scroll_down, scroll_left, scroll_right. Values are a command from `noctalia msg --help` (e.g. \"media toggle\"), \"exec <shell command>\", or \"none\" to unbind.",
+          "label": "Gesture Actions"
+        },
         "active-color": {
           "description": "Color used for active privacy indicators; fixed hex colors are also supported",
           "label": "Active Color"

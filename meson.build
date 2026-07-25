@@ -702,8 +702,12 @@ _noctalia_sources = files(
   'src/shell/wallpaper/panel/wallpaper_scanner.cpp',
   'src/shell/wallpaper/panel/wallpaper_tile.cpp',
   'src/shell/bar/widget.cpp',
+  'src/shell/bar/widget_action.cpp',
+  'src/shell/bar/widget_action_dispatcher.cpp',
   'src/shell/bar/widget_custom_image.cpp',
   'src/shell/bar/widget_factory.cpp',
+  'src/shell/bar/widget_gesture.cpp',
+  'src/shell/bar/widget_gesture_defaults.cpp',
   'src/shell/bar/widgets/active_window_widget.cpp',
   'src/shell/bar/widgets/active_window_widget_definition.cpp',
   'src/shell/bar/widgets/audio_visualizer_widget.cpp',
@@ -1174,6 +1178,22 @@ ipc_service_test = executable('ipc_service_test',
 )
 
 test('ipc_service', ipc_service_test)
+
+widget_action_test = executable('widget_action_test',
+  sources: files(
+    'tests/widget_action_test.cpp',
+    'src/shell/bar/widget_action.cpp',
+    'src/shell/bar/widget_action_dispatcher.cpp',
+    'src/shell/bar/widget_gesture.cpp',
+    'src/ipc/ipc_service.cpp',
+    'src/core/process/process.cpp',
+    'src/core/log.cpp',
+  ),
+  include_directories: _noctalia_inc,
+  dependencies: [wayland_client_dep],
+)
+
+test('widget_action', widget_action_test)
 
 process_test = executable('process_test',
   sources: files(

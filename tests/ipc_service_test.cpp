@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <sys/socket.h>
@@ -85,6 +86,41 @@ int main() {
   assert(ipc.execute("visible-command ok") == "visible:ok\n");
   assert(ipc.execute("hidden-command ok") == "hidden:ok\n");
   assert(ipc.execute("visible-command line1\nline2\nline3") == "visible:line1\nline2\nline3\n");
+
+  // The catalog lists public handlers only, but hasHandler() agrees with execute() dispatch so a
+  // hidden command stays bindable.
+  {
+    const auto infos = ipc.handlers();
+    assert(infos.size() == 1);
+    assert(infos.front().command == "visible-command");
+    assert(infos.front().usage == "visible-command <value>");
+    assert(infos.front().description == "Visible command");
+    assert(ipc.hasHandler("visible-command"));
+    assert(ipc.hasHandler("hidden-command"));
+    assert(!ipc.hasHandler("no-such-command"));
+  }
+
+  // `exec` and `none` are reserved by the bar widget action grammar and must never become
+  // IPC commands, or a binding would resolve to two different things.
+  assert(!ipc.hasHandler("exec"));
+  assert(!ipc.hasHandler("none"));
+
+  // The invocation context is empty unless a scope is active, and scopes nest.
+  {
+    assert(!ipc.invocationContext().has_value());
+    const IpcService::InvocationScope outer(ipc, IpcInvocationContext{.widgetName = "media", .barName = "default"});
+    assert(ipc.invocationContext().has_value());
+    assert(ipc.invocationContext()->widgetName == "media");
+    {
+      const IpcService::InvocationScope inner(ipc, IpcInvocationContext{.widgetName = "clock"});
+      assert(ipc.invocationContext()->widgetName == "clock");
+      const IpcService::InvocationScope cleared(ipc, std::nullopt);
+      assert(!ipc.invocationContext().has_value());
+    }
+    assert(ipc.invocationContext()->widgetName == "media");
+    assert(ipc.invocationContext()->barName == "default");
+  }
+  assert(!ipc.invocationContext().has_value());
 
   const std::string help = ipc.execute("--help");
   assert(help.find("visible-command <value>") != std::string::npos);

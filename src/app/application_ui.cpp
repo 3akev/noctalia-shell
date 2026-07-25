@@ -831,10 +831,7 @@ void Application::initBarDockAndLayout() {
       .scriptApi = &m_scriptApi,
   });
   m_idleInhibitor.setAnchorSurfacesProvider([this]() { return m_bar.caffeineAnchorSurfaces(); });
-  m_bar.setOpenWidgetSettingsCallback([this](std::string barName, std::string widgetName) {
-    if (m_panelManager.isOpen()) {
-      m_panelManager.closePanel();
-    }
+  m_panelManager.setOpenWidgetSettingsCallback([this](std::string barName, std::string widgetName) {
     m_settingsWindow.openToBarWidget(std::move(barName), std::move(widgetName));
   });
   m_panelManager.setAttachedPanelGeometryCallback(

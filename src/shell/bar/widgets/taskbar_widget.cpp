@@ -504,17 +504,6 @@ void TaskbarWidget::applyPinnedMerge(std::vector<TaskModel>& tasks) {
   tasks = std::move(merged);
 }
 
-bool TaskbarWidget::reservesMiddleClick(float sceneX, float sceneY) const noexcept {
-  Node* hit = Node::hitTest(root(), sceneX, sceneY);
-  while (hit != nullptr) {
-    if (auto* area = dynamic_cast<InputArea*>(hit); area != nullptr && area->acceptsButton(BTN_MIDDLE)) {
-      return true;
-    }
-    hit = hit->parent();
-  }
-  return false;
-}
-
 void TaskbarWidget::create() {
   auto container = std::make_unique<InputArea>();
   container->setOnAxisHandler([this](const InputArea::PointerData& data) {

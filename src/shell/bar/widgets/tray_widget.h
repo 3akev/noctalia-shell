@@ -37,6 +37,10 @@ public:
   TrayWidget(ConfigService& config, TrayService* tray, TrayWidgetOptions options = {});
 
   void create() override;
+  // Left and right go to individual tray items and their menus.
+  [[nodiscard]] noctalia::bar::GestureMask reservedGestures() const noexcept override {
+    return {noctalia::bar::Gesture::Left, noctalia::bar::Gesture::Right};
+  }
   [[nodiscard]] bool wantsBarHoverHighlight() const noexcept override { return false; }
 
 private:

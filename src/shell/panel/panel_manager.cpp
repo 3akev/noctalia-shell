@@ -7,6 +7,7 @@
 #include "core/input/keybind_matcher.h"
 #include "core/log.h"
 #include "core/ui_phase.h"
+#include "ipc/ipc_arg_parse.h"
 #include "ipc/ipc_service.h"
 #include "render/render_context.h"
 #include "render/scene/input_area.h"
@@ -335,6 +336,10 @@ void PanelManager::initialize(CompositorPlatform& platform, ConfigService* confi
 
 void PanelManager::setOpenSettingsWindowCallback(std::function<void(std::string)> callback) {
   m_openSettingsWindow = std::move(callback);
+}
+
+void PanelManager::setOpenWidgetSettingsCallback(std::function<void(std::string, std::string)> callback) {
+  m_openWidgetSettings = std::move(callback);
 }
 
 void PanelManager::setCloseSettingsWindowCallback(std::function<void()> callback) {
@@ -2617,6 +2622,40 @@ void PanelManager::registerIpc(IpcService& ipc) {
       },
       "settings-open [context]",
       "Open the settings window, or focus it if already open, optionally at a specific section"
+  );
+
+  ipc.registerHandler(
+      "settings-open-widget",
+      [this, &ipc](const std::string& args) -> std::string {
+        const auto parts = noctalia::ipc::splitWords(args);
+        std::string barName;
+        std::string widgetName;
+        if (parts.size() == 2) {
+          barName = parts[0];
+          widgetName = parts[1];
+        } else if (parts.empty()) {
+          // Invoked from a bar widget gesture: the widget is the implicit target.
+          const auto& context = ipc.invocationContext();
+          if (!context.has_value() || context->widgetName.empty()) {
+            return "error: settings-open-widget needs <bar-name> <widget-name> unless invoked from a bar widget\n";
+          }
+          barName = context->barName;
+          widgetName = context->widgetName;
+        } else {
+          return "error: settings-open-widget takes either no arguments or <bar-name> <widget-name>\n";
+        }
+
+        if (!m_openWidgetSettings) {
+          return "error: settings window unavailable\n";
+        }
+        if (isOpen()) {
+          closePanel();
+        }
+        m_openWidgetSettings(std::move(barName), std::move(widgetName));
+        return "ok\n";
+      },
+      "settings-open-widget [bar-name widget-name]",
+      "Open the settings window at a bar widget; from a widget gesture, targets that widget"
   );
 
   ipc.registerHandler(

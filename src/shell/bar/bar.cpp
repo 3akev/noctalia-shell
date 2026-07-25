@@ -232,10 +232,14 @@ namespace {
   Widget* widgetAtPoint(const std::vector<std::unique_ptr<Widget>>& widgets, float sceneX, float sceneY) {
     for (const auto& widgetPtr : std::views::reverse(widgets)) {
       auto* widget = widgetPtr.get();
-      if (widget == nullptr || widget->isBarClickThrough() || widget->root() == nullptr || !widget->root()->visible()) {
+      if (widget == nullptr
+          || widget->isBarClickThrough()
+          || widget->outerNode() == nullptr
+          || !widget->outerNode()->visible()) {
         continue;
       }
-      if (Node::hitTest(widget->root(), sceneX, sceneY) != nullptr || pointInsideNode(widget->root(), sceneX, sceneY)) {
+      if (Node::hitTest(widget->outerNode(), sceneX, sceneY) != nullptr
+          || pointInsideNode(widget->outerNode(), sceneX, sceneY)) {
         return widget;
       }
     }
@@ -244,7 +248,7 @@ namespace {
       if (widget == nullptr || widget->isBarClickThrough()) {
         continue;
       }
-      auto* root = widget != nullptr ? widget->root() : nullptr;
+      auto* root = widget != nullptr ? widget->outerNode() : nullptr;
       auto* bounds = widget != nullptr ? widget->layoutBoundsNode() : nullptr;
       if (root == nullptr || bounds == nullptr || bounds == root || root->parent() != bounds || !bounds->visible()) {
         continue;
@@ -513,7 +517,7 @@ namespace {
       if (run.container == nullptr) {
         Widget* widget = !run.widgets.empty() ? run.widgets.front() : nullptr;
         Box* box = run.hoverBoxes.front();
-        auto* area = widget != nullptr ? dynamic_cast<InputArea*>(widget->root()) : nullptr;
+        auto* area = widget != nullptr ? widget->outerNode() : nullptr;
         if (area == nullptr || box == nullptr || !area->visible() || !area->participatesInLayout()) {
           continue;
         }
@@ -539,7 +543,7 @@ namespace {
       laidOut.reserve(run.widgets.size());
       for (std::size_t i = 0; i < run.widgets.size(); ++i) {
         Widget* widget = run.widgets[i];
-        auto* root = widget != nullptr ? widget->root() : nullptr;
+        auto* root = widget != nullptr ? widget->outerNode() : nullptr;
         if (root == nullptr || !root->visible() || !root->participatesInLayout()) {
           continue;
         }
@@ -1115,7 +1119,7 @@ namespace {
       auto placeGhostPills = [&](std::vector<std::unique_ptr<Widget>>& widgets) {
         for (auto& widget : widgets) {
           Box* box = widget->barHoverBox();
-          Node* root = widget->root();
+          Node* root = widget->outerNode();
           if (box == nullptr || root == nullptr || widget->barCapsuleShell() != nullptr) {
             continue;
           }
@@ -1597,10 +1601,6 @@ void Bar::reevaluateAutoHide() {
     }
     startHideFadeOut(*instance);
   }
-}
-
-void Bar::setOpenWidgetSettingsCallback(std::function<void(std::string, std::string)> callback) {
-  m_openWidgetSettingsCallback = std::move(callback);
 }
 
 bool Bar::isRunning() const noexcept {
@@ -2186,6 +2186,18 @@ void Bar::populateWidgets(BarInstance& instance) {
         return;
       }
     }
+    widget->setActionContext(
+        IpcInvocationContext{
+            .widgetName = name,
+            .widgetType = wcPtr != nullptr ? wcPtr->type : name,
+            .barName = instance.barConfig.name,
+            .output = instance.output,
+        }
+    );
+    widget->resolveGestureBindings(
+        wcPtr != nullptr ? wcPtr->type : name, wcPtr, &instance.barConfig.actions,
+        std::format("bar.{}", instance.barConfig.name), &m_actionDispatcher
+    );
     widget->setBarCapsuleSpec(
         groupSpec != nullptr ? *groupSpec : resolveWidgetBarCapsuleSpec(instance.barConfig, wcPtr)
     );
@@ -2311,7 +2323,8 @@ void Bar::attachWidgetsToSections(BarInstance& instance) {
       }
       widget->setPanelToggleCallback([this, inst = &instance](
                                          std::string_view panelId, std::string_view context,
-                                         std::optional<float> anchorSurfaceX, std::optional<float> anchorSurfaceY
+                                         std::optional<float> anchorSurfaceX, std::optional<float> anchorSurfaceY,
+                                         Widget::PanelActivation activation
                                      ) {
         float anchorX = inst->lastPointerSx;
         float anchorY = inst->lastPointerSy;
@@ -2328,22 +2341,24 @@ void Bar::attachWidgetsToSections(BarInstance& instance) {
             anchorY += surfaceY;
           }
         }
-        PanelManager::instance().togglePanel(
-            std::string(panelId),
-            PanelOpenRequest{
-                .output = inst->output,
-                .anchorX = anchorX,
-                .anchorY = anchorY,
-                .hasExplicitAnchor = anchorSurfaceX.has_value() || anchorSurfaceY.has_value(),
-                .hasAnchorPosition = true,
-                .context = context,
-                .sourceBarName = inst->barConfig.name
-            }
-        );
+        PanelOpenRequest request{
+            .output = inst->output,
+            .anchorX = anchorX,
+            .anchorY = anchorY,
+            .hasExplicitAnchor = anchorSurfaceX.has_value() || anchorSurfaceY.has_value(),
+            .hasAnchorPosition = true,
+            .context = context,
+            .sourceBarName = inst->barConfig.name
+        };
+        if (activation == Widget::PanelActivation::Open) {
+          PanelManager::instance().openPanel(std::string(panelId), request);
+        } else {
+          PanelManager::instance().togglePanel(std::string(panelId), request);
+        }
       });
       widget->create();
-      if (widget->root() != nullptr) {
-        instance.widgetByRoot[widget->root()] = widget.get();
+      if (widget->outerNode() != nullptr) {
+        instance.widgetByRoot[widget->outerNode()] = widget.get();
       }
     }
 
@@ -2396,7 +2411,7 @@ void Bar::attachWidgetsToSections(BarInstance& instance) {
               .shell = shellPtr,
               .bg = bgPtr,
               .container = nullptr,
-              .content = widget.root(),
+              .content = widget.outerNode(),
               .spec = cap,
               .contentScale = widget.contentScale(),
               .widgets = {&widget},
@@ -3116,22 +3131,6 @@ bool Bar::onPointerEvent(const PointerEvent& event) {
     }
   }
 
-  if (targetInstance != nullptr
-      && event.type == PointerEvent::Type::Button
-      && event.button == BTN_MIDDLE
-      && event.pressed
-      && m_config != nullptr
-      && m_config->config().shell.middleClickOpensWidgetSettings) {
-    auto* widget = widgetAtPoint(*targetInstance, static_cast<float>(event.sx), static_cast<float>(event.sy));
-    if (widget != nullptr
-        && !widget->reservesMiddleClick(static_cast<float>(event.sx), static_cast<float>(event.sy))
-        && !widget->configName().empty()
-        && m_openWidgetSettingsCallback) {
-      m_openWidgetSettingsCallback(targetInstance->barConfig.name, std::string(widget->configName()));
-      return true;
-    }
-  }
-
   if (targetInstance != nullptr && targetInstance->attachedPopupCount > 0) {
     switch (event.type) {
     case PointerEvent::Type::Enter:
@@ -3669,6 +3668,9 @@ std::string Bar::setBarLayerIpc(std::string_view args) {
 }
 
 void Bar::registerIpc(IpcService& ipc) {
+  // Widget gesture actions dispatch through the same registry.
+  m_actionDispatcher.setIpcService(&ipc);
+
   ipc.registerHandler(
       "bar-show", [this](const std::string& args) -> std::string { return showBarIpc(args); },
       "bar-show [bar-name] [monitor-selector]", "Show one or all bars"

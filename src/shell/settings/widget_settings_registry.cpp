@@ -4,6 +4,7 @@
 #include "scripting/plugin_i18n.h"
 #include "scripting/plugin_panel_shell.h"
 #include "scripting/plugin_registry.h"
+#include "shell/bar/widget_gesture_defaults.h"
 #include "shell/bar/widgets/active_window_widget_definition.h"
 #include "shell/bar/widgets/audio_visualizer_widget_definition.h"
 #include "shell/bar/widgets/battery_widget_definition.h"
@@ -678,13 +679,32 @@ namespace settings {
     auto capsuleOpacity = withGroup(doubleSpec("capsule_opacity", 1.0, 0.0, 1.0, 0.01), "presentation");
     capsuleOpacity.visibleWhen = capsuleOn;
 
+    // Gesture -> action bindings. Reaches every widget type, including those without a typed
+    // definition and plugin widgets, because this list is merged into all of them.
+    auto actions = withGroup(stringMapSpec("actions"), "actions");
+
     return {
         std::move(enabled),           std::move(anchor),          std::move(interactive),    std::move(scale),
         std::move(widgetColor),       std::move(widgetIconColor), std::move(fontFamily),     std::move(fontWeight),
         std::move(capsuleToggle),     std::move(capsuleRadius),   std::move(capsuleFill),    std::move(capsuleBorder),
-        std::move(capsuleForeground), std::move(capsulePadding),  std::move(capsuleOpacity),
+        std::move(capsuleForeground), std::move(capsulePadding),  std::move(capsuleOpacity), std::move(actions),
     };
   }
+
+  namespace {
+
+    // The gesture-actions spec carries this type's resolved defaults so the editor can show what
+    // each gesture already does, rather than a column of blanks.
+    void applyGestureActionDefaults(std::vector<WidgetSettingSpec>& specs, std::string_view type) {
+      const auto it = std::ranges::find(specs, "actions", [](const WidgetSettingSpec& spec) {
+        return std::string_view(spec.schema.key);
+      });
+      if (it != specs.end()) {
+        it->schema.defaultValue = noctalia::bar::defaultActionsForType(type);
+      }
+    }
+
+  } // namespace
 
   std::vector<WidgetSettingSpec> widgetSettingSpecs(
       std::string_view type, std::string_view shellFontFamily, bool supportsTaskbarWorkspaceGrouping,
@@ -1146,6 +1166,7 @@ namespace settings {
     }
 
     specs.insert(specs.end(), std::make_move_iterator(commonSpecs.begin()), std::make_move_iterator(commonSpecs.end()));
+    applyGestureActionDefaults(specs, type);
     return specs;
   }
 
@@ -1355,6 +1376,7 @@ namespace settings {
       specs.insert(
           specs.end(), std::make_move_iterator(commonSpecs.begin()), std::make_move_iterator(commonSpecs.end())
       );
+      applyGestureActionDefaults(specs, type);
       return specs;
     }
     return widgetSettingSpecs(type, shellFontFamily, supportsTaskbarWorkspaceGrouping, populateFontCatalogs);

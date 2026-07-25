@@ -31,7 +31,6 @@ public:
   explicit CustomButtonWidget(Options options);
 
   void create() override;
-  [[nodiscard]] bool reservesMiddleClick(float sceneX, float sceneY) const noexcept override;
 
 private:
   void doLayout(Renderer& renderer, float containerWidth, float containerHeight) override;
