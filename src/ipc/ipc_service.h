@@ -25,6 +25,9 @@ public:
     // Argument spec without the verb, e.g. "<id> [context]". Empty when the command takes none.
     std::string_view args;
     std::string_view description;
+    // Whether to offer this command where a UI picks an action to run. False for state queries,
+    // whose output a click would discard. Config is not restricted by this.
+    bool bindable = true;
 
     // "panel-toggle <id> [context]" — the form shown in --help.
     [[nodiscard]] std::string signature() const;
@@ -92,12 +95,20 @@ public:
       HandlerVisibility visibility = HandlerVisibility::Public
   );
 
+  // A command that only reports state. Registered and listed in --help exactly like any other, but
+  // reported as unbindable so action pickers leave it out: running it from a click would throw the
+  // answer away. Hand-written config can still bind it.
+  void registerQueryHandler(
+      const std::string& command, Handler handler, std::string argsSpec = {}, std::string description = {}
+  );
+
 private:
   struct HandlerEntry {
     Handler fn;
     std::string argsSpec;
     std::string description;
     HandlerVisibility visibility = HandlerVisibility::Public;
+    bool bindable = true;
   };
 
   void handleConnection(int connFd);

@@ -121,7 +121,7 @@ void Application::initIpc() {
   m_dmenuIpc.setPanelManager(&m_panelManager);
   m_dmenuIpc.start();
 
-  m_ipcService.registerHandler(
+  m_ipcService.registerQueryHandler(
       "status",
       [this](const std::string&) -> std::string {
         const bool panelOpen = m_panelManager.isOpen();
@@ -160,7 +160,7 @@ void Application::initIpc() {
       "<debug|info|warn|error>", "Set the console log level"
   );
 
-  m_ipcService.registerHandler(
+  m_ipcService.registerQueryHandler(
       "log-level-status",
       [](const std::string&) -> std::string { return std::string(logLevelName(currentLogLevel())) + "\n"; }, "",
       "Print the current console log level"
@@ -213,7 +213,7 @@ void Application::initIpc() {
       "", "Toggle notification Do Not Disturb state"
   );
 
-  m_ipcService.registerHandler(
+  m_ipcService.registerQueryHandler(
       "notification-dnd-status",
       [this](const std::string&) -> std::string { return m_notificationManager.doNotDisturb() ? "on\n" : "off\n"; }, "",
       "Print notification Do Not Disturb state"
@@ -575,7 +575,7 @@ void Application::initIpc() {
       },
       "", "Clear all workspace alerts"
   );
-  m_ipcService.registerHandler(
+  m_ipcService.registerQueryHandler(
       "workspace-alert-status",
       [workspaceAlertStatus](const std::string& args) -> std::string {
         if (!noctalia::ipc::splitWords(args).empty()) {

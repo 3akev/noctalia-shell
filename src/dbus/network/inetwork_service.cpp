@@ -69,7 +69,7 @@ void INetworkService::registerIpc(IpcService& ipc, WirelessFeedbackCallback wire
       "", "Toggle Wi-Fi"
   );
 
-  ipc.registerHandler(
+  ipc.registerQueryHandler(
       "wifi-status",
       [this](const std::string& args) -> std::string {
         if (auto err = rejectArgs("wifi-status", args); err.has_value()) {

@@ -1,5 +1,6 @@
 #include "ipc/ipc_service.h"
 
+#include <algorithm>
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
@@ -95,10 +96,27 @@ int main() {
     // The registry stores arguments only; the verb is composed back in for display.
     assert(infos.front().args == "<value>");
     assert(infos.front().signature() == "visible-command <value>");
+    assert(infos.front().bindable);
     assert(infos.front().description == "Visible command");
     assert(ipc.hasHandler("visible-command"));
     assert(ipc.hasHandler("hidden-command"));
     assert(!ipc.hasHandler("no-such-command"));
+  }
+
+  // A state query runs and documents itself like any other command, but action pickers skip it.
+  {
+    ipc.registerQueryHandler("query-command", [](const std::string&) { return "state\n"; }, "", "Print some state");
+    assert(ipc.execute("query-command") == "state\n");
+    assert(ipc.hasHandler("query-command"));
+
+    const auto infos = ipc.handlers();
+    const auto query = std::ranges::find(infos, "query-command", &IpcService::HandlerInfo::command);
+    assert(query != infos.end());
+    assert(!query->bindable);
+    assert(ipc.execute("--help").find("query-command") != std::string::npos);
+
+    const auto visible = std::ranges::find(infos, "visible-command", &IpcService::HandlerInfo::command);
+    assert(visible != infos.end() && visible->bindable);
   }
 
   // `exec` and `none` are reserved by the bar widget action grammar and must never become

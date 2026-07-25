@@ -1642,7 +1642,7 @@ void BrightnessService::registerIpc(IpcService& ipc, std::function<void()> onBat
       "Decrease brightness (defaults to current monitor)"
   );
 
-  ipc.registerHandler(
+  ipc.registerQueryHandler(
       "brightness-list-backlight-devices",
       [](const std::string& /*args*/) -> std::string {
         const std::string backlightDir = "/sys/class/backlight";

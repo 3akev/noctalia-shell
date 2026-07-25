@@ -109,7 +109,17 @@ void IpcService::registerHandler(
 ) {
   // Remove existing entry for this command if re-registering
   std::erase_if(m_handlers, [&command](const auto& e) { return e.first == command; });
-  m_handlers.push_back({command, {std::move(handler), std::move(argsSpec), std::move(description), visibility}});
+  m_handlers.push_back({command, {std::move(handler), std::move(argsSpec), std::move(description), visibility, true}});
+}
+
+void IpcService::registerQueryHandler(
+    const std::string& command, Handler handler, std::string argsSpec, std::string description
+) {
+  registerHandler(command, std::move(handler), std::move(argsSpec), std::move(description));
+  const auto it = std::ranges::find_if(m_handlers, [&command](const auto& e) { return e.first == command; });
+  if (it != m_handlers.end()) {
+    it->second.bindable = false;
+  }
 }
 
 std::vector<IpcService::HandlerInfo> IpcService::handlers() const {
@@ -124,6 +134,7 @@ std::vector<IpcService::HandlerInfo> IpcService::handlers() const {
             .command = command,
             .args = entry.argsSpec,
             .description = entry.description,
+            .bindable = entry.bindable,
         }
     );
   }

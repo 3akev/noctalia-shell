@@ -530,7 +530,7 @@ void BluetoothService::registerIpc(IpcService& ipc, StateFeedbackCallback stateF
       "", "Toggle Bluetooth"
   );
 
-  ipc.registerHandler(
+  ipc.registerQueryHandler(
       "bluetooth-status",
       [this](const std::string& args) -> std::string {
         if (auto err = rejectArgs("bluetooth-status", args); err.has_value()) {
