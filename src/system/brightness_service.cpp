@@ -1468,7 +1468,8 @@ void BrightnessService::reload(const BrightnessConfig& config) { m_impl->reload(
 void BrightnessService::onOutputsChanged() { m_impl->onOutputsChanged(); }
 
 void BrightnessService::registerIpc(IpcService& ipc, std::function<void()> onBatchChange) {
-  auto resolveTargets = [this](std::string_view token, std::vector<std::string>& ids, std::string& error) -> bool {
+  auto resolveTargets = [this,
+                         &ipc](std::string_view token, std::vector<std::string>& ids, std::string& error) -> bool {
     if (!available()) {
       error = "error: brightness control unavailable\n";
       return false;
@@ -1481,7 +1482,14 @@ void BrightnessService::registerIpc(IpcService& ipc, std::function<void()> onBat
     };
 
     if (token.empty() || token == "current") {
-      wl_output* output = m_impl->wayland.activeToplevelOutput();
+      // A bar widget gesture means the monitor that widget is on, not wherever focus happens to be.
+      wl_output* output = nullptr;
+      if (const auto& context = ipc.invocationContext(); context.has_value()) {
+        output = context->output;
+      }
+      if (output == nullptr) {
+        output = m_impl->wayland.activeToplevelOutput();
+      }
       if (output == nullptr) {
         output = m_impl->platform.preferredInteractiveOutput();
       }

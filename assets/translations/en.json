@@ -3135,8 +3135,6 @@
         "rate": "Rate",
         "regular": "Regular",
         "replace": "Replace",
-        "screenshot-primary-fullscreen": "Fullscreen",
-        "screenshot-primary-region": "Region",
         "shared": "Shared",
         "short": "Short",
         "swap-percent": "Swap Percent",
@@ -3533,10 +3531,6 @@
           "description": "Opacity of pinned apps that are not currently running",
           "label": "Pinned App Opacity"
         },
-        "primary-click": {
-          "description": "Action performed when left-clicking the bar button",
-          "label": "Primary click"
-        },
         "right-command": {
           "description": "Shell command run when right-clicking this button",
           "label": "Right Click Command"
@@ -3556,10 +3550,6 @@
         "scroll-down-command": {
           "description": "Shell command run when scrolling down over this button",
           "label": "Scroll Down Command"
-        },
-        "scroll-step": {
-          "description": "Percentage change applied on each mouse wheel step",
-          "label": "Scroll Step"
         },
         "scroll-up-command": {
           "description": "Shell command run when scrolling up over this button",

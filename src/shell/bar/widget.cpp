@@ -184,7 +184,7 @@ void Widget::resolveGestureBindings(
   m_gestureBindings.resolve(
       noctalia::bar::WidgetActionBindings::Inputs{
           .builtinDefaults = noctalia::bar::builtinGestureDefaults(),
-          .widgetDefaults = noctalia::bar::gestureDefaultsForType(widgetType),
+          .widgetDefaults = noctalia::bar::gestureDefaultsForType(widgetType, widgetConfig),
           .barActions = barActions,
           .widgetActions = noctalia::bar::findActionTable(widgetConfig),
           .reserved = noctalia::bar::reservedGesturesForType(widgetType),

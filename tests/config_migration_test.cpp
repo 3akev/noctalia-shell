@@ -210,7 +210,7 @@ enable_scroll = false
 [widget.keyboard_layout]
 cycle_command = "hyprctl switchxkblayout all next"
 
-[widget.media]
+[widget.custom_button]
 enable_scroll = false
 )");
     noctalia::config::LegacyConfigIssues issues;
@@ -257,13 +257,88 @@ enable_scroll = false
 
     // Widgets that still own their scroll keep the key.
     expect(
-        config["widget"]["media"]["enable_scroll"].value<bool>() == std::optional<bool>{false},
+        config["widget"]["custom_button"]["enable_scroll"].value<bool>() == std::optional<bool>{false},
         "enable_scroll was dropped from a widget that still uses it"
     );
 
     noctalia::config::LegacyConfigIssues secondPassIssues;
     noctalia::config::normalizeLegacyConfig(config, secondPassIssues);
     expect(secondPassIssues.empty(), "widget gesture setting normalization was not idempotent");
+  }
+
+  void checkRemainingWidgetGesturesMigration() {
+    toml::table config = toml::parse(R"(
+[widget.media]
+enable_scroll = false
+
+[widget.volume]
+scroll_step = 10
+
+[widget.mic]
+type = "volume"
+device = "input"
+scroll_step = 2
+
+[widget.brightness]
+enable_scroll = true
+scroll_step = 5
+
+[widget.screenshot]
+primary_click = "fullscreen"
+
+[widget.shot2]
+type = "screenshot"
+primary_click = "region"
+)");
+    noctalia::config::LegacyConfigIssues issues;
+    noctalia::config::normalizeLegacyConfig(config, issues);
+
+    for (const std::string_view gesture : {"scroll_up", "scroll_down"}) {
+      expect(
+          config["widget"]["media"]["actions"][gesture].value<std::string>() == std::optional<std::string>{"none"},
+          "media enable_scroll = false did not unbind a scroll gesture"
+      );
+    }
+
+    // A non-default step survives as the verb's argument, picking the verbs the device implies.
+    expect(
+        config["widget"]["volume"]["actions"]["scroll_up"].value<std::string>()
+            == std::optional<std::string>{"volume-up 10%"},
+        "volume scroll_step did not become a step argument"
+    );
+    expect(
+        config["widget"]["mic"]["actions"]["scroll_down"].value<std::string>()
+            == std::optional<std::string>{"mic-volume-down 2%"},
+        "a microphone volume widget did not migrate to the mic verbs"
+    );
+
+    // The default step matches the verbs' own default, so it leaves nothing behind.
+    expect(
+        !config["widget"]["brightness"]["scroll_step"].value<std::int64_t>().has_value(),
+        "a default scroll_step was not dropped"
+    );
+    expect(
+        config["widget"]["brightness"]["actions"].as_table() == nullptr,
+        "a default scroll_step seeded a spurious actions table"
+    );
+
+    expect(
+        config["widget"]["screenshot"]["actions"]["left"].value<std::string>()
+            == std::optional<std::string>{"screenshot-fullscreen"},
+        "primary_click = fullscreen did not become a left binding"
+    );
+    // `region` is already the declared default, so it needs no binding.
+    expect(
+        config["widget"]["shot2"]["actions"].as_table() == nullptr, "primary_click = region wrote a redundant binding"
+    );
+    expect(
+        !config["widget"]["screenshot"]["primary_click"].value<std::string>().has_value(),
+        "primary_click was not dropped"
+    );
+
+    noctalia::config::LegacyConfigIssues secondPassIssues;
+    noctalia::config::normalizeLegacyConfig(config, secondPassIssues);
+    expect(secondPassIssues.empty(), "remaining widget gesture normalization was not idempotent");
   }
 
   void checkVersionGating() {
@@ -408,6 +483,7 @@ int main() {
   checkCustomScheduleMigration();
   checkWidgetActionsMigration();
   checkWidgetGestureSettingsMigration();
+  checkRemainingWidgetGesturesMigration();
   checkVersionGating();
   checkReminderFingerprint();
   checkRegistryOrdering();

@@ -17,6 +17,7 @@ namespace noctalia::config {
     constexpr int kCustomScheduleMigrationVersion = 2;
     constexpr int kWidgetActionsMigrationVersion = 3;
     constexpr int kWidgetGestureSettingsMigrationVersion = 4;
+    constexpr int kRemainingWidgetGesturesMigrationVersion = 5;
     constexpr std::int64_t kMaxBarRadius = 500;
     constexpr std::array<std::string_view, 5> kBarRadiusKeys = {
         "radius", "radius_top_left", "radius_top_right", "radius_bottom_left", "radius_bottom_right",
@@ -153,6 +154,19 @@ namespace noctalia::config {
       }
     }
 
+    // Writes a gesture binding, leaving an existing one alone: an explicit config always wins over
+    // whatever a migrated setting would have implied.
+    void bindAction(toml::table& widget, std::string_view gesture, const std::string& action) {
+      auto* actions = widget["actions"].as_table();
+      if (actions == nullptr) {
+        widget.insert_or_assign("actions", toml::table{});
+        actions = widget["actions"].as_table();
+      }
+      if (!actions->contains(gesture)) {
+        actions->insert_or_assign(gesture, action);
+      }
+    }
+
     // `enable_scroll` and `cycle_command` were per-widget stand-ins for gestures these widgets now
     // declare as data. Both become ordinary bindings.
     template <typename OnChanged> void migrateWidgetGestureSettings(toml::table& root, OnChanged&& onChanged) {
@@ -162,17 +176,6 @@ namespace noctalia::config {
       if (widgets == nullptr) {
         return;
       }
-
-      const auto bind = [](toml::table& widget, std::string_view gesture, const std::string& action) {
-        auto* actions = widget["actions"].as_table();
-        if (actions == nullptr) {
-          widget.insert_or_assign("actions", toml::table{});
-          actions = widget["actions"].as_table();
-        }
-        if (!actions->contains(gesture)) {
-          actions->insert_or_assign(gesture, action);
-        }
-      };
 
       for (auto& [widgetName, widgetNode] : *widgets) {
         auto* widget = widgetNode.as_table();
@@ -187,8 +190,8 @@ namespace noctalia::config {
           const bool wasEnabled = (*widget)["enable_scroll"].value_or(true);
           widget->erase("enable_scroll");
           if (!wasEnabled) {
-            bind(*widget, "scroll_up", "none");
-            bind(*widget, "scroll_down", "none");
+            bindAction(*widget, "scroll_up", "none");
+            bindAction(*widget, "scroll_down", "none");
           }
           onChanged(path, "enable_scroll is now the scroll_up/scroll_down gesture bindings");
         }
@@ -197,11 +200,76 @@ namespace noctalia::config {
           const auto command = (*widget)["cycle_command"].value_or(std::string{});
           widget->erase("cycle_command");
           if (!command.empty()) {
-            bind(*widget, "left", "exec " + command);
+            bindAction(*widget, "left", "exec " + command);
           }
           onChanged(path, "cycle_command is now the left gesture binding");
         }
       }
+    }
+
+    // Second wave: the widgets migrated in stage 3. `scroll_step` becomes the step argument of the
+    // scroll binding, and screenshot's `primary_click` picks the left binding's verb.
+    template <typename OnChanged> void migrateRemainingWidgetGestures(toml::table& root, OnChanged&& onChanged) {
+      // Both scroll verbs default to 5%, so only a non-default step has to survive as an argument.
+      constexpr std::int64_t kDefaultScrollStep = 5;
+
+      auto* widgets = root["widget"].as_table();
+      if (widgets == nullptr) {
+        return;
+      }
+
+      for (auto& [widgetName, widgetNode] : *widgets) {
+        auto* widget = widgetNode.as_table();
+        if (widget == nullptr) {
+          continue;
+        }
+        const std::string type = (*widget)["type"].value_or(std::string(widgetName.str()));
+        const std::string path = "widget." + std::string(widgetName.str());
+        const bool scrollType = type == "media" || type == "volume" || type == "brightness";
+
+        if (scrollType && widget->contains("enable_scroll")) {
+          const bool wasEnabled = (*widget)["enable_scroll"].value_or(true);
+          widget->erase("enable_scroll");
+          if (!wasEnabled) {
+            bindAction(*widget, "scroll_up", "none");
+            bindAction(*widget, "scroll_down", "none");
+          }
+          onChanged(path, "enable_scroll is now the scroll_up/scroll_down gesture bindings");
+        }
+
+        if ((type == "volume" || type == "brightness") && widget->contains("scroll_step")) {
+          const auto step = (*widget)["scroll_step"].value_or(kDefaultScrollStep);
+          widget->erase("scroll_step");
+          if (step != kDefaultScrollStep) {
+            const std::string suffix = " " + std::to_string(step) + "%";
+            std::string upVerb = "brightness-up";
+            std::string downVerb = "brightness-down";
+            if (type == "volume") {
+              const bool microphone = (*widget)["device"].value_or(std::string("output")) == "input";
+              upVerb = microphone ? "mic-volume-up" : "volume-up";
+              downVerb = microphone ? "mic-volume-down" : "volume-down";
+            }
+            bindAction(*widget, "scroll_up", upVerb + suffix);
+            bindAction(*widget, "scroll_down", downVerb + suffix);
+          }
+          onChanged(path, "scroll_step is now the step argument of the scroll gesture bindings");
+        }
+
+        if (type == "screenshot" && widget->contains("primary_click")) {
+          const auto primary = (*widget)["primary_click"].value_or(std::string("region"));
+          widget->erase("primary_click");
+          if (primary == "fullscreen") {
+            bindAction(*widget, "left", "screenshot-fullscreen");
+          }
+          onChanged(path, "primary_click is now the left gesture binding");
+        }
+      }
+    }
+
+    void migrateRemainingWidgetGesturesSidecar(toml::table& root, schema::Diagnostics& diag) {
+      migrateRemainingWidgetGestures(root, [&diag](const std::string& path, std::string_view message) {
+        diag.warn(path, std::string(message));
+      });
     }
 
     void migrateWidgetGestureSettingsSidecar(toml::table& root, schema::Diagnostics& diag) {
@@ -272,6 +340,11 @@ namespace noctalia::config {
             .toVersion = kWidgetGestureSettingsMigrationVersion,
             .summary = "widget: move enable_scroll and cycle_command to gesture actions",
             .apply = migrateWidgetGestureSettingsSidecar,
+        },
+        {
+            .toVersion = kRemainingWidgetGesturesMigrationVersion,
+            .summary = "widget: move scroll_step and primary_click to gesture actions",
+            .apply = migrateRemainingWidgetGesturesSidecar,
         },
     };
     return migrations;
@@ -349,6 +422,13 @@ namespace noctalia::config {
     migrateWidgetGestureSettings(root, [&issues](const std::string& path, std::string_view message) {
       issues.push_back({
           .migrationVersion = kWidgetGestureSettingsMigrationVersion,
+          .path = path,
+          .message = std::string(message),
+      });
+    });
+    migrateRemainingWidgetGestures(root, [&issues](const std::string& path, std::string_view message) {
+      issues.push_back({
+          .migrationVersion = kRemainingWidgetGesturesMigrationVersion,
           .path = path,
           .message = std::string(message),
       });

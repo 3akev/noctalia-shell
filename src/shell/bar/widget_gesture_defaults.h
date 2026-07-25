@@ -1,5 +1,6 @@
 #pragma once
 
+#include "config/config_types.h"
 #include "shell/bar/widget_action.h"
 
 #include <span>
@@ -16,11 +17,15 @@ namespace noctalia::bar {
   // Layer 1: applies to every widget type.
   [[nodiscard]] std::span<const GestureBinding> builtinGestureDefaults() noexcept;
 
-  // Layer 2: what a widget type declares for itself. Empty when it declares none.
-  [[nodiscard]] std::span<const GestureBinding> gestureDefaultsForType(std::string_view type) noexcept;
+  // Layer 2: what a widget type declares for itself. Empty when it declares none. `config` is read
+  // only by types whose defaults genuinely differ per setting, e.g. a volume widget bound to the
+  // microphone needs the mic verbs.
+  [[nodiscard]] std::span<const GestureBinding>
+  gestureDefaultsForType(std::string_view type, const WidgetConfig* config = nullptr) noexcept;
 
   // Layers 1 and 2 merged, as config-shaped strings. Used to show defaults in the settings editor.
-  [[nodiscard]] std::unordered_map<std::string, std::string> defaultActionsForType(std::string_view type);
+  [[nodiscard]] std::unordered_map<std::string, std::string>
+  defaultActionsForType(std::string_view type, const WidgetConfig* config = nullptr);
 
   // Gestures a widget type handles on its individual items (workspace pills, taskbar tasks, tray
   // icons) rather than as a whole. They are never bindable and the settings editor omits them.

@@ -78,7 +78,16 @@ void GammaService::setEnabled(bool enabled) {
   notifyStateFeedback();
 }
 
-void GammaService::toggleEnabled() { setEnabled(!enabled()); }
+void GammaService::toggleEnabled() {
+  // Toggling out of the forced state lands on scheduled-on rather than off, so the force override
+  // stays reachable in both directions.
+  if (effectiveForce()) {
+    m_forceOverride.reset();
+    setEnabled(true);
+    return;
+  }
+  setEnabled(!enabled());
+}
 
 void GammaService::setLocationResolving(bool resolving) {
   if (m_locationResolving == resolving) {
