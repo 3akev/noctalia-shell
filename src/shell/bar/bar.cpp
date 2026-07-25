@@ -481,18 +481,20 @@ namespace {
     const float contentMain = isVertical ? contentY : contentX;
     const float crossExtent = std::max(0.0f, shellCross - 2.0f * crossInset);
     for (std::size_t i = 0; i < run.widgets.size() && i < run.hoverBoxes.size(); ++i) {
-      Node* root = run.widgets[i] != nullptr ? run.widgets[i]->root() : nullptr;
+      // outerNode(), not root(): the outer gesture area is what the run container lays out, so it
+      // carries the member's position; root() sits at (0,0) inside it.
+      Node* member = run.widgets[i] != nullptr ? run.widgets[i]->outerNode() : nullptr;
       Box* box = run.hoverBoxes[i];
-      if (root == nullptr || box == nullptr) {
+      if (member == nullptr || box == nullptr) {
         continue;
       }
       // Skip hidden members — Flex leaves them at stale (0,0) geometry.
-      if (!root->visible() || !root->participatesInLayout()) {
+      if (!member->visible() || !member->participatesInLayout()) {
         box->setSize(0.0f, 0.0f);
         continue;
       }
-      const float rootStart = contentMain + (isVertical ? root->y() : root->x());
-      const float rootExtent = isVertical ? root->height() : root->width();
+      const float rootStart = contentMain + (isVertical ? member->y() : member->x());
+      const float rootExtent = isVertical ? member->height() : member->width();
       const float mainStart = std::max(0.0f, rootStart - mainPad);
       const float mainExtent = std::max(0.0f, std::min(shellMain, rootStart + rootExtent + mainPad) - mainStart);
       if (isVertical) {
@@ -541,7 +543,6 @@ namespace {
       }
 
       // Tile only laid-out members; hidden ones keep stale geometry.
-      // Use Node visibility, some widgets (e.g. tray) root on Flex, not InputArea.
       std::vector<std::size_t> laidOut;
       laidOut.reserve(run.widgets.size());
       for (std::size_t i = 0; i < run.widgets.size(); ++i) {
@@ -556,19 +557,16 @@ namespace {
       const float shellMain = isVertical ? run.shell->height() : run.shell->width();
       const float containerMain = isVertical ? run.container->y() : run.container->x();
       auto memberStart = [&](std::size_t i) {
-        const Node* root = run.widgets[i]->root();
-        return containerMain + (isVertical ? root->y() : root->x());
+        const Node* node = run.widgets[i]->outerNode();
+        return containerMain + (isVertical ? node->y() : node->x());
       };
       auto memberEnd = [&](std::size_t i) {
-        const Node* root = run.widgets[i]->root();
-        return memberStart(i) + (isVertical ? root->height() : root->width());
+        const Node* node = run.widgets[i]->outerNode();
+        return memberStart(i) + (isVertical ? node->height() : node->width());
       };
       for (std::size_t vi = 0; vi < laidOut.size(); ++vi) {
         const std::size_t i = laidOut[vi];
-        auto* area = dynamic_cast<InputArea*>(run.widgets[i]->root());
-        if (area == nullptr) {
-          continue;
-        }
+        Node* area = run.widgets[i]->outerNode();
         const float sliceStart = vi > 0 ? (memberEnd(laidOut[vi - 1]) + memberStart(i)) * 0.5f : 0.0f;
         const float sliceEnd =
             vi + 1 < laidOut.size() ? (memberEnd(i) + memberStart(laidOut[vi + 1])) * 0.5f : shellMain;
