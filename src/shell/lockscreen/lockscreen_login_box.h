@@ -84,6 +84,7 @@ namespace lockscreen_login_box {
     float status = 0.0f;
     float password = 0.0f;
     float session = 0.0f;
+    float scale = 1.0f;
   };
 
   [[nodiscard]] RegularRowHeights regularRowHeights(float panelHeight, bool showSessionButtons, bool showStatus = true);

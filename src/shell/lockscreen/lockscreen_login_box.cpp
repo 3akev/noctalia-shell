@@ -157,6 +157,7 @@ namespace lockscreen_login_box {
         .status = statusFloor * scale,
         .password = passwordFloor * scale,
         .session = sessionFloor * scale,
+        .scale = scale,
     };
   }
 

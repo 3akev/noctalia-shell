@@ -76,6 +76,22 @@ namespace {
     return ButtonVariant::Default;
   }
 
+  // Default/Ghost use SurfaceVariant or clear fills that disappear on the
+  // SurfaceVariant login panel — Outline gives a readable Surface chip.
+  [[nodiscard]] ButtonVariant lockscreenSessionVariant(SessionActionButtonVariant variant) {
+    switch (variant) {
+    case SessionActionButtonVariant::Default:
+    case SessionActionButtonVariant::Ghost:
+      return ButtonVariant::Outline;
+    case SessionActionButtonVariant::Primary:
+    case SessionActionButtonVariant::Secondary:
+    case SessionActionButtonVariant::Destructive:
+    case SessionActionButtonVariant::Outline:
+      return buttonVariantFor(variant);
+    }
+    return ButtonVariant::Outline;
+  }
+
   [[nodiscard]] std::string weekdayAbbrev(const std::string& isoDate) {
     if (isoDate.size() != 10) {
       return isoDate;
@@ -958,12 +974,32 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
       loginVisible && loginStyle.showKeyboardLayout && m_layoutChip != nullptr && m_layoutChip->visible();
   const bool showSession = regular && loginStyle.showSessionButtons && !m_sessionButtons.empty();
 
+  bool statusError = false;
+  const bool showStatus = regular && !resolveStatusText(loginStyle, statusError).empty() && isLoginBoxEnabled();
+  const lockscreen_login_box::RegularRowHeights rows = regular
+      ? lockscreen_login_box::regularRowHeights(panelHeight, showSession, showStatus)
+      : lockscreen_login_box::RegularRowHeights{};
+  const float contentScale = regular ? rows.scale : 1.0f;
+  m_regularContentScale = contentScale;
+  const float captionSize = Style::fontSizeCaption * contentScale;
+  const float bodySize = Style::fontSizeBody * contentScale;
+  const float mediaArtSize = kMediaArtSize * contentScale;
+  const float weatherGlyphSize = kWeatherGlyphSize * contentScale;
+  const float forecastGlyphSize = kForecastGlyphSize * contentScale;
+  const float sessionGlyphSize = 16.0f * contentScale;
+
   if (m_mediaArt != nullptr) {
-    m_mediaArt->setSize(kMediaArtSize, kMediaArtSize);
-    m_mediaArt->setRadius(kMediaArtSize * 0.5f);
+    m_mediaArt->setSize(mediaArtSize, mediaArtSize);
+    m_mediaArt->setRadius(mediaArtSize * 0.5f);
   }
   if (m_mediaFallbackGlyph != nullptr) {
-    m_mediaFallbackGlyph->setGlyphSize(18.0f);
+    m_mediaFallbackGlyph->setGlyphSize(18.0f * contentScale);
+  }
+  if (m_mediaTitle != nullptr) {
+    m_mediaTitle->setFontSize(bodySize);
+  }
+  if (m_mediaArtist != nullptr) {
+    m_mediaArtist->setFontSize(captionSize);
   }
   if (m_mediaBlock != nullptr) {
     m_mediaBlock->setVisible(showMedia);
@@ -978,8 +1014,28 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
   if (m_forecastRow != nullptr) {
     m_forecastRow->setVisible(showForecast);
   }
+  if (m_weatherGlyph != nullptr) {
+    m_weatherGlyph->setGlyphSize(weatherGlyphSize);
+  }
+  if (m_weatherTemp != nullptr) {
+    m_weatherTemp->setFontSize(bodySize);
+  }
+  if (m_weatherMeta != nullptr) {
+    m_weatherMeta->setFontSize(captionSize);
+  }
+  for (auto& column : m_forecastColumns) {
+    if (column.day != nullptr) {
+      column.day->setFontSize(captionSize);
+    }
+    if (column.glyph != nullptr) {
+      column.glyph->setGlyphSize(forecastGlyphSize);
+    }
+    if (column.temps != nullptr) {
+      column.temps->setFontSize(captionSize);
+    }
+  }
 
-  const float mediaTextMax = std::max(48.0f, mediaBudget - kMediaArtSize - Style::spaceSm);
+  const float mediaTextMax = std::max(48.0f, mediaBudget - mediaArtSize - Style::spaceSm);
   if (m_mediaTitle != nullptr) {
     m_mediaTitle->setMaxWidth(mediaTextMax);
     m_mediaTitle->setEllipsize(TextEllipsize::End);
@@ -991,7 +1047,7 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
   }
 
   const float weatherTextMax = showForecast ? std::max(56.0f, weatherBudget * 0.42f)
-                                            : std::max(56.0f, weatherBudget - kWeatherGlyphSize - Style::spaceSm);
+                                            : std::max(56.0f, weatherBudget - weatherGlyphSize - Style::spaceSm);
   if (m_weatherTemp != nullptr) {
     m_weatherTemp->setMaxWidth(weatherTextMax);
     m_weatherTemp->setEllipsize(TextEllipsize::End);
@@ -1004,12 +1060,6 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
 
   // Scale info / status / password / session by the same factor so extra panel
   // height is shared, not absorbed only by session buttons.
-  bool statusError = false;
-  const bool showStatus = regular && !resolveStatusText(loginStyle, statusError).empty() && isLoginBoxEnabled();
-  const lockscreen_login_box::RegularRowHeights rows = regular
-      ? lockscreen_login_box::regularRowHeights(panelHeight, showSession, showStatus)
-      : lockscreen_login_box::RegularRowHeights{};
-
   if (m_infoRow != nullptr) {
     m_infoRow->setVisible(regular);
     m_infoRow->setMaxWidth(contentWidth);
@@ -1025,9 +1075,12 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
     m_statusPanel->setMaxHeight(showStatus ? rows.status : 0.0f);
     m_statusPanel->setFlexGrow(0.0f);
   }
-  if (m_statusLabel != nullptr && m_statusLabel->visible()) {
-    m_statusLabel->setMaxWidth(std::max(0.0f, contentWidth - Style::spaceSm * 2.0f));
-    m_statusLabel->setEllipsize(TextEllipsize::End);
+  if (m_statusLabel != nullptr) {
+    m_statusLabel->setFontSize(captionSize);
+    if (m_statusLabel->visible()) {
+      m_statusLabel->setMaxWidth(std::max(0.0f, contentWidth - Style::spaceSm * 2.0f));
+      m_statusLabel->setEllipsize(TextEllipsize::End);
+    }
   }
 
   const float controlHeight = regular ? rows.password : Style::controlHeight;
@@ -1055,8 +1108,9 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
         button->setMinHeight(0.0f);
         button->setMaxHeight(0.0f);
         button->setFillHeight(true);
-        button->setGlyphSize(16.0f);
-        button->setFontSize(Style::fontSizeCaption);
+        button->setGlyphSize(sessionGlyphSize);
+        button->setFontSize(captionSize);
+        button->setRadius(Style::scaledRadius(loginStyle.inputRadius));
       }
     }
   }
@@ -1064,7 +1118,8 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
   if (showLayoutChip) {
     m_layoutChip->setRadius(Style::scaledRadius(loginStyle.inputRadius));
     m_layoutChip->setMaxWidth(kLayoutChipMaxWidth);
-    m_layoutChip->setGlyphSize(Style::fontSizeCaption);
+    m_layoutChip->setFontSize(captionSize);
+    m_layoutChip->setGlyphSize(captionSize);
     m_layoutChip->setMinHeight(controlHeight);
     m_layoutChip->setMaxHeight(controlHeight);
   }
@@ -1073,12 +1128,14 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
   m_passwordField->setFrameRadius(loginStyle.inputRadius);
   m_passwordField->setTextAlign(loginStyle.centerPasswordText ? TextAlign::Center : TextAlign::Start);
   m_passwordField->setControlHeight(controlHeight);
+  m_passwordField->setFontSize(bodySize);
 
   const bool showLoginButton = loginVisible && loginStyle.showLoginButton;
   m_loginButton->setVisible(showLoginButton);
   if (showLoginButton) {
     m_loginButton->setRadius(Style::scaledRadius(loginStyle.inputRadius));
     m_loginButton->setSize(controlHeight, controlHeight);
+    m_loginButton->setGlyphSize(sessionGlyphSize);
   }
 
   m_loginPanel->arrange(*renderer, LayoutRect{panelX, panelY, panelWidth, panelHeight});
@@ -1226,7 +1283,7 @@ void LockSurface::rebuildSessionButtons() {
         cfg.label.has_value() && !cfg.label->empty() ? *cfg.label : i18n::tr(session_action::labelKey(cfg.action));
     raw->setText(labelText);
     raw->setGlyph(cfg.glyph.has_value() && !cfg.glyph->empty() ? *cfg.glyph : session_action::defaultGlyph(cfg.action));
-    raw->setVariant(buttonVariantFor(cfg.variant));
+    raw->setVariant(lockscreenSessionVariant(cfg.variant));
     raw->setDirection(FlexDirection::Vertical);
     raw->setAlign(FlexAlign::Center);
     raw->setJustify(FlexJustify::Center);
@@ -1284,7 +1341,7 @@ void LockSurface::syncRegularExtras(Renderer& renderer) {
       }
       if (artChanged || (m_mediaArt != nullptr && !artUrl.empty() && !m_mediaArt->hasImage())) {
         m_lastArtUrl = artUrl;
-        const int targetPx = static_cast<int>(std::round(kMediaArtSize));
+        const int targetPx = static_cast<int>(std::round(kMediaArtSize * std::max(1.0f, m_regularContentScale)));
         bool hasArt = false;
         if (m_mediaArt != nullptr) {
           if (!artUrl.empty()) {

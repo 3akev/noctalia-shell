@@ -163,6 +163,7 @@ private:
   std::optional<ScreencopyImage> m_desktopCapture;
   float m_blurIntensity = 0.5f;
   float m_tintIntensity = 0.3f;
+  float m_regularContentScale = 1.0f;
   bool m_blackout = false;
   bool m_captureDirty = true;
   std::string m_wallpaperPath;
