@@ -16,6 +16,11 @@ namespace noctalia::bar {
         GestureBinding{Gesture::Middle, "settings-open-widget"},
     };
 
+    constexpr std::array<GestureBinding, 1> kDeadZoneDefaults{
+        // Right click opens the control center, anchored at the pointer.
+        GestureBinding{Gesture::Right, "panel-toggle control-center home"},
+    };
+
     struct TypeDefaults {
       std::string_view type;
       std::span<const GestureBinding> bindings;
@@ -160,6 +165,8 @@ namespace noctalia::bar {
   } // namespace
 
   std::span<const GestureBinding> builtinGestureDefaults() noexcept { return kBuiltinDefaults; }
+
+  std::span<const GestureBinding> deadZoneGestureDefaults() noexcept { return kDeadZoneDefaults; }
 
   std::vector<GestureBinding> gestureDefaultsForType(std::string_view type, const WidgetConfig* config) {
     const auto collect = [](std::span<const GestureBinding> bindings) {

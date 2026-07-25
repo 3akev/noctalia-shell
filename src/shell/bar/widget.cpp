@@ -303,9 +303,6 @@ bool Widget::dispatchGesture(noctalia::bar::Gesture gesture) {
     return false;
   }
 
-  if (!m_actionDispatcher->run(*action, m_actionContext)) {
-    kLog.error("widget.{}.actions.{}: action failed", m_configName, gestureConfigKey(gesture));
-    return false;
-  }
-  return true;
+  // The dispatcher reports the command and the failure itself.
+  return m_actionDispatcher->run(*action, m_actionContext);
 }

@@ -32,6 +32,21 @@ namespace noctalia::bar {
     };
   }
 
+  namespace {
+
+    // Not every gesture surface is a widget: the bar dead zone dispatches with no widget name.
+    std::string sourceLabel(const IpcInvocationContext& context) {
+      if (!context.widgetName.empty()) {
+        return std::format("widget '{}'", context.widgetName);
+      }
+      if (!context.barName.empty()) {
+        return std::format("bar '{}' dead zone", context.barName);
+      }
+      return "bar gesture";
+    }
+
+  } // namespace
+
   bool WidgetActionDispatcher::run(const WidgetAction& action, IpcInvocationContext context) const {
     switch (action.kind) {
     case WidgetAction::Kind::None:
@@ -39,22 +54,22 @@ namespace noctalia::bar {
 
     case WidgetAction::Kind::Exec:
       if (!process::runAsync(action.args)) {
-        kLog.warn("widget '{}': failed to launch \"{}\"", context.widgetName, action.args);
+        kLog.warn("{}: failed to launch \"{}\"", sourceLabel(context), action.args);
         return false;
       }
       return true;
 
     case WidgetAction::Kind::Ipc: {
       if (m_ipc == nullptr) {
-        kLog.warn("widget '{}': no IPC service, dropping \"{}\"", context.widgetName, action.verb);
+        kLog.warn("{}: no IPC service, dropping \"{}\"", sourceLabel(context), action.verb);
         return false;
       }
-      const std::string widgetName = context.widgetName;
+      const std::string source = sourceLabel(context);
       const std::string line = action.commandLine();
       const IpcService::InvocationScope scope(*m_ipc, std::move(context));
       const std::string response = m_ipc->execute(line);
       if (response.starts_with("error:")) {
-        kLog.warn("widget '{}': \"{}\" -> {}", widgetName, line, StringUtils::trimRightView(response));
+        kLog.warn("{}: \"{}\" -> {}", source, line, StringUtils::trimRightView(response));
         return false;
       }
       return true;

@@ -16,6 +16,7 @@
 #include "shell/bar/bar_corner_shape.h"
 #include "shell/bar/bar_reserved_zone.h"
 #include "shell/bar/widget.h"
+#include "shell/bar/widget_gesture_defaults.h"
 #include "shell/bar/widgets/plugin_widget.h"
 #include "shell/bar/widgets/taskbar_widget.h"
 #include "shell/panel/panel_manager.h"
@@ -239,8 +240,10 @@ namespace {
           || !widget->outerNode()->visible()) {
         continue;
       }
-      if (Node::hitTest(widget->outerNode(), sceneX, sceneY) != nullptr
-          || pointInsideNode(widget->outerNode(), sceneX, sceneY)) {
+      // Bounds only, never Node::hitTest: hit outsets deliberately extend a widget's clickable
+      // band past its ink (bar.cpp applies the hover pill padding that way), and treating that
+      // band as "on a widget" would carve unreachable holes out of the dead zone.
+      if (pointInsideNode(widget->outerNode(), sceneX, sceneY)) {
         return widget;
       }
     }
@@ -254,7 +257,7 @@ namespace {
       if (root == nullptr || bounds == nullptr || bounds == root || root->parent() != bounds || !bounds->visible()) {
         continue;
       }
-      if (Node::hitTest(bounds, sceneX, sceneY) != nullptr || pointInsideNode(bounds, sceneX, sceneY)) {
+      if (pointInsideNode(bounds, sceneX, sceneY)) {
         return widget;
       }
     }
@@ -320,37 +323,13 @@ namespace {
         || pointInsideNode(instance.sceneRoot.get(), sceneX, sceneY);
   }
 
-  void executeDeadZoneCommand(const std::string& command) {
-    if (command.empty()) {
-      return;
-    }
-    if (!process::runAsync(command)) {
-      kLog.warn("bar dead zone command failed: {}", command);
-    }
-  }
-
-  float pointerScrollDelta(const PointerEvent& event) {
-    if (event.axis != WL_POINTER_AXIS_VERTICAL_SCROLL && event.axis != WL_POINTER_AXIS_HORIZONTAL_SCROLL) {
-      return 0.0f;
-    }
-
-    if (event.axisValue120 != 0) {
-      return static_cast<float>(event.axisValue120) / 120.0f;
-    }
-    if (event.axisDiscrete != 0) {
-      return static_cast<float>(event.axisDiscrete);
-    }
-    if (event.axisValue != 0.0) {
-      return static_cast<float>(event.axisValue);
-    }
-    return 0.0f;
-  }
-
-  void openControlCenterAtBarPointer(
-      BarInstance& instance, float sx, float sy, CompositorPlatform* platform, std::string_view sourceBarName
+  // The dead zone has no widget to anchor to, so a panel action anchors at the pointer instead.
+  void openPanelAtBarPointer(
+      BarInstance& instance, float sx, float sy, CompositorPlatform* platform, std::string_view sourceBarName,
+      std::string_view panelId, std::string_view context, bool toggle
   ) {
     auto& panelManager = PanelManager::instance();
-    if (panelManager.isOpenPanel("control-center")) {
+    if (toggle && panelManager.isOpenPanel(std::string(panelId))) {
       panelManager.closePanel();
       return;
     }
@@ -365,63 +344,82 @@ namespace {
       }
     }
     panelManager.openPanel(
-        "control-center",
+        std::string(panelId),
         PanelOpenRequest{
             .output = instance.output,
             .anchorX = anchorX,
             .anchorY = anchorY,
             .hasAnchorPosition = true,
-            .context = "home",
+            .context = std::string(context),
             .sourceBarName = std::string(sourceBarName),
         }
     );
   }
 
+  bool dispatchBarDeadZoneGesture(
+      BarInstance& instance, noctalia::bar::Gesture gesture, float sx, float sy, CompositorPlatform* platform,
+      const noctalia::bar::WidgetActionDispatcher& dispatcher
+  ) {
+    const auto* action = instance.deadZoneBindings.find(gesture);
+    if (action == nullptr) {
+      return false;
+    }
+
+    if (action->kind == noctalia::bar::WidgetAction::Kind::Ipc && noctalia::bar::isAnchoredPanelVerb(action->verb)) {
+      const auto args = noctalia::bar::parsePanelVerbArgs(action->args);
+      if (args.panelId.empty()) {
+        kLog.error(
+            "bar.{}.dead_zone.actions.{}: \"{}\" needs a panel id", instance.barConfig.name, gestureConfigKey(gesture),
+            action->verb
+        );
+        return false;
+      }
+      openPanelAtBarPointer(
+          instance, sx, sy, platform, instance.barConfig.name, args.panelId, args.panelContext,
+          action->verb == "panel-toggle"
+      );
+      return true;
+    }
+
+    // The dispatcher reports the command and the failure itself; repeating it here would double
+    // every line on a held scroll.
+    return dispatcher.run(*action, IpcInvocationContext{.barName = instance.barConfig.name, .output = instance.output});
+  }
+
   bool handleBarDeadZoneButton(
-      BarInstance& instance, float sx, float sy, std::uint32_t button, CompositorPlatform* platform
+      BarInstance& instance, float sx, float sy, std::uint32_t button, CompositorPlatform* platform,
+      const noctalia::bar::WidgetActionDispatcher& dispatcher
+  ) {
+    if (!isBarDeadZone(instance, sx, sy)) {
+      return false;
+    }
+    const auto gesture = noctalia::bar::gestureForButton(button);
+    if (!gesture.has_value()) {
+      return false;
+    }
+    return dispatchBarDeadZoneGesture(instance, *gesture, sx, sy, platform, dispatcher);
+  }
+
+  bool handleBarDeadZoneAxis(
+      BarInstance& instance, float sx, float sy, const PointerEvent& event, CompositorPlatform* platform,
+      const noctalia::bar::WidgetActionDispatcher& dispatcher
   ) {
     if (!isBarDeadZone(instance, sx, sy)) {
       return false;
     }
 
-    const auto& deadZone = instance.barConfig.deadZone;
-    if (button == BTN_LEFT && !deadZone.command.empty()) {
-      executeDeadZoneCommand(deadZone.command);
-      return true;
-    }
-    if (button == BTN_RIGHT) {
-      if (!deadZone.rightCommand.empty()) {
-        executeDeadZoneCommand(deadZone.rightCommand);
-        return true;
+    // Routed through a scene-less InputArea purely for its detent accumulator, so a touchpad flick
+    // fires once per detent here exactly as it does over a widget.
+    instance.deadZoneAxisSink.setOnAxisHandler([&](const InputArea::PointerData& data) {
+      const auto gesture = noctalia::bar::gestureForScroll(data.axis, data.scrollSteps());
+      if (!gesture.has_value()) {
+        return false;
       }
-      openControlCenterAtBarPointer(instance, sx, sy, platform, instance.barConfig.name);
-      return true;
-    }
-    if (button == BTN_MIDDLE && !deadZone.middleCommand.empty()) {
-      executeDeadZoneCommand(deadZone.middleCommand);
-      return true;
-    }
-    return false;
-  }
-
-  bool handleBarDeadZoneAxis(BarInstance& instance, float sx, float sy, const PointerEvent& event) {
-    if (!isBarDeadZone(instance, sx, sy)) {
-      return false;
-    }
-
-    const float delta = pointerScrollDelta(event);
-    if (delta == 0.0f) {
-      return false;
-    }
-
-    const auto& deadZone = instance.barConfig.deadZone;
-    const std::string& command = delta < 0.0f ? deadZone.scrollUpCommand : deadZone.scrollDownCommand;
-    if (command.empty()) {
-      return false;
-    }
-
-    executeDeadZoneCommand(command);
-    return true;
+      return dispatchBarDeadZoneGesture(instance, *gesture, sx, sy, platform, dispatcher);
+    });
+    return instance.deadZoneAxisSink.dispatchAxis(
+        sx, sy, event.axis, event.axisSource, event.axisValue, event.axisDiscrete, event.axisValue120, event.axisLines
+    );
   }
 
   std::uint32_t positionToAnchor(const std::string& position) {
@@ -2158,6 +2156,32 @@ void Bar::destroyInstance(std::uint32_t outputName) {
 }
 
 void Bar::populateWidgets(BarInstance& instance) {
+  instance.deadZoneBindings.resolve(
+      noctalia::bar::WidgetActionBindings::Inputs{
+          .widgetDefaults = noctalia::bar::deadZoneGestureDefaults(),
+          .widgetActions = &instance.barConfig.deadZone.actions,
+          .widgetContext = "bar." + instance.barConfig.name + ".dead_zone",
+          .widgetName = instance.barConfig.name,
+          .widgetType = "dead zone",
+      }
+  );
+  {
+    std::string summary;
+    for (const auto gesture : noctalia::bar::allGestures()) {
+      const auto* action = instance.deadZoneBindings.find(gesture);
+      if (action == nullptr) {
+        continue;
+      }
+      if (!summary.empty()) {
+        summary += ", ";
+      }
+      summary += std::format("{}={}", gestureConfigKey(gesture), action->commandLine());
+    }
+    // Runs once per bar per reload, mirroring the per-widget line: the first thing to check when a
+    // dead zone binding does not fire.
+    kLog.debug("bar.{}.dead_zone: {}", instance.barConfig.name, summary.empty() ? "no bindings" : summary);
+  }
+
   const auto& widgetConfigs = m_config->config().widgets;
   const auto labelFontWeight = static_cast<FontWeight>(instance.barConfig.fontWeight);
   const std::string barFontFamily = (instance.barConfig.fontFamily && !instance.barConfig.fontFamily->empty())
@@ -3150,11 +3174,10 @@ bool Bar::onPointerEvent(const PointerEvent& event) {
       if (event.type == PointerEvent::Type::Button && event.button == BTN_RIGHT && event.pressed) {
         const auto sx = static_cast<float>(event.sx);
         const auto sy = static_cast<float>(event.sy);
-        const auto& deadZone = targetInstance->barConfig.deadZone;
-        if (!deadZone.rightCommand.empty() && isBarDeadZone(*targetInstance, sx, sy)) {
-          executeDeadZoneCommand(deadZone.rightCommand);
-        } else {
-          openControlCenterAtBarPointer(*targetInstance, sx, sy, m_platform, targetInstance->barConfig.name);
+        if (!handleBarDeadZoneButton(*targetInstance, sx, sy, event.button, m_platform, m_actionDispatcher)) {
+          openPanelAtBarPointer(
+              *targetInstance, sx, sy, m_platform, targetInstance->barConfig.name, "control-center", "home", true
+          );
         }
         return true;
       }
@@ -3222,7 +3245,7 @@ bool Bar::onPointerEvent(const PointerEvent& event) {
     bool pressed = event.pressed;
     consumed = m_hoveredInstance->inputDispatcher.pointerButton(sx, sy, event.button, pressed);
     if (pressed && !consumed) {
-      if (handleBarDeadZoneButton(*m_hoveredInstance, sx, sy, event.button, m_platform)) {
+      if (handleBarDeadZoneButton(*m_hoveredInstance, sx, sy, event.button, m_platform, m_actionDispatcher)) {
         consumed = true;
       }
     }
@@ -3239,7 +3262,7 @@ bool Bar::onPointerEvent(const PointerEvent& event) {
         sx, sy, event.axis, event.axisSource, event.axisValue, event.axisDiscrete, event.axisValue120, event.axisLines
     );
     if (!axisConsumed) {
-      handleBarDeadZoneAxis(*m_hoveredInstance, sx, sy, event);
+      handleBarDeadZoneAxis(*m_hoveredInstance, sx, sy, event, m_platform, m_actionDispatcher);
     }
     break;
   }

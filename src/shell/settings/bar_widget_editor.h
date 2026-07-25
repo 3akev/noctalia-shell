@@ -32,6 +32,8 @@ namespace settings {
     std::string& pendingDeleteWidgetName;
     std::string& pendingDeleteWidgetSettingPath;
     std::string& renamingWidgetName;
+    std::function<std::unique_ptr<Node>(const GestureActionSetting&, const std::string&, std::vector<std::string>)>
+        makeGestureActionRow;
     std::string& pendingGestureKey;
     std::string& pendingGestureVerb;
     std::string& actionsExpandedFor;

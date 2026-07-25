@@ -19,6 +19,7 @@ namespace noctalia::config {
     constexpr int kWidgetGestureSettingsMigrationVersion = 4;
     constexpr int kRemainingWidgetGesturesMigrationVersion = 5;
     constexpr int kCustomButtonCommandsMigrationVersion = 6;
+    constexpr int kDeadZoneActionsMigrationVersion = 7;
     constexpr std::int64_t kMaxBarRadius = 500;
     constexpr std::array<std::string_view, 5> kBarRadiusKeys = {
         "radius", "radius_top_left", "radius_top_right", "radius_bottom_left", "radius_bottom_right",
@@ -318,6 +319,65 @@ namespace noctalia::config {
       }
     }
 
+    // The bar dead zone had the same five command keys custom_button did, running through the same
+    // process::runAsync the `exec` verb uses.
+    template <typename OnChanged> void migrateDeadZoneActions(toml::table& root, OnChanged&& onChanged) {
+      static constexpr std::array<std::pair<std::string_view, std::string_view>, 5> kCommandKeys{{
+          {"command", "left"},
+          {"right_command", "right"},
+          {"middle_command", "middle"},
+          {"scroll_up_command", "scroll_up"},
+          {"scroll_down_command", "scroll_down"},
+      }};
+
+      const auto migrateTable = [&onChanged](toml::table& owner, const std::string& path) {
+        auto* deadZone = owner["dead_zone"].as_table();
+        if (deadZone == nullptr) {
+          return;
+        }
+        for (const auto& [key, gesture] : kCommandKeys) {
+          if (!deadZone->contains(key)) {
+            continue;
+          }
+          const auto command = (*deadZone)[key].value_or(std::string{});
+          deadZone->erase(key);
+          if (!command.empty()) {
+            bindAction(*deadZone, gesture, "exec " + command);
+          }
+          onChanged(path + ".dead_zone", std::string(key) + " is now the " + std::string(gesture) + " binding");
+        }
+      };
+
+      auto* bars = root["bar"].as_table();
+      if (bars == nullptr) {
+        return;
+      }
+      for (auto& [barName, barNode] : *bars) {
+        auto* bar = barNode.as_table();
+        if (bar == nullptr) {
+          continue;
+        }
+        const std::string barPath = "bar." + std::string(barName.str());
+        migrateTable(*bar, barPath);
+
+        auto* monitors = (*bar)["monitor"].as_table();
+        if (monitors == nullptr) {
+          continue;
+        }
+        for (auto& [monitorName, monitorNode] : *monitors) {
+          if (auto* monitor = monitorNode.as_table(); monitor != nullptr) {
+            migrateTable(*monitor, barPath + ".monitor." + std::string(monitorName.str()));
+          }
+        }
+      }
+    }
+
+    void migrateDeadZoneActionsSidecar(toml::table& root, schema::Diagnostics& diag) {
+      migrateDeadZoneActions(root, [&diag](const std::string& path, std::string_view message) {
+        diag.warn(path, std::string(message));
+      });
+    }
+
     void migrateCustomButtonCommandsSidecar(toml::table& root, schema::Diagnostics& diag) {
       migrateCustomButtonCommands(root, [&diag](const std::string& path, std::string_view message) {
         diag.warn(path, std::string(message));
@@ -409,6 +469,11 @@ namespace noctalia::config {
             .summary = "widget: move custom_button commands to gesture actions",
             .apply = migrateCustomButtonCommandsSidecar,
         },
+        {
+            .toVersion = kDeadZoneActionsMigrationVersion,
+            .summary = "bar: move dead zone commands to gesture actions",
+            .apply = migrateDeadZoneActionsSidecar,
+        },
     };
     return migrations;
   }
@@ -499,6 +564,13 @@ namespace noctalia::config {
     migrateCustomButtonCommands(root, [&issues](const std::string& path, std::string_view message) {
       issues.push_back({
           .migrationVersion = kCustomButtonCommandsMigrationVersion,
+          .path = path,
+          .message = std::string(message),
+      });
+    });
+    migrateDeadZoneActions(root, [&issues](const std::string& path, std::string_view message) {
+      issues.push_back({
+          .migrationVersion = kDeadZoneActionsMigrationVersion,
           .path = path,
           .message = std::string(message),
       });

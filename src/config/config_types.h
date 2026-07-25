@@ -46,11 +46,7 @@ inline constexpr std::string_view kCapsuleGroupTokenPrefix = "group:";
 [[nodiscard]] std::string makeCapsuleGroupToken(std::string_view groupId);
 
 struct BarDeadZoneOverride {
-  std::optional<std::string> command;
-  std::optional<std::string> rightCommand;
-  std::optional<std::string> middleCommand;
-  std::optional<std::string> scrollUpCommand;
-  std::optional<std::string> scrollDownCommand;
+  std::optional<std::unordered_map<std::string, std::string>> actions;
 
   bool operator==(const BarDeadZoneOverride&) const = default;
 };
@@ -110,11 +106,9 @@ struct BarMonitorOverride {
 };
 
 struct BarDeadZoneConfig {
-  std::string command;
-  std::string rightCommand;
-  std::string middleCommand;
-  std::string scrollUpCommand;
-  std::string scrollDownCommand;
+  // Gesture -> action bindings for the parts of the bar no widget covers. Same grammar as widget
+  // actions; see widget_action.h.
+  std::unordered_map<std::string, std::string> actions;
 
   bool operator==(const BarDeadZoneConfig&) const = default;
 };

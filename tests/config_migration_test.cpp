@@ -406,6 +406,54 @@ left = "media toggle"
     expect(secondPassIssues.empty(), "custom_button command normalization was not idempotent");
   }
 
+  void checkDeadZoneActionsMigration() {
+    toml::table config = toml::parse(R"(
+[bar.default.dead_zone]
+command = "notify-send left"
+right_command = "notify-send right"
+
+[bar.default.monitor.DP-1.dead_zone]
+scroll_up_command = "notify-send up"
+
+[bar.other.dead_zone]
+middle_command = ""
+)");
+    noctalia::config::LegacyConfigIssues issues;
+    noctalia::config::normalizeLegacyConfig(config, issues);
+
+    expect(
+        config["bar"]["default"]["dead_zone"]["actions"]["left"].value<std::string>()
+            == std::optional<std::string>{"exec notify-send left"},
+        "a dead zone command did not become a left exec binding"
+    );
+    expect(
+        config["bar"]["default"]["dead_zone"]["actions"]["right"].value<std::string>()
+            == std::optional<std::string>{"exec notify-send right"},
+        "a dead zone right_command did not migrate"
+    );
+    expect(
+        !config["bar"]["default"]["dead_zone"]["command"].value<std::string>().has_value(),
+        "the old dead zone key was not dropped"
+    );
+
+    // Monitor overrides carry their own dead zone table.
+    expect(
+        config["bar"]["default"]["monitor"]["DP-1"]["dead_zone"]["actions"]["scroll_up"].value<std::string>()
+            == std::optional<std::string>{"exec notify-send up"},
+        "a monitor override dead zone command did not migrate"
+    );
+
+    // An empty command bound nothing before and binds nothing now.
+    expect(
+        config["bar"]["other"]["dead_zone"]["actions"].as_table() == nullptr,
+        "an empty dead zone command seeded a binding"
+    );
+
+    noctalia::config::LegacyConfigIssues secondPassIssues;
+    noctalia::config::normalizeLegacyConfig(config, secondPassIssues);
+    expect(secondPassIssues.empty(), "dead zone normalization was not idempotent");
+  }
+
   void checkVersionGating() {
     toml::table legacy = toml::parse(R"(
 [bar.main]
@@ -550,6 +598,7 @@ int main() {
   checkWidgetGestureSettingsMigration();
   checkRemainingWidgetGesturesMigration();
   checkCustomButtonCommandsMigration();
+  checkDeadZoneActionsMigration();
   checkVersionGating();
   checkReminderFingerprint();
   checkRegistryOrdering();

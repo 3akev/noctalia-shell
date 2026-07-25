@@ -5,7 +5,6 @@
 #include "cursor-shape-v1-client-protocol.h"
 #include "i18n/i18n.h"
 #include "render/scene/node.h"
-#include "shell/bar/widget_action.h"
 #include "shell/bar/widget_gesture.h"
 #include "shell/bar/widget_gesture_defaults.h"
 #include "shell/settings/color_spec_picker.h"
@@ -18,7 +17,6 @@
 #include "ui/dialogs/glyph_picker_dialog.h"
 #include "ui/palette.h"
 #include "ui/style.h"
-#include "util/string_utils.h"
 
 #include <algorithm>
 #include <cctype>
@@ -109,45 +107,15 @@ namespace settings {
       return header;
     }
 
-    // Synthetic picker entries. Empty value inherits the default; the other is a grammar keyword
-    // rather than an IPC command, so it cannot collide with a real command name.
-    constexpr std::string_view kActionExecOption = "\x01exec";
-
-    // Argument specs spell required arguments as <id> and optional ones as [context]. A <> nested
-    // inside brackets is still optional, so only a top-level one makes the argument mandatory.
-    [[nodiscard]] bool specTakesArguments(std::string_view spec) { return !spec.empty(); }
-
-    [[nodiscard]] bool specRequiresArgument(std::string_view spec) {
-      int optionalDepth = 0;
-      for (const char c : spec) {
-        if (c == '[') {
-          ++optionalDepth;
-        } else if (c == ']') {
-          optionalDepth = std::max(0, optionalDepth - 1);
-        } else if (c == '<' && optionalDepth == 0) {
-          return true;
-        }
-      }
-      return false;
-    }
-
     // One row per bindable gesture: a picker over Default / Disabled / every command / a free-form
     // shell command, plus an argument field when the choice takes one.
+    // One row per bindable gesture, built by the shared factory so this matches every other
+    // gesture-binding surface.
     void addGestureActionRows(
         Flex& panel, const BarWidgetEditorContext& ctx, const SettingEntry& entry,
         const WidgetSettingStringMap& defaults, const WidgetSettingStringMap& configured,
         noctalia::bar::GestureMask reserved
     ) {
-      // Shared by value: BarWidgetEditorContext is a build-pass local, but these callbacks are
-      // stored in the scene and fire long after it is gone.
-      const auto catalog = std::make_shared<const std::vector<GestureActionOption>>(ctx.actionCatalog);
-      const auto specFor = [catalog](std::string_view verb) -> std::string {
-        const auto it = std::ranges::find_if(*catalog, [verb](const GestureActionOption& action) {
-          return action.option.value == verb;
-        });
-        return it != catalog->end() ? it->argsSpec : std::string{};
-      };
-
       for (const auto gesture : noctalia::bar::allGestures()) {
         if (reserved.contains(gesture)) {
           continue;
@@ -157,134 +125,19 @@ namespace settings {
         path.push_back(key);
 
         const auto configuredIt = configured.find(key);
-        const bool isOverridden = configuredIt != configured.end();
         const auto defaultIt = defaults.find(key);
-        const std::string defaultValue = defaultIt != defaults.end() ? defaultIt->second : std::string{};
-
-        const std::string effective = isOverridden ? configuredIt->second : defaultValue;
-        const auto parsed = noctalia::bar::parseWidgetAction(effective);
-
-        // A row holds its chosen command until the argument is typed, because committing a bare
-        // verb that needs one would store a binding that silently does nothing.
-        const bool pending = ctx.pendingGestureKey == key;
-        std::string selected;
-        std::string argument;
-        if (pending) {
-          selected = ctx.pendingGestureVerb;
-        } else if (!isOverridden) {
-          selected.clear();
-        } else if (!parsed.has_value() || parsed->kind == noctalia::bar::WidgetAction::Kind::None) {
-          selected = std::string(noctalia::bar::kNoneVerb);
-        } else if (parsed->kind == noctalia::bar::WidgetAction::Kind::Exec) {
-          selected = std::string(kActionExecOption);
-          argument = parsed->args;
-        } else {
-          selected = parsed->verb;
-          argument = parsed->args;
-        }
-        const bool execMode = selected == kActionExecOption;
-
-        std::vector<SelectOption> options;
-        options.reserve(ctx.actionCatalog.size() + 3);
-        options.push_back(
-            SelectOption{
-                .value = {},
-                .label = defaultValue.empty()
-                    ? i18n::tr("settings.widgets.actions.unset")
-                    : std::format("{} ({})", i18n::tr("settings.widgets.actions.default"), defaultValue),
-            }
-        );
-        options.push_back(
-            SelectOption{
-                .value = std::string(noctalia::bar::kNoneVerb),
-                .label = i18n::tr("settings.widgets.actions.disabled"),
-            }
-        );
-        options.push_back(
-            SelectOption{
-                .value = std::string(kActionExecOption),
-                .label = i18n::tr("settings.widgets.actions.run-command"),
-            }
-        );
-        for (const auto& action : ctx.actionCatalog) {
-          options.push_back(action.option);
-        }
-
-        SearchPickerSetting picker;
-        picker.options = std::move(options);
-        picker.selectedValue = selected;
-        picker.emptyText = i18n::tr("ui.controls.search-picker.empty");
-        picker.onSelect = [setOverride = ctx.setOverride, clearOverride = ctx.clearOverride,
-                           requestRebuild = ctx.requestRebuild, pendingKey = &ctx.pendingGestureKey,
-                           pendingVerb = &ctx.pendingGestureVerb, specFor, path, key](const std::string& value) {
-          pendingKey->clear();
-          pendingVerb->clear();
-          const bool needsArgument =
-              value == kActionExecOption || (!value.empty() && specRequiresArgument(specFor(value)));
-          if (needsArgument) {
-            // Nothing to store yet: the value is completed by the argument field.
-            *pendingKey = key;
-            *pendingVerb = value;
-            clearOverride(path);
-          } else if (value.empty()) {
-            clearOverride(path);
-          } else {
-            setOverride(path, value);
-          }
-          if (requestRebuild) {
-            requestRebuild();
-          }
-        };
 
         SettingEntry rowEntry = entry;
         rowEntry.path = path;
         rowEntry.title = i18n::tr(std::string(noctalia::bar::gestureLabelKey(gesture)));
         rowEntry.subtitle.clear();
 
-        const std::string argsSpec = execMode ? std::string{} : specFor(selected);
-        const bool wantsArgument = execMode || (!selected.empty() && specTakesArguments(argsSpec));
-
-        auto control = ui::row({.align = FlexAlign::Center, .gap = Style::spaceSm * ctx.scale});
-        control->addChild(ctx.makeSearchPicker(picker, rowEntry.title, path));
-        if (wantsArgument) {
-          control->addChild(
-              ui::input({
-                  .value = argument,
-                  .placeholder = execMode ? i18n::tr("settings.widgets.actions.command-placeholder") : argsSpec,
-                  .fontSize = Style::fontSizeBody * ctx.scale,
-                  .controlHeight = Style::controlHeight * ctx.scale,
-                  .horizontalPadding = Style::spaceSm * ctx.scale,
-                  .width = 220.0f * ctx.scale,
-                  .height = Style::controlHeight * ctx.scale,
-                  .onSubmit =
-                      [setOverride = ctx.setOverride, clearOverride = ctx.clearOverride,
-                       requestRebuild = ctx.requestRebuild, pendingKey = &ctx.pendingGestureKey,
-                       pendingVerb = &ctx.pendingGestureVerb, specFor, path, verb = selected,
-                       execMode](const std::string& text) {
-                        const std::string trimmed = StringUtils::trim(text);
-                        if (trimmed.empty()) {
-                          // Clearing the argument drops a binding that needs one.
-                          if (execMode || specRequiresArgument(specFor(verb))) {
-                            clearOverride(path);
-                          } else {
-                            setOverride(path, verb);
-                          }
-                        } else if (execMode) {
-                          setOverride(path, std::string(noctalia::bar::kExecVerb) + " " + trimmed);
-                        } else {
-                          setOverride(path, verb + " " + trimmed);
-                        }
-                        pendingKey->clear();
-                        pendingVerb->clear();
-                        if (requestRebuild) {
-                          requestRebuild();
-                        }
-                      },
-                  .submitOnFocusLoss = true,
-              })
-          );
-        }
-        ctx.makeRow(panel, rowEntry, std::move(control));
+        GestureActionSetting setting{
+            .gestureKey = key,
+            .configured = configuredIt != configured.end() ? configuredIt->second : std::string{},
+            .defaultAction = defaultIt != defaults.end() ? defaultIt->second : std::string{},
+        };
+        ctx.makeRow(panel, rowEntry, ctx.makeGestureActionRow(setting, rowEntry.title, path));
       }
     }
 

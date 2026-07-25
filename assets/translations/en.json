@@ -1668,25 +1668,9 @@
         "corner-top-right": {
           "description": "Top right corner radius for the bar"
         },
-        "dead-zone-command": {
-          "description": "Shell command to run on left-click in the bar margin outside widget sections",
-          "label": "Left Click"
-        },
-        "dead-zone-middle-command": {
-          "description": "Shell command to run on middle-click in the bar margin outside widget sections",
-          "label": "Middle Click"
-        },
-        "dead-zone-right-command": {
-          "description": "Shell command to run on right-click; leave empty to open Control Center",
-          "label": "Right Click"
-        },
-        "dead-zone-scroll-down-command": {
-          "description": "Shell command to run when scrolling down",
-          "label": "Scroll Down"
-        },
-        "dead-zone-scroll-up-command": {
-          "description": "Shell command to run when scrolling up",
-          "label": "Scroll Up"
+        "dead-zone-action": {
+          "description": "Action run on the parts of the bar no widget covers; leave empty for the default",
+          "placeholder": "e.g. panel-toggle launcher"
         },
         "edge-margin": {
           "description": "Gap between the bar and the screen edge it sits on; set to 0 px to sit flush against that edge"

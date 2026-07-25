@@ -18,6 +18,10 @@ namespace noctalia::bar {
   // Layer 1: applies to every widget type.
   [[nodiscard]] std::span<const GestureBinding> builtinGestureDefaults() noexcept;
 
+  // What the parts of a bar no widget covers do out of the box. Separate from the widget layers:
+  // there is no widget there, so `settings-open-widget` has nothing to open.
+  [[nodiscard]] std::span<const GestureBinding> deadZoneGestureDefaults() noexcept;
+
   // Layer 2: what a widget type declares for itself, empty when it declares none. For a plugin
   // [[widget]] type this is the manifest's `actions` table, so plugin widgets get defaults the same
   // way built-in ones do. `config` is read only by types whose defaults genuinely differ per

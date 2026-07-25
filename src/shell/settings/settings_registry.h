@@ -262,11 +262,19 @@ namespace settings {
     std::string noneLabel;
   };
 
+  // One bindable gesture. `configured` is the stored binding, empty when it inherits; `defaultAction`
+  // is what runs when it does, shown in the picker so "unset" never reads as "does nothing".
+  struct GestureActionSetting {
+    std::string gestureKey;
+    std::string configured;
+    std::string defaultAction;
+  };
+
   using SettingControl = std::variant<
       ToggleSetting, SelectSetting, SliderSetting, RangeSliderSetting, TextSetting, OptionalNumberSetting,
       OptionalStepperSetting, StepperSetting, ListSetting, ShortcutListSetting, KeybindListSetting,
       SessionPanelActionsSetting, IdleBehaviorsSetting, NotificationFiltersSetting, MultiSelectSetting,
-      TemplateGridSetting, ButtonSetting, ColorSpecPickerSetting, SearchPickerSetting>;
+      TemplateGridSetting, ButtonSetting, ColorSpecPickerSetting, SearchPickerSetting, GestureActionSetting>;
 
   // Visibility predicate, evaluated against the same Config the registry was built from
   // (the registry rebuilds on every config change). Capture snapshot values or read the

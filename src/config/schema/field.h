@@ -242,6 +242,39 @@ namespace noctalia::config::schema {
     };
   }
 
+  // The same sub-table as a monitor override: absent means "inherit", present replaces the bar's
+  // whole table rather than merging key by key.
+  template <typename Struct>
+  Field<Struct>
+  field(std::optional<std::unordered_map<std::string, std::string>> Struct::* member, std::string_view key) {
+    return Field<Struct>{
+        key,
+        [member, key](const toml::table& tbl, Struct& out, std::string_view, Diagnostics&) {
+          const auto* sub = tbl[key].as_table();
+          if (sub == nullptr) {
+            return;
+          }
+          std::unordered_map<std::string, std::string> values;
+          for (const auto& [entryKey, node] : *sub) {
+            if (auto value = node.value<std::string>()) {
+              values.emplace(std::string(entryKey.str()), std::move(*value));
+            }
+          }
+          out.*member = std::move(values);
+        },
+        [member, key](toml::table& tbl, const Struct& in) {
+          if (!(in.*member).has_value()) {
+            return;
+          }
+          toml::table sub;
+          for (const auto& [entryKey, value] : *(in.*member)) {
+            sub.insert_or_assign(entryKey, value);
+          }
+          tbl.insert_or_assign(key, std::move(sub));
+        },
+    };
+  }
+
   // Escape hatch for a single key whose read/write don't fit a stock codec
   // (e.g. a value that cascades to sibling fields, or bespoke validation).
   template <typename Struct>
