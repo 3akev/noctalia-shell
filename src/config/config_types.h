@@ -120,6 +120,9 @@ struct BarDeadZoneConfig {
 };
 
 struct BarConfig {
+  // Gesture -> action bindings applied to every widget on this bar, overriding widget-type
+  // defaults and overridden in turn by `[widget.<name>.actions]`. See widget_action.h.
+  std::unordered_map<std::string, std::string> actions;
   std::string name = "default";
   std::string position = "top";
   bool enabled = true;
@@ -999,7 +1002,6 @@ struct ShellConfig {
   AnimationConfig animation;
   std::string avatarPath;
   bool settingsShowAdvanced = true;
-  bool middleClickOpensWidgetSettings = true;
   bool showLocation = true;
   bool appIconColorize = false;
   std::optional<ColorSpec> appIconColor;

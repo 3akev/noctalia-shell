@@ -432,7 +432,7 @@ namespace settings {
         .radius = Style::scaledRadiusMd(scale),
         .onClick = [openPopup = ctx.openSearchPickerPopup, title = std::move(title), options = setting.options,
                     selectedValue = setting.selectedValue, placeholder = setting.placeholder,
-                    emptyText = setting.emptyText, path = std::move(path)]() {
+                    emptyText = setting.emptyText, path = std::move(path), onSelect = setting.onSelect]() {
           if (openPopup) {
             openPopup(
                 SearchPickerOpenRequest{
@@ -442,6 +442,7 @@ namespace settings {
                     .placeholder = placeholder,
                     .emptyText = emptyText,
                     .settingPath = path,
+                    .onSelect = onSelect,
                 }
             );
           }
@@ -1039,7 +1040,8 @@ namespace settings {
       );
       row->addChild(
           ui::button({
-              .glyph = value.empty() ? std::string{} : std::string{"close"},
+              // nullopt, not "": an empty glyph name resolves to the missing-glyph skull.
+              .glyph = value.empty() ? std::nullopt : std::optional<std::string>{"close"},
               .fontSize = Style::fontSizeCaption * scale,
               .glyphSize = Style::fontSizeCaption * scale,
               .variant = ButtonVariant::Ghost,
