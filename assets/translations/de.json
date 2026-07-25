@@ -1630,26 +1630,6 @@
         "corner-top-right": {
           "description": "Eckenradius oben rechts für die Leiste"
         },
-        "dead-zone-command": {
-          "description": "Shell-Befehl, der bei Linksklick im leeren Bereich der Leiste außerhalb der Widget-Bereiche ausgeführt wird",
-          "label": "Linksklick"
-        },
-        "dead-zone-middle-command": {
-          "description": "Shell-Befehl, der bei Mittelklick im leeren Bereich der Leiste außerhalb der Widget-Bereiche ausgeführt wird",
-          "label": "Mittelklick"
-        },
-        "dead-zone-right-command": {
-          "description": "Shell-Befehl, der bei Rechtsklick ausgeführt wird; leer lassen, um das Kontrollzentrum zu öffnen",
-          "label": "Rechtsklick"
-        },
-        "dead-zone-scroll-down-command": {
-          "description": "Shell-Befehl, der beim Herunterscrollen ausgeführt wird",
-          "label": "Nach unten scrollen"
-        },
-        "dead-zone-scroll-up-command": {
-          "description": "Shell-Befehl, der beim Hochscrollen ausgeführt wird",
-          "label": "Nach oben scrollen"
-        },
         "edge-margin": {
           "description": "Abstand zwischen der Leiste und dem Bildschirmrand, an dem sie liegt; auf 0 px setzen, um bündig am Rand anzuliegen"
         },

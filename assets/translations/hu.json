@@ -1658,26 +1658,6 @@
         "corner-top-right": {
           "description": "A sáv jobb felső sarkának sugara"
         },
-        "dead-zone-command": {
-          "description": "Shell-parancs, amelyet a widget-szakaszokon kívüli sáv szélén, bal egérgombbal történő kattintással lehet futtatni",
-          "label": "Bal kattintás"
-        },
-        "dead-zone-middle-command": {
-          "description": "Shell-parancs, amelyet a widget-szakaszokon kívüli sáv szélén, középső egérgombbal történő kattintással lehet futtatni",
-          "label": "Középső kattintás"
-        },
-        "dead-zone-right-command": {
-          "description": "A jobb egérgombbal elindítandó shell-parancs. Ha üresen hagyod, a Vezérlőközpontot nyitja meg",
-          "label": "Jobb kattintás"
-        },
-        "dead-zone-scroll-down-command": {
-          "description": "A lefelé görgetéskor futtatandó shell-parancs",
-          "label": "Lefelé görgetés"
-        },
-        "dead-zone-scroll-up-command": {
-          "description": "A felfelé görgetéskor futtatandó shell-parancs",
-          "label": "Felfelé görgetés"
-        },
         "edge-margin": {
           "description": "Távolság a legközelebbi képernyőszéltől; a pozitív értékek lebegtetik tőle a sávot"
         },

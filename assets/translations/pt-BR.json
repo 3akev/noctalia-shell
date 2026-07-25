@@ -517,6 +517,7 @@
         "show-label": "Exibir Rótulo",
         "show-login-button": "Botão de Login",
         "show-password-hint": "Dica de Senha",
+        "show-session-buttons": "Botões de Sessão",
         "show-vpn-label": "Mostra Rótulo VPN",
         "show-when-idle": "Mostrar Quando Ocioso",
         "stat": "Estatísticas",
@@ -1023,6 +1024,7 @@
         "settings": {
           "empty": "Nenhuma configuração corresponde aos filtros atuais.",
           "groups": {
+            "actions": "Entradas",
             "grouping": "Agrupamento",
             "presentation": "Apresentação",
             "runtime": "Tempo de Execução",
@@ -1415,6 +1417,8 @@
         "delete-confirm-title": "Apagar \"{name}\"?",
         "deprecated": "Obsoleto",
         "empty": "Nenhum plugin ativado.",
+        "held-back": "versão mais antiga",
+        "held-back-hint": "v{version} requer a API de plugins {required}; este Noctalia suporta até {current}. Atualize o Noctalia para obtê-la.",
         "incompatible-plugin-api": "APi de plugin incoompatível",
         "loading": "Carregando plugins...",
         "refreshing": "Atualizando plugins...",
@@ -1462,7 +1466,10 @@
         "categories": "Categoria",
         "category-all": "Todos",
         "empty": "Não foram encontrados plugins",
+        "held-back": "Versão mais antiga",
+        "held-back-hint": "Instala a v{version} para a API de plugins {resolved}. A versão mais recente v{latest} requer a API de plugins {latestRequired}; este Noctalia suporta até {current}.",
         "incompatible": "Incompatível",
+        "incompatible-hint": "Requer a API de plugins {required}; este Noctalia suporta {oldest}–{current}.",
         "loading": "Carregando catálogo...",
         "no-readme": "Nenhuma descrição disponível.",
         "open-page": "Abrir página de plugin em noctalia.dev",
@@ -1662,25 +1669,8 @@
         "corner-top-right": {
           "description": "Raio do canto superior direito da barra"
         },
-        "dead-zone-command": {
-          "description": "Comando do shell a ser executado ao clicar com o botão esquerdo na margem da barra, fora das seções dos widgets",
-          "label": "Clique Esquerdo"
-        },
-        "dead-zone-middle-command": {
-          "description": "Comando do shell a ser executado ao clicar com o botão do meio na margem da barra fora das seções dos widgets",
-          "label": "Clique do Meio"
-        },
-        "dead-zone-right-command": {
-          "description": "Comando do shell a ser executado ao clicar com o botão direito; deixe em branco para abrir a Central de Controle",
-          "label": "Clique Direito"
-        },
-        "dead-zone-scroll-down-command": {
-          "description": "Comando a executar ao rolar para baixo",
-          "label": "Rolar para Baixo"
-        },
-        "dead-zone-scroll-up-command": {
-          "description": "Comando a executar ao rolar para cima",
-          "label": "Rolar para Cima"
+        "dead-zone-action": {
+          "description": "Ação executada nas partes da barra que nenhum widget cobre; deixe vazio para o padrão"
         },
         "edge-margin": {
           "description": "Espaço entre a barra e a borda da tela em que ela está; defina como 0 px para alinhar exatamente com a borda"
@@ -2445,6 +2435,10 @@
           "description-unavailable": "Nenhum provedor do Secret Service está disponível. Os eventos do calendário permanecerão disponíveis apenas nesta sessão.",
           "label": "Armazenamento de Eventos do Calendário"
         },
+        "calendar-week-numbers": {
+          "description": "Exibir os números da semana na norma ISO 8601 ao lado da grade do calendário",
+          "label": "Números da Semana"
+        },
         "custom-schedule": {
           "description": "Usar horários manuais de amanhecer e anoitecer ao invés de computar à partir das coordenadas",
           "label": "Agendamento Personalizado"
@@ -2502,11 +2496,11 @@
           "placeholder": "/path/to/sound.wav"
         },
         "shell-sounds": {
-          "description": "Tocar efeitos de som para eventos da shell",
-          "label": "Sons da Shell"
+          "description": "Tocar efeitos de som para eventos do shell",
+          "label": "Sons do Shell"
         },
         "sound-volume": {
-          "description": "Volume para efeitos de som da shell",
+          "description": "Volume para efeitos de som do shell",
           "label": "Volume do Áudio"
         },
         "sunrise": {
@@ -3049,6 +3043,23 @@
       "success": "Redefinição do armazenamento privado bem sucedida"
     },
     "widgets": {
+      "actions": {
+        "command-placeholder": "Comando do shell",
+        "default": "Padrão",
+        "disabled": "Desativado",
+        "run-command": "Executar um comando..."
+      },
+      "gestures": {
+        "back": "Botão Voltar",
+        "forward": "Botão Avançar",
+        "left": "Clique Esquerdo",
+        "middle": "Clique do Meio",
+        "right": "Clique Direito",
+        "scroll-down": "Rolar para Baixo",
+        "scroll-left": "Rolar para Esquerda",
+        "scroll-right": "Rolar para Direita",
+        "scroll-up": "Rolar para Cima"
+      },
       "instances": {
         "cpu": "CPU",
         "date": "Data",
@@ -3073,6 +3084,7 @@
         "auto": "Auto",
         "before": "Antes",
         "both": "Ambos",
+        "compact": "Compacto",
         "count": "Contar",
         "cpu-temp": "Temperatura da CPU",
         "cpu-usage": "Uso da CPU",
@@ -3123,6 +3135,10 @@
         "workspace-label-inside": "Dentro da Pílula"
       },
       "settings": {
+        "actions": {
+          "description": "O que cada gesto do mouse faz neste widget. Escolha um comando, execute um comando do shell ou desative-o.",
+          "label": "Ações de Gesto"
+        },
         "active-color": {
           "description": "Cor usada para indicadores de privacidade ativos; cores hex fixas também são suportadas",
           "label": "Cor Ativa"

@@ -1662,26 +1662,6 @@
         "corner-top-right": {
           "description": "Raggio angolo in alto a destra della barra"
         },
-        "dead-zone-command": {
-          "description": "Comando della shell da eseguire quando si fa clic con il pulsante sinistro sul margine della barra all'esterno delle sezioni del widget",
-          "label": "Click sinistro"
-        },
-        "dead-zone-middle-command": {
-          "description": "Comando della shell da eseguire quando si fa clic con il pulsante centrale sul margine della barra all'esterno delle sezioni del widget",
-          "label": "Click centrale"
-        },
-        "dead-zone-right-command": {
-          "description": "Comando da eseguire quando si fa clic con il pulsante destro; lasciare vuoto per aprire il centro di controllo",
-          "label": "Click destro"
-        },
-        "dead-zone-scroll-down-command": {
-          "description": "Comando da eseguire quando si scrolla in basso",
-          "label": "Scroll in basso"
-        },
-        "dead-zone-scroll-up-command": {
-          "description": "Comando da eseguire quando si scrolla in alto",
-          "label": "Scroll in alto"
-        },
         "edge-margin": {
           "description": "Spazio tra la barra e il bordo dello schermo su cui si trova; imposta a 0 px per posizinarlo a filo con quel bordo"
         },

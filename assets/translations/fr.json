@@ -1603,26 +1603,6 @@
         "corner-top-right": {
           "description": "Rayon du coin supérieur droit de la barre"
         },
-        "dead-zone-command": {
-          "description": "Commande shell à exécuter lors d'un clic gauche sur la marge de la barre, en dehors des widgets",
-          "label": "Clic gauche"
-        },
-        "dead-zone-middle-command": {
-          "description": "Commande shell à exécuter lors d'un clic du milieu sur la marge de la barre, en dehors des widgets",
-          "label": "Clic du milieu"
-        },
-        "dead-zone-right-command": {
-          "description": "Commande shell à exécuter lors d'un clic droit ; laissez vide pour ouvrir le Centre de contrôle",
-          "label": "Clic droit"
-        },
-        "dead-zone-scroll-down-command": {
-          "description": "Commande shell à exécuter lors d'un défilement vers le bas",
-          "label": "Défilement vers le bas"
-        },
-        "dead-zone-scroll-up-command": {
-          "description": "Commande shell à exécuter lors d'un défilement vers le haut",
-          "label": "Défilement vers le haut"
-        },
         "edge-margin": {
           "description": "Distance par rapport au bord d’écran le plus proche ; des valeurs positives éloignent la barre du bord"
         },

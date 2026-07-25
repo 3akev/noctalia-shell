@@ -1662,26 +1662,6 @@
         "corner-top-right": {
           "description": "状态栏右上角的圆角半径"
         },
-        "dead-zone-command": {
-          "description": "在小组件区域之外的状态栏空白处，左键点击时执行的 Shell 命令",
-          "label": "左键点击"
-        },
-        "dead-zone-middle-command": {
-          "description": "在小组件区域之外的状态栏空白处，中键点击时执行的 Shell 命令",
-          "label": "中键点击"
-        },
-        "dead-zone-right-command": {
-          "description": "右键点击时执行的 Shell 命令；留空时打开控制中心",
-          "label": "右键点击"
-        },
-        "dead-zone-scroll-down-command": {
-          "description": "向下滚动时执行的 Shell 命令",
-          "label": "向下滚动"
-        },
-        "dead-zone-scroll-up-command": {
-          "description": "向上滚动时执行的 Shell 命令",
-          "label": "向上滚动"
-        },
         "edge-margin": {
           "description": "状态栏与其所在屏幕边缘的间距；设为 0 时紧贴屏幕边缘"
         },

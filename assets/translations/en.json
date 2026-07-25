@@ -1670,8 +1670,7 @@
           "description": "Top right corner radius for the bar"
         },
         "dead-zone-action": {
-          "description": "Action run on the parts of the bar no widget covers; leave empty for the default",
-          "placeholder": "e.g. panel-toggle launcher"
+          "description": "Action run on the parts of the bar no widget covers; leave empty for the default"
         },
         "edge-margin": {
           "description": "Gap between the bar and the screen edge it sits on; set to 0 px to sit flush against that edge"

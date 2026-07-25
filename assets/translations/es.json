@@ -1624,26 +1624,6 @@
         "corner-top-right": {
           "description": "Radio de la esquina superior derecha de la barra; los valores negativos crean una esquina cóncava cuando esta esquina no está orientada hacia el borde de la pantalla"
         },
-        "dead-zone-command": {
-          "description": "Comando del shell a ejecutar al hacer clic izquierdo en el margen de la barra fuera de las secciones de widgets",
-          "label": "Clic izquierdo"
-        },
-        "dead-zone-middle-command": {
-          "description": "Comando del shell a ejecutar al hacer clic central en el margen de la barra fuera de las secciones de widgets",
-          "label": "Clic central"
-        },
-        "dead-zone-right-command": {
-          "description": "Comando del shell a ejecutar al hacer clic derecho; deja vacío para abrir el Centro de control",
-          "label": "Clic derecho"
-        },
-        "dead-zone-scroll-down-command": {
-          "description": "Comando del shell a ejecutar al desplazarse hacia abajo",
-          "label": "Desplazar hacia abajo"
-        },
-        "dead-zone-scroll-up-command": {
-          "description": "Comando del shell a ejecutar al desplazarse hacia arriba",
-          "label": "Desplazar hacia arriba"
-        },
         "edge-margin": {
           "description": "Espacio entre la barra y el borde de pantalla en el que se apoya. Pon 0 px para que quede a ras de ese borde."
         },

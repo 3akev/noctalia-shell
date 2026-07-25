@@ -1525,21 +1525,6 @@
         "corner-top-right": {
           "description": "Радиус верхнего правого угла панели"
         },
-        "dead-zone-command": {
-          "label": "ЛКМ"
-        },
-        "dead-zone-middle-command": {
-          "label": "СКМ"
-        },
-        "dead-zone-right-command": {
-          "label": "ПКМ"
-        },
-        "dead-zone-scroll-down-command": {
-          "label": "Прокрутить вниз"
-        },
-        "dead-zone-scroll-up-command": {
-          "label": "Прокрутить вверх"
-        },
         "edge-margin": {
           "description": "Расстояние от ближайшего края экрана; положительные значения отодвигают панель от него"
         },

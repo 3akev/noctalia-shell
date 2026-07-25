@@ -1602,26 +1602,6 @@
         "corner-top-right": {
           "description": "Radio do canto superior dereito da barra; os valores negativos tallan un canto cóncavo cando este canto mira cara fóra do bordo da pantalla"
         },
-        "dead-zone-command": {
-          "description": "Comando de shell para executar cun clic esquerdo na marxe da barra fóra das seccións de widgets",
-          "label": "Clic esquerdo"
-        },
-        "dead-zone-middle-command": {
-          "description": "Comando de shell para executar cun clic central na marxe da barra fóra das seccións de widgets",
-          "label": "Clic central"
-        },
-        "dead-zone-right-command": {
-          "description": "Comando de shell para executar cun clic dereito; déixao baleiro para abrir o Centro de control",
-          "label": "Clic dereito"
-        },
-        "dead-zone-scroll-down-command": {
-          "description": "Comando de shell para executar ao desprazar cara abaixo",
-          "label": "Desprazar abaixo"
-        },
-        "dead-zone-scroll-up-command": {
-          "description": "Comando de shell para executar ao desprazar cara arriba",
-          "label": "Desprazar arriba"
-        },
         "edge-margin": {
           "description": "Espazo entre a barra e o bordo da pantalla no que está colocada. Pon 0 px para pegala a ese bordo."
         },

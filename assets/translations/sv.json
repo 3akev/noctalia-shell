@@ -820,17 +820,6 @@
           "label": "Gränsnittsskala"
         }
       },
-      "bar": {
-        "dead-zone-command": {
-          "label": "Vänsterklick"
-        },
-        "dead-zone-middle-command": {
-          "label": "Mittenklick"
-        },
-        "dead-zone-right-command": {
-          "label": "Högerklick"
-        }
-      },
       "services": {
         "calendar-credentials": {
           "button": "Försök igen",

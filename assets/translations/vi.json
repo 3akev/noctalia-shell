@@ -1592,26 +1592,6 @@
         "corner-top-right": {
           "description": "Bán kính góc trên bên phải cho Bar"
         },
-        "dead-zone-command": {
-          "description": "ệnh shell được thực thi khi nhấp chuột trái vào khoảng trống trên thanh bên ngoài các khu vực widget",
-          "label": "Lệnh nhấp chuột trái"
-        },
-        "dead-zone-middle-command": {
-          "description": "Lệnh shell được thực thi khi nhấp chuột giữa vào hoảng trống trên thanh bên ngoài các khu vực widget",
-          "label": "Lệnh nhấp chuột giữa"
-        },
-        "dead-zone-right-command": {
-          "description": "Lệnh shell được thực thi khi nhấp chuột phải; để trống để mở Trung tâm điều khiển.",
-          "label": "Lệnh nhấp chuột phải"
-        },
-        "dead-zone-scroll-down-command": {
-          "description": "Lệnh shell được thực thi khi lăn chuột xuống",
-          "label": "Kéo xuống"
-        },
-        "dead-zone-scroll-up-command": {
-          "description": "Lệnh shell được thực thi khi lăn chuột lên",
-          "label": "Kéo lên"
-        },
         "edge-margin": {
           "description": "Khoảng cách giữa thanh và mép màn hình mà nó nằm trên. Đặt 0 px để thanh nằm sát mép màn hình."
         },

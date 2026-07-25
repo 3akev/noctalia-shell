@@ -150,6 +150,7 @@
   },
   "time": {
     "units": {
+      "month": "{count} ay",
       "month-plural": "{count} ay",
       "year": "{count} yıl",
       "year-plural": "{count} yıl"
