@@ -136,6 +136,18 @@ namespace {
       assert(!bindings.boundGestures().contains(Gesture::Forward));
     }
 
+    // Layer 2 can unbind a built-in too. This is how a plugin [[widget]] whose script implements
+    // onMiddleClick declares that middle belongs to it: nothing bound means the widget's own input
+    // area keeps the button.
+    {
+      constexpr std::array kFreesMiddle{GestureBinding{Gesture::Middle, "none"}};
+      WidgetActionBindings bindings;
+      bindings.resolve(WidgetActionBindings::Inputs{.builtinDefaults = kBuiltin, .widgetDefaults = kFreesMiddle});
+      assert(bindings.find(Gesture::Middle) == nullptr);
+      assert(!bindings.boundGestures().contains(Gesture::Middle));
+      assert(bindings.empty());
+    }
+
     // Layer 4 overrides a widget default; "none" unbinds an inherited one.
     {
       const WidgetConfig widget = makeConfig({{"right", "media next"}, {"left", "none"}});
