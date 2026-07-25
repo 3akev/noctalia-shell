@@ -1,9 +1,11 @@
 #include "ipc/ipc_service.h"
 
+#include <algorithm>
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <sys/socket.h>
@@ -74,17 +76,70 @@ int main() {
 
   IpcService ipc;
   ipc.registerHandler(
-      "visible-command", [](const std::string& args) { return "visible:" + args + "\n"; }, "visible-command <value>",
-      "Visible command"
+      "visible-command", [](const std::string& args) { return "visible:" + args + "\n"; }, "<value>", "Visible command"
   );
   ipc.registerHandler(
-      "hidden-command", [](const std::string& args) { return "hidden:" + args + "\n"; }, "hidden-command <value>",
-      "Hidden command", IpcService::HandlerVisibility::Hidden
+      "hidden-command", [](const std::string& args) { return "hidden:" + args + "\n"; }, "<value>", "Hidden command",
+      IpcService::HandlerVisibility::Hidden
   );
 
   assert(ipc.execute("visible-command ok") == "visible:ok\n");
   assert(ipc.execute("hidden-command ok") == "hidden:ok\n");
   assert(ipc.execute("visible-command line1\nline2\nline3") == "visible:line1\nline2\nline3\n");
+
+  // The catalog lists public handlers only, but hasHandler() agrees with execute() dispatch so a
+  // hidden command stays bindable.
+  {
+    const auto infos = ipc.handlers();
+    assert(infos.size() == 1);
+    assert(infos.front().command == "visible-command");
+    // The registry stores arguments only; the verb is composed back in for display.
+    assert(infos.front().args == "<value>");
+    assert(infos.front().signature() == "visible-command <value>");
+    assert(infos.front().bindable);
+    assert(infos.front().description == "Visible command");
+    assert(ipc.hasHandler("visible-command"));
+    assert(ipc.hasHandler("hidden-command"));
+    assert(!ipc.hasHandler("no-such-command"));
+  }
+
+  // A state query runs and documents itself like any other command, but action pickers skip it.
+  {
+    ipc.registerQueryHandler("query-command", [](const std::string&) { return "state\n"; }, "", "Print some state");
+    assert(ipc.execute("query-command") == "state\n");
+    assert(ipc.hasHandler("query-command"));
+
+    const auto infos = ipc.handlers();
+    const auto query = std::ranges::find(infos, "query-command", &IpcService::HandlerInfo::command);
+    assert(query != infos.end());
+    assert(!query->bindable);
+    assert(ipc.execute("--help").find("query-command") != std::string::npos);
+
+    const auto visible = std::ranges::find(infos, "visible-command", &IpcService::HandlerInfo::command);
+    assert(visible != infos.end() && visible->bindable);
+  }
+
+  // `exec` and `none` are reserved by the bar widget action grammar and must never become
+  // IPC commands, or a binding would resolve to two different things.
+  assert(!ipc.hasHandler("exec"));
+  assert(!ipc.hasHandler("none"));
+
+  // The invocation context is empty unless a scope is active, and scopes nest.
+  {
+    assert(!ipc.invocationContext().has_value());
+    const IpcService::InvocationScope outer(ipc, IpcInvocationContext{.widgetName = "media", .barName = "default"});
+    assert(ipc.invocationContext().has_value());
+    assert(ipc.invocationContext()->widgetName == "media");
+    {
+      const IpcService::InvocationScope inner(ipc, IpcInvocationContext{.widgetName = "clock"});
+      assert(ipc.invocationContext()->widgetName == "clock");
+      const IpcService::InvocationScope cleared(ipc, std::nullopt);
+      assert(!ipc.invocationContext().has_value());
+    }
+    assert(ipc.invocationContext()->widgetName == "media");
+    assert(ipc.invocationContext()->barName == "default");
+  }
+  assert(!ipc.invocationContext().has_value());
 
   const std::string help = ipc.execute("--help");
   assert(help.find("visible-command <value>") != std::string::npos);
@@ -93,7 +148,7 @@ int main() {
   assert(help.find("Hidden command") == std::string::npos);
 
   ipc.registerHandler(
-      "visible-command", [](const std::string&) { return "hidden-now\n"; }, "visible-command", "Now hidden",
+      "visible-command", [](const std::string&) { return "hidden-now\n"; }, "", "Now hidden",
       IpcService::HandlerVisibility::Hidden
   );
 

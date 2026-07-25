@@ -1458,7 +1458,6 @@ namespace noctalia::config::schema {
         field(&ShellConfig::polkitAgent, "polkit_agent"),
         enumField(&ShellConfig::passwordMaskStyle, "password_style", kPasswordMaskStyles),
         field(&ShellConfig::settingsShowAdvanced, "settings_show_advanced"),
-        field(&ShellConfig::middleClickOpensWidgetSettings, "middle_click_opens_widget_settings"),
         field(&ShellConfig::showLocation, "show_location"),
         field(&ShellConfig::appIconColorize, "app_icon_colorize"),
         colorSpecField(&ShellConfig::appIconColor, "app_icon_color", /*alwaysEmit=*/false),
@@ -2160,6 +2159,7 @@ namespace noctalia::config::schema {
         capsuleBorderField(&BarConfig::widgetCapsuleBorder, &BarConfig::widgetCapsuleBorderSpecified, "capsule_border"),
         field(&BarConfig::hoverHighlight, "hover_highlight"),
         subTable(&BarConfig::deadZone, "dead_zone", barDeadZoneSchema()),
+        field(&BarConfig::actions, "actions"),
     };
     return s;
   }

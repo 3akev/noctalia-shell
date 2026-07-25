@@ -68,6 +68,14 @@ namespace settings {
     std::string tooltip;
   };
 
+  // A bindable IPC command for the gesture action picker. `argsSpec` is the registry's argument
+  // spec ("<id> [context]"), used for the argument field's placeholder and to decide whether the
+  // row needs one at all. It is deliberately not part of the option label.
+  struct GestureActionOption {
+    SelectOption option;
+    std::string argsSpec;
+  };
+
   enum class SelectValueType : std::uint8_t {
     String,
     Integer,
@@ -95,6 +103,8 @@ namespace settings {
     std::string placeholder;
     std::string emptyText;
     float preferredHeight = 240.0f;
+    // When set, replaces the default commit for the setting path.
+    std::function<void(const std::string&)> onSelect;
   };
 
   struct SliderSetting {

@@ -1677,12 +1677,6 @@ namespace settings {
         "calendar date format strftime chrono"
     ));
     entries.push_back(makeEntry(
-        SettingsSection::Shell, "general", tr("settings.schema.shell.middle-click-opens-widget-settings.label"),
-        tr("settings.schema.shell.middle-click-opens-widget-settings.description"),
-        {"shell", "middle_click_opens_widget_settings"}, ToggleSetting{cfg.shell.middleClickOpensWidgetSettings},
-        "bar widget settings middle click configure"
-    ));
-    entries.push_back(makeEntry(
         SettingsSection::Shell, "general", tr("settings.schema.shell.launch-apps-as-systemd-services.label"),
         env.systemdUserManaged ? tr("settings.schema.shell.launch-apps-as-systemd-services.description")
                                : tr("settings.schema.shell.launch-apps-as-systemd-services.requires-systemd-session"),

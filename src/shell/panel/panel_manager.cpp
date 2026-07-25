@@ -7,6 +7,7 @@
 #include "core/input/keybind_matcher.h"
 #include "core/log.h"
 #include "core/ui_phase.h"
+#include "ipc/ipc_arg_parse.h"
 #include "ipc/ipc_service.h"
 #include "render/render_context.h"
 #include "render/scene/input_area.h"
@@ -335,6 +336,10 @@ void PanelManager::initialize(CompositorPlatform& platform, ConfigService* confi
 
 void PanelManager::setOpenSettingsWindowCallback(std::function<void(std::string)> callback) {
   m_openSettingsWindow = std::move(callback);
+}
+
+void PanelManager::setOpenWidgetSettingsCallback(std::function<void(std::string, std::string)> callback) {
+  m_openWidgetSettings = std::move(callback);
 }
 
 void PanelManager::setCloseSettingsWindowCallback(std::function<void()> callback) {
@@ -2547,8 +2552,7 @@ void PanelManager::registerIpc(IpcService& ipc) {
         }
         return "ok\n";
       },
-      "panel-toggle <id> [context]",
-      "Toggle a panel by id, optionally with context (e.g. launcher /emo, control-center audio)"
+      "<id> [context]", "Toggle a panel by id, optionally with context (e.g. launcher /emo, control-center audio)"
   );
 
   ipc.registerHandler(
@@ -2575,8 +2579,7 @@ void PanelManager::registerIpc(IpcService& ipc) {
         openPanel(panelId, PanelOpenRequest{.context = context});
         return "ok\n";
       },
-      "panel-open <id> [context]",
-      "Open a panel by id, optionally with context (e.g. launcher /emo, control-center audio)"
+      "<id> [context]", "Open a panel by id, optionally with context (e.g. launcher /emo, control-center audio)"
   );
 
   ipc.registerHandler(
@@ -2599,7 +2602,7 @@ void PanelManager::registerIpc(IpcService& ipc) {
         }
         return "ok\n";
       },
-      "panel-close [id]", "Close the active panel, or close the named panel if it is active"
+      "[id]", "Close the active panel, or close the named panel if it is active"
   );
 
   const auto rejectSettingsArgs = [](const std::string& args, std::string_view command) -> std::optional<std::string> {
@@ -2615,8 +2618,40 @@ void PanelManager::registerIpc(IpcService& ipc) {
         openSettingsWindow(std::string(StringUtils::trimLeftView(args)));
         return "ok\n";
       },
-      "settings-open [context]",
-      "Open the settings window, or focus it if already open, optionally at a specific section"
+      "[context]", "Open the settings window, or focus it if already open, optionally at a specific section"
+  );
+
+  ipc.registerHandler(
+      "settings-open-widget",
+      [this, &ipc](const std::string& args) -> std::string {
+        const auto parts = noctalia::ipc::splitWords(args);
+        std::string barName;
+        std::string widgetName;
+        if (parts.size() == 2) {
+          barName = parts[0];
+          widgetName = parts[1];
+        } else if (parts.empty()) {
+          // Invoked from a bar widget gesture: the widget is the implicit target.
+          const auto& context = ipc.invocationContext();
+          if (!context.has_value() || context->widgetName.empty()) {
+            return "error: settings-open-widget needs <bar-name> <widget-name> unless invoked from a bar widget\n";
+          }
+          barName = context->barName;
+          widgetName = context->widgetName;
+        } else {
+          return "error: settings-open-widget takes either no arguments or <bar-name> <widget-name>\n";
+        }
+
+        if (!m_openWidgetSettings) {
+          return "error: settings window unavailable\n";
+        }
+        if (isOpen()) {
+          closePanel();
+        }
+        m_openWidgetSettings(std::move(barName), std::move(widgetName));
+        return "ok\n";
+      },
+      "[bar-name widget-name]", "Open the settings window at a bar widget; from a widget gesture, targets that widget"
   );
 
   ipc.registerHandler(
@@ -2628,7 +2663,7 @@ void PanelManager::registerIpc(IpcService& ipc) {
         closeSettingsWindow();
         return "ok\n";
       },
-      "settings-close", "Close the settings window"
+      "", "Close the settings window"
   );
 
   ipc.registerHandler(
@@ -2637,6 +2672,6 @@ void PanelManager::registerIpc(IpcService& ipc) {
         toggleSettingsWindow(std::string(StringUtils::trimLeftView(args)));
         return "ok\n";
       },
-      "settings-toggle [context]", "Toggle the settings window, optionally at a specific section"
+      "[context]", "Toggle the settings window, optionally at a specific section"
   );
 }

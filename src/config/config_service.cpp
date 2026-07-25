@@ -1841,6 +1841,6 @@ void ConfigService::registerIpc(IpcService& ipc) {
         forceReload();
         return "ok\n";
       },
-      "config-reload", "Reload the config file"
+      "", "Reload the config file"
   );
 }

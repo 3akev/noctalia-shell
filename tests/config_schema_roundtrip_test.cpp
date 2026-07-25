@@ -191,6 +191,7 @@ location = "https://example.invalid/bad"
     bar.marginEnds = 100;
     bar.marginEdge = 5;
     bar.marginOppositeEdge = 12;
+    bar.actions = {{"middle", "none"}, {"right", "media toggle"}};
     bar.deadZone.command = "notify-send bar-left";
     bar.deadZone.rightCommand = "notify-send bar-right";
     bar.deadZone.middleCommand = "notify-send bar-middle";
@@ -802,6 +803,10 @@ start = [ "launcher" ]
 thickness = 44
 widget_spacing = 8
 
+    [default.actions]
+    middle = "none"
+    right = "media toggle"
+
     [default.dead_zone]
     command = "notify-send bar-left"
     middle_command = "notify-send bar-middle"
@@ -853,6 +858,10 @@ widget_spacing = 8
     start = [ "tray" ]
     thickness = 50
     widget_spacing = 7
+
+        [default.monitor.DP-1.actions]
+        middle = "none"
+        right = "media toggle"
 
         [default.monitor.DP-1.dead_zone]
         command = "notify-send bar-left"
