@@ -1210,7 +1210,12 @@ float WorkspacesWidget::workspaceMainAxisMinWidth(float baseSize, bool active) c
   return baseSize * (active ? m_activePillSize : m_inactivePillSize);
 }
 
-WorkspacesWidget::~WorkspacesWidget() { cancelAnimation(); }
+WorkspacesWidget::~WorkspacesWidget() {
+  cancelAnimation();
+  if (m_animations != nullptr) {
+    m_animations->cancelForOwner(&m_hoverProgress);
+  }
+}
 
 std::string WorkspacesWidget::activeWindowAppId() const {
   const auto active = m_platform.activeToplevel();
