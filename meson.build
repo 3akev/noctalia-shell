@@ -1243,6 +1243,19 @@ desktop_entry_launch_test = executable('desktop_entry_launch_test',
 
 test('desktop_entry_launch', desktop_entry_launch_test)
 
+icon_resolver_test = executable('icon_resolver_test',
+  sources: files(
+    'tests/icon_resolver_test.cpp',
+    'src/system/icon_resolver.cpp',
+  ),
+  dependencies: [
+    gio_dep,
+  ],
+  include_directories: _noctalia_inc,
+)
+
+test('icon_resolver', icon_resolver_test)
+
 string_utils_test = executable('string_utils_test',
   sources: files(
     'tests/string_utils_test.cpp',

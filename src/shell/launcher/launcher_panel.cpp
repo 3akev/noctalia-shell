@@ -1218,6 +1218,12 @@ bool LauncherPanel::handleGlobalKey(std::uint32_t sym, std::uint32_t modifiers, 
 }
 
 void LauncherPanel::onInputChanged(const std::string& text) {
+  const auto desktopVersion = desktopEntriesVersion();
+  if (desktopVersion != m_desktopEntriesVersion) {
+    m_iconResolver.invalidateMissingCache();
+    m_desktopEntriesVersion = desktopVersion;
+  }
+
   m_query = text;
   m_allResults.clear();
 
