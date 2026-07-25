@@ -112,6 +112,21 @@ public:
   [[nodiscard]] std::uint32_t acceptedButtons() const noexcept { return m_acceptedButtons; }
   [[nodiscard]] bool acceptsButton(std::uint32_t button) const noexcept;
 
+  // The axis counterpart of the button mask. An area that does not accept a scroll direction
+  // reports those events unconsumed, so the dispatcher's ancestor walk carries them past it.
+  enum class ScrollDirection : std::uint8_t { Up, Down, Left, Right };
+  [[nodiscard]] static std::uint32_t scrollDirectionMask(ScrollDirection direction) noexcept {
+    return 1U << static_cast<std::uint32_t>(direction);
+  }
+  [[nodiscard]] static std::uint32_t allScrollDirections() noexcept {
+    return scrollDirectionMask(ScrollDirection::Up)
+        | scrollDirectionMask(ScrollDirection::Down)
+        | scrollDirectionMask(ScrollDirection::Left)
+        | scrollDirectionMask(ScrollDirection::Right);
+  }
+  void setAcceptedScrollDirections(std::uint32_t mask) noexcept { m_acceptedScrollDirections = mask; }
+  [[nodiscard]] std::uint32_t acceptedScrollDirections() const noexcept { return m_acceptedScrollDirections; }
+
   void setPropagateEvents(bool propagate);
   [[nodiscard]] bool propagateEvents() const noexcept { return m_propagateEvents; }
 
@@ -184,6 +199,7 @@ private:
 
   std::uint32_t m_cursorShape = 0;
   std::uint32_t m_acceptedButtons = buttonMask(BTN_LEFT);
+  std::uint32_t m_acceptedScrollDirections = allScrollDirections();
   bool m_propagateEvents = false;
   bool m_enabled = true;
   HitShape m_hitShape = HitShape::Rect;

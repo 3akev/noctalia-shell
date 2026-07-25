@@ -95,4 +95,19 @@ namespace noctalia::bar {
 
   std::span<const std::uint32_t> buttonsForGesture(Gesture gesture) noexcept { return entryFor(gesture).buttons; }
 
+  std::optional<InputArea::ScrollDirection> scrollDirectionForGesture(Gesture gesture) noexcept {
+    switch (gesture) {
+    case Gesture::ScrollUp:
+      return InputArea::ScrollDirection::Up;
+    case Gesture::ScrollDown:
+      return InputArea::ScrollDirection::Down;
+    case Gesture::ScrollLeft:
+      return InputArea::ScrollDirection::Left;
+    case Gesture::ScrollRight:
+      return InputArea::ScrollDirection::Right;
+    default:
+      return std::nullopt;
+    }
+  }
+
 } // namespace noctalia::bar

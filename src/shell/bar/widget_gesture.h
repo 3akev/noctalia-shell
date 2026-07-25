@@ -1,5 +1,7 @@
 #pragma once
 
+#include "render/scene/input_area.h"
+
 #include <cstdint>
 #include <optional>
 #include <span>
@@ -63,5 +65,7 @@ namespace noctalia::bar {
   // Mouse buttons that trigger `gesture`, for building an InputArea button mask. Back/Forward
   // yield two codes each; scroll gestures yield none, being delivered on the axis path instead.
   [[nodiscard]] std::span<const std::uint32_t> buttonsForGesture(Gesture gesture) noexcept;
+  // The scroll direction a gesture claims, or nullopt for the button gestures.
+  [[nodiscard]] std::optional<InputArea::ScrollDirection> scrollDirectionForGesture(Gesture gesture) noexcept;
 
 } // namespace noctalia::bar

@@ -106,6 +106,7 @@ void Widget::setRoot(std::unique_ptr<Node> root) {
   m_innerRoot = root.get();
   m_innerArea = dynamic_cast<InputArea*>(m_innerRoot);
   m_innerBaseButtons = m_innerArea != nullptr ? m_innerArea->acceptedButtons() : 0;
+  m_innerBaseScrollDirections = m_innerArea != nullptr ? m_innerArea->acceptedScrollDirections() : 0;
 
   auto gestureArea = std::make_unique<InputArea>();
   m_gestureArea = gestureArea.get();
@@ -205,6 +206,7 @@ void Widget::installGestureHandlers() {
   const auto bound = m_gestureBindings.boundGestures();
 
   std::uint32_t mask = 0;
+  std::uint32_t scrollMask = 0;
   for (const auto gesture : noctalia::bar::allGestures()) {
     if (!bound.contains(gesture)) {
       continue;
@@ -212,15 +214,19 @@ void Widget::installGestureHandlers() {
     for (const auto button : noctalia::bar::buttonsForGesture(gesture)) {
       mask |= InputArea::buttonMask(button);
     }
+    if (const auto direction = noctalia::bar::scrollDirectionForGesture(gesture); direction.has_value()) {
+      scrollMask |= InputArea::scrollDirectionMask(*direction);
+    }
   }
   m_gestureArea->setAcceptedButtons(mask);
   updateGestureAreaEnabled();
 
   if (m_innerArea != nullptr) {
-    // The dispatcher's ancestor walk stops at the first area accepting the button, so the widget's
-    // own root must give up whatever the wrapper is bound to. This is what lets a config binding
-    // override a gesture the widget still handles itself.
+    // Both dispatcher walks start at the innermost area, so the widget's own root has to give up
+    // whatever the wrapper is bound to. This is what lets a config binding override a gesture the
+    // widget still handles itself, for scroll as much as for clicks.
     m_innerArea->setAcceptedButtons(m_innerBaseButtons & ~mask);
+    m_innerArea->setAcceptedScrollDirections(m_innerBaseScrollDirections & ~scrollMask);
     // Hover resolves to the innermost area, so it carries the pointer cursor for the wrapper.
     if (mask != 0 && m_innerArea->cursorShape() == 0) {
       m_innerArea->setCursorShape(WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_POINTER);

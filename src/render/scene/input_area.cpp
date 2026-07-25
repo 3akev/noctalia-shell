@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <optional>
 
 namespace {
 
@@ -232,6 +233,24 @@ bool InputArea::dispatchAxis(
 ) {
   if (!m_onAxis) {
     return false;
+  }
+
+  // Reject unaccepted directions before they reach the accumulator, so a direction this area has
+  // given up cannot bank fractional detents here on its way to an ancestor.
+  if (m_acceptedScrollDirections != allScrollDirections()) {
+    const float delta = axisLines != 0.0f ? axisLines : static_cast<float>(axisValue);
+    if (delta != 0.0f) {
+      // Wayland reports up/left as a negative delta.
+      std::optional<ScrollDirection> direction;
+      if (axis == WL_POINTER_AXIS_VERTICAL_SCROLL) {
+        direction = delta < 0.0f ? ScrollDirection::Up : ScrollDirection::Down;
+      } else if (axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL) {
+        direction = delta < 0.0f ? ScrollDirection::Left : ScrollDirection::Right;
+      }
+      if (direction.has_value() && (m_acceptedScrollDirections & scrollDirectionMask(*direction)) == 0) {
+        return false;
+      }
+    }
   }
 
   // Quantize scroll into whole detent steps. Wheel sources are capped at one

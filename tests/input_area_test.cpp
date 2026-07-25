@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <linux/input-event-codes.h>
 #include <memory>
+#include <wayland-client-protocol.h>
 
 namespace {
 
@@ -107,6 +108,43 @@ int main() {
 
     ok = expect(Node::hitTest(&root, 27.0f, 5.0f) == overflowPtr, "default hit test preserves child overflow") && ok;
     ok = expect(Node::hitTestStrict(&root, 27.0f, 5.0f) == nullptr, "strict hit test clips at ancestor bounds") && ok;
+  }
+
+  {
+    // The axis counterpart of the button mask: a direction the area has given up is reported
+    // unconsumed, so the dispatcher can carry it to an ancestor that claims it.
+    InputArea area;
+    area.setSize(20.0f, 20.0f);
+    int verticalEvents = 0;
+    area.setOnAxisHandler([&verticalEvents](const InputArea::PointerData&) {
+      ++verticalEvents;
+      return true;
+    });
+
+    // Wayland reports up as a negative delta.
+    area.setAcceptedScrollDirections(
+        InputArea::allScrollDirections() & ~InputArea::scrollDirectionMask(InputArea::ScrollDirection::Up)
+    );
+
+    const bool upConsumed = area.dispatchAxis(
+        1.0f, 1.0f, WL_POINTER_AXIS_VERTICAL_SCROLL, WL_POINTER_AXIS_SOURCE_WHEEL, -10.0, 0, 0, -1.0f
+    );
+    ok = expect(!upConsumed, "an unaccepted scroll direction is reported unconsumed") && ok;
+    ok = expect(verticalEvents == 0, "an unaccepted scroll direction never reaches the handler") && ok;
+
+    const bool downConsumed =
+        area.dispatchAxis(1.0f, 1.0f, WL_POINTER_AXIS_VERTICAL_SCROLL, WL_POINTER_AXIS_SOURCE_WHEEL, 10.0, 0, 0, 1.0f);
+    ok = expect(downConsumed, "an accepted scroll direction is still consumed") && ok;
+    ok = expect(verticalEvents == 1, "an accepted scroll direction reaches the handler") && ok;
+
+    // Rejection happens before the accumulator, so the given-up direction banks nothing here.
+    ok = expect(
+             area.dispatchAxis(
+                 1.0f, 1.0f, WL_POINTER_AXIS_HORIZONTAL_SCROLL, WL_POINTER_AXIS_SOURCE_WHEEL, -10.0, 0, 0, -1.0f
+             ),
+             "an untouched axis keeps its directions"
+         )
+        && ok;
   }
 
   return ok ? 0 : 1;

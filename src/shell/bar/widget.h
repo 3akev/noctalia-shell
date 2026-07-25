@@ -189,9 +189,10 @@ private:
   Node* m_outerPtr = nullptr;
   Node* m_innerRoot = nullptr;
   InputArea* m_gestureArea = nullptr;
-  // The widget's own root area and the buttons it claimed before any binding was applied.
+  // The widget's own root area and what it claimed before any binding was applied.
   InputArea* m_innerArea = nullptr;
   std::uint32_t m_innerBaseButtons = 0;
+  std::uint32_t m_innerBaseScrollDirections = 0;
   noctalia::bar::WidgetActionBindings m_gestureBindings;
   const noctalia::bar::WidgetActionDispatcher* m_actionDispatcher = nullptr;
   IpcInvocationContext m_actionContext;
