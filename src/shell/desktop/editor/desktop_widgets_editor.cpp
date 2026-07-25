@@ -2272,7 +2272,10 @@ void DesktopWidgetsEditor::updateDrag() {
           surface != nullptr && surface->surface != nullptr) {
         screenWidth = static_cast<float>(surface->surface->width());
       }
-      lockscreen_login_box::clampPanelSize(screenWidth, boxW, boxH);
+      lockscreen_login_box::clampPanelSize(
+          screenWidth, boxW, boxH, lockscreen_login_box::resolveLayout(state->settings),
+          lockscreen_login_box::resolveStyle(state->settings).showSessionButtons
+      );
     }
 
     if (!m_altHeld) {

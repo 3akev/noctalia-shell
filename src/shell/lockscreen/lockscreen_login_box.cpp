@@ -107,38 +107,69 @@ namespace lockscreen_login_box {
 
   std::string widgetIdForOutput(std::string_view outputKey) { return std::format("{}{}", kWidgetIdPrefix, outputKey); }
 
-  float defaultPanelWidth(float screenWidth) {
-    return std::min(screenWidth - Style::spaceLg * 2.0f, kDefaultPanelWidthCap);
+  LayoutMode resolveLayout(std::string_view layout) {
+    if (layout == kLayoutCompact) {
+      return LayoutMode::Compact;
+    }
+    return LayoutMode::Regular;
   }
 
-  float defaultPanelHeight() { return 70.0f; }
+  LayoutMode resolveLayout(const std::unordered_map<std::string, WidgetSettingValue>& settings) {
+    return resolveLayout(readString(settings, kLayoutKey, kLayoutRegular));
+  }
 
-  float panelWidth(float screenWidth) { return defaultPanelWidth(screenWidth); }
+  float minPanelWidth(LayoutMode layout) {
+    return layout == LayoutMode::Regular ? kRegularMinPanelWidth : kCompactMinPanelWidth;
+  }
 
-  float panelHeight() { return defaultPanelHeight(); }
+  float minPanelHeight(LayoutMode layout, bool showSessionButtons) {
+    if (layout != LayoutMode::Regular) {
+      return kCompactMinPanelHeight;
+    }
+    return showSessionButtons ? kRegularMinPanelHeight : kRegularMinPanelHeightNoSession;
+  }
 
-  float resolvePanelWidth(float screenWidth, float boxWidth) {
+  float maxPanelHeight(LayoutMode layout) {
+    return layout == LayoutMode::Regular ? kRegularMaxPanelHeight : kCompactMaxPanelHeight;
+  }
+
+  float defaultPanelWidth(float screenWidth, LayoutMode layout) {
+    const float widthCap = layout == LayoutMode::Regular ? kRegularDefaultWidthCap : kCompactDefaultWidthCap;
+    return std::min(screenWidth - Style::spaceLg * 2.0f, widthCap);
+  }
+
+  float defaultPanelHeight(LayoutMode layout, bool showSessionButtons) {
+    if (layout != LayoutMode::Regular) {
+      return 70.0f;
+    }
+    return showSessionButtons ? 248.0f : 248.0f - kRegularSessionBlockHeight;
+  }
+
+  float resolvePanelWidth(float screenWidth, float boxWidth, LayoutMode layout) {
+    const float minWidth = minPanelWidth(layout);
     if (boxWidth > 0.0f) {
-      return std::clamp(boxWidth, kMinPanelWidth, std::max(kMinPanelWidth, screenWidth - Style::spaceLg * 2.0f));
+      return std::clamp(boxWidth, minWidth, std::max(minWidth, screenWidth - Style::spaceLg * 2.0f));
     }
-    return defaultPanelWidth(screenWidth);
+    return defaultPanelWidth(screenWidth, layout);
   }
 
-  float resolvePanelHeight(float boxHeight) {
+  float resolvePanelHeight(float boxHeight, LayoutMode layout, bool showSessionButtons) {
     if (boxHeight > 0.0f) {
-      return std::clamp(boxHeight, kMinPanelHeight, kMaxPanelHeight);
+      return std::clamp(boxHeight, minPanelHeight(layout, showSessionButtons), maxPanelHeight(layout));
     }
-    return defaultPanelHeight();
+    return defaultPanelHeight(layout, showSessionButtons);
   }
 
-  void defaultPanelSize(float screenWidth, float& boxWidth, float& boxHeight) {
-    boxWidth = defaultPanelWidth(screenWidth);
-    boxHeight = defaultPanelHeight();
+  void
+  defaultPanelSize(float screenWidth, float& boxWidth, float& boxHeight, LayoutMode layout, bool showSessionButtons) {
+    boxWidth = defaultPanelWidth(screenWidth, layout);
+    boxHeight = defaultPanelHeight(layout, showSessionButtons);
   }
 
-  void clampPanelSize(float screenWidth, float& boxWidth, float& boxHeight) {
-    boxWidth = resolvePanelWidth(screenWidth, boxWidth);
-    boxHeight = resolvePanelHeight(boxHeight);
+  void
+  clampPanelSize(float screenWidth, float& boxWidth, float& boxHeight, LayoutMode layout, bool showSessionButtons) {
+    boxWidth = resolvePanelWidth(screenWidth, boxWidth, layout);
+    boxHeight = resolvePanelHeight(boxHeight, layout, showSessionButtons);
   }
 
   PanelContentLayout panelContentLayout(float panelWidth, float panelHeight, bool showLoginButton) {
@@ -158,9 +189,11 @@ namespace lockscreen_login_box {
     return layout;
   }
 
-  void defaultPanelCenter(float screenWidth, float screenHeight, float& cx, float& cy) {
-    float width = defaultPanelWidth(screenWidth);
-    float height = defaultPanelHeight();
+  void defaultPanelCenter(
+      float screenWidth, float screenHeight, float& cx, float& cy, LayoutMode layout, bool showSessionButtons
+  ) {
+    float width = defaultPanelWidth(screenWidth, layout);
+    float height = defaultPanelHeight(layout, showSessionButtons);
     const float panelX = std::round((screenWidth - width) * 0.5f);
     const float panelY = std::max(Style::spaceLg, screenHeight - height - 84.0f);
     cx = panelX + width * 0.5f;
@@ -168,11 +201,11 @@ namespace lockscreen_login_box {
   }
 
   void panelOriginFromCenter(
-      float cx, float cy, float screenWidth, float boxWidth, float boxHeight, float& panelX, float& panelY,
-      float& panelWidthOut, float& panelHeightOut
+      float cx, float cy, float screenWidth, float boxWidth, float boxHeight, LayoutMode layout, float& panelX,
+      float& panelY, float& panelWidthOut, float& panelHeightOut, bool showSessionButtons
   ) {
-    panelWidthOut = resolvePanelWidth(screenWidth, boxWidth);
-    panelHeightOut = resolvePanelHeight(boxHeight);
+    panelWidthOut = resolvePanelWidth(screenWidth, boxWidth, layout);
+    panelHeightOut = resolvePanelHeight(boxHeight, layout, showSessionButtons);
     panelX = cx - panelWidthOut * 0.5f;
     panelY = cy - panelHeightOut * 0.5f;
   }
@@ -191,6 +224,7 @@ namespace lockscreen_login_box {
 
   LoginBoxStyle resolveStyle(const std::unordered_map<std::string, WidgetSettingValue>& settings) {
     LoginBoxStyle style;
+    style.layout = resolveLayout(settings);
     style.panelOpacity = std::clamp(readFloat(settings, "background_opacity", style.panelOpacity), 0.0f, 1.0f);
     ColorSpec panelFill =
         colorSpecFromConfigString(readString(settings, "background_color", "surface_variant"), "background_color");
@@ -204,6 +238,7 @@ namespace lockscreen_login_box {
     style.showPasswordHint = readBool(settings, kShowPasswordHintKey, style.showPasswordHint);
     style.showCapsLock = readBool(settings, kShowCapsLockKey, style.showCapsLock);
     style.showKeyboardLayout = readBool(settings, kShowKeyboardLayoutKey, style.showKeyboardLayout);
+    style.showSessionButtons = readBool(settings, kShowSessionButtonsKey, style.showSessionButtons);
     return style;
   }
 
@@ -211,6 +246,8 @@ namespace lockscreen_login_box {
       std::unordered_map<std::string, WidgetSettingValue>& settings, desktop_settings::DesktopWidgetSettingsScope scope
   ) {
     if (scope == desktop_settings::DesktopWidgetSettingsScope::Widget) {
+      settings.insert_or_assign(std::string(kLayoutKey), std::string(kLayoutRegular));
+      settings.insert_or_assign(std::string(kShowSessionButtonsKey), true);
       settings.insert_or_assign(std::string(kShowLoginButtonKey), true);
       settings.insert_or_assign(std::string(kShowPasswordHintKey), true);
       settings.insert_or_assign(std::string(kShowCapsLockKey), true);
@@ -232,6 +269,19 @@ namespace lockscreen_login_box {
   }
 
   void normalizeSettings(std::unordered_map<std::string, WidgetSettingValue>& settings) {
+    if (!settings.contains(std::string(kLayoutKey))) {
+      settings.insert_or_assign(std::string(kLayoutKey), std::string(kLayoutRegular));
+    } else {
+      const std::string layout = readString(settings, kLayoutKey, kLayoutRegular);
+      if (layout != kLayoutCompact && layout != kLayoutRegular) {
+        settings.insert_or_assign(std::string(kLayoutKey), std::string(kLayoutRegular));
+      }
+    }
+    if (!settings.contains(std::string(kShowSessionButtonsKey))) {
+      settings.insert_or_assign(std::string(kShowSessionButtonsKey), true);
+    }
+    settings.erase("show_media");
+    settings.erase("show_weather");
     if (!settings.contains(std::string(kShowLoginButtonKey))) {
       settings.insert_or_assign(std::string(kShowLoginButtonKey), true);
     }
@@ -273,11 +323,12 @@ namespace lockscreen_login_box {
       widget.rotationRad = 0.0f;
       widget.type = std::string(kWidgetType);
       normalizeSettings(widget.settings);
+      const LoginBoxStyle style = resolveStyle(widget.settings);
       const float screenWidth = screenWidthForOutput(wayland, widget.outputName);
       if (widget.boxWidth <= 0.0f || widget.boxHeight <= 0.0f) {
-        defaultPanelSize(screenWidth, widget.boxWidth, widget.boxHeight);
+        defaultPanelSize(screenWidth, widget.boxWidth, widget.boxHeight, style.layout, style.showSessionButtons);
       } else {
-        clampPanelSize(screenWidth, widget.boxWidth, widget.boxHeight);
+        clampPanelSize(screenWidth, widget.boxWidth, widget.boxHeight, style.layout, style.showSessionButtons);
       }
       desktop_widgets::clampStateToOutput(wayland, widget, widget.boxWidth, widget.boxHeight);
     }
@@ -298,10 +349,14 @@ namespace lockscreen_login_box {
       widget.rotationRad = 0.0f;
       widget.enabled = true;
       const float screenWidth = desktop_widgets::outputLogicalWidth(output);
-      defaultPanelCenter(screenWidth, desktop_widgets::outputLogicalHeight(output), widget.cx, widget.cy);
-      defaultPanelSize(screenWidth, widget.boxWidth, widget.boxHeight);
       applyDefaultSettings(widget.settings, desktop_settings::DesktopWidgetSettingsScope::Widget);
       applyDefaultSettings(widget.settings, desktop_settings::DesktopWidgetSettingsScope::Background);
+      const LoginBoxStyle style = resolveStyle(widget.settings);
+      defaultPanelCenter(
+          screenWidth, desktop_widgets::outputLogicalHeight(output), widget.cx, widget.cy, style.layout,
+          style.showSessionButtons
+      );
+      defaultPanelSize(screenWidth, widget.boxWidth, widget.boxHeight, style.layout, style.showSessionButtons);
       widgets.insert(widgets.begin(), std::move(widget));
       outputsWithLoginBox.insert(outputKey);
     }
