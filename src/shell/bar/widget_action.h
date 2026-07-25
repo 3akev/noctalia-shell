@@ -74,6 +74,8 @@ namespace noctalia::bar {
       std::string_view barContext;
       // Widget instance name, used to say which widget rejected a bar-wide binding.
       std::string_view widgetName;
+      // Widget type, so a malformed declared default names its source.
+      std::string_view widgetType;
     };
 
     void resolve(const Inputs& inputs);

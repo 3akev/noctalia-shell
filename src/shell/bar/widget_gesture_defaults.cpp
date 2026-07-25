@@ -1,5 +1,8 @@
 #include "shell/bar/widget_gesture_defaults.h"
 
+#include "core/log.h"
+#include "scripting/plugin_registry.h"
+
 #include <array>
 #include <vector>
 
@@ -129,22 +132,53 @@ namespace noctalia::bar {
         {"screenshot", GestureMask{Gesture::Right}},
     }};
 
+    constexpr Logger kLog("bar.actions");
+
+    // A plugin [[widget]] entry declares its defaults in plugin.toml, where the settings GUI can
+    // read them too. The manifest parser keeps them as strings, so the vocabulary is checked here.
+    std::vector<GestureBinding> pluginGestureDefaults(std::string_view type) {
+      auto& registry = scripting::PluginRegistry::instance();
+      registry.ensureScanned();
+      const auto resolved = registry.resolve(type);
+      if (!resolved.has_value() || resolved->entry->kind != scripting::PluginEntryKind::Widget) {
+        return {};
+      }
+
+      std::vector<GestureBinding> bindings;
+      bindings.reserve(resolved->entry->widgetActions.size());
+      for (const auto& [gestureKey, action] : resolved->entry->widgetActions) {
+        const auto gesture = parseGestureKey(gestureKey);
+        if (!gesture.has_value()) {
+          kLog.error("{}: [widget.actions] '{}' is not a gesture", type, gestureKey);
+          continue;
+        }
+        bindings.push_back(GestureBinding{*gesture, action});
+      }
+      return bindings;
+    }
+
   } // namespace
 
   std::span<const GestureBinding> builtinGestureDefaults() noexcept { return kBuiltinDefaults; }
 
-  std::span<const GestureBinding> gestureDefaultsForType(std::string_view type, const WidgetConfig* config) noexcept {
+  std::vector<GestureBinding> gestureDefaultsForType(std::string_view type, const WidgetConfig* config) {
+    const auto collect = [](std::span<const GestureBinding> bindings) {
+      return std::vector<GestureBinding>(bindings.begin(), bindings.end());
+    };
+
     if (type == "volume") {
       const std::string device = config != nullptr ? config->getString("device", "output") : std::string("output");
-      return device == "input" ? std::span<const GestureBinding>(kVolumeInput)
-                               : std::span<const GestureBinding>(kVolumeOutput);
+      return collect(
+          device == "input" ? std::span<const GestureBinding>(kVolumeInput)
+                            : std::span<const GestureBinding>(kVolumeOutput)
+      );
     }
     for (const auto& entry : kTypeDefaults) {
       if (entry.type == type) {
-        return entry.bindings;
+        return collect(entry.bindings);
       }
     }
-    return {};
+    return pluginGestureDefaults(type);
   }
 
   GestureMask reservedGesturesForType(std::string_view type) noexcept {
@@ -165,7 +199,8 @@ namespace noctalia::bar {
       }
     };
     apply(builtinGestureDefaults());
-    apply(gestureDefaultsForType(type, config));
+    const auto typeDefaults = gestureDefaultsForType(type, config);
+    apply(typeDefaults);
     return actions;
   }
 

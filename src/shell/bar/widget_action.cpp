@@ -81,7 +81,8 @@ namespace noctalia::bar {
       }
     };
     applyDefaults(inputs.builtinDefaults, "built-in widget defaults");
-    applyDefaults(inputs.widgetDefaults, "widget type defaults");
+    const std::string typeOrigin = std::format("'{}' widget defaults", inputs.widgetType);
+    applyDefaults(inputs.widgetDefaults, typeOrigin);
 
     // Layers 3 and 4 come from user config: every rejection names its exact config path.
     const auto applyConfig = [&](const ActionTable* table, std::string_view context, bool barWide) {

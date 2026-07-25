@@ -7,6 +7,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <vector>
 
 namespace noctalia::bar {
 
@@ -17,11 +18,15 @@ namespace noctalia::bar {
   // Layer 1: applies to every widget type.
   [[nodiscard]] std::span<const GestureBinding> builtinGestureDefaults() noexcept;
 
-  // Layer 2: what a widget type declares for itself. Empty when it declares none. `config` is read
-  // only by types whose defaults genuinely differ per setting, e.g. a volume widget bound to the
-  // microphone needs the mic verbs.
-  [[nodiscard]] std::span<const GestureBinding>
-  gestureDefaultsForType(std::string_view type, const WidgetConfig* config = nullptr) noexcept;
+  // Layer 2: what a widget type declares for itself, empty when it declares none. For a plugin
+  // [[widget]] type this is the manifest's `actions` table, so plugin widgets get defaults the same
+  // way built-in ones do. `config` is read only by types whose defaults genuinely differ per
+  // setting, e.g. a volume widget bound to the microphone needs the mic verbs.
+  //
+  // The returned bindings borrow from the type tables and from the loaded manifest, both of which
+  // outlive a resolve pass.
+  [[nodiscard]] std::vector<GestureBinding>
+  gestureDefaultsForType(std::string_view type, const WidgetConfig* config = nullptr);
 
   // Layers 1 and 2 merged, as config-shaped strings. Used to show defaults in the settings editor.
   [[nodiscard]] std::unordered_map<std::string, std::string>
