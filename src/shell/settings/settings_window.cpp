@@ -13,6 +13,7 @@
 #include "idle/idle_manager.h"
 #include "render/render_context.h"
 #include "render/text/font_weight_catalog.h"
+#include "shell/tooltip/tooltip_manager.h"
 #include "system/dependency_service.h"
 #include "ui/controls/box.h"
 #include "ui/controls/flex.h"
@@ -351,6 +352,8 @@ std::optional<LayerPopupParentContext> SettingsWindow::popupParentContextForSurf
 }
 
 void SettingsWindow::open(std::string context) {
+  TooltipManager::instance().forceDestroy();
+
   if (!context.empty()) {
     m_selectedSection = std::move(context);
   }
