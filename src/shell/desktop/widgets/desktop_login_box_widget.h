@@ -29,6 +29,7 @@ private:
   Box* m_infoGhost = nullptr;
   Box* m_mediaGhost = nullptr;
   Box* m_weatherGhost = nullptr;
+  Box* m_statusGhost = nullptr;
   Box* m_passwordGhost = nullptr;
   Box* m_loginButtonGhost = nullptr;
   Glyph* m_loginGlyph = nullptr;

@@ -122,11 +122,60 @@ namespace lockscreen_login_box {
     return layout == LayoutMode::Regular ? kRegularMinPanelWidth : kCompactMinPanelWidth;
   }
 
+  float regularInfoContentHeight() {
+    // day + glyph + hi/lo — caption ink, not full controlHeightSm rows
+    const float caption = Style::fontSizeCaption + Style::spaceXs;
+    const float forecastColumn = caption + Style::spaceXs + kRegularForecastGlyphSize + Style::spaceXs + caption;
+    return std::max(kRegularMediaArtSize, forecastColumn);
+  }
+
+  float regularStatusContentHeight() { return Style::spaceXs * 2.0f + Style::fontSizeCaption + Style::spaceXs; }
+
+  float regularSessionContentHeight() { return Style::controlHeight; }
+
+  RegularRowHeights regularRowHeights(float panelHeight, bool showSessionButtons, bool showStatus) {
+    const float infoFloor = regularInfoContentHeight();
+    const float statusFloor = showStatus ? regularStatusContentHeight() : 0.0f;
+    const float passwordFloor = Style::controlHeight;
+    const float sessionFloor = showSessionButtons ? regularSessionContentHeight() : 0.0f;
+
+    int rows = 2; // info + password
+    if (showStatus) {
+      ++rows;
+    }
+    if (showSessionButtons) {
+      ++rows;
+    }
+    const float pad = Style::spaceSm * 2.0f;
+    const float gaps = Style::spaceSm * static_cast<float>(std::max(0, rows - 1));
+    const float available = std::max(0.0f, panelHeight - pad - gaps);
+    const float floors = infoFloor + statusFloor + passwordFloor + sessionFloor;
+    const float scale = floors > 0.0f ? available / floors : 1.0f;
+
+    return RegularRowHeights{
+        .info = infoFloor * scale,
+        .status = statusFloor * scale,
+        .password = passwordFloor * scale,
+        .session = sessionFloor * scale,
+    };
+  }
+
   float minPanelHeight(LayoutMode layout, bool showSessionButtons) {
     if (layout != LayoutMode::Regular) {
       return kCompactMinPanelHeight;
     }
-    return showSessionButtons ? kRegularMinPanelHeight : kRegularMinPanelHeightNoSession;
+    // paddingV + info + status (hint/caps) + password [+ session] + gaps
+    const float pad = Style::spaceSm * 2.0f;
+    const int gapCount = showSessionButtons ? 3 : 2;
+    float height = pad
+        + regularInfoContentHeight()
+        + regularStatusContentHeight()
+        + Style::controlHeight
+        + Style::spaceSm * static_cast<float>(gapCount);
+    if (showSessionButtons) {
+      height += regularSessionContentHeight();
+    }
+    return height;
   }
 
   float maxPanelHeight(LayoutMode layout) {
@@ -142,7 +191,7 @@ namespace lockscreen_login_box {
     if (layout != LayoutMode::Regular) {
       return 70.0f;
     }
-    return showSessionButtons ? 232.0f : 232.0f - kRegularSessionBlockHeight;
+    return minPanelHeight(layout, showSessionButtons) + Style::spaceMd;
   }
 
   float resolvePanelWidth(float screenWidth, float boxWidth, LayoutMode layout) {

@@ -66,13 +66,27 @@ namespace lockscreen_login_box {
   // Min width for media + weather; forecast needs more.
   constexpr float kRegularMinPanelWidth = 720.0f;
   constexpr float kCompactMinPanelHeight = 64.0f;
-  // Ideal session row height plus the gap above it (used when toggling session buttons).
-  constexpr float kRegularSessionBlockHeight = 66.0f;
-  // Fits shrinkable info/session rows plus password/status with spaceSm padding/gaps.
-  constexpr float kRegularMinPanelHeight = 190.0f;
-  constexpr float kRegularMinPanelHeightNoSession = kRegularMinPanelHeight - kRegularSessionBlockHeight;
   constexpr float kCompactMaxPanelHeight = 120.0f;
-  constexpr float kRegularMaxPanelHeight = 300.0f;
+  constexpr float kRegularMaxPanelHeight = 320.0f;
+
+  // Matches lock-surface media art / forecast glyph sizes used in Regular layout.
+  constexpr float kRegularMediaArtSize = 40.0f;
+  constexpr float kRegularForecastGlyphSize = 18.0f;
+
+  // Content floors shared by min-size clamping and the editor ghost.
+  [[nodiscard]] float regularInfoContentHeight();
+  [[nodiscard]] float regularStatusContentHeight();
+  [[nodiscard]] float regularSessionContentHeight();
+
+  // Proportional row heights for Regular: each floor scales by the same factor.
+  struct RegularRowHeights {
+    float info = 0.0f;
+    float status = 0.0f;
+    float password = 0.0f;
+    float session = 0.0f;
+  };
+
+  [[nodiscard]] RegularRowHeights regularRowHeights(float panelHeight, bool showSessionButtons, bool showStatus = true);
 
   struct PanelContentLayout {
     float contentLeft = 0.0f;
