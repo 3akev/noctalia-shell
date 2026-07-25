@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <cstdint>
 #include <string>
 #include <string_view>
@@ -24,7 +25,9 @@ namespace scripting {
     std::string name; // mandatory display name
     std::vector<std::string> tags;
     std::vector<std::string> dependencies;
-    std::string version; // latest available in the source
+    std::string version;                             // latest available in the source
+    std::chrono::system_clock::time_point updatedAt; // catalog key `updated_at`, epoch when absent
+    std::chrono::system_clock::time_point addedAt;   // catalog key `added_at`, epoch when absent
     std::string author;
     std::string icon;
     std::string description;

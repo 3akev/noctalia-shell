@@ -1476,8 +1476,13 @@
         "open-source": "Open plugin source repository",
         "results-count": "{count} plugins",
         "search-placeholder": "Search plugins…",
-        "source-all": "All",
-        "sources": "Sources",
+        "sort-added-at-asc": "Sort by date added (oldest first)",
+        "sort-added-at-desc": "Sort by date added (newest first)",
+        "sort-name-asc": "Sort by name (A-Z)",
+        "sort-name-desc": "Sort by name (Z-A)",
+        "sort-updated-at-asc": "Sort by date updated (oldest first)",
+        "sort-updated-at-desc": "Sort by date updated (newest first)",
+        "source-all": "All sources",
         "title": "Plugin Store"
       }
     },

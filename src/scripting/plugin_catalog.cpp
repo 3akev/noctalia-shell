@@ -12,6 +12,7 @@
 #include "util/file_utils.h"
 
 #include <algorithm>
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <limits>
@@ -204,18 +205,26 @@ namespace scripting {
       if (tbl == nullptr) {
         continue;
       }
+
       CatalogEntry e{
           .id = tableString(*tbl, "id"),
           .name = tableString(*tbl, "name"),
           .tags = tableStringArray(*tbl, "tags"),
           .dependencies = tableStringArray(*tbl, "dependencies"),
           .version = tableString(*tbl, "version"),
+          .updatedAt = std::chrono::system_clock::time_point{std::chrono::seconds{
+              (*tbl)["updated_at"].value<std::uint64_t>().value_or(0)
+          }},
+          .addedAt = std::chrono::system_clock::time_point{std::chrono::seconds{
+              (*tbl)["added_at"].value<std::uint64_t>().value_or(0)
+          }},
           .author = tableString(*tbl, "author"),
           .icon = tableString(*tbl, "icon"),
           .description = tableString(*tbl, "description"),
           .license = tableString(*tbl, "license", "MIT"),
           .deprecated = (*tbl)["deprecated"].value<bool>().value_or(false),
       };
+
       if (e.id.empty()) {
         kLog.warn("catalog row missing mandatory key 'id'");
         continue;
