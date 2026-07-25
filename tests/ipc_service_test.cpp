@@ -75,12 +75,11 @@ int main() {
 
   IpcService ipc;
   ipc.registerHandler(
-      "visible-command", [](const std::string& args) { return "visible:" + args + "\n"; }, "visible-command <value>",
-      "Visible command"
+      "visible-command", [](const std::string& args) { return "visible:" + args + "\n"; }, "<value>", "Visible command"
   );
   ipc.registerHandler(
-      "hidden-command", [](const std::string& args) { return "hidden:" + args + "\n"; }, "hidden-command <value>",
-      "Hidden command", IpcService::HandlerVisibility::Hidden
+      "hidden-command", [](const std::string& args) { return "hidden:" + args + "\n"; }, "<value>", "Hidden command",
+      IpcService::HandlerVisibility::Hidden
   );
 
   assert(ipc.execute("visible-command ok") == "visible:ok\n");
@@ -93,7 +92,9 @@ int main() {
     const auto infos = ipc.handlers();
     assert(infos.size() == 1);
     assert(infos.front().command == "visible-command");
-    assert(infos.front().usage == "visible-command <value>");
+    // The registry stores arguments only; the verb is composed back in for display.
+    assert(infos.front().args == "<value>");
+    assert(infos.front().signature() == "visible-command <value>");
     assert(infos.front().description == "Visible command");
     assert(ipc.hasHandler("visible-command"));
     assert(ipc.hasHandler("hidden-command"));
@@ -129,7 +130,7 @@ int main() {
   assert(help.find("Hidden command") == std::string::npos);
 
   ipc.registerHandler(
-      "visible-command", [](const std::string&) { return "hidden-now\n"; }, "visible-command", "Now hidden",
+      "visible-command", [](const std::string&) { return "hidden-now\n"; }, "", "Now hidden",
       IpcService::HandlerVisibility::Hidden
   );
 

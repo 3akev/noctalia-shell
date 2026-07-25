@@ -828,21 +828,26 @@ std::vector<settings::SelectOption> SettingsWindow::batteryDeviceOptions() const
   return upowerBatteryDeviceOptions(m_upower);
 }
 
-std::vector<settings::SelectOption> SettingsWindow::gestureActionCatalog() const {
+std::vector<settings::GestureActionOption> SettingsWindow::gestureActionCatalog() const {
   if (m_ipcService == nullptr) {
     return {};
   }
-  std::vector<settings::SelectOption> options;
+  std::vector<settings::GestureActionOption> options;
   for (const auto& handler : m_ipcService->handlers()) {
     // `exec` and `none` are grammar keywords, not commands, and are offered as their own rows.
     if (handler.command == noctalia::bar::kExecVerb || handler.command == noctalia::bar::kNoneVerb) {
       continue;
     }
     options.push_back(
-        settings::SelectOption{
-            .value = std::string(handler.command),
-            .label = std::string(handler.usage),
-            .description = std::string(handler.description),
+        settings::GestureActionOption{
+            .option =
+                settings::SelectOption{
+                    .value = std::string(handler.command),
+                    // The verb is the label: it is what goes in the config and what errors name.
+                    .label = std::string(handler.command),
+                    .description = std::string(handler.description),
+                },
+            .argsSpec = std::string(handler.args),
         }
     );
   }

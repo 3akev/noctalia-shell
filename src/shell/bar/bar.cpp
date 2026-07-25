@@ -3723,31 +3723,31 @@ void Bar::registerIpc(IpcService& ipc) {
 
   ipc.registerHandler(
       "bar-show", [this](const std::string& args) -> std::string { return showBarIpc(args); },
-      "bar-show [bar-name] [monitor-selector]", "Show one or all bars"
+      "[bar-name] [monitor-selector]", "Show one or all bars"
   );
 
   ipc.registerHandler(
       "bar-hide", [this](const std::string& args) -> std::string { return hideBarIpc(args); },
-      "bar-hide [bar-name] [monitor-selector]", "Hide one or all bars and release their layout gaps"
+      "[bar-name] [monitor-selector]", "Hide one or all bars and release their layout gaps"
   );
 
   ipc.registerHandler(
       "bar-toggle", [this](const std::string& args) -> std::string { return toggleBarIpc(args); },
-      "bar-toggle [bar-name] [monitor-selector]", "Toggle visibility for one or all bars"
+      "[bar-name] [monitor-selector]", "Toggle visibility for one or all bars"
   );
 
   ipc.registerHandler(
       "bar-reserve-toggle", [this](const std::string& args) -> std::string { return toggleBarReserveSpaceIpc(args); },
-      "bar-reserve-toggle [bar-name] [monitor-selector]", "Toggle reserve space for one or all bars"
+      "[bar-name] [monitor-selector]", "Toggle reserve space for one or all bars"
   );
 
   ipc.registerHandler(
       "bar-auto-hide-set", [this](const std::string& args) -> std::string { return setBarAutoHideIpc(args); },
-      "bar-auto-hide-set <on|off|true|false|1|0> [bar-name] [monitor-selector]", "Set auto-hide state for a bar"
+      "<on|off|true|false|1|0> [bar-name] [monitor-selector]", "Set auto-hide state for a bar"
   );
 
   ipc.registerHandler(
       "bar-layer-set", [this](const std::string& args) -> std::string { return setBarLayerIpc(args); },
-      "bar-layer-set <top|overlay> [bar-name] [monitor-selector]", "Set one or all bar layers"
+      "<top|overlay> [bar-name] [monitor-selector]", "Set one or all bar layers"
   );
 }

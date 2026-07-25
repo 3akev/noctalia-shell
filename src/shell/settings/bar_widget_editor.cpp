@@ -112,9 +112,23 @@ namespace settings {
     // rather than an IPC command, so it cannot collide with a real command name.
     constexpr std::string_view kActionExecOption = "\x01exec";
 
-    // Usage strings spell required arguments as <id> and optional ones as [context].
-    [[nodiscard]] bool usageTakesArguments(std::string_view usage) { return usage.contains(' '); }
-    [[nodiscard]] bool usageRequiresArgument(std::string_view usage) { return usage.contains('<'); }
+    // Argument specs spell required arguments as <id> and optional ones as [context]. A <> nested
+    // inside brackets is still optional, so only a top-level one makes the argument mandatory.
+    [[nodiscard]] bool specTakesArguments(std::string_view spec) { return !spec.empty(); }
+
+    [[nodiscard]] bool specRequiresArgument(std::string_view spec) {
+      int optionalDepth = 0;
+      for (const char c : spec) {
+        if (c == '[') {
+          ++optionalDepth;
+        } else if (c == ']') {
+          optionalDepth = std::max(0, optionalDepth - 1);
+        } else if (c == '<' && optionalDepth == 0) {
+          return true;
+        }
+      }
+      return false;
+    }
 
     // One row per bindable gesture: a picker over Default / Disabled / every command / a free-form
     // shell command, plus an argument field when the choice takes one.
@@ -125,10 +139,12 @@ namespace settings {
     ) {
       // Shared by value: BarWidgetEditorContext is a build-pass local, but these callbacks are
       // stored in the scene and fire long after it is gone.
-      const auto catalog = std::make_shared<const std::vector<SelectOption>>(ctx.actionCatalog);
-      const auto usageFor = [catalog](std::string_view verb) -> std::string {
-        const auto it = std::ranges::find(*catalog, verb, &SelectOption::value);
-        return it != catalog->end() ? it->label : std::string{};
+      const auto catalog = std::make_shared<const std::vector<GestureActionOption>>(ctx.actionCatalog);
+      const auto specFor = [catalog](std::string_view verb) -> std::string {
+        const auto it = std::ranges::find_if(*catalog, [verb](const GestureActionOption& action) {
+          return action.option.value == verb;
+        });
+        return it != catalog->end() ? it->argsSpec : std::string{};
       };
 
       for (const auto gesture : noctalia::bar::allGestures()) {
@@ -189,7 +205,9 @@ namespace settings {
                 .label = i18n::tr("settings.widgets.actions.run-command"),
             }
         );
-        options.insert(options.end(), ctx.actionCatalog.begin(), ctx.actionCatalog.end());
+        for (const auto& action : ctx.actionCatalog) {
+          options.push_back(action.option);
+        }
 
         SearchPickerSetting picker;
         picker.options = std::move(options);
@@ -197,11 +215,11 @@ namespace settings {
         picker.emptyText = i18n::tr("ui.controls.search-picker.empty");
         picker.onSelect = [setOverride = ctx.setOverride, clearOverride = ctx.clearOverride,
                            requestRebuild = ctx.requestRebuild, pendingKey = &ctx.pendingGestureKey,
-                           pendingVerb = &ctx.pendingGestureVerb, usageFor, path, key](const std::string& value) {
+                           pendingVerb = &ctx.pendingGestureVerb, specFor, path, key](const std::string& value) {
           pendingKey->clear();
           pendingVerb->clear();
           const bool needsArgument =
-              value == kActionExecOption || (!value.empty() && usageRequiresArgument(usageFor(value)));
+              value == kActionExecOption || (!value.empty() && specRequiresArgument(specFor(value)));
           if (needsArgument) {
             // Nothing to store yet: the value is completed by the argument field.
             *pendingKey = key;
@@ -222,11 +240,8 @@ namespace settings {
         rowEntry.title = i18n::tr(std::string(noctalia::bar::gestureLabelKey(gesture)));
         rowEntry.subtitle.clear();
 
-        const std::string usage = execMode ? std::string{} : usageFor(selected);
-        const bool wantsArgument = execMode || (!selected.empty() && usageTakesArguments(usage));
-        const std::string argumentHint = wantsArgument && !usage.empty()
-            ? std::string(StringUtils::trimLeftView(std::string_view(usage).substr(usage.find(' ') + 1)))
-            : std::string{};
+        const std::string argsSpec = execMode ? std::string{} : specFor(selected);
+        const bool wantsArgument = execMode || (!selected.empty() && specTakesArguments(argsSpec));
 
         auto control = ui::row({.align = FlexAlign::Center, .gap = Style::spaceSm * ctx.scale});
         control->addChild(ctx.makeSearchPicker(picker, rowEntry.title, path));
@@ -234,7 +249,7 @@ namespace settings {
           control->addChild(
               ui::input({
                   .value = argument,
-                  .placeholder = execMode ? i18n::tr("settings.widgets.actions.command-placeholder") : argumentHint,
+                  .placeholder = execMode ? i18n::tr("settings.widgets.actions.command-placeholder") : argsSpec,
                   .fontSize = Style::fontSizeBody * ctx.scale,
                   .controlHeight = Style::controlHeight * ctx.scale,
                   .horizontalPadding = Style::spaceSm * ctx.scale,
@@ -243,12 +258,12 @@ namespace settings {
                   .onSubmit =
                       [setOverride = ctx.setOverride, clearOverride = ctx.clearOverride,
                        requestRebuild = ctx.requestRebuild, pendingKey = &ctx.pendingGestureKey,
-                       pendingVerb = &ctx.pendingGestureVerb, usageFor, path, verb = selected,
+                       pendingVerb = &ctx.pendingGestureVerb, specFor, path, verb = selected,
                        execMode](const std::string& text) {
                         const std::string trimmed = StringUtils::trim(text);
                         if (trimmed.empty()) {
                           // Clearing the argument drops a binding that needs one.
-                          if (execMode || usageRequiresArgument(usageFor(verb))) {
+                          if (execMode || specRequiresArgument(specFor(verb))) {
                             clearOverride(path);
                           } else {
                             setOverride(path, verb);

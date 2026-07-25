@@ -104,12 +104,12 @@ bool IpcService::start() {
 }
 
 void IpcService::registerHandler(
-    const std::string& command, Handler handler, std::string usage, std::string description,
+    const std::string& command, Handler handler, std::string argsSpec, std::string description,
     HandlerVisibility visibility
 ) {
   // Remove existing entry for this command if re-registering
   std::erase_if(m_handlers, [&command](const auto& e) { return e.first == command; });
-  m_handlers.push_back({command, {std::move(handler), std::move(usage), std::move(description), visibility}});
+  m_handlers.push_back({command, {std::move(handler), std::move(argsSpec), std::move(description), visibility}});
 }
 
 std::vector<IpcService::HandlerInfo> IpcService::handlers() const {
@@ -122,7 +122,7 @@ std::vector<IpcService::HandlerInfo> IpcService::handlers() const {
     infos.push_back(
         HandlerInfo{
             .command = command,
-            .usage = entry.usage.empty() ? std::string_view(command) : std::string_view(entry.usage),
+            .args = entry.argsSpec,
             .description = entry.description,
         }
     );
@@ -248,22 +248,33 @@ void IpcService::handleConnection(int connFd) {
   }
 }
 
+std::string IpcService::HandlerInfo::signature() const {
+  std::string out(command);
+  if (!args.empty()) {
+    out += ' ';
+    out += args;
+  }
+  return out;
+}
+
 std::string IpcService::buildHelp() const {
   const auto infos = handlers();
 
-  // Longest usage string, for description alignment.
-  std::size_t maxUsage = 0;
+  std::vector<std::string> signatures;
+  signatures.reserve(infos.size());
+  std::size_t maxSignature = 0;
   for (const auto& info : infos) {
-    maxUsage = std::max(maxUsage, info.usage.size());
+    signatures.push_back(info.signature());
+    maxSignature = std::max(maxSignature, signatures.back().size());
   }
 
   std::string out = "Usage: noctalia msg <command> [args]\n\nCommands:\n";
-  for (const auto& info : infos) {
+  for (std::size_t i = 0; i < infos.size(); ++i) {
     out += "  ";
-    out += info.usage;
-    if (!info.description.empty()) {
-      out += std::string(maxUsage - info.usage.size() + 2, ' ');
-      out += info.description;
+    out += signatures[i];
+    if (!infos[i].description.empty()) {
+      out += std::string(maxSignature - signatures[i].size() + 2, ' ');
+      out += infos[i].description;
     }
     out += '\n';
   }

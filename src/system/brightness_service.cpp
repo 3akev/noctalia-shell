@@ -1585,13 +1585,12 @@ void BrightnessService::registerIpc(IpcService& ipc, std::function<void()> onBat
           setBrightness(display.id, *amount);
         });
       },
-      "brightness-set <value> | brightness-set <current|*|all|monitor-selector> <value>",
-      "Set brightness (defaults to current monitor)"
+      "[current|*|all|monitor-selector] <value>", "Set brightness (defaults to current monitor)"
   );
 
   auto registerDeltaHandler =
       [this, &ipc,
-       applyToTargets](const std::string& command, float direction, std::string usage, std::string description) {
+       applyToTargets](const std::string& command, float direction, std::string argsSpec, std::string description) {
         ipc.registerHandler(
             command,
             [this, applyToTargets, command, direction](const std::string& args) -> std::string {
@@ -1622,16 +1621,16 @@ void BrightnessService::registerIpc(IpcService& ipc, std::function<void()> onBat
                 setBrightness(display.id, display.brightness + direction * *step);
               });
             },
-            std::move(usage), std::move(description)
+            std::move(argsSpec), std::move(description)
         );
       };
 
   registerDeltaHandler(
-      "brightness-up", 1.0f, "brightness-up [current|*|all|monitor-selector] [step]",
+      "brightness-up", 1.0f, "[current|*|all|monitor-selector] [step]",
       "Increase brightness (defaults to current monitor)"
   );
   registerDeltaHandler(
-      "brightness-down", -1.0f, "brightness-down [current|*|all|monitor-selector] [step]",
+      "brightness-down", -1.0f, "[current|*|all|monitor-selector] [step]",
       "Decrease brightness (defaults to current monitor)"
   );
 
@@ -1654,7 +1653,7 @@ void BrightnessService::registerIpc(IpcService& ipc, std::function<void()> onBat
         ::closedir(dir);
         return result.empty() ? "error: no backlight devices available\n" : result;
       },
-      "brightness-list-backlight-devices", "List available sysfs backlight device names"
+      "", "List available sysfs backlight device names"
   );
 }
 

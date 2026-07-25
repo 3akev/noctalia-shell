@@ -125,7 +125,7 @@ private:
   );
   [[nodiscard]] std::vector<settings::SelectOption> batteryDeviceOptions() const;
   // Bindable IPC commands, for the bar widget gesture action picker.
-  [[nodiscard]] std::vector<settings::SelectOption> gestureActionCatalog() const;
+  [[nodiscard]] std::vector<settings::GestureActionOption> gestureActionCatalog() const;
   [[nodiscard]] settings::SettingsContentContext makeContentContext(
       const Config& cfg, const BarConfig* selectedBar, const BarMonitorOverride* selectedMonitorOverride
   );

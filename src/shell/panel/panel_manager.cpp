@@ -2552,8 +2552,7 @@ void PanelManager::registerIpc(IpcService& ipc) {
         }
         return "ok\n";
       },
-      "panel-toggle <id> [context]",
-      "Toggle a panel by id, optionally with context (e.g. launcher /emo, control-center audio)"
+      "<id> [context]", "Toggle a panel by id, optionally with context (e.g. launcher /emo, control-center audio)"
   );
 
   ipc.registerHandler(
@@ -2580,8 +2579,7 @@ void PanelManager::registerIpc(IpcService& ipc) {
         openPanel(panelId, PanelOpenRequest{.context = context});
         return "ok\n";
       },
-      "panel-open <id> [context]",
-      "Open a panel by id, optionally with context (e.g. launcher /emo, control-center audio)"
+      "<id> [context]", "Open a panel by id, optionally with context (e.g. launcher /emo, control-center audio)"
   );
 
   ipc.registerHandler(
@@ -2604,7 +2602,7 @@ void PanelManager::registerIpc(IpcService& ipc) {
         }
         return "ok\n";
       },
-      "panel-close [id]", "Close the active panel, or close the named panel if it is active"
+      "[id]", "Close the active panel, or close the named panel if it is active"
   );
 
   const auto rejectSettingsArgs = [](const std::string& args, std::string_view command) -> std::optional<std::string> {
@@ -2620,8 +2618,7 @@ void PanelManager::registerIpc(IpcService& ipc) {
         openSettingsWindow(std::string(StringUtils::trimLeftView(args)));
         return "ok\n";
       },
-      "settings-open [context]",
-      "Open the settings window, or focus it if already open, optionally at a specific section"
+      "[context]", "Open the settings window, or focus it if already open, optionally at a specific section"
   );
 
   ipc.registerHandler(
@@ -2654,8 +2651,7 @@ void PanelManager::registerIpc(IpcService& ipc) {
         m_openWidgetSettings(std::move(barName), std::move(widgetName));
         return "ok\n";
       },
-      "settings-open-widget [bar-name widget-name]",
-      "Open the settings window at a bar widget; from a widget gesture, targets that widget"
+      "[bar-name widget-name]", "Open the settings window at a bar widget; from a widget gesture, targets that widget"
   );
 
   ipc.registerHandler(
@@ -2667,7 +2663,7 @@ void PanelManager::registerIpc(IpcService& ipc) {
         closeSettingsWindow();
         return "ok\n";
       },
-      "settings-close", "Close the settings window"
+      "", "Close the settings window"
   );
 
   ipc.registerHandler(
@@ -2676,6 +2672,6 @@ void PanelManager::registerIpc(IpcService& ipc) {
         toggleSettingsWindow(std::string(StringUtils::trimLeftView(args)));
         return "ok\n";
       },
-      "settings-toggle [context]", "Toggle the settings window, optionally at a specific section"
+      "[context]", "Toggle the settings window, optionally at a specific section"
   );
 }

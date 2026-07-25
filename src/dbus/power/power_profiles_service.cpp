@@ -339,7 +339,7 @@ void PowerProfilesService::registerIpc(IpcService& ipc, StateFeedbackCallback st
         }
         return "ok\n";
       },
-      "power-set <profile>", "Set the UPower power profile (e.g. performance, balanced, power-saver)"
+      "<profile>", "Set the UPower power profile (e.g. performance, balanced, power-saver)"
   );
   ipc.registerHandler(
       "power-cycle",
@@ -363,6 +363,6 @@ void PowerProfilesService::registerIpc(IpcService& ipc, StateFeedbackCallback st
         }
         return "ok\n";
       },
-      "power-cycle [next|prev]", "Step through UPower's ordered profile list, forward by default (wraps)"
+      "[next|prev]", "Step through UPower's ordered profile list, forward by default (wraps)"
   );
 }

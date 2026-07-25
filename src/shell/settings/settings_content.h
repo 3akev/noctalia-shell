@@ -58,7 +58,7 @@ namespace settings {
     std::string& pendingGestureVerb;
     // Bindable IPC commands for the gesture action picker: value = command, label = usage,
     // description = the command's --help text.
-    std::vector<SelectOption> actionCatalog;
+    std::vector<GestureActionOption> actionCatalog;
 
     std::function<void()> requestRebuild;
     std::function<void()> requestContentRebuild;

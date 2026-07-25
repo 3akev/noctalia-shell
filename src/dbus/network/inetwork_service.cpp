@@ -41,7 +41,7 @@ void INetworkService::registerIpc(IpcService& ipc, WirelessFeedbackCallback wire
         }
         return setWifi(true);
       },
-      "wifi-enable", "Enable Wi-Fi"
+      "", "Enable Wi-Fi"
   );
 
   ipc.registerHandler(
@@ -52,7 +52,7 @@ void INetworkService::registerIpc(IpcService& ipc, WirelessFeedbackCallback wire
         }
         return setWifi(false);
       },
-      "wifi-disable", "Disable Wi-Fi"
+      "", "Disable Wi-Fi"
   );
 
   ipc.registerHandler(
@@ -66,7 +66,7 @@ void INetworkService::registerIpc(IpcService& ipc, WirelessFeedbackCallback wire
         }
         return setWifi(!state().wirelessEnabled);
       },
-      "wifi-toggle", "Toggle Wi-Fi"
+      "", "Toggle Wi-Fi"
   );
 
   ipc.registerHandler(
@@ -80,7 +80,7 @@ void INetworkService::registerIpc(IpcService& ipc, WirelessFeedbackCallback wire
         }
         return state().wirelessEnabled ? "on\n" : "off\n";
       },
-      "wifi-status", "Print Wi-Fi state"
+      "", "Print Wi-Fi state"
   );
 
   ipc.registerHandler(
@@ -112,6 +112,6 @@ void INetworkService::registerIpc(IpcService& ipc, WirelessFeedbackCallback wire
         }
         return "error: nothing to toggle (Wi-Fi is on and no wired connection is available)\n";
       },
-      "network-toggle", "Disconnect the active network, or reconnect when nothing is connected"
+      "", "Disconnect the active network, or reconnect when nothing is connected"
   );
 }

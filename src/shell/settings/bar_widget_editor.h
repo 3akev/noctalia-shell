@@ -34,7 +34,7 @@ namespace settings {
     std::string& renamingWidgetName;
     std::string& pendingGestureKey;
     std::string& pendingGestureVerb;
-    std::vector<SelectOption> actionCatalog;
+    std::vector<GestureActionOption> actionCatalog;
 
     std::function<void()> requestRebuild;
     std::function<void()> resetContentScroll;

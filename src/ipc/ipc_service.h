@@ -22,8 +22,12 @@ public:
   // invalidated by the next registerHandler() call.
   struct HandlerInfo {
     std::string_view command;
-    std::string_view usage;
+    // Argument spec without the verb, e.g. "<id> [context]". Empty when the command takes none.
+    std::string_view args;
     std::string_view description;
+
+    // "panel-toggle <id> [context]" — the form shown in --help.
+    [[nodiscard]] std::string signature() const;
   };
 
   // Sets the invocation context for its lifetime, restoring the previous value on destruction so
@@ -80,18 +84,18 @@ public:
 
   // Register a handler for a command name. The handler receives everything after
   // the first space as `args`. Must return a string ending with '\n'.
-  // `usage` describes the command signature, e.g. "panel-toggle <id>".
+  // `argsSpec` describes the arguments only, without repeating the verb, e.g. "<id> [context]".
   // `description` is a short human-readable explanation shown in --help.
   // Hidden handlers remain executable but are omitted from --help.
   void registerHandler(
-      const std::string& command, Handler handler, std::string usage = {}, std::string description = {},
+      const std::string& command, Handler handler, std::string argsSpec = {}, std::string description = {},
       HandlerVisibility visibility = HandlerVisibility::Public
   );
 
 private:
   struct HandlerEntry {
     Handler fn;
-    std::string usage;
+    std::string argsSpec;
     std::string description;
     HandlerVisibility visibility = HandlerVisibility::Public;
   };
