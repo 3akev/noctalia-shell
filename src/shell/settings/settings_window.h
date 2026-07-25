@@ -278,6 +278,8 @@ private:
   // Gesture whose action row has a chosen command that still needs its argument typed.
   std::string m_pendingGestureKey;
   std::string m_pendingGestureVerb;
+  // Survives scene rebuilds, so editing a binding does not fold the group back up.
+  bool m_actionsExpanded = false;
   std::string m_creatingBarName;
   std::string m_renamingBarName;
   std::string m_pendingDeleteBarName;

@@ -13,6 +13,7 @@
 #include "shell/settings/settings_content.h"
 #include "shell/settings/widget_settings_registry.h"
 #include "ui/builders.h"
+#include "ui/controls/collapsible.h"
 #include "ui/dialogs/file_dialog.h"
 #include "ui/dialogs/glyph_picker_dialog.h"
 #include "ui/palette.h"
@@ -289,6 +290,38 @@ namespace settings {
 
     std::string widgetSettingGroupTitle(std::string_view groupKey) {
       return i18n::tr("settings.entities.widget.settings.groups." + std::string(groupKey));
+    }
+
+    constexpr std::string_view kGestureActionsGroup = "actions";
+
+    // The actions group is long (one row per bindable gesture) and most widgets never need it, so it
+    // folds. `ctx.actionsExpanded` lives on the settings window: editing a binding rebuilds the
+    // scene, and a local flag would fold the group back up on every edit.
+    std::unique_ptr<Node>
+    makeGestureActionsSection(const BarWidgetEditorContext& ctx, std::unique_ptr<Node> body, bool withSeparator) {
+      // Same padding and gap as makeMiniSectionHeader, so this section sits like every other one.
+      auto section = ui::column({
+          .align = FlexAlign::Stretch,
+          .gap = Style::spaceXs * ctx.scale,
+          .configure = [scale = ctx.scale](Flex& flex) { flex.setPadding(Style::spaceSm * scale, 0.0f, 0.0f, 0.0f); },
+      });
+      if (withSeparator) {
+        section->addChild(ui::separator());
+      }
+
+      auto collapsible = std::make_unique<Collapsible>();
+      collapsible->setScale(ctx.scale);
+      // Flush left, matching the plain group headers above it.
+      collapsible->setHeaderPadding(0.0f, 0.0f);
+      collapsible->setHeader(makeLabel(
+          widgetSettingGroupTitle(kGestureActionsGroup), Style::fontSizeCaption * ctx.scale,
+          colorSpecFromRole(ColorRole::Secondary), FontWeight::Bold
+      ));
+      collapsible->setBody(std::move(body));
+      collapsible->setExpandedImmediate(ctx.actionsExpanded);
+      collapsible->setOnToggle([expanded = &ctx.actionsExpanded](bool value) { *expanded = value; });
+      section->addChild(std::move(collapsible));
+      return section;
     }
 
     enum class PathBrowseKind : std::uint8_t {
@@ -1671,7 +1704,10 @@ namespace settings {
         }
 
         if (spec.group != activeGroupKey) {
-          panel->addChild(makeMiniSectionHeader(widgetSettingGroupTitle(spec.group), ctx.scale, visibleSpecs > 0));
+          // The actions group folds, and carries its title in the collapsible's own header.
+          if (spec.group != kGestureActionsGroup) {
+            panel->addChild(makeMiniSectionHeader(widgetSettingGroupTitle(spec.group), ctx.scale, visibleSpecs > 0));
+          }
           activeGroupKey = spec.group;
         }
 
@@ -1873,9 +1909,11 @@ namespace settings {
                 configured = tableIt->second;
               }
             }
+            auto body = ui::column({.align = FlexAlign::Stretch});
             addGestureActionRows(
-                *panel, ctx, entry, defaults, configured, noctalia::bar::reservedGesturesForType(widgetType)
+                *body, ctx, entry, defaults, configured, noctalia::bar::reservedGesturesForType(widgetType)
             );
+            panel->addChild(makeGestureActionsSection(ctx, std::move(body), visibleSpecs > 0));
             break;
           }
           const bool customLabels = spec.schema.key == "custom_labels";
