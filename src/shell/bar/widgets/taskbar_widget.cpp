@@ -1516,6 +1516,10 @@ void TaskbarWidget::updateModels() {
 
   // Windows with no app id still get a task keyed by toplevel handle / window id.
   for (const auto& window : m_platform.windowsWithoutAppId(topFilter)) {
+    // Skip anonymous XWayland menu popups (no app id and no title to show).
+    if (window.title.empty()) {
+      continue;
+    }
     const auto handleKey = taskHandleKey(window);
     if (handleKey == 0 || !processedHandles.insert(handleKey).second) {
       continue;
@@ -2224,6 +2228,10 @@ void TaskbarWidget::updateModels() {
       for (std::size_t i = 0; i < workspaceAssignments.size(); ++i) {
         const auto& assignment = workspaceAssignments[i];
         if (!assignment.appId.empty() || assignment.windowId.empty()) {
+          continue;
+        }
+        // Same empty-title skip as the foreign-toplevel orphan path above.
+        if (assignment.title.empty()) {
           continue;
         }
         if (representedWindowIds.contains(assignment.windowId)) {
