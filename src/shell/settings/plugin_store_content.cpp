@@ -4,6 +4,7 @@
 #include "core/input/key_symbols.h"
 #include "core/input/keybind_matcher.h"
 #include "i18n/i18n.h"
+#include "scripting/plugin_api.h"
 #include "scripting/plugin_file_cache.h"
 #include "scripting/plugin_id.h"
 #include "shell/settings/plugin_store_tile.h"
@@ -572,8 +573,8 @@ namespace settings {
     if (!entry.author.empty()) {
       addMetaText(entry.author);
     }
-    if (!entry.version.empty()) {
-      addMetaText("v" + entry.version);
+    if (!entry.resolvedVersion.empty()) {
+      addMetaText("v" + entry.resolvedVersion);
     }
     if (!entry.license.empty()) {
       addMetaText(entry.license);
@@ -592,6 +593,9 @@ namespace settings {
     if (entry.deprecated) {
       addMetaItem(pill(i18n::tr("settings.badges.deprecated"), ColorRole::Error, ColorRole::Error, 0.15f));
     }
+    if (entry.heldBack) {
+      addMetaItem(pill(i18n::tr("settings.plugins.store.held-back"), ColorRole::Tertiary, ColorRole::Tertiary, 0.15f));
+    }
     info->addChild(std::move(meta));
 
     if (!entry.description.empty()) {
@@ -602,6 +606,35 @@ namespace settings {
               .color = colorSpecFromRole(ColorRole::OnSurfaceVariant),
               .maxLines = 4,
               .ellipsize = TextEllipsize::End,
+          })
+      );
+    }
+
+    // Name the version this build gets and why, so the store never silently installs
+    // something other than the newest published version.
+    if (entry.heldBack) {
+      info->addChild(
+          ui::label({
+              .text = i18n::tr(
+                  "settings.plugins.store.held-back-hint", "version", entry.resolvedVersion, "resolved",
+                  entry.resolvedPluginApiVersion, "latest", entry.version, "latestRequired", entry.pluginApiVersion,
+                  "current", scripting::kCurrentPluginApiVersion
+              ),
+              .fontSize = Style::fontSizeMini * scale,
+              .color = colorSpecFromRole(ColorRole::Tertiary),
+              .maxLines = 3,
+          })
+      );
+    } else if (!entry.compatible) {
+      info->addChild(
+          ui::label({
+              .text = i18n::tr(
+                  "settings.plugins.store.incompatible-hint", "required", entry.pluginApiVersion, "oldest",
+                  scripting::kOldestSupportedPluginApiVersion, "current", scripting::kCurrentPluginApiVersion
+              ),
+              .fontSize = Style::fontSizeMini * scale,
+              .color = colorSpecFromRole(ColorRole::Error),
+              .maxLines = 3,
           })
       );
     }
