@@ -517,6 +517,7 @@
         "show-label": "Show Label",
         "show-login-button": "Login Button",
         "show-password-hint": "Password Hint",
+        "show-session-buttons": "Session Buttons",
         "show-vpn-label": "Show VPN Label",
         "show-when-idle": "Show When Idle",
         "stat": "Stat",
@@ -2306,7 +2307,7 @@
           "label": "Along Bar"
         },
         "panel-anchor-bar": {
-          "description": "Which bar panels attach to when opened from a shortcut or the dock. Leave empty to follow the widget that opened them",
+          "description": "Bar panels attach to when opened. Leave empty to follow the widget, shortcut, or dock that opened them",
           "label": "Anchor Bar"
         },
         "placement-clipboard": {
@@ -3085,6 +3086,7 @@
         "auto": "Auto",
         "before": "Before",
         "both": "Both",
+        "compact": "Compact",
         "count": "Count",
         "cpu-temp": "CPU Temperature",
         "cpu-usage": "CPU Usage",
