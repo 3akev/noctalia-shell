@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/timer_manager.h"
+#include "ipc/ipc_invocation_context.h"
 #include "shell/bar/bar_instance.h"
 #include "shell/bar/bar_services.h"
 #include "shell/bar/widget_action_dispatcher.h"
@@ -15,6 +16,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+
+class TaskbarWidget;
 
 class ConfigService;
 class CompositorPlatform;
@@ -116,6 +119,7 @@ private:
   void syncInstances();
   void createInstance(const WaylandOutput& output, std::size_t barIndex, const BarConfig& barConfig);
   void destroyInstance(std::uint32_t outputName);
+  [[nodiscard]] TaskbarWidget* findTaskbarWidget(const IpcInvocationContext& context) const;
   void populateWidgets(BarInstance& instance);
   void attachWidgetsToSections(BarInstance& instance);
   void updateWidgetHoverHighlight(BarInstance& instance, InputArea* hoveredArea);

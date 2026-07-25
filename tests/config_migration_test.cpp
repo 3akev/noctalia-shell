@@ -195,6 +195,77 @@ middle = "media toggle"
     expect(secondPassIssues.empty(), "widget action normalization was not idempotent");
   }
 
+  void checkWidgetGestureSettingsMigration() {
+    toml::table config = toml::parse(R"(
+[widget.workspaces]
+enable_scroll = false
+
+[widget.taskbar]
+enable_scroll = true
+
+[widget.my_profile]
+type = "power_profile"
+enable_scroll = false
+
+[widget.keyboard_layout]
+cycle_command = "hyprctl switchxkblayout all next"
+
+[widget.media]
+enable_scroll = false
+)");
+    noctalia::config::LegacyConfigIssues issues;
+    noctalia::config::normalizeLegacyConfig(config, issues);
+
+    // Disabled scroll becomes an explicit unbind on both scroll gestures.
+    for (const std::string_view gesture : {"scroll_up", "scroll_down"}) {
+      expect(
+          config["widget"]["workspaces"]["actions"][gesture].value<std::string>() == std::optional<std::string>{"none"},
+          "enable_scroll = false did not unbind a workspaces scroll gesture"
+      );
+    }
+    expect(
+        !config["widget"]["workspaces"]["enable_scroll"].value<bool>().has_value(),
+        "enable_scroll was not dropped from workspaces"
+    );
+
+    // Enabled scroll is the default, so the key just goes away.
+    expect(
+        !config["widget"]["taskbar"]["enable_scroll"].value<bool>().has_value(),
+        "enable_scroll = true was not dropped from taskbar"
+    );
+    expect(
+        config["widget"]["taskbar"]["actions"].as_table() == nullptr,
+        "enable_scroll = true seeded a spurious taskbar actions table"
+    );
+
+    // The type comes from `type` when the widget is named something else.
+    expect(
+        config["widget"]["my_profile"]["actions"]["scroll_up"].value<std::string>()
+            == std::optional<std::string>{"none"},
+        "a renamed power_profile widget was not migrated"
+    );
+
+    expect(
+        config["widget"]["keyboard_layout"]["actions"]["left"].value<std::string>()
+            == std::optional<std::string>{"exec hyprctl switchxkblayout all next"},
+        "cycle_command did not become an exec binding"
+    );
+    expect(
+        !config["widget"]["keyboard_layout"]["cycle_command"].value<std::string>().has_value(),
+        "cycle_command was not dropped"
+    );
+
+    // Widgets that still own their scroll keep the key.
+    expect(
+        config["widget"]["media"]["enable_scroll"].value<bool>() == std::optional<bool>{false},
+        "enable_scroll was dropped from a widget that still uses it"
+    );
+
+    noctalia::config::LegacyConfigIssues secondPassIssues;
+    noctalia::config::normalizeLegacyConfig(config, secondPassIssues);
+    expect(secondPassIssues.empty(), "widget gesture setting normalization was not idempotent");
+  }
+
   void checkVersionGating() {
     toml::table legacy = toml::parse(R"(
 [bar.main]
@@ -336,6 +407,7 @@ int main() {
   checkExtremeNegativeRadius();
   checkCustomScheduleMigration();
   checkWidgetActionsMigration();
+  checkWidgetGestureSettingsMigration();
   checkVersionGating();
   checkReminderFingerprint();
   checkRegistryOrdering();

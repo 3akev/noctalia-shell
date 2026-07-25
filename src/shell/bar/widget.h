@@ -147,6 +147,12 @@ protected:
   }
   // Runs the action bound to `gesture`, if any. Returns whether it was handled.
   bool dispatchGesture(noctalia::bar::Gesture gesture);
+  // Called just before a bound action runs, so a widget can snapshot state for an optimistic
+  // update. Match on `action` when the update only makes sense for one verb.
+  virtual void onGestureDispatch(noctalia::bar::Gesture gesture, const noctalia::bar::WidgetAction& action) {
+    (void)gesture;
+    (void)action;
+  }
   virtual void doLayout(Renderer& renderer, float containerWidth, float containerHeight) = 0;
   virtual void doUpdate(Renderer& renderer) { (void)renderer; }
 

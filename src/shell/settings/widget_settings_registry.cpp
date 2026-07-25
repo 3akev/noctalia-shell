@@ -18,7 +18,6 @@
 #include "shell/bar/widgets/lock_keys_widget_definition.h"
 #include "shell/bar/widgets/network_widget_definition.h"
 #include "shell/bar/widgets/notification_widget_definition.h"
-#include "shell/bar/widgets/power_profile_widget_definition.h"
 #include "shell/bar/widgets/privacy_widget_definition.h"
 #include "shell/bar/widgets/screenshot_widget_definition.h"
 #include "shell/bar/widgets/session_widget_definition.h"
@@ -107,7 +106,6 @@ namespace settings {
         projectWidgetDefinition<lockKeysWidgetDefinition>(),
         projectWidgetDefinition<networkWidgetDefinition>(),
         projectWidgetDefinition<notificationWidgetDefinition>(),
-        projectWidgetDefinition<powerProfileWidgetDefinition>(),
         projectWidgetDefinition<privacyWidgetDefinition>(),
         projectWidgetDefinition<screenshotWidgetDefinition>(),
         projectWidgetDefinition<sessionWidgetDefinition>(),
@@ -781,7 +779,6 @@ namespace settings {
     if (const auto* projection = findTypedWidgetDefinitionProjection(type)) {
       specs = projection->presentedSettingSpecs();
     } else if (type == "keyboard_layout") {
-      add(stringSpec("cycle_command"));
       add(boolSpec("hide_when_single_layout", false));
       add(boolSpec("show_icon", true));
       {
@@ -914,7 +911,6 @@ namespace settings {
       }
     } else if (type == "taskbar") {
       // Windows: what the taskbar lists and how each window tile looks.
-      add(withGroup(boolSpec("enable_scroll", true), "taskbar.windows"));
       add(withGroup(boolSpec("show_all_outputs", false), "taskbar.windows"));
       add(withGroup(boolSpec("show_active_indicator", true), "taskbar.windows"));
       add(withGroup(doubleSpec("active_opacity", 1.0, 0.1, 1.0, 0.01), "taskbar.windows"));
@@ -1109,7 +1105,6 @@ namespace settings {
       }
 
       // Workspaces: which workspaces appear, and what each one's label shows.
-      add(withGroup(boolSpec("enable_scroll", true), "workspaces.list"));
       {
         auto hideWhenEmpty = withGroup(boolSpec("hide_when_empty", false), "workspaces.list");
         hideWhenEmpty.descriptionKey = "settings.widgets.settings.hide-when-empty.workspaces-description";

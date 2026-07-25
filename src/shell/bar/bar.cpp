@@ -17,6 +17,7 @@
 #include "shell/bar/bar_reserved_zone.h"
 #include "shell/bar/widget.h"
 #include "shell/bar/widgets/plugin_widget.h"
+#include "shell/bar/widgets/taskbar_widget.h"
 #include "shell/panel/panel_manager.h"
 #include "shell/surface/shadow.h"
 #include "shell/tooltip/tooltip_manager.h"
@@ -3667,9 +3668,58 @@ std::string Bar::setBarLayerIpc(std::string_view args) {
   return "ok\n";
 }
 
+TaskbarWidget* Bar::findTaskbarWidget(const IpcInvocationContext& context) const {
+  const auto findIn = [&context](const std::vector<std::unique_ptr<Widget>>& widgets) -> TaskbarWidget* {
+    for (const auto& widget : widgets) {
+      if (widget->configName() != context.widgetName) {
+        continue;
+      }
+      if (auto* taskbar = dynamic_cast<TaskbarWidget*>(widget.get()); taskbar != nullptr) {
+        return taskbar;
+      }
+    }
+    return nullptr;
+  };
+
+  for (const auto& instance : m_instances) {
+    if (instance->barConfig.name != context.barName || instance->output != context.output) {
+      continue;
+    }
+    for (const auto* section : {&instance->startWidgets, &instance->centerWidgets, &instance->endWidgets}) {
+      if (auto* taskbar = findIn(*section); taskbar != nullptr) {
+        return taskbar;
+      }
+    }
+  }
+  return nullptr;
+}
+
 void Bar::registerIpc(IpcService& ipc) {
   // Widget gesture actions dispatch through the same registry.
   m_actionDispatcher.setIpcService(&ipc);
+
+  ipc.registerHandler(
+      "taskbar-cycle",
+      [this, &ipc](const std::string& args) -> std::string {
+        const auto parts = noctalia::ipc::splitWords(args);
+        if (parts.size() != 1 || (parts[0] != "next" && parts[0] != "prev")) {
+          return "error: taskbar-cycle requires <next|prev>\n";
+        }
+        // Order comes from the taskbar's own model (pins, grouping, per-monitor filter), so the
+        // target is a widget instance rather than a global window list.
+        const auto& context = ipc.invocationContext();
+        if (!context.has_value() || context->widgetName.empty()) {
+          return "error: taskbar-cycle must be invoked from a taskbar widget gesture\n";
+        }
+        auto* taskbar = findTaskbarWidget(*context);
+        if (taskbar == nullptr) {
+          return "error: no taskbar widget named '" + context->widgetName + "' on bar '" + context->barName + "'\n";
+        }
+        taskbar->cycleAdjacent(parts[0] == "next" ? 1 : -1);
+        return "ok\n";
+      },
+      "taskbar-cycle <next|prev>", "Step to the adjacent task or workspace group in the invoking taskbar"
+  );
 
   ipc.registerHandler(
       "bar-show", [this](const std::string& args) -> std::string { return showBarIpc(args); },

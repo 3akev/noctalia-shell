@@ -272,6 +272,8 @@ bool Widget::dispatchGesture(noctalia::bar::Gesture gesture) {
     return false;
   }
 
+  onGestureDispatch(gesture, *action);
+
   // Panel actions re-enter through the bar's panel callback so the panel anchors at this widget
   // rather than at the compositor's focused output.
   if (action->kind == noctalia::bar::WidgetAction::Kind::Ipc && noctalia::bar::isAnchoredPanelVerb(action->verb)) {

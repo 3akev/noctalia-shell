@@ -3252,10 +3252,6 @@
           "description": "Map keyboard layout names to custom labels",
           "label": "Custom Labels"
         },
-        "cycle-command": {
-          "description": "Command run when cycling keyboard layouts",
-          "label": "Cycle Command"
-        },
         "detached-panel": {
           "description": "Open the drawer as a floating panel with its own background instead of merging with the bar",
           "label": "Detached Panel"

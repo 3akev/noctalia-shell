@@ -7,6 +7,7 @@
 #include <limits>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 
 namespace noctalia::config {
@@ -15,6 +16,7 @@ namespace noctalia::config {
     constexpr int kNegativeBarRadiusMigrationVersion = 1;
     constexpr int kCustomScheduleMigrationVersion = 2;
     constexpr int kWidgetActionsMigrationVersion = 3;
+    constexpr int kWidgetGestureSettingsMigrationVersion = 4;
     constexpr std::int64_t kMaxBarRadius = 500;
     constexpr std::array<std::string_view, 5> kBarRadiusKeys = {
         "radius", "radius_top_left", "radius_top_right", "radius_bottom_left", "radius_bottom_right",
@@ -151,6 +153,63 @@ namespace noctalia::config {
       }
     }
 
+    // `enable_scroll` and `cycle_command` were per-widget stand-ins for gestures these widgets now
+    // declare as data. Both become ordinary bindings.
+    template <typename OnChanged> void migrateWidgetGestureSettings(toml::table& root, OnChanged&& onChanged) {
+      static constexpr std::array<std::string_view, 3> kScrollTypes{"workspaces", "taskbar", "power_profile"};
+
+      auto* widgets = root["widget"].as_table();
+      if (widgets == nullptr) {
+        return;
+      }
+
+      const auto bind = [](toml::table& widget, std::string_view gesture, const std::string& action) {
+        auto* actions = widget["actions"].as_table();
+        if (actions == nullptr) {
+          widget.insert_or_assign("actions", toml::table{});
+          actions = widget["actions"].as_table();
+        }
+        if (!actions->contains(gesture)) {
+          actions->insert_or_assign(gesture, action);
+        }
+      };
+
+      for (auto& [widgetName, widgetNode] : *widgets) {
+        auto* widget = widgetNode.as_table();
+        if (widget == nullptr) {
+          continue;
+        }
+        // A widget entry without an explicit `type` is named after its type.
+        const std::string type = (*widget)["type"].value_or(std::string(widgetName.str()));
+        const std::string path = "widget." + std::string(widgetName.str());
+
+        if (std::ranges::contains(kScrollTypes, type) && widget->contains("enable_scroll")) {
+          const bool wasEnabled = (*widget)["enable_scroll"].value_or(true);
+          widget->erase("enable_scroll");
+          if (!wasEnabled) {
+            bind(*widget, "scroll_up", "none");
+            bind(*widget, "scroll_down", "none");
+          }
+          onChanged(path, "enable_scroll is now the scroll_up/scroll_down gesture bindings");
+        }
+
+        if (type == "keyboard_layout" && widget->contains("cycle_command")) {
+          const auto command = (*widget)["cycle_command"].value_or(std::string{});
+          widget->erase("cycle_command");
+          if (!command.empty()) {
+            bind(*widget, "left", "exec " + command);
+          }
+          onChanged(path, "cycle_command is now the left gesture binding");
+        }
+      }
+    }
+
+    void migrateWidgetGestureSettingsSidecar(toml::table& root, schema::Diagnostics& diag) {
+      migrateWidgetGestureSettings(root, [&diag](const std::string& path, std::string_view message) {
+        diag.warn(path, std::string(message));
+      });
+    }
+
     void migrateWidgetActionsSidecar(toml::table& root, schema::Diagnostics& diag) {
       migrateWidgetActions(root, [&diag](const std::string& path) {
         diag.warn(path, "middle_click_opens_widget_settings is now the `middle` widget gesture binding");
@@ -208,6 +267,11 @@ namespace noctalia::config {
             .toVersion = kWidgetActionsMigrationVersion,
             .summary = "bar: move middle_click_opens_widget_settings to widget gesture actions",
             .apply = migrateWidgetActionsSidecar,
+        },
+        {
+            .toVersion = kWidgetGestureSettingsMigrationVersion,
+            .summary = "widget: move enable_scroll and cycle_command to gesture actions",
+            .apply = migrateWidgetGestureSettingsSidecar,
         },
     };
     return migrations;
@@ -280,6 +344,13 @@ namespace noctalia::config {
           .migrationVersion = kWidgetActionsMigrationVersion,
           .path = path,
           .message = "middle_click_opens_widget_settings is now the `middle` bar widget gesture binding",
+      });
+    });
+    migrateWidgetGestureSettings(root, [&issues](const std::string& path, std::string_view message) {
+      issues.push_back({
+          .migrationVersion = kWidgetGestureSettingsMigrationVersion,
+          .path = path,
+          .message = std::string(message),
       });
     });
   }

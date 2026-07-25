@@ -27,24 +27,42 @@ namespace noctalia::bar {
     constexpr std::array<GestureBinding, 2> kNetwork{
         {{Gesture::Left, "panel-toggle control-center network"}, {Gesture::Right, "network-toggle"}}
     };
+    constexpr std::array<GestureBinding, 1> kKeyboardLayout{{{Gesture::Left, "keyboard-layout-cycle"}}};
+    // Left steps toward performance, right back toward power-saver; scroll up matches left.
+    constexpr std::array<GestureBinding, 4> kPowerProfile{
+        {{Gesture::Left, "power-cycle next"},
+         {Gesture::Right, "power-cycle prev"},
+         {Gesture::ScrollUp, "power-cycle next"},
+         {Gesture::ScrollDown, "power-cycle prev"}}
+    };
     constexpr std::array<GestureBinding, 1> kSession{{{Gesture::Left, "panel-toggle session"}}};
+    constexpr std::array<GestureBinding, 2> kTaskbar{
+        {{Gesture::ScrollUp, "taskbar-cycle prev"}, {Gesture::ScrollDown, "taskbar-cycle next"}}
+    };
+    constexpr std::array<GestureBinding, 2> kWorkspaces{
+        {{Gesture::ScrollUp, "workspace-switch prev"}, {Gesture::ScrollDown, "workspace-switch next"}}
+    };
     constexpr std::array<GestureBinding, 1> kSettings{{{Gesture::Left, "settings-open"}}};
     constexpr std::array<GestureBinding, 1> kSysmon{{{Gesture::Left, "panel-toggle control-center system"}}};
     constexpr std::array<GestureBinding, 1> kWallpaper{{{Gesture::Left, "panel-toggle wallpaper"}}};
     constexpr std::array<GestureBinding, 1> kWeather{{{Gesture::Left, "panel-toggle control-center weather"}}};
 
-    constexpr std::array<TypeDefaults, 11> kTypeDefaults{{
+    constexpr std::array<TypeDefaults, 15> kTypeDefaults{{
         {"battery", kBattery},
         {"clipboard", kClipboard},
         {"clock", kClock},
         {"control-center", kControlCenter},
+        {"keyboard_layout", kKeyboardLayout},
         {"launcher", kLauncher},
         {"network", kNetwork},
+        {"power_profile", kPowerProfile},
         {"session", kSession},
         {"settings", kSettings},
         {"sysmon", kSysmon},
+        {"taskbar", kTaskbar},
         {"wallpaper", kWallpaper},
         {"weather", kWeather},
+        {"workspaces", kWorkspaces},
     }};
 
     struct TypeReserved {
