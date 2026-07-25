@@ -443,6 +443,68 @@ void Application::initIpc() {
       "dpms-off", "Turn monitors off"
   );
 
+  m_ipcService.registerHandler(
+      "workspace-switch",
+      [this](const std::string& args) -> std::string {
+        const auto parts = noctalia::ipc::splitWords(args);
+        if (parts.size() != 1 || (parts[0] != "next" && parts[0] != "prev")) {
+          return "error: workspace-switch requires <next|prev>\n";
+        }
+        // A bar widget gesture targets its own monitor; a keybind targets the focused one.
+        wl_output* output = nullptr;
+        if (const auto& context = m_ipcService.invocationContext(); context.has_value()) {
+          output = context->output;
+        }
+        if (output == nullptr) {
+          output = m_compositorPlatform.preferredInteractiveOutput();
+        }
+        const auto workspaces = m_compositorPlatform.workspaces(output);
+        if (workspaces.empty()) {
+          return "error: no workspaces on the target monitor\n";
+        }
+
+        const bool forward = parts[0] == "next";
+        const auto active = std::ranges::find(workspaces, true, &Workspace::active);
+        std::size_t target = 0;
+        if (active == workspaces.end()) {
+          target = forward ? 0 : workspaces.size() - 1;
+        } else {
+          const auto current = static_cast<std::size_t>(std::ranges::distance(workspaces.begin(), active));
+          if (forward) {
+            if (current + 1 >= workspaces.size()) {
+              return "ok\n";
+            }
+            target = current + 1;
+          } else {
+            if (current == 0) {
+              return "ok\n";
+            }
+            target = current - 1;
+          }
+        }
+        m_compositorPlatform.activateWorkspace(output, workspaces[target]);
+        return "ok\n";
+      },
+      "workspace-switch <next|prev>", "Switch to the adjacent workspace on the target monitor (stops at both ends)"
+  );
+
+  m_ipcService.registerHandler(
+      "keyboard-layout-cycle",
+      [this](const std::string& args) -> std::string {
+        if (!noctalia::ipc::splitWords(args).empty()) {
+          return "error: keyboard-layout-cycle takes no arguments\n";
+        }
+        if (!m_compositorPlatform.hasKeyboardLayoutBackend()) {
+          return "error: this compositor has no keyboard layout backend\n";
+        }
+        if (!m_compositorPlatform.cycleKeyboardLayout()) {
+          return "error: failed to cycle the keyboard layout\n";
+        }
+        return "ok\n";
+      },
+      "keyboard-layout-cycle", "Switch to the next keyboard layout"
+  );
+
   auto workspaceAlertStatus = [this]() {
     const auto tokens = m_workspaceAlertService.tokens();
     if (tokens.empty()) {

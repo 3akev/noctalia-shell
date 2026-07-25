@@ -24,18 +24,22 @@ namespace noctalia::bar {
     constexpr std::array<GestureBinding, 1> kClock{{{Gesture::Left, "panel-toggle control-center calendar"}}};
     constexpr std::array<GestureBinding, 1> kControlCenter{{{Gesture::Left, "panel-toggle control-center home"}}};
     constexpr std::array<GestureBinding, 1> kLauncher{{{Gesture::Left, "panel-toggle launcher"}}};
+    constexpr std::array<GestureBinding, 2> kNetwork{
+        {{Gesture::Left, "panel-toggle control-center network"}, {Gesture::Right, "network-toggle"}}
+    };
     constexpr std::array<GestureBinding, 1> kSession{{{Gesture::Left, "panel-toggle session"}}};
     constexpr std::array<GestureBinding, 1> kSettings{{{Gesture::Left, "settings-open"}}};
     constexpr std::array<GestureBinding, 1> kSysmon{{{Gesture::Left, "panel-toggle control-center system"}}};
     constexpr std::array<GestureBinding, 1> kWallpaper{{{Gesture::Left, "panel-toggle wallpaper"}}};
     constexpr std::array<GestureBinding, 1> kWeather{{{Gesture::Left, "panel-toggle control-center weather"}}};
 
-    constexpr std::array<TypeDefaults, 10> kTypeDefaults{{
+    constexpr std::array<TypeDefaults, 11> kTypeDefaults{{
         {"battery", kBattery},
         {"clipboard", kClipboard},
         {"clock", kClock},
         {"control-center", kControlCenter},
         {"launcher", kLauncher},
+        {"network", kNetwork},
         {"session", kSession},
         {"settings", kSettings},
         {"sysmon", kSysmon},
