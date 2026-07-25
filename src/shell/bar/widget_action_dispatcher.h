@@ -28,6 +28,11 @@ namespace noctalia::bar {
     // Returns false when the action could not be run. Panel verbs must be handled by the caller.
     bool run(const WidgetAction& action, IpcInvocationContext context) const;
 
+    // True when the action's verb declared itself as stepping one position along an ordered set
+    // (IpcService::registerCycleHandler). Bound to a scroll gesture, those run once per flick
+    // rather than once per notch. Exec actions are opaque and never count as cycles.
+    [[nodiscard]] bool cycles(const WidgetAction& action) const noexcept;
+
   private:
     IpcService* m_ipc = nullptr;
   };

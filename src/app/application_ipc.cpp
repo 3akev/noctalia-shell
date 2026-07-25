@@ -443,7 +443,7 @@ void Application::initIpc() {
       "", "Turn monitors off"
   );
 
-  m_ipcService.registerHandler(
+  m_ipcService.registerCycleHandler(
       "workspace-switch",
       [this](const std::string& args) -> std::string {
         const auto parts = noctalia::ipc::splitWords(args);
@@ -488,7 +488,7 @@ void Application::initIpc() {
       "<next|prev>", "Switch to the adjacent workspace on the target monitor (stops at both ends)"
   );
 
-  m_ipcService.registerHandler(
+  m_ipcService.registerCycleHandler(
       "keyboard-layout-cycle",
       [this](const std::string& args) -> std::string {
         if (!noctalia::ipc::splitWords(args).empty()) {

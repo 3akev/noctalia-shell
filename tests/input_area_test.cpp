@@ -1,9 +1,11 @@
 #include "render/scene/input_area.h"
 #include "render/scene/node.h"
 
+#include <chrono>
 #include <cstdio>
 #include <linux/input-event-codes.h>
 #include <memory>
+#include <thread>
 #include <wayland-client-protocol.h>
 
 namespace {
@@ -14,6 +16,22 @@ namespace {
       return false;
     }
     return true;
+  }
+
+  // One vertical axis frame from a wheel the compositor counted notches for; `lines` is the
+  // detent count it reported, which a scroll-factor can inflate past 1.
+  void wheelFrame(InputArea& area, float lines) {
+    const auto value120 = static_cast<std::int32_t>(lines * 120.0f);
+    static_cast<void>(area.dispatchAxis(
+        1.0f, 1.0f, WL_POINTER_AXIS_VERTICAL_SCROLL, WL_POINTER_AXIS_SOURCE_WHEEL, lines * 15.0f, 0, value120, lines
+    ));
+  }
+
+  // One vertical axis frame from a touchpad: continuous units, no detent count.
+  void fingerFrame(InputArea& area, double value) {
+    static_cast<void>(
+        area.dispatchAxis(1.0f, 1.0f, WL_POINTER_AXIS_VERTICAL_SCROLL, WL_POINTER_AXIS_SOURCE_FINGER, value, 0, 0, 0.0f)
+    );
   }
 
 } // namespace
@@ -145,6 +163,103 @@ int main() {
              "an untouched axis keeps its directions"
          )
         && ok;
+  }
+
+  {
+    // A notch the compositor counted (value120) steps every time, however fast the wheel turns:
+    // discrete steppers scale with how far the user actually scrolled.
+    InputArea area;
+    area.setSize(20.0f, 20.0f);
+    float steps = 0.0f;
+    area.setOnAxisHandler([&steps](const InputArea::PointerData& data) {
+      steps += data.scrollSteps();
+      return true;
+    });
+
+    for (int notch = 0; notch < 5; ++notch) {
+      wheelFrame(area, 1.0f);
+    }
+    ok = expect(steps == 5.0f, "back-to-back wheel notches each step") && ok;
+
+    // Flicking back the other way is never swallowed by a gate armed in the old direction.
+    steps = 0.0f;
+    wheelFrame(area, -1.0f);
+    ok = expect(steps == -1.0f, "an immediate reversal steps") && ok;
+
+    // A compositor scroll-factor inflates the delta; the notch the user felt is still one step.
+    steps = 0.0f;
+    wheelFrame(area, 3.2f);
+    ok = expect(steps == 1.0f, "a scaled wheel notch is still one step") && ok;
+  }
+
+  {
+    // Sub-detent frames (a free-spinning hi-res wheel) accrue to a whole notch before stepping.
+    InputArea area;
+    area.setSize(20.0f, 20.0f);
+    float steps = 0.0f;
+    area.setOnAxisHandler([&steps](const InputArea::PointerData& data) {
+      steps += data.scrollSteps();
+      return true;
+    });
+
+    for (int frame = 0; frame < 3; ++frame) {
+      wheelFrame(area, 0.25f);
+    }
+    ok = expect(steps == 0.0f, "sub-detent frames do not step on their own") && ok;
+
+    wheelFrame(area, 0.25f);
+    ok = expect(steps == 1.0f, "sub-detent frames step once a full detent has turned") && ok;
+  }
+
+  {
+    // A touchpad carries no detent count and streams frames as fast as the finger moves, so
+    // steps are rate-capped rather than fired on every threshold crossing.
+    InputArea area;
+    area.setSize(20.0f, 20.0f);
+    float steps = 0.0f;
+    area.setOnAxisHandler([&steps](const InputArea::PointerData& data) {
+      steps += data.scrollSteps();
+      return true;
+    });
+
+    for (int frame = 0; frame < 20; ++frame) {
+      fingerFrame(area, 25.0);
+    }
+    ok = expect(steps == 1.0f, "a touchpad flick is rate-capped to one step per interval") && ok;
+
+    // The cap is a rate, not a one-shot: keep swiping and it keeps stepping, no pause needed.
+    std::this_thread::sleep_for(std::chrono::milliseconds(90));
+    fingerFrame(area, 25.0);
+    ok = expect(steps == 2.0f, "a touchpad keeps stepping once the cap interval elapses") && ok;
+  }
+
+  {
+    // scrollStepStartsGesture() is what a list-cycling consumer acts on: it marks the first step
+    // of a flick, so the rest of the burst can be swallowed and one flick moves one position.
+    InputArea area;
+    area.setSize(20.0f, 20.0f);
+    float steps = 0.0f;
+    area.setOnAxisHandler([&steps](const InputArea::PointerData& data) {
+      if (data.scrollStepStartsGesture()) {
+        steps += data.scrollSteps();
+      }
+      return true;
+    });
+
+    for (int notch = 0; notch < 5; ++notch) {
+      wheelFrame(area, 1.0f);
+    }
+    ok = expect(steps == 1.0f, "only the first step of a flick starts the gesture") && ok;
+
+    // Reversing mid-flick is a new intent, not a continuation of the same one.
+    steps = 0.0f;
+    wheelFrame(area, -1.0f);
+    ok = expect(steps == -1.0f, "reversing within a burst starts a new gesture") && ok;
+
+    steps = 0.0f;
+    std::this_thread::sleep_for(std::chrono::milliseconds(120));
+    wheelFrame(area, -1.0f);
+    ok = expect(steps == -1.0f, "a quiet stream starts the next gesture") && ok;
   }
 
   return ok ? 0 : 1;

@@ -28,6 +28,10 @@ public:
     // Whether to offer this command where a UI picks an action to run. False for state queries,
     // whose output a click would discard. Config is not restricted by this.
     bool bindable = true;
+    // Whether the command moves one position along an ordered set. Bound to a scroll gesture,
+    // one of those runs once per flick: the several notches an eager wheel movement emits are
+    // one intent, not a request to skip that many entries.
+    bool cycles = false;
 
     // "panel-toggle <id> [context]" — the form shown in --help.
     [[nodiscard]] std::string signature() const;
@@ -102,6 +106,16 @@ public:
       const std::string& command, Handler handler, std::string argsSpec = {}, std::string description = {}
   );
 
+  // A command that steps one position along an ordered set (workspaces, tracks, power profiles).
+  // Registered like any other; bound to a scroll gesture it runs once per flick instead of once
+  // per notch, so an eager wheel movement moves one position rather than several.
+  void registerCycleHandler(
+      const std::string& command, Handler handler, std::string argsSpec = {}, std::string description = {}
+  );
+
+  // True when `command` was registered with registerCycleHandler().
+  [[nodiscard]] bool handlerCycles(std::string_view command) const noexcept;
+
 private:
   struct HandlerEntry {
     Handler fn;
@@ -109,6 +123,7 @@ private:
     std::string description;
     HandlerVisibility visibility = HandlerVisibility::Public;
     bool bindable = true;
+    bool cycles = false;
   };
 
   void handleConnection(int connFd);

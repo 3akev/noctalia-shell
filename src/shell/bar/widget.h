@@ -147,6 +147,8 @@ protected:
   }
   // Runs the action bound to `gesture`, if any. Returns whether it was handled.
   bool dispatchGesture(noctalia::bar::Gesture gesture);
+  // Whether the gesture's bound verb steps along a list, so a scroll flick should run it once.
+  [[nodiscard]] bool bindingCycles(noctalia::bar::Gesture gesture) const;
   // Called just before a bound action runs, so a widget can snapshot state for an optimistic
   // update. Match on `action` when the update only makes sense for one verb.
   virtual void onGestureDispatch(noctalia::bar::Gesture gesture, const noctalia::bar::WidgetAction& action) {

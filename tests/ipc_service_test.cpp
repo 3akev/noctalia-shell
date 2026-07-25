@@ -119,6 +119,23 @@ int main() {
     assert(visible != infos.end() && visible->bindable);
   }
 
+  // A cycling command runs like any other, but declares that a scroll flick should move one
+  // position rather than one per notch.
+  {
+    ipc.registerCycleHandler("cycle-command", [](const std::string&) { return "moved\n"; }, "<next|prev>", "Step");
+    assert(ipc.execute("cycle-command next") == "moved\n");
+    assert(ipc.handlerCycles("cycle-command"));
+    assert(!ipc.handlerCycles("visible-command"));
+    assert(!ipc.handlerCycles("no-such-command"));
+
+    const auto infos = ipc.handlers();
+    const auto cycle = std::ranges::find(infos, "cycle-command", &IpcService::HandlerInfo::command);
+    assert(cycle != infos.end());
+    assert(cycle->cycles);
+    // Cycling says nothing about whether an action picker should offer it.
+    assert(cycle->bindable);
+  }
+
   // `exec` and `none` are reserved by the bar widget action grammar and must never become
   // IPC commands, or a binding would resolve to two different things.
   assert(!ipc.hasHandler("exec"));

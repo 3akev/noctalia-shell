@@ -415,6 +415,10 @@ namespace {
       if (!gesture.has_value()) {
         return false;
       }
+      const auto* action = instance.deadZoneBindings.find(*gesture);
+      if (!data.scrollStepStartsGesture() && action != nullptr && dispatcher.cycles(*action)) {
+        return true;
+      }
       return dispatchBarDeadZoneGesture(instance, *gesture, sx, sy, platform, dispatcher);
     });
     return instance.deadZoneAxisSink.dispatchAxis(
@@ -3721,7 +3725,7 @@ void Bar::registerIpc(IpcService& ipc) {
   // Widget gesture actions dispatch through the same registry.
   m_actionDispatcher.setIpcService(&ipc);
 
-  ipc.registerHandler(
+  ipc.registerCycleHandler(
       "taskbar-cycle",
       [this, &ipc](const std::string& args) -> std::string {
         const auto parts = noctalia::ipc::splitWords(args);

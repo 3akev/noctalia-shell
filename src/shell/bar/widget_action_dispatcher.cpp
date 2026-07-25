@@ -47,6 +47,10 @@ namespace noctalia::bar {
 
   } // namespace
 
+  bool WidgetActionDispatcher::cycles(const WidgetAction& action) const noexcept {
+    return action.kind == WidgetAction::Kind::Ipc && m_ipc != nullptr && m_ipc->handlerCycles(action.verb);
+  }
+
   bool WidgetActionDispatcher::run(const WidgetAction& action, IpcInvocationContext context) const {
     switch (action.kind) {
     case WidgetAction::Kind::None:

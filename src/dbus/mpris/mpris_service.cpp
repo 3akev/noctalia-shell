@@ -686,7 +686,7 @@ void MprisService::refreshPlayers() {
 }
 
 void MprisService::registerIpc(IpcService& ipc) {
-  ipc.registerHandler(
+  ipc.registerCycleHandler(
       "media",
       [this](const std::string& args) -> std::string {
         const auto parts = noctalia::ipc::splitWords(args);

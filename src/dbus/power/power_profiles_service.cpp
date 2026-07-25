@@ -341,7 +341,7 @@ void PowerProfilesService::registerIpc(IpcService& ipc, StateFeedbackCallback st
       },
       "<profile>", "Set the UPower power profile (e.g. performance, balanced, power-saver)"
   );
-  ipc.registerHandler(
+  ipc.registerCycleHandler(
       "power-cycle",
       [this, stateFeedback](const std::string& args) -> std::string {
         const std::string direction = StringUtils::trim(args);

@@ -271,8 +271,18 @@ void Widget::installGestureHandlers() {
       return m_gestureBindings.find(noctalia::bar::Gesture::ScrollUp) != nullptr
           || m_gestureBindings.find(noctalia::bar::Gesture::ScrollDown) != nullptr;
     }
+    if (!data.scrollStepStartsGesture() && bindingCycles(*gesture)) {
+      // A verb that steps along a list moves one position per flick, so the rest of the burst is
+      // swallowed rather than skipping several entries. Ramp verbs take every notch.
+      return true;
+    }
     return dispatchGesture(*gesture);
   });
+}
+
+bool Widget::bindingCycles(noctalia::bar::Gesture gesture) const {
+  const auto* action = m_gestureBindings.find(gesture);
+  return action != nullptr && m_actionDispatcher != nullptr && m_actionDispatcher->cycles(*action);
 }
 
 bool Widget::dispatchGesture(noctalia::bar::Gesture gesture) {
