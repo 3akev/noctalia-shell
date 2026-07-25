@@ -4,9 +4,28 @@
 #include "scripting/plugin_i18n.h"
 #include "scripting/plugin_panel_shell.h"
 #include "scripting/plugin_registry.h"
+#include "shell/bar/widgets/active_window_widget_definition.h"
 #include "shell/bar/widgets/audio_visualizer_widget_definition.h"
 #include "shell/bar/widgets/battery_widget_definition.h"
+#include "shell/bar/widgets/bluetooth_widget_definition.h"
 #include "shell/bar/widgets/brightness_widget_definition.h"
+#include "shell/bar/widgets/clipboard_widget_definition.h"
+#include "shell/bar/widgets/clock_widget_definition.h"
+#include "shell/bar/widgets/control_center_widget_definition.h"
+#include "shell/bar/widgets/custom_button_widget_definition.h"
+#include "shell/bar/widgets/launcher_widget_definition.h"
+#include "shell/bar/widgets/lock_keys_widget_definition.h"
+#include "shell/bar/widgets/network_widget_definition.h"
+#include "shell/bar/widgets/notification_widget_definition.h"
+#include "shell/bar/widgets/power_profile_widget_definition.h"
+#include "shell/bar/widgets/privacy_widget_definition.h"
+#include "shell/bar/widgets/screenshot_widget_definition.h"
+#include "shell/bar/widgets/session_widget_definition.h"
+#include "shell/bar/widgets/settings_widget_definition.h"
+#include "shell/bar/widgets/spacer_widget_definition.h"
+#include "shell/bar/widgets/text_widget_definition.h"
+#include "shell/bar/widgets/wallpaper_widget_definition.h"
+#include "shell/bar/widgets/weather_widget_definition.h"
 #include "shell/settings/font_family_catalog.h"
 #include "shell/settings/font_weight_catalog.h"
 #include "shell/settings/font_weight_i18n.h"
@@ -74,9 +93,28 @@ namespace settings {
     }
 
     constexpr std::array kTypedWidgetDefinitions{
+        projectWidgetDefinition<activeWindowWidgetDefinition>(),
         projectWidgetDefinition<audioVisualizerWidgetDefinition>(),
         projectWidgetDefinition<batteryWidgetDefinition>(),
+        projectWidgetDefinition<bluetoothWidgetDefinition>(),
         projectWidgetDefinition<brightnessWidgetDefinition>(),
+        projectWidgetDefinition<clipboardWidgetDefinition>(),
+        projectWidgetDefinition<clockWidgetDefinition>(),
+        projectWidgetDefinition<controlCenterWidgetDefinition>(),
+        projectWidgetDefinition<customButtonWidgetDefinition>(),
+        projectWidgetDefinition<launcherWidgetDefinition>(),
+        projectWidgetDefinition<lockKeysWidgetDefinition>(),
+        projectWidgetDefinition<networkWidgetDefinition>(),
+        projectWidgetDefinition<notificationWidgetDefinition>(),
+        projectWidgetDefinition<powerProfileWidgetDefinition>(),
+        projectWidgetDefinition<privacyWidgetDefinition>(),
+        projectWidgetDefinition<screenshotWidgetDefinition>(),
+        projectWidgetDefinition<sessionWidgetDefinition>(),
+        projectWidgetDefinition<settingsWidgetDefinition>(),
+        projectWidgetDefinition<spacerWidgetDefinition>(),
+        projectWidgetDefinition<textWidgetDefinition>(),
+        projectWidgetDefinition<wallpaperWidgetDefinition>(),
+        projectWidgetDefinition<weatherWidgetDefinition>(),
     };
 
     const TypedWidgetDefinitionProjection* findTypedWidgetDefinitionProjection(std::string_view type) {
@@ -687,11 +725,6 @@ namespace settings {
         {"kb", "settings.widgets.options.kilobytes"},
         {"mb", "settings.widgets.options.megabytes"},
     };
-    const std::vector<WidgetSettingSelectOption> vpnStatusMode = {
-        {"replace", "settings.widgets.options.replace"},
-        {"both", "settings.widgets.options.both"},
-        {"hidden", "settings.widgets.options.hidden"},
-    };
     const std::vector<WidgetSettingSelectOption> glyphPositionOptions = {
         {"before", "settings.widgets.options.before"},
         {"after", "settings.widgets.options.after"},
@@ -721,51 +754,12 @@ namespace settings {
         {"always", "settings.widgets.options.always"},
         {"on_hover", "settings.widgets.options.on-hover"},
     };
-    const std::vector<WidgetSettingSelectOption> activeWindowDisplay = {
-        {"icon_and_text", "settings.widgets.options.icon-and-text"},
-        {"icon_only", "settings.widgets.options.icon-only"},
-        {"text_only", "settings.widgets.options.text-only"},
-    };
     const std::vector<WidgetSettingSelectOption> volumeDeviceOptions = {
         {"output", "settings.widgets.options.output"},
         {"input", "settings.widgets.options.input"},
     };
     if (const auto* projection = findTypedWidgetDefinitionProjection(type)) {
       specs = projection->presentedSettingSpecs();
-    } else if (type == "active_window") {
-      add(intSpec("min_length", 80, 0.0, 800.0, 1.0));
-      add(intSpec("max_length", 260, 40.0, 800.0, 1.0));
-      add(intSpec("icon_size", static_cast<double>(Style::fontSizeBody), 8.0, 64.0, 1.0));
-      add(selectSpec("title_scroll", "none", mediaTitleScroll));
-      {
-        auto display = selectSpec("display", "icon_and_text", activeWindowDisplay);
-        display.descriptionKey = "settings.widgets.settings.display.active-window-description";
-        add(std::move(display));
-      }
-      add(boolSpec("show_empty_label", false));
-    } else if (type == "bluetooth") {
-      add(boolSpec("show_label", false));
-      add(boolSpec("hide_when_no_connected_device", false));
-    } else if (type == "clock") {
-      add(stringSpec("format", "{:%H:%M}"));
-      add(stringSpec("vertical_format"));
-      add(stringSpec("tooltip_format"));
-      add(stringSpec("timezone", ""));
-    } else if (type == "clipboard") {
-      add(glyphSpec("glyph", "clipboard"));
-      add(stringSpec("custom_image", ""));
-      add(boolSpec("custom_image_colorize", false));
-    } else if (type == "screenshot") {
-      add(glyphSpec("glyph", "screenshot"));
-      add(stringSpec("custom_image", ""));
-      add(boolSpec("custom_image_colorize", false));
-      add(segmentedSpec(
-          "primary_click", "region",
-          {
-              {"region", "settings.widgets.options.screenshot-primary-region"},
-              {"fullscreen", "settings.widgets.options.screenshot-primary-fullscreen"},
-          }
-      ));
     } else if (type == "keyboard_layout") {
       add(stringSpec("cycle_command"));
       add(boolSpec("hide_when_single_layout", false));
@@ -796,40 +790,6 @@ namespace settings {
         labels.visibleWhen = WidgetSettingVisibility{"show_label", {"true"}};
         add(std::move(labels));
       }
-    } else if (type == "launcher") {
-      add(glyphSpec("glyph", "search"));
-      add(stringSpec("custom_image", ""));
-      add(boolSpec("custom_image_colorize", false));
-    } else if (type == "control-center") {
-      add(glyphSpec("glyph", "noctalia"));
-      add(stringSpec("custom_image", ""));
-      add(boolSpec("custom_image_colorize", false));
-    } else if (type == "custom_button") {
-      add(glyphSpec("glyph", "heart"));
-      add(stringSpec("custom_image", ""));
-      add(boolSpec("custom_image_colorize", false));
-      add(stringSpec("label"));
-      add(stringSpec("tooltip"));
-      add(stringSpec("command"));
-      add(stringSpec("right_command"));
-      add(stringSpec("middle_command"));
-      add(boolSpec("enable_scroll", true));
-      {
-        auto scrollUp = stringSpec("scroll_up_command");
-        scrollUp.visibleWhen = WidgetSettingVisibility{"enable_scroll", {"true"}};
-        add(std::move(scrollUp));
-      }
-      {
-        auto scrollDown = stringSpec("scroll_down_command");
-        scrollDown.visibleWhen = WidgetSettingVisibility{"enable_scroll", {"true"}};
-        add(std::move(scrollDown));
-      }
-    } else if (type == "lock_keys") {
-      add(boolSpec("show_caps_lock", true));
-      add(boolSpec("show_num_lock", true));
-      add(boolSpec("show_scroll_lock", false));
-      add(boolSpec("hide_when_off", false));
-      add(segmentedSpec("display", "short", shortFull));
     } else if (type == "media") {
       const WidgetSettingVisibility notAlbumArtOnly{"album_art_only", {"false"}};
       const WidgetSettingVisibility notHideAlbumArt{"hide_album_art", {"false"}};
@@ -875,35 +835,6 @@ namespace settings {
       }
       add(boolSpec("hide_when_no_media", false));
       add(boolSpec("enable_scroll", true));
-    } else if (type == "network") {
-      add(selectSpec("vpn_status", "replace", vpnStatusMode));
-      add(boolSpec("show_label", true));
-      {
-        auto vpnName = boolSpec("show_vpn_label", false);
-        WidgetSettingVisibility vis;
-        vis.all = {{"show_label", {"true"}}, {"vpn_status", {"replace", "both"}}};
-        vpnName.visibleWhen = std::move(vis);
-        add(std::move(vpnName));
-      }
-    } else if (type == "notifications") {
-      add(boolSpec("hide_when_no_unread", false));
-    } else if (type == "privacy") {
-      add(boolSpec("hide_inactive", false));
-      add(intSpec("icon_spacing", 4, 0.0, 48.0, 1.0));
-      add(colorSpec("active_color", "primary"));
-      add(colorSpec("inactive_color", "outline"));
-    } else if (type == "session") {
-      add(glyphSpec("glyph", "shutdown"));
-      add(stringSpec("custom_image", ""));
-      add(boolSpec("custom_image_colorize", false));
-    } else if (type == "settings") {
-      add(glyphSpec("glyph", "settings"));
-      add(stringSpec("custom_image", ""));
-      add(boolSpec("custom_image_colorize", false));
-    } else if (type == "spacer") {
-      add(intSpec("length", 20, 0.0, 400.0, 1.0));
-    } else if (type == "text") {
-      add(stringSpec("text"));
     } else if (type == "sysmon") {
       add(selectSpec("stat", "cpu_usage", sysmonStats));
       {
@@ -961,8 +892,6 @@ namespace settings {
         glyphPosition.visibleWhen = WidgetSettingVisibility{"show_label", {"true"}};
         add(std::move(glyphPosition));
       }
-    } else if (type == "power_profile") {
-      add(boolSpec("enable_scroll", true));
     } else if (type == "taskbar") {
       // Windows: what the taskbar lists and how each window tile looks.
       add(withGroup(boolSpec("enable_scroll", true), "taskbar.windows"));
@@ -1148,14 +1077,6 @@ namespace settings {
       }
       add(boolSpec("show_label", true));
       add(colorSpec("mute_color", "error"));
-    } else if (type == "wallpaper") {
-      add(glyphSpec("glyph", "wallpaper-selector"));
-      add(stringSpec("custom_image", ""));
-      add(boolSpec("custom_image_colorize", false));
-    } else if (type == "weather") {
-      add(intSpec("max_length", 160, 40.0, 800.0, 1.0));
-      add(boolSpec("show_condition", true));
-      add(boolSpec("show_temperature", true));
     } else if (type == "workspaces") {
       WidgetSettingVisibility pillStyleOnly;
       pillStyleOnly.all = {WidgetSettingVisibilityCondition{"style", {"regular"}}};
