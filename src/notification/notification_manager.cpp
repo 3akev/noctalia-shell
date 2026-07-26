@@ -17,7 +17,6 @@ namespace {
 
   constexpr Logger kLog("notification");
   constexpr auto kImplicitDuplicateWindow = std::chrono::seconds(1);
-
   constexpr std::string_view urgencyStr(Urgency u) noexcept {
     switch (u) {
     case Urgency::Low:
@@ -123,6 +122,38 @@ void NotificationManager::rebuildHistoryIndex() {
   for (size_t i = 0; i < m_history.size(); ++i) {
     m_historyIndex[m_history[i].notification.id] = i;
   }
+}
+
+void NotificationManager::cleanupOldHistoryEntries() {
+  if (m_historyRetentionHours <= 0 || m_history.empty()) {
+    return;
+  }
+
+  const auto retention = std::chrono::hours(m_historyRetentionHours);
+  const auto cutoff = WallClock::now() - retention;
+  const bool hadUnreadBefore = computeHasUnreadNotificationHistory();
+
+  std::deque<NotificationHistoryEntry> kept;
+  for (auto& entry : m_history) {
+    const bool eligible = !entry.active
+        && entry.notification.receivedWallClock.has_value()
+        && *entry.notification.receivedWallClock <= cutoff;
+    if (eligible) {
+      emitPendingDBusClose(entry.notification.id, CloseReason::Expired);
+    } else {
+      kept.push_back(std::move(entry));
+    }
+  }
+
+  if (kept.size() == m_history.size()) {
+    return;
+  }
+
+  m_history = std::move(kept);
+  ++m_changeSerial;
+  rebuildHistoryIndex();
+  schedulePersistHistory();
+  notifyUnreadStateChangedIfNeeded(hadUnreadBefore);
 }
 
 void NotificationManager::upsertHistory(
@@ -621,6 +652,16 @@ void NotificationManager::pauseExpiry(uint32_t id) {
   m_notifications[it->second].expiryWallClock.reset();
 }
 
+void NotificationManager::setHistoryRetentionHours(int hours) {
+  m_historyRetentionHours = hours;
+  if (hours > 0) {
+    m_autoClearTimer.startRepeating(std::chrono::seconds(60), [this]() { cleanupOldHistoryEntries(); });
+  } else {
+    m_autoClearTimer.stop();
+  }
+  cleanupOldHistoryEntries();
+}
+
 void NotificationManager::resumeExpiry(uint32_t id, int32_t remainingMs) {
   const auto it = m_idToIndex.find(id);
   if (it == m_idToIndex.end()) {
@@ -719,14 +760,7 @@ void NotificationManager::markNotificationHistorySeen() {
 }
 
 void NotificationManager::schedulePersistHistory() {
-  if (m_persistScheduled) {
-    return;
-  }
-  m_persistScheduled = true;
-  DeferredCall::callLater([this]() {
-    m_persistScheduled = false;
-    persistHistoryToDisk();
-  });
+  DeferredCall::callLater([this]() { persistHistoryToDisk(); });
 }
 
 void NotificationManager::persistHistoryToDisk() {
