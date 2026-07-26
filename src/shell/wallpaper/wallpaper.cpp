@@ -806,7 +806,7 @@ void Wallpaper::registerIpc(IpcService& ipc) {
       "[connector]", "Switch to the previous wallpaper immediately"
   );
 
-  ipc.registerQueryHandler(
+  ipc.registerHandler(
       "wallpaper-get",
       [this, validateOutputConnector](const std::string& args) -> std::string {
         if (m_config == nullptr) {
@@ -828,7 +828,8 @@ void Wallpaper::registerIpc(IpcService& ipc) {
         out.push_back('\n');
         return out;
       },
-      "[connector]", "Print default wallpaper path, or effective path for an output"
+      "[connector]", "Print default wallpaper path, or effective path for an output",
+      IpcService::HandlerOptions{.actionEditorVisibility = IpcService::ActionEditorVisibility::Hidden}
   );
   ipc.registerHandler(
       "wallpaper-set",
