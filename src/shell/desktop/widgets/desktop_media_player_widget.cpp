@@ -373,7 +373,7 @@ void DesktopMediaPlayerWidget::sync(Renderer& renderer) {
     }
   }
 
-  if (canGoPreviousChanged || canGoNextChanged) {
+  if (titleChanged || artistChanged || canGoPreviousChanged || canGoNextChanged) {
     requestLayout();
   } else {
     requestRedraw();
