@@ -90,8 +90,10 @@ namespace {
       for (const auto& field : schema) {
         config.settings[field.key] = field.defaultValue;
       }
-      if (definition.resolve(&config, type, context...) != definition.resolve(nullptr, type, context...)) {
-        fail(type, "resolving the schema defaults does not match the Options defaults");
+      if (!definition.fieldValuesEqual(
+              definition.resolve(&config, type, context...), definition.resolve(nullptr, type, context...)
+          )) {
+        fail(type, "resolving the schema defaults does not match the declared field defaults");
       }
     } catch (const std::exception& e) {
       fail(type, e.what());

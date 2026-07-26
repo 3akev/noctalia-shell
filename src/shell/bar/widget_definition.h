@@ -45,6 +45,7 @@ namespace noctalia::bar {
     config::schema::WidgetSettingField schema;
     std::optional<settings::WidgetSettingPresentation> presentation;
     std::function<void(Options&, const WidgetConfig*, std::string_view)> resolve;
+    std::function<bool(const Options&, const Options&)> valuesEqual;
   };
 
   namespace detail {
@@ -450,7 +451,7 @@ namespace noctalia::bar {
       }
     }
 
-    return WidgetDefinitionField<Options>{
+    WidgetDefinitionField<Options> definitionField{
         .schema = std::move(schema),
         .presentation = std::move(spec.presentation),
         .resolve = [key, defaultValue, choices = std::move(spec.choices),
@@ -467,6 +468,10 @@ namespace noctalia::bar {
           options.*Member = std::move(value);
         },
     };
+    definitionField.valuesEqual = [](const Options& left, const Options& right) {
+      return left.*Member == right.*Member;
+    };
+    return definitionField;
   }
 
   template <typename Options, typename Context = std::monostate> struct WidgetDefinition {
@@ -494,6 +499,13 @@ namespace noctalia::bar {
         finalize(options, context);
       }
       return options;
+    }
+
+    [[nodiscard]] bool fieldValuesEqual(const Options& left, const Options& right) const {
+      validate();
+      return std::ranges::all_of(fields, [&](const WidgetDefinitionField<Options>& field) {
+        return field.valuesEqual(left, right);
+      });
     }
 
     [[nodiscard]] config::schema::WidgetSettingSchema schemaFields() const {
