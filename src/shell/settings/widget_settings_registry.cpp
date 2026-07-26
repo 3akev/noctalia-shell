@@ -675,13 +675,24 @@ namespace settings {
     // definition and plugin widgets, because this list is merged into all of them.
     // Non-interactive widgets ignore pointer input, so gesture bindings are irrelevant.
     auto actions = withGroup(stringMapSpec("actions"), "actions");
+    auto scrollRepeat = withGroup(
+        selectSpec(
+            "scroll_repeat", "auto",
+            {{"auto", "settings.widgets.options.auto"},
+             {"gesture", "settings.widgets.options.scroll-gesture"},
+             {"steps", "settings.widgets.options.scroll-steps"}}
+        ),
+        "behavior"
+    );
+    scrollRepeat.visibleWhen = WidgetSettingVisibility{"interactive", {"true"}};
     actions.visibleWhen = WidgetSettingVisibility{"interactive", {"true"}};
 
     return {
         std::move(enabled),           std::move(anchor),          std::move(interactive),    std::move(scale),
         std::move(widgetColor),       std::move(widgetIconColor), std::move(fontFamily),     std::move(fontWeight),
         std::move(capsuleToggle),     std::move(capsuleRadius),   std::move(capsuleFill),    std::move(capsuleBorder),
-        std::move(capsuleForeground), std::move(capsulePadding),  std::move(capsuleOpacity), std::move(actions),
+        std::move(capsuleForeground), std::move(capsulePadding),  std::move(capsuleOpacity), std::move(scrollRepeat),
+        std::move(actions),
     };
   }
 

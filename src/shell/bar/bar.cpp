@@ -408,8 +408,8 @@ namespace {
       return false;
     }
 
-    // Routed through a scene-less InputArea purely for its detent accumulator, so a touchpad flick
-    // fires once per detent here exactly as it does over a widget.
+    // Routed through a scene-less InputArea for detent accumulation. Cycle actions fire once per
+    // gesture; other actions fire for every step, matching a widget's `scroll_repeat = "auto"`.
     instance.deadZoneAxisSink.setOnAxisHandler([&](const InputArea::PointerData& data) {
       const auto gesture = noctalia::bar::gestureForScroll(data.axis, data.scrollSteps());
       if (!gesture.has_value()) {
@@ -422,7 +422,8 @@ namespace {
       return dispatchBarDeadZoneGesture(instance, *gesture, sx, sy, platform, dispatcher);
     });
     return instance.deadZoneAxisSink.dispatchAxis(
-        sx, sy, event.axis, event.axisSource, event.axisValue, event.axisDiscrete, event.axisValue120, event.axisLines
+        sx, sy, event.axis, event.axisSource, event.axisValue, event.axisDiscrete, event.axisValue120, event.axisLines,
+        event.axisGestureSerial
     );
   }
 
@@ -3270,7 +3271,8 @@ bool Bar::onPointerEvent(const PointerEvent& event) {
     const auto sx = static_cast<float>(event.sx);
     const auto sy = static_cast<float>(event.sy);
     const bool axisConsumed = m_hoveredInstance->inputDispatcher.pointerAxis(
-        sx, sy, event.axis, event.axisSource, event.axisValue, event.axisDiscrete, event.axisValue120, event.axisLines
+        sx, sy, event.axis, event.axisSource, event.axisValue, event.axisDiscrete, event.axisValue120, event.axisLines,
+        event.axisGestureSerial
     );
     if (!axisConsumed) {
       handleBarDeadZoneAxis(*m_hoveredInstance, sx, sy, event, m_platform, m_actionDispatcher);

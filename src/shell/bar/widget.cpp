@@ -10,7 +10,6 @@
 #include "ui/palette.h"
 
 #include <algorithm>
-#include <array>
 #include <format>
 
 namespace {
@@ -180,6 +179,15 @@ void Widget::resolveGestureBindings(
     const noctalia::bar::WidgetActionDispatcher* dispatcher
 ) {
   m_actionDispatcher = dispatcher;
+  m_scrollRepeatMode = noctalia::bar::ScrollRepeatMode::Auto;
+  if (widgetConfig != nullptr) {
+    const std::string configuredMode = widgetConfig->getString("scroll_repeat", "auto");
+    if (const auto mode = noctalia::bar::parseScrollRepeatMode(configuredMode); mode.has_value()) {
+      m_scrollRepeatMode = *mode;
+    } else {
+      kLog.error("widget.{}.scroll_repeat: unknown mode \"{}\"", m_configName, configuredMode);
+    }
+  }
 
   const std::string widgetContext = std::format("widget.{}", m_configName);
   // Named, not inlined: the span in Inputs borrows from it.
@@ -271,18 +279,17 @@ void Widget::installGestureHandlers() {
       return m_gestureBindings.find(noctalia::bar::Gesture::ScrollUp) != nullptr
           || m_gestureBindings.find(noctalia::bar::Gesture::ScrollDown) != nullptr;
     }
-    if (!data.scrollStepStartsGesture() && bindingCycles(*gesture)) {
-      // A verb that steps along a list moves one position per flick, so the rest of the burst is
-      // swallowed rather than skipping several entries. Ramp verbs take every notch.
+    if (!data.scrollStepStartsGesture() && !bindingRepeatsEveryScrollStep(*gesture)) {
       return true;
     }
     return dispatchGesture(*gesture);
   });
 }
 
-bool Widget::bindingCycles(noctalia::bar::Gesture gesture) const {
+bool Widget::bindingRepeatsEveryScrollStep(noctalia::bar::Gesture gesture) const {
   const auto* action = m_gestureBindings.find(gesture);
-  return action != nullptr && m_actionDispatcher != nullptr && m_actionDispatcher->cycles(*action);
+  const bool actionCycles = action != nullptr && m_actionDispatcher != nullptr && m_actionDispatcher->cycles(*action);
+  return noctalia::bar::scrollRepeatsEveryStep(m_scrollRepeatMode, actionCycles);
 }
 
 bool Widget::dispatchGesture(noctalia::bar::Gesture gesture) {

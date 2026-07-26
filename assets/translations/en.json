@@ -1026,6 +1026,7 @@
           "empty": "No settings match the current filters.",
           "groups": {
             "actions": "Actions",
+            "behavior": "Behavior",
             "grouping": "Grouping",
             "presentation": "Presentation",
             "runtime": "Runtime",
@@ -3162,6 +3163,8 @@
         "rate": "Rate",
         "regular": "Regular",
         "replace": "Replace",
+        "scroll-gesture": "Once per gesture",
+        "scroll-steps": "Every step",
         "shared": "Shared",
         "short": "Short",
         "swap-percent": "Swap Percent",
@@ -3561,6 +3564,10 @@
         "script": {
           "description": "Path to the lua script",
           "label": "Script"
+        },
+        "scroll-repeat": {
+          "description": "Choose whether scroll actions follow command semantics, run once per gesture, or repeat for every scroll step",
+          "label": "Scroll Repeat"
         },
         "show-active-indicator": {
           "description": "Show a small dot below the active window icon in the taskbar",
