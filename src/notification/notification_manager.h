@@ -165,7 +165,8 @@ private:
   uint32_t suppressExternal(std::string_view appName, Urgency urgency);
 
   int m_historyRetentionHours = 0;
-  Timer m_autoClearTimer;
+  bool m_persistScheduled = false;
+  Timer m_historyRetentionTimer;
 
   std::deque<Notification> m_notifications;
   std::unordered_map<uint32_t, size_t> m_idToIndex;

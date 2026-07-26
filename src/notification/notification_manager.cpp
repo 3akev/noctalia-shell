@@ -14,7 +14,6 @@
 #include <string_view>
 
 namespace {
-
   constexpr Logger kLog("notification");
   constexpr auto kImplicitDuplicateWindow = std::chrono::seconds(1);
   constexpr std::string_view urgencyStr(Urgency u) noexcept {
@@ -655,9 +654,9 @@ void NotificationManager::pauseExpiry(uint32_t id) {
 void NotificationManager::setHistoryRetentionHours(int hours) {
   m_historyRetentionHours = hours;
   if (hours > 0) {
-    m_autoClearTimer.startRepeating(std::chrono::seconds(60), [this]() { cleanupOldHistoryEntries(); });
+    m_historyRetentionTimer.startRepeating(std::chrono::seconds(60), [this]() { cleanupOldHistoryEntries(); });
   } else {
-    m_autoClearTimer.stop();
+    m_historyRetentionTimer.stop();
   }
   cleanupOldHistoryEntries();
 }
@@ -760,7 +759,14 @@ void NotificationManager::markNotificationHistorySeen() {
 }
 
 void NotificationManager::schedulePersistHistory() {
-  DeferredCall::callLater([this]() { persistHistoryToDisk(); });
+  if (m_persistScheduled) {
+    return;
+  }
+  m_persistScheduled = true;
+  DeferredCall::callLater([this]() {
+    m_persistScheduled = false;
+    persistHistoryToDisk();
+  });
 }
 
 void NotificationManager::persistHistoryToDisk() {
