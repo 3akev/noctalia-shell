@@ -394,6 +394,11 @@ void Application::initInputDispatch() {
     if (m_fileDialogPopup.onPointerEvent(event)) {
       return;
     }
+    // Region overlay is layer Overlay + exclusive keyboard; prefer it over the
+    // widgets editors (Bottom / OnDemand) so confirm/cancel still work mid-edit.
+    if (m_screenshotService.onPointerEvent(event)) {
+      return;
+    }
     if (m_lockscreenWidgetsController.onPointerEvent(event)) {
       return;
     }
@@ -401,9 +406,6 @@ void Application::initInputDispatch() {
       return;
     }
     if (m_wallpaper.onPointerEvent(event)) {
-      return;
-    }
-    if (m_screenshotService.onPointerEvent(event)) {
       return;
     }
     if (m_trayMenu.onPointerEvent(event)) {
@@ -452,6 +454,9 @@ void Application::initInputDispatch() {
       m_fileDialogPopup.onKeyboardEvent(event);
       return;
     }
+    if (m_screenshotService.onKeyboardEvent(event)) {
+      return;
+    }
     if (m_lockscreenWidgetsController.isEditing()) {
       m_lockscreenWidgetsController.onKeyboardEvent(event);
       return;
@@ -462,9 +467,6 @@ void Application::initInputDispatch() {
     }
     if (m_settingsWindow.ownsKeyboardSurface(m_wayland.lastKeyboardSurface())) {
       m_settingsWindow.onKeyboardEvent(event);
-      return;
-    }
-    if (m_screenshotService.onKeyboardEvent(event)) {
       return;
     }
     if (m_overviewLauncherCapture.handleKeyboardEvent(event)) {
