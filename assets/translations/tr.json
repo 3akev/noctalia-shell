@@ -146,14 +146,30 @@
   "settings": {
     "widgets": {
       "settings": {
+        "vpn-status": {
+          "label": "VPN Durumu"
+        },
+        "warning-color": {
+          "label": "Uyarı Rengi"
+        },
         "width": {
+          "description": "Widget genişliği pixel ile",
           "label": "Genişlik"
         },
         "window-title-max-width": {
           "description": "Pencere başlıkları için maksimum başlkık genişliği"
+        },
+        "workspace-group-content": {
+          "label": "Grup İçeriği"
+        },
+        "workspace-label-placement": {
+          "label": "Çalışma Alanı Yerleşimi"
         }
       },
       "types": {
+        "active-window": "Aktif Pencere",
+        "audio-visualizer": "Ses  göstergesi",
+        "battery": "Batarya",
         "bluetooth": "Bluetooth",
         "brightness": "Parlaklık",
         "caffeine": "Kafein",

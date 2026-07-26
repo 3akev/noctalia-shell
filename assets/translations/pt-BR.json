@@ -516,9 +516,11 @@
         "show-keyboard-layout": "Layout do Teclado",
         "show-label": "Exibir Rótulo",
         "show-login-button": "Botão de Login",
+        "show-media": "Mídia",
         "show-password-hint": "Dica de Senha",
         "show-session-buttons": "Botões de Sessão",
         "show-vpn-label": "Mostra Rótulo VPN",
+        "show-weather": "Clima",
         "show-when-idle": "Mostrar Quando Ocioso",
         "stat": "Estatísticas",
         "stat-cpu-temp": "Temperatura da CPU",
@@ -952,7 +954,7 @@
         "group": {
           "action": "Grupo",
           "border": "Borda",
-          "border-description": "Função da cor do contorno da cápsula; deixe em Padrão para nenhum contorno.",
+          "border-description": "Cor do contorno da cápsula; deixe em Padrão para nenhum contorno.",
           "clear": "Apagar",
           "drawer-columns": "Número de ícones do tray por linha no painel do drawer.",
           "drawer-columns-description": "Número de widgets por linha no painel gaveta",
@@ -1515,12 +1517,12 @@
           "label": "Paleta Integrada"
         },
         "button-borders": {
-          "description": "Desenhe contornos ao redor dos botões em toda a interface",
+          "description": "Desenhar contornos ao redor dos botões em toda a interface",
           "label": "Bordas nos Botões"
         },
         "card-borders": {
           "description": "Desenhar contornos ao redor dos cards de seção dentro dos painéis e da janela de configurações",
-          "label": "Bordas dos Cards"
+          "label": "Bordas nos Cards"
         },
         "community-palette": {
           "description": "Escolha uma paleta de cores do catálogo da comunidade",
@@ -1552,7 +1554,7 @@
           "description": "Direção em que a sombra é projetada nas superfícies"
         },
         "input-borders": {
-          "description": "Desenhar linhas em torno de campos de texto e outros campos pelo shell",
+          "description": "Desenhar contornos ao redor de campos de texto e outros campos pelo shell",
           "label": "Bordas nos Campos"
         },
         "language": {
@@ -1564,7 +1566,7 @@
           "label": "Fonte da Paleta"
         },
         "popup-borders": {
-          "description": "Desenhar linhas em torno de pop-ups e menus suspensos",
+          "description": "Desenhar contornos ao redor de pop-ups e menus suspensos",
           "label": "Bordas nos Pop-ups"
         },
         "popup-shadows": {
@@ -1617,7 +1619,7 @@
           "label": "Largura da Borda"
         },
         "capsule-border": {
-          "description": "Função de cor de contorno padrão da cápsula; cores hexadecimais fixas também são suportadas",
+          "description": "Cor de contorno padrão da cápsula; cores hexadecimais fixas também são suportadas",
           "label": "Borda da Cápsula"
         },
         "capsule-fill": {
@@ -2676,6 +2678,10 @@
           "label": "Comando de Ação de Imagem",
           "placeholder": "gimp {path} ou satty -f -"
         },
+        "clipboard-keep-from-closed-apps": {
+          "description": "Mantém o último item copiado para ser colado após o fechamento do aplicativo de onde foi copiado",
+          "label": "Manter Área de Tranferência de Aplicativos Fechados"
+        },
         "clipboard-storage": {
           "button": "Tentar Novamente",
           "description-cancelled": "O prompt do Secret Service foi cancelado. O histórico da área de transferência permanecerá disponível apenas nesta sessão.",
@@ -3191,7 +3197,7 @@
           "label": "Cápsula"
         },
         "capsule-border": {
-          "description": "Função de cor para o contorno da cápsula; cores hexadecimais fixas também são suportadas",
+          "description": "Cor para o contorno da cápsula; cores hexadecimais fixas também são suportadas",
           "label": "Borda da Cápsula"
         },
         "capsule-fill": {
