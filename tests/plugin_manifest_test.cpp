@@ -176,6 +176,55 @@ int main() {
     }
   }
 
+  const auto pathSettingsManifestPath = root / "path-settings/plugin.toml";
+  ok = writeText(
+           pathSettingsManifestPath,
+           "id = \"me/path-settings\"\n"
+           "name = \"Path Settings\"\n"
+           "plugin_api = 3\n"
+           "[[setting]]\n"
+           "key = \"config_file\"\n"
+           "type = \"file\"\n"
+           "label_key = \"settings.config_file.label\"\n"
+           "default = \"\"\n"
+           "extensions = [\".toml\", \".json\"]\n"
+           "[[desktop_widget]]\n"
+           "id = \"notes\"\n"
+           "entry = \"notes.luau\"\n"
+           "[[desktop_widget.setting]]\n"
+           "key = \"notes_dir\"\n"
+           "type = \"folder\"\n"
+           "label_key = \"settings.notes_dir.label\"\n"
+           "default = \"~/Documents/Notes\"\n"
+       )
+      && ok;
+  error.clear();
+  const auto pathSettingsManifest = scripting::parsePluginManifest(pathSettingsManifestPath, &error);
+  ok =
+      expect(pathSettingsManifest.has_value(), error.empty() ? "failed to parse path settings manifest" : error.c_str())
+      && ok;
+  if (pathSettingsManifest.has_value()) {
+    ok = expect(pathSettingsManifest->settings.size() == 1, "one plugin path setting expected") && ok;
+    if (!pathSettingsManifest->settings.empty()) {
+      const auto& fileSetting = pathSettingsManifest->settings.front();
+      ok = expect(fileSetting.type == scripting::ManifestFieldType::File, "file setting type should parse") && ok;
+      ok = expect(fileSetting.extensions.size() == 2, "file setting extensions should parse") && ok;
+    }
+    ok = expect(pathSettingsManifest->entries.size() == 1, "one desktop widget entry expected") && ok;
+    if (!pathSettingsManifest->entries.empty()) {
+      ok =
+          expect(pathSettingsManifest->entries.front().settings.size() == 1, "one desktop widget path setting expected")
+          && ok;
+    }
+    if (!pathSettingsManifest->entries.empty() && !pathSettingsManifest->entries.front().settings.empty()) {
+      ok = expect(
+               pathSettingsManifest->entries.front().settings.front().type == scripting::ManifestFieldType::Folder,
+               "desktop widget folder setting type should parse"
+           )
+          && ok;
+    }
+  }
+
   const auto literalLabelPath = root / "literal-label/plugin.toml";
   ok = writeText(
            literalLabelPath,

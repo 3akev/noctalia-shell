@@ -534,9 +534,21 @@ namespace settings {
       case WidgetControlKind::StringList:
       case WidgetControlKind::StringMap:
         return nullptr;
-      case WidgetControlKind::String:
       case WidgetControlKind::File:
       case WidgetControlKind::Folder:
+        return factory.makePathBrowse(
+            TextSetting{
+                .value = valueAsString(value),
+                .placeholder = {},
+                .width = 190.0f,
+                .browseMode = spec.control == WidgetControlKind::Folder ? TextSettingBrowseMode::SelectFolder
+                                                                        : TextSettingBrowseMode::OpenFile,
+                .browseFileExtensions = spec.extensions,
+                .browseFallbackDirectory = {},
+            },
+            path
+        );
+      case WidgetControlKind::String:
       case WidgetControlKind::Glyph:
       default:
         return factory.makeText(valueAsString(value), {}, path);

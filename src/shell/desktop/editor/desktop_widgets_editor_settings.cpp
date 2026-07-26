@@ -7,6 +7,7 @@
 #include "shell/desktop/editor/desktop_widgets_editor.h"
 #include "shell/lockscreen/lockscreen_login_box.h"
 #include "shell/settings/color_spec_picker.h"
+#include "shell/settings/path_browse.h"
 #include "shell/settings/settings_content_common.h"
 #include "shell/settings/widget_settings_registry.h"
 #include "ui/builders.h"
@@ -399,6 +400,59 @@ namespace {
     );
   }
 
+  std::unique_ptr<Flex> makePathPickerRow(
+      std::string_view labelText, const std::string& key, const std::string& value, PathBrowseKind kind,
+      std::vector<std::string> extensions, DesktopWidgetsEditor* editor
+  ) {
+    Input* inputPtr = nullptr;
+    auto input = ui::input({
+        .out = &inputPtr,
+        .value = value,
+        .controlHeight = Style::controlHeightSm,
+        .flexGrow = 1.0f,
+        .onChange = [editor, key](const std::string& path) { editor->applySettingChange(key, path); },
+    });
+    const bool selectFolder = kind == PathBrowseKind::Folder;
+    auto browse = ui::button({
+        .glyph = selectFolder ? "folder" : "file-text",
+        .glyphSize = Style::fontSizeBody,
+        .variant = ButtonVariant::Default,
+        .minWidth = Style::controlHeightSm,
+        .minHeight = Style::controlHeightSm,
+        .paddingV = Style::spaceXs,
+        .paddingH = Style::spaceSm,
+        .onClick = [editor, key, inputPtr, kind, selectFolder, extensions = std::move(extensions)]() {
+          FileDialogOptions options;
+          options.mode = selectFolder ? FileDialogMode::SelectFolder : FileDialogMode::Open;
+          options.defaultViewMode = FileDialogViewMode::List;
+          options.title = selectFolder ? i18n::tr("settings.controls.path-browse.folder-title")
+                                       : i18n::tr("settings.controls.path-browse.file-title");
+          if (!selectFolder) {
+            options.extensions = extensions;
+          }
+          applyPathDialogStartValue(options, inputPtr->value(), kind);
+          (void)FileDialog::open(
+              std::move(options), [editor, key, inputPtr](std::optional<std::filesystem::path> result) {
+                if (!result.has_value()) {
+                  return;
+                }
+                inputPtr->setValue(result->string());
+                editor->applySettingChange(key, result->string());
+              }
+          );
+        },
+    });
+    auto control = ui::row({
+        .align = FlexAlign::Center,
+        .gap = Style::spaceSm,
+        .fillWidth = true,
+        .flexGrow = 1.0f,
+    });
+    control->addChild(std::move(input));
+    control->addChild(std::move(browse));
+    return makeRow(labelText, std::move(control));
+  }
+
   std::unique_ptr<Flex>
   makeFilePickerRow(std::string_view labelText, const std::string& key, DesktopWidgetsEditor* editor) {
     return makeRow(
@@ -548,6 +602,18 @@ namespace {
               makeInputRow(label, spec.schema.key, getStr(s, spec.schema.key, fallback), fallback, editor)
           );
         }
+        break;
+      }
+
+      case settings::WidgetControlKind::File:
+      case settings::WidgetControlKind::Folder: {
+        const auto* defVal = std::get_if<std::string>(&spec.schema.defaultValue);
+        const std::string fallback = defVal != nullptr ? *defVal : std::string{};
+        const PathBrowseKind kind =
+            spec.control == settings::WidgetControlKind::Folder ? PathBrowseKind::Folder : PathBrowseKind::File;
+        content.addChild(makePathPickerRow(
+            label, spec.schema.key, getStr(s, spec.schema.key, fallback), kind, spec.extensions, editor
+        ));
         break;
       }
 

@@ -670,6 +670,7 @@ _noctalia_sources = files(
   'src/shell/settings/settings_content.cpp',
   'src/shell/settings/settings_content_common.cpp',
   'src/shell/settings/settings_content_plugins.cpp',
+  'src/shell/settings/path_browse.cpp',
   'src/shell/settings/plugin_store_content.cpp',
   'src/shell/settings/plugin_store_tile.cpp',
   'src/shell/settings/template_store_content.cpp',
@@ -1377,6 +1378,16 @@ disk_mounts_test = executable('disk_mounts_test',
 )
 
 test('disk_mounts', disk_mounts_test)
+
+path_browse_test = executable('path_browse_test',
+  sources: files(
+    'tests/path_browse_test.cpp',
+    'src/shell/settings/path_browse.cpp',
+  ),
+  include_directories: _noctalia_inc,
+)
+
+test('path_browse', path_browse_test)
 
 system_monitor_service_test = executable('system_monitor_service_test',
   sources: files(
