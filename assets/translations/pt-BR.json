@@ -678,7 +678,7 @@
     "caps-lock-on": "Caps Lock está ativo",
     "password-cleared": "Senha apagada",
     "password-placeholder": "Senha",
-    "ready": "Digite sua senha e aperte Enter.",
+    "ready": "Digite sua senha e pressione Enter.",
     "unlocked": "Desbloqueado",
     "waiting": "Aguardando confirmação de bloqueio…"
   },
@@ -1476,7 +1476,13 @@
         "open-source": "Abrir repositório fonte de plugin",
         "results-count": "{count} plugins",
         "search-placeholder": "Pesquisar plugins...",
-        "source-all": "Todos",
+        "sort-added-at-asc": "Ordenar por data (mais antigos primeiro)",
+        "sort-added-at-desc": "Ordenar por data (mais recentes primeiro)",
+        "sort-name-asc": "Ordenar por nome (A-Z)",
+        "sort-name-desc": "Ordenar por nome (Z-A)",
+        "sort-updated-at-asc": "Ordenar por data de atualização (mais antigos primeiro)",
+        "sort-updated-at-desc": "Ordenar por data de atualização (mais recentes primeiro)",
+        "source-all": "Todas fontes",
         "title": "Loja de Plugins"
       }
     },
@@ -1511,6 +1517,10 @@
         "button-borders": {
           "description": "Desenhe contornos ao redor dos botões em toda a interface",
           "label": "Bordas nos Botões"
+        },
+        "card-borders": {
+          "description": "Desenhar contornos ao redor dos cards de seção dentro dos painéis e da janela de configurações",
+          "label": "Bordas dos Cards"
         },
         "community-palette": {
           "description": "Escolha uma paleta de cores do catálogo da comunidade",
@@ -2172,7 +2182,7 @@
       },
       "panels": {
         "borders": {
-          "description": "Desenhe um contorno nos painéis e nos cartões de seção dentro dos painéis",
+          "description": "Desenhe um contorno nos painéis flutuantes",
           "label": "Bordas"
         },
         "control-center-sidebar": {
