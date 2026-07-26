@@ -393,4 +393,15 @@ void LockscreenWidgetsHost::prepareFrame(LockSurface& surface, bool needsUpdate,
     desktop_widgets::widgetNodeScale(instance->state, flipScaleX, flipScaleY);
     instance->transformNode->setScale(flipScaleX, flipScaleY);
   }
+
+  // Mirror the desktop host: widgets like sysmon drive updates from frame ticks.
+  const bool needsFrameTick = std::ranges::any_of(m_instances, [&surface](const auto& instance) {
+    return instance != nullptr
+        && instance->surface == &surface
+        && instance->widget != nullptr
+        && instance->widget->needsFrameTick();
+  });
+  if (needsFrameTick) {
+    surface.requestFrameTick();
+  }
 }
