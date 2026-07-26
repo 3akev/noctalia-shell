@@ -12,6 +12,7 @@
 #include "shell/settings/widget_settings_registry.h"
 #include "ui/builders.h"
 #include "ui/controls/input.h"
+#include "ui/controls/list_editor.h"
 #include "ui/controls/slider.h"
 #include "ui/dialogs/file_dialog.h"
 #include "ui/dialogs/glyph_picker_dialog.h"
@@ -400,6 +401,158 @@ namespace {
     );
   }
 
+  std::unique_ptr<Flex> makeStringListRow(
+      std::string_view labelText, const std::string& key, std::vector<std::string> items, DesktopWidgetsEditor* editor
+  ) {
+    auto listEditor = std::make_unique<ListEditor>();
+    listEditor->setAddPlaceholder(i18n::tr("settings.controls.list.add-entry-placeholder"));
+    listEditor->setItems(items);
+    listEditor->setOnAddRequested([editor, key, items](std::string value) mutable {
+      if (value.empty()) {
+        return;
+      }
+      items.push_back(std::move(value));
+      editor->applySettingChange(key, items);
+    });
+    listEditor->setOnRemoveRequested([editor, key, items](std::size_t index) mutable {
+      if (index >= items.size()) {
+        return;
+      }
+      items.erase(items.begin() + static_cast<std::ptrdiff_t>(index));
+      editor->applySettingChange(key, items);
+    });
+    listEditor->setOnMoveRequested([editor, key, items](std::size_t from, std::size_t to) mutable {
+      if (from >= items.size() || to >= items.size() || from == to) {
+        return;
+      }
+      std::swap(items[from], items[to]);
+      editor->applySettingChange(key, items);
+    });
+    return makeRow(labelText, std::move(listEditor));
+  }
+
+  std::unique_ptr<Flex> makeStringMapRow(
+      std::string_view labelText, const std::string& key, WidgetSettingStringMap entries, DesktopWidgetsEditor* editor
+  ) {
+    auto rows = ui::column({.gap = Style::spaceSm, .fillWidth = true, .flexGrow = 1.0f});
+    std::vector<std::string> keys;
+    keys.reserve(entries.size());
+    for (const auto& entry : entries) {
+      keys.push_back(entry.first);
+    }
+    std::ranges::sort(keys);
+
+    for (const auto& entryKey : keys) {
+      const std::string entryValue = entries.at(entryKey);
+      auto row = ui::row({.align = FlexAlign::Center, .gap = Style::spaceSm, .fillWidth = true});
+      row->addChild(
+          ui::input({
+              .value = entryKey,
+              .placeholder = i18n::tr("settings.widgets.map-placeholders.key"),
+              .controlHeight = Style::controlHeightSm,
+              .flexGrow = 1.0f,
+              .onSubmit =
+                  [editor, key, entries, oldKey = entryKey, entryValue](const std::string& newKey) mutable {
+                    if (newKey.empty() || newKey == oldKey) {
+                      return;
+                    }
+                    entries.erase(oldKey);
+                    entries.insert_or_assign(newKey, entryValue);
+                    editor->applySettingChange(key, entries);
+                  },
+              .submitOnFocusLoss = true,
+          })
+      );
+      row->addChild(
+          ui::label({
+              .text = "->",
+              .fontSize = Style::fontSizeCaption,
+              .color = colorSpecFromRole(ColorRole::OnSurfaceVariant),
+          })
+      );
+      row->addChild(
+          ui::input({
+              .value = entryValue,
+              .placeholder = i18n::tr("settings.widgets.map-placeholders.value"),
+              .controlHeight = Style::controlHeightSm,
+              .flexGrow = 1.0f,
+              .onSubmit =
+                  [editor, key, entries, entryKey](const std::string& newValue) mutable {
+                    if (newValue.empty()) {
+                      entries.erase(entryKey);
+                    } else {
+                      entries.insert_or_assign(entryKey, newValue);
+                    }
+                    editor->applySettingChange(key, entries);
+                  },
+              .submitOnFocusLoss = true,
+          })
+      );
+      row->addChild(
+          ui::button({
+              .glyph = "close",
+              .glyphSize = Style::fontSizeCaption,
+              .variant = ButtonVariant::Ghost,
+              .minWidth = Style::controlHeightSm,
+              .minHeight = Style::controlHeightSm,
+              .onClick = [editor, key, entries, entryKey]() mutable {
+                entries.erase(entryKey);
+                editor->applySettingChange(key, entries);
+              },
+          })
+      );
+      rows->addChild(std::move(row));
+    }
+
+    Input* keyInput = nullptr;
+    Input* valueInput = nullptr;
+    auto addRow = ui::row({.align = FlexAlign::Center, .gap = Style::spaceSm, .fillWidth = true});
+    addRow->addChild(
+        ui::input({
+            .out = &keyInput,
+            .placeholder = i18n::tr("settings.widgets.map-placeholders.key"),
+            .controlHeight = Style::controlHeightSm,
+            .flexGrow = 1.0f,
+        })
+    );
+    addRow->addChild(
+        ui::label({
+            .text = "->",
+            .fontSize = Style::fontSizeCaption,
+            .color = colorSpecFromRole(ColorRole::OnSurfaceVariant),
+        })
+    );
+    addRow->addChild(
+        ui::input({
+            .out = &valueInput,
+            .placeholder = i18n::tr("settings.widgets.map-placeholders.value"),
+            .controlHeight = Style::controlHeightSm,
+            .flexGrow = 1.0f,
+        })
+    );
+    addRow->addChild(
+        ui::button({
+            .glyph = "add",
+            .glyphSize = Style::fontSizeCaption,
+            .variant = ButtonVariant::Ghost,
+            .minWidth = Style::controlHeightSm,
+            .minHeight = Style::controlHeightSm,
+            .onClick = [editor, key, entries = std::move(entries), keyInput, valueInput]() mutable {
+              if (keyInput == nullptr
+                  || valueInput == nullptr
+                  || keyInput->value().empty()
+                  || valueInput->value().empty()) {
+                return;
+              }
+              entries.insert_or_assign(keyInput->value(), valueInput->value());
+              editor->applySettingChange(key, entries);
+            },
+        })
+    );
+    rows->addChild(std::move(addRow));
+    return makeRow(labelText, std::move(rows));
+  }
+
   std::unique_ptr<Flex> makePathPickerRow(
       std::string_view labelText, const std::string& key, const std::string& value, PathBrowseKind kind,
       std::vector<std::string> extensions, DesktopWidgetsEditor* editor
@@ -592,6 +745,30 @@ namespace {
         break;
       }
 
+      case settings::WidgetControlKind::StringList: {
+        const auto* defaultValue = std::get_if<std::vector<std::string>>(&spec.schema.defaultValue);
+        std::vector<std::string> value = defaultValue != nullptr ? *defaultValue : std::vector<std::string>{};
+        if (const auto it = s.find(spec.schema.key); it != s.end()) {
+          if (const auto* configured = std::get_if<std::vector<std::string>>(&it->second)) {
+            value = *configured;
+          }
+        }
+        content.addChild(makeStringListRow(label, spec.schema.key, std::move(value), editor));
+        break;
+      }
+
+      case settings::WidgetControlKind::StringMap: {
+        const auto* defaultValue = std::get_if<WidgetSettingStringMap>(&spec.schema.defaultValue);
+        WidgetSettingStringMap value = defaultValue != nullptr ? *defaultValue : WidgetSettingStringMap{};
+        if (const auto it = s.find(spec.schema.key); it != s.end()) {
+          if (const auto* configured = std::get_if<WidgetSettingStringMap>(&it->second)) {
+            value = *configured;
+          }
+        }
+        content.addChild(makeStringMapRow(label, spec.schema.key, std::move(value), editor));
+        break;
+      }
+
       case settings::WidgetControlKind::String: {
         const auto* defVal = std::get_if<std::string>(&spec.schema.defaultValue);
         const std::string fallback = defVal != nullptr ? *defVal : std::string{};
@@ -716,7 +893,10 @@ void DesktopWidgetsEditor::applySettingChange(const std::string& key, WidgetSett
       return;
     }
 
-    const bool rebuildInspector = settingChangeAffectsInspectorVisibility(state->type, key) || key == "background";
+    const bool collectionValue = std::holds_alternative<std::vector<std::string>>(value)
+        || std::holds_alternative<WidgetSettingStringMap>(value);
+    const bool rebuildInspector =
+        settingChangeAffectsInspectorVisibility(state->type, key) || key == "background" || collectionValue;
     state->settings[key] = value;
 
     if (lockscreen_login_box::isLoginBoxWidget(*state)

@@ -501,6 +501,86 @@ int main() {
       expectEq(error, "setting 'output_glyphs' type 'string_map' requires plugin_api >= 6", "string-map API gate error")
       && ok;
 
+  const auto doubleManifestPath = root / "double-setting/plugin.toml";
+  ok = writeText(
+           doubleManifestPath,
+           "id = \"me/double-setting\"\n"
+           "name = \"Double Setting\"\n"
+           "plugin_api = 6\n"
+           "[[desktop_widget]]\n"
+           "id = \"meter\"\n"
+           "entry = \"meter.luau\"\n"
+           "[[desktop_widget.setting]]\n"
+           "key = \"opacity\"\n"
+           "type = \"double\"\n"
+           "label_key = \"settings.opacity.label\"\n"
+           "default = 0.5\n"
+           "min = 0.0\n"
+           "max = 1.0\n"
+           "step = 0.05\n"
+       )
+      && ok;
+  error.clear();
+  const auto doubleManifest = scripting::parsePluginManifest(doubleManifestPath, &error);
+  ok = expect(doubleManifest.has_value(), error.empty() ? "failed to parse double manifest" : error.c_str()) && ok;
+  if (doubleManifest.has_value() && expect(doubleManifest->entries.size() == 1, "one double entry expected")) {
+    const auto& settings = doubleManifest->entries.front().settings;
+    ok = expect(settings.size() == 1, "one double setting expected") && ok;
+    if (!settings.empty()) {
+      const auto& setting = settings.front();
+      ok = expect(setting.type == scripting::ManifestFieldType::Double, "setting should be Double") && ok;
+      ok = expect(setting.numberDefault == 0.5, "double default should parse") && ok;
+      ok = expect(setting.minValue == 0.0, "double min should parse") && ok;
+      ok = expect(setting.maxValue == 1.0, "double max should parse") && ok;
+      ok = expect(setting.step == 0.05, "double step should parse") && ok;
+    }
+  }
+
+  const auto expectInvalidNumericSetting = [&](std::string_view fixtureName, std::string_view settingBody,
+                                               std::string_view expectedError) {
+    const auto manifestPath = root / std::filesystem::path(fixtureName) / "plugin.toml";
+    const std::string manifest = "id = \"me/"
+        + std::string(fixtureName)
+        + "\"\n"
+          "name = \"Invalid Numeric Setting\"\n"
+          "plugin_api = 6\n"
+          "[[setting]]\n"
+          "key = \"value\"\n"
+          "label_key = \"settings.value.label\"\n"
+        + std::string(settingBody);
+    bool result = writeText(manifestPath, manifest);
+    error.clear();
+    const auto parsed = scripting::parsePluginManifest(manifestPath, &error);
+    result = expect(!parsed.has_value(), "invalid numeric setting should fail") && result;
+    result = expectEq(error, expectedError, "invalid numeric setting error") && result;
+    return result;
+  };
+
+  ok = expectInvalidNumericSetting(
+           "double-string-default", "type = \"double\"\ndefault = \"fast\"\n",
+           "setting 'value' double default must be a finite number"
+       )
+      && ok;
+  ok = expectInvalidNumericSetting(
+           "double-zero-step", "type = \"double\"\ndefault = 0.5\nstep = 0.0\n",
+           "setting 'value' step must be greater than zero"
+       )
+      && ok;
+  ok = expectInvalidNumericSetting(
+           "double-inverted-range", "type = \"double\"\ndefault = 0.5\nmin = 1.0\nmax = 0.0\n",
+           "setting 'value' min must be less than or equal to max"
+       )
+      && ok;
+  ok = expectInvalidNumericSetting(
+           "int-float-min", "type = \"int\"\ndefault = 2\nmin = 0.5\n", "setting 'value' min must be an integer"
+       )
+      && ok;
+  ok = expectInvalidNumericSetting(
+           "string-numeric-bound", "type = \"string\"\ndefault = \"value\"\nmin = 0\n",
+           "setting 'value' min is only valid for int or double"
+       )
+      && ok;
+
   // Panel width/height: number, "fill", or a loud error — never a silent default.
   const auto fillPanelManifestPath = root / "fill-panel/plugin.toml";
   ok = writeText(
