@@ -706,6 +706,14 @@ namespace settings {
     ) {
       std::vector<WidgetSettingSpec> specs;
       auto commonSpecs = commonWidgetSettingSpecs(shellFontFamily, populateFontCatalogs);
+      if (type == "spacer") {
+        for (WidgetSettingSpec& spec : commonSpecs) {
+          if (spec.schema.key == "interactive") {
+            spec.schema.defaultValue = false;
+            break;
+          }
+        }
+      }
 
       auto add = [&](WidgetSettingSpec spec) { specs.push_back(std::move(spec)); };
       const std::vector<WidgetSettingSelectOption> shortFull = {

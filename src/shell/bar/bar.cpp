@@ -2208,10 +2208,15 @@ void Bar::populateWidgets(BarInstance& instance) {
     widget->setConfigName(name);
     if (wcPtr != nullptr) {
       widget->setAnchor(wcPtr->getBool("anchor", false));
-      widget->setNonInteractive(!wcPtr->getBool("interactive", true));
+      const std::string_view widgetType = !wcPtr->type.empty() ? wcPtr->type : std::string_view(name);
+      // Spacers are layout gaps by default; enable Interactive to use them as hot zones.
+      const bool interactiveDefault = widgetType != "spacer";
+      widget->setNonInteractive(!wcPtr->getBool("interactive", interactiveDefault));
       if (!wcPtr->getBool("enabled", true)) {
         return;
       }
+    } else if (name == "spacer") {
+      widget->setNonInteractive(true);
     }
     widget->setActionContext(
         IpcInvocationContext{
