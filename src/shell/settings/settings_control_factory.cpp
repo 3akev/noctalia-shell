@@ -321,15 +321,19 @@ namespace settings {
           .enabled = enabled,
           .scale = scale,
           .onChange = [configService = ctx.configService, setOverride = ctx.setOverride,
-                       clearOverride = ctx.clearOverride, path, clearWhenValue](bool value) {
+                       clearOverride = ctx.clearOverride, requestRebuild = ctx.requestRebuild, path,
+                       clearWhenValue](bool value) {
             if (clearWhenValue.has_value()
                 && value == *clearWhenValue
                 && configService != nullptr
                 && configService->hasOverride(path)) {
               clearOverride(path);
-              return;
+            } else {
+              setOverride(path, value);
             }
-            setOverride(path, value);
+            if (requestRebuild) {
+              requestRebuild();
+            }
           },
       });
     }

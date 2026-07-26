@@ -671,7 +671,9 @@ namespace settings {
 
     // Gesture -> action bindings. Reaches every widget type, including those without a typed
     // definition and plugin widgets, because this list is merged into all of them.
+    // Non-interactive widgets ignore pointer input, so gesture bindings are irrelevant.
     auto actions = withGroup(stringMapSpec("actions"), "actions");
+    actions.visibleWhen = WidgetSettingVisibility{"interactive", {"true"}};
 
     return {
         std::move(enabled),           std::move(anchor),          std::move(interactive),    std::move(scale),
@@ -1389,8 +1391,14 @@ namespace settings {
 
       auto fields = projection->schemaFields();
       const auto common = commonWidgetSettingSpecs("sans-serif", false);
-      std::ranges::transform(common, std::back_inserter(fields), [](const WidgetSettingSpec& spec) {
-        return spec.schema;
+      std::ranges::transform(common, std::back_inserter(fields), [type](const WidgetSettingSpec& spec) {
+        auto field = spec.schema;
+        // Spacers are click-through by default; keep the schema default aligned so
+        // interactive = true is treated as an effective override (not stripped as default).
+        if (type == "spacer" && field.key == "interactive") {
+          field.defaultValue = false;
+        }
+        return field;
       });
       return fields;
     }
