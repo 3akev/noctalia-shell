@@ -188,7 +188,7 @@ LockSurface::LockSurface(WaylandConnection& connection, ConfigService* config) :
               .align = FlexAlign::Stretch,
               .justify = FlexJustify::Start,
               .gap = Style::spaceSm,
-              .paddingV = Style::spaceSm,
+              .paddingV = Style::spaceLg,
               .paddingH = Style::spaceLg,
               .configure = [](Flex& flex) { flex.setZIndex(2); },
           }
@@ -926,7 +926,21 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
   m_loginContentRow->setVisible(loginVisible);
   m_passwordField->setVisible(loginVisible);
   m_loginButton->setVisible(loginVisible && loginStyle.showLoginButton);
-  float panelHeight = lockscreen_login_box::defaultPanelHeight(loginStyle.layout, loginStyle.showSessionButtons);
+
+  const bool regular = loginVisible && loginStyle.layout == lockscreen_login_box::LayoutMode::Regular;
+  ensureLayoutChipInPasswordRow();
+  if (regular && loginStyle.showSessionButtons) {
+    rebuildSessionButtons();
+  }
+  const bool showSession = regular && loginStyle.showSessionButtons && !m_sessionButtons.empty();
+  const bool showInfoConfigured = regular && lockscreen_login_box::styleShowsInfoExtras(loginStyle);
+  bool statusErrorEarly = false;
+  const bool hasStatusText = !resolveStatusText(loginStyle, statusErrorEarly).empty() && isLoginBoxEnabled();
+  const bool showStatus = loginVisible && hasStatusText;
+  const bool reserveStatus = !regular || lockscreen_login_box::styleReservesStatus(loginStyle, showStatus);
+
+  float panelHeight =
+      lockscreen_login_box::defaultPanelHeight(loginStyle.layout, showSession, showInfoConfigured, reserveStatus);
   float panelWidth = lockscreen_login_box::defaultPanelWidth(sw, loginStyle.layout);
   float panelX = std::round((sw - panelWidth) * 0.5f);
   float panelY = std::max(Style::spaceLg, sh - panelHeight - 84.0f);
@@ -936,10 +950,12 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
         loginBox != nullptr) {
       float cx = loginBox->cx;
       float cy = loginBox->cy;
-      lockscreen_login_box::panelOriginFromCenter(
-          cx, cy, sw, loginBox->boxWidth, loginBox->boxHeight, loginStyle.layout, panelX, panelY, panelWidth,
-          panelHeight, loginStyle.showSessionButtons
-      );
+      // Fit height to visible chrome so disabling hint/media/weather does not leave empty panel space.
+      panelHeight =
+          lockscreen_login_box::defaultPanelHeight(loginStyle.layout, showSession, showInfoConfigured, reserveStatus);
+      panelWidth = lockscreen_login_box::resolvePanelWidth(sw, loginBox->boxWidth, loginStyle.layout);
+      panelX = cx - panelWidth * 0.5f;
+      panelY = cy - panelHeight * 0.5f;
     }
   }
 
@@ -990,19 +1006,14 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
 
   const float contentWidth = std::max(0.0f, panelWidth - 2.0f * Style::spaceLg);
 
-  const bool regular = loginVisible && loginStyle.layout == lockscreen_login_box::LayoutMode::Regular;
   m_loginPanel->setJustify(regular ? FlexJustify::Start : FlexJustify::Center);
-  ensureLayoutChipInPasswordRow();
-
-  if (regular && loginStyle.showSessionButtons) {
-    rebuildSessionButtons();
-  }
 
   const bool mediaReady = m_mpris != nullptr && m_mpris->activePlayer().has_value();
   const bool weatherReady = m_weather != nullptr && m_weather->enabled() && m_weather->hasData();
   const auto extras = lockscreen_login_box::resolveInfoExtrasVisibility(regular, loginStyle, mediaReady, weatherReady);
   const bool showMedia = extras.showMedia;
   const bool showWeather = extras.showWeather;
+  const bool showInfoExtras = showMedia || showWeather;
   const bool weatherAlone = showWeather && !showMedia;
   const bool mediaAlone = showMedia && !showWeather;
   const float mediaBudget = lockscreen_login_box::infoExtraBudget(contentWidth, showMedia, showWeather);
@@ -1012,17 +1023,11 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
   int forecastDaysFit = 0;
   const bool showLayoutChip =
       loginVisible && loginStyle.showKeyboardLayout && m_layoutChip != nullptr && m_layoutChip->visible();
-  const bool showSession = regular && loginStyle.showSessionButtons && !m_sessionButtons.empty();
 
-  bool statusError = false;
-  const bool hasStatusText = !resolveStatusText(loginStyle, statusError).empty() && isLoginBoxEnabled();
-  // Compact shares the status strip with Regular (hint/caps/auth); layout used to
-  // reserve height only for Regular while updateCopy still showed the text.
-  const bool showStatus = loginVisible && hasStatusText;
   const lockscreen_login_box::RegularRowHeights rows = regular
-      ? lockscreen_login_box::regularRowHeights(panelHeight, showSession, showStatus)
+      ? lockscreen_login_box::regularRowHeights(panelHeight, showSession, reserveStatus, showInfoExtras)
       : lockscreen_login_box::RegularRowHeights{};
-  const float compactStatusHeight = showStatus ? lockscreen_login_box::regularStatusContentHeight() : 0.0f;
+  const float compactStatusHeight = reserveStatus ? lockscreen_login_box::regularStatusContentHeight() : 0.0f;
   const float contentScale = regular ? rows.scale : 1.0f;
   m_regularContentScale = contentScale;
   const float captionSize = Style::fontSizeCaption * contentScale;
@@ -1132,10 +1137,10 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
   // Scale info / status / password / session by the same factor so extra panel
   // height is shared, not absorbed only by session buttons.
   if (m_infoRow != nullptr) {
-    m_infoRow->setVisible(regular);
+    m_infoRow->setVisible(regular && showInfoExtras);
     m_infoRow->setMaxWidth(contentWidth);
-    m_infoRow->setMinHeight(regular ? rows.info : 0.0f);
-    m_infoRow->setMaxHeight(regular ? rows.info : 0.0f);
+    m_infoRow->setMinHeight(regular && showInfoExtras ? rows.info : 0.0f);
+    m_infoRow->setMaxHeight(regular && showInfoExtras ? rows.info : 0.0f);
     m_infoRow->setFlexGrow(0.0f);
     m_infoRow->setJustify((mediaAlone || weatherAlone) ? FlexJustify::Center : FlexJustify::Start);
   }
@@ -1143,7 +1148,7 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
   if (m_statusPanel != nullptr) {
     m_statusPanel->setMaxWidth(contentWidth);
     m_statusPanel->setRadius(Style::scaledRadius(loginStyle.inputRadius));
-    const float statusHeight = regular ? (showStatus ? rows.status : 0.0f) : compactStatusHeight;
+    const float statusHeight = regular ? (reserveStatus ? rows.status : 0.0f) : compactStatusHeight;
     m_statusPanel->setMinHeight(statusHeight);
     m_statusPanel->setMaxHeight(statusHeight);
     m_statusPanel->setFlexGrow(0.0f);
@@ -1556,10 +1561,7 @@ std::string LockSurface::resolveStatusText(const lockscreen_login_box::LoginBoxS
     isError = true;
     return i18n::tr("lockscreen.caps-lock-on");
   }
-  if (style.showPasswordHint) {
-    return i18n::tr("lockscreen.ready");
-  }
-  return {};
+  return i18n::tr("lockscreen.ready");
 }
 
 void LockSurface::releaseWallpaperTextureRef(const std::string& path) {

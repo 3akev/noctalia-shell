@@ -24,7 +24,6 @@ namespace {
         || key == lockscreen_login_box::kShowMediaKey
         || key == lockscreen_login_box::kShowWeatherKey
         || key == lockscreen_login_box::kShowLoginButtonKey
-        || key == lockscreen_login_box::kShowPasswordHintKey
         || key == lockscreen_login_box::kShowCapsLockKey
         || key == lockscreen_login_box::kInputOpacityKey
         || key == lockscreen_login_box::kInputRadiusKey;
@@ -105,8 +104,10 @@ void DesktopLoginBoxWidget::doLayout(Renderer& renderer) {
   const float screenWidth = m_screenWidth > 0.0f ? m_screenWidth : 1920.0f;
   const lockscreen_login_box::LoginBoxStyle style = lockscreen_login_box::resolveStyle(m_settings);
   const float panelWidth = lockscreen_login_box::resolvePanelWidth(screenWidth, m_boxWidth, style.layout);
+  const bool showInfo = lockscreen_login_box::styleShowsInfoExtras(style);
+  const bool reserveStatus = lockscreen_login_box::styleReservesStatus(style);
   const float panelHeight =
-      lockscreen_login_box::resolvePanelHeight(m_boxHeight, style.layout, style.showSessionButtons);
+      lockscreen_login_box::defaultPanelHeight(style.layout, style.showSessionButtons, showInfo, reserveStatus);
   const bool regular = style.layout == lockscreen_login_box::LayoutMode::Regular;
 
   if (m_panel != nullptr) {
@@ -124,31 +125,34 @@ void DesktopLoginBoxWidget::doLayout(Renderer& renderer) {
     );
   }
 
-  const float padV = Style::spaceSm;
+  const float padV = Style::spaceLg;
   const float padH = Style::spaceLg;
   const bool showSession = regular && style.showSessionButtons;
+  const bool showMedia = style.showMedia;
+  const bool showWeather = style.showWeather;
+  const bool showInfoExtras = showMedia || showWeather;
   const lockscreen_login_box::RegularRowHeights rows = regular
-      ? lockscreen_login_box::regularRowHeights(panelHeight, showSession, true)
+      ? lockscreen_login_box::regularRowHeights(panelHeight, showSession, reserveStatus, showInfoExtras)
       : lockscreen_login_box::RegularRowHeights{};
 
   float contentTop = padV;
   if (regular) {
     if (m_infoGhost != nullptr) {
-      m_infoGhost->setVisible(true);
-      m_infoGhost->setPosition(padH, contentTop);
-      m_infoGhost->setSize(panelWidth - padH * 2.0f, rows.info);
-      m_infoGhost->setStyle(
-          RoundedRectStyle{
-              .fill = colorForRole(ColorRole::Surface, 0.35f),
-              .fillMode = FillMode::Solid,
-              .radius = Style::scaledRadius(style.inputRadius),
-          }
-      );
+      m_infoGhost->setVisible(showInfoExtras);
+      if (showInfoExtras) {
+        m_infoGhost->setPosition(padH, contentTop);
+        m_infoGhost->setSize(panelWidth - padH * 2.0f, rows.info);
+        m_infoGhost->setStyle(
+            RoundedRectStyle{
+                .fill = colorForRole(ColorRole::Surface, 0.35f),
+                .fillMode = FillMode::Solid,
+                .radius = Style::scaledRadius(style.inputRadius),
+            }
+        );
+      }
     }
     const float halfGap = Style::spaceSm;
     const float contentWidth = panelWidth - padH * 2.0f;
-    const bool showMedia = style.showMedia;
-    const bool showWeather = style.showWeather;
     const bool mediaAlone = showMedia && !showWeather;
     const bool weatherAlone = showWeather && !showMedia;
     const float mediaWidth = lockscreen_login_box::infoExtraBudget(contentWidth, showMedia, showWeather);
@@ -190,21 +194,27 @@ void DesktopLoginBoxWidget::doLayout(Renderer& renderer) {
         );
       }
     }
-    contentTop += rows.info + Style::spaceSm;
+    if (showInfoExtras) {
+      contentTop += rows.info + Style::spaceSm;
+    }
 
     if (m_statusGhost != nullptr) {
-      m_statusGhost->setVisible(true);
-      m_statusGhost->setPosition(padH, contentTop);
-      m_statusGhost->setSize(panelWidth - padH * 2.0f, rows.status);
-      m_statusGhost->setStyle(
-          RoundedRectStyle{
-              .fill = colorForRole(ColorRole::Surface, 0.55f),
-              .fillMode = FillMode::Solid,
-              .radius = Style::scaledRadius(style.inputRadius),
-          }
-      );
+      m_statusGhost->setVisible(reserveStatus);
+      if (reserveStatus) {
+        m_statusGhost->setPosition(padH, contentTop);
+        m_statusGhost->setSize(panelWidth - padH * 2.0f, rows.status);
+        m_statusGhost->setStyle(
+            RoundedRectStyle{
+                .fill = colorForRole(ColorRole::Surface, 0.55f),
+                .fillMode = FillMode::Solid,
+                .radius = Style::scaledRadius(style.inputRadius),
+            }
+        );
+      }
     }
-    contentTop += rows.status + Style::spaceSm;
+    if (reserveStatus) {
+      contentTop += rows.status + Style::spaceSm;
+    }
   } else {
     if (m_infoGhost != nullptr) {
       m_infoGhost->setVisible(false);
@@ -215,22 +225,19 @@ void DesktopLoginBoxWidget::doLayout(Renderer& renderer) {
     if (m_weatherGhost != nullptr) {
       m_weatherGhost->setVisible(false);
     }
-    const bool showStatusGhost = style.showPasswordHint || style.showCapsLock;
-    const float statusHeight = showStatusGhost ? lockscreen_login_box::regularStatusContentHeight() : 0.0f;
+    const float statusHeight = lockscreen_login_box::regularStatusContentHeight();
     if (m_statusGhost != nullptr) {
-      m_statusGhost->setVisible(showStatusGhost);
-      if (showStatusGhost) {
-        m_statusGhost->setPosition(padH, contentTop);
-        m_statusGhost->setSize(panelWidth - padH * 2.0f, statusHeight);
-        m_statusGhost->setStyle(
-            RoundedRectStyle{
-                .fill = colorForRole(ColorRole::Surface, 0.55f),
-                .fillMode = FillMode::Solid,
-                .radius = Style::scaledRadius(style.inputRadius),
-            }
-        );
-        contentTop += statusHeight + Style::spaceSm;
-      }
+      m_statusGhost->setVisible(true);
+      m_statusGhost->setPosition(padH, contentTop);
+      m_statusGhost->setSize(panelWidth - padH * 2.0f, statusHeight);
+      m_statusGhost->setStyle(
+          RoundedRectStyle{
+              .fill = colorForRole(ColorRole::Surface, 0.55f),
+              .fillMode = FillMode::Solid,
+              .radius = Style::scaledRadius(style.inputRadius),
+          }
+      );
+      contentTop += statusHeight + Style::spaceSm;
     }
   }
 

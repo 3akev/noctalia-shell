@@ -2272,9 +2272,15 @@ void DesktopWidgetsEditor::updateDrag() {
           surface != nullptr && surface->surface != nullptr) {
         screenWidth = static_cast<float>(surface->surface->width());
       }
+      const lockscreen_login_box::LoginBoxStyle style = lockscreen_login_box::resolveStyle(state->settings);
       lockscreen_login_box::clampPanelSize(
-          screenWidth, boxW, boxH, lockscreen_login_box::resolveLayout(state->settings),
-          lockscreen_login_box::resolveStyle(state->settings).showSessionButtons
+          screenWidth, boxW, boxH, style.layout, style.showSessionButtons,
+          lockscreen_login_box::styleShowsInfoExtras(style), lockscreen_login_box::styleReservesStatus(style)
+      );
+      // Login box height follows chrome; scale is width-oriented.
+      boxH = lockscreen_login_box::defaultPanelHeight(
+          style.layout, style.showSessionButtons, lockscreen_login_box::styleShowsInfoExtras(style),
+          lockscreen_login_box::styleReservesStatus(style)
       );
     }
 
