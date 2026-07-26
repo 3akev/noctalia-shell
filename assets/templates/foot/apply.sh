@@ -26,7 +26,7 @@ write_if_changed() {
     rm -f "$tmp"
 }
 
-if [ ! -f "$config_file" ] && [ ! -L "$config_file" ]; then
+if [ ! -f "$config_file" ]; then
     cat >"$config_file" <<EOF
 [main]
 $include_line

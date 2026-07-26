@@ -1424,6 +1424,15 @@ void SettingsWindow::refreshSettingsRegistry(const Config& cfg) {
   logSettingsProfile("refreshRegistry registry", phaseProfileWatch);
   phaseProfileWatch.reset();
 
+  for (auto& entry : m_settingsRegistry) {
+    if (entry.section != settings::SettingsSection::Templates || entry.group != "community") {
+      continue;
+    }
+    if (auto* button = std::get_if<settings::ButtonSetting>(&entry.control)) {
+      button->action = [this]() { openCommunityTemplateStore(); };
+    }
+  }
+
   if (m_calendarService != nullptr
       && (m_calendarService->credentialMigrationPending()
           || m_calendarService->credentialState() != calendar::CredentialState::Ready)) {

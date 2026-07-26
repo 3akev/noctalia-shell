@@ -59,7 +59,7 @@ awk -v include_line="$include_line" '
 ' "$config_file" >"$tmp_file"
 
 # Replace kitty.conf only if its contents actually changed. Write through a symlink
-# (stow/dotfiles) instead of replacing it with a regular file via mv.
+# instead of replacing it with a regular file via mv.
 if ! cmp -s "$config_file" "$tmp_file"; then
     cat "$tmp_file" >"$config_file"
 fi

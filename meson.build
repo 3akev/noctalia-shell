@@ -672,6 +672,8 @@ _noctalia_sources = files(
   'src/shell/settings/settings_content_plugins.cpp',
   'src/shell/settings/plugin_store_content.cpp',
   'src/shell/settings/plugin_store_tile.cpp',
+  'src/shell/settings/template_store_content.cpp',
+  'src/shell/settings/template_store_tile.cpp',
   'src/shell/settings/settings_control_factory.cpp',
   'src/shell/settings/settings_content_idle_behavior.cpp',
   'src/shell/settings/settings_content_notification_filter.cpp',

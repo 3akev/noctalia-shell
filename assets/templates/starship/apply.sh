@@ -80,7 +80,8 @@ cleanup() {
 trap cleanup EXIT
 
 # Build the desired starship.toml into a temp file (never sed -i the live path).
-if [ ! -e "$config_file" ] && [ ! -L "$config_file" ]; then
+# ! -f covers a missing path and a dangling symlink (write-through creates the target).
+if [ ! -f "$config_file" ]; then
     {
         echo 'palette = "noctalia"'
         echo ""
@@ -139,7 +140,7 @@ else
 fi
 
 # Only touch the live path when content actually changes. Write through a symlink
-# (stow/dotfiles) instead of replacing it with a regular file via mv/sed -i.
+# instead of replacing it with a regular file via mv/sed -i.
 if [ ! -e "$config_file" ] && [ ! -L "$config_file" ]; then
     mv "$tmp_file" "$config_file"
     trap - EXIT
