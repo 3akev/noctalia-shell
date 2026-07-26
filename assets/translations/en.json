@@ -1140,6 +1140,7 @@
         "general": "General",
         "greeter": "Greeter",
         "grouping": "Grouping",
+        "history": "History",
         "home": "Home",
         "hot-corners": "Hot Corners",
         "idle": "Idle",
@@ -1485,24 +1486,6 @@
         "sort-updated-at-desc": "Sort by date updated (newest first)",
         "source-all": "All sources",
         "title": "Plugin Store"
-      }
-    },
-    "templates": {
-      "store": {
-        "browse": "Browse Templates",
-        "categories": "Categories",
-        "category-all": "All",
-        "empty": "No templates match your filters",
-        "enabled-count": "{count} enabled",
-        "filter-all": "All",
-        "filter-enabled": "Enabled",
-        "results-count": "{count} templates",
-        "search-placeholder": "Search templates…",
-        "sort-category-asc": "Sort by category (A-Z)",
-        "sort-category-desc": "Sort by category (Z-A)",
-        "sort-name-asc": "Sort by name (A-Z)",
-        "sort-name-desc": "Sort by name (Z-A)",
-        "title": "Community Templates"
       }
     },
     "schema": {
@@ -2161,6 +2144,10 @@
         "filters": {
           "description": "Per-sender rules for toasts, history, and sounds; first matching enabled filter wins",
           "label": "Notification Filters"
+        },
+        "history-retention-hours": {
+          "description": "Automatically remove notification history entries older than this many hours (0 to keep forever)",
+          "label": "Keep history for"
         },
         "layer": {
           "description": "Use Overlay to show notification toasts above fullscreen apps",
@@ -3073,6 +3060,24 @@
       "error-key": "Private storage files were deleted, but secure storage could not be reopened. Fix access and retry.",
       "label": "Recover Private Storage",
       "success": "Private storage was reset successfully."
+    },
+    "templates": {
+      "store": {
+        "browse": "Browse Templates",
+        "categories": "Categories",
+        "category-all": "All",
+        "empty": "No templates match your filters",
+        "enabled-count": "{count} enabled",
+        "filter-all": "All",
+        "filter-enabled": "Enabled",
+        "results-count": "{count} templates",
+        "search-placeholder": "Search templates…",
+        "sort-category-asc": "Sort by category (A-Z)",
+        "sort-category-desc": "Sort by category (Z-A)",
+        "sort-name-asc": "Sort by name (A-Z)",
+        "sort-name-desc": "Sort by name (Z-A)",
+        "title": "Community Templates"
+      }
     },
     "widgets": {
       "actions": {

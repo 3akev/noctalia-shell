@@ -516,9 +516,11 @@
         "show-keyboard-layout": "Layout tastiera",
         "show-label": "Mostra etichette",
         "show-login-button": "Pulsante di login",
+        "show-media": "Media",
         "show-password-hint": "Suggerimento password",
         "show-session-buttons": "Pulsanti di sessione",
         "show-vpn-label": "Mostra etichetta VPN",
+        "show-weather": "Meteo",
         "show-when-idle": "Mostra quando inattivo",
         "stat": "Statistica",
         "stat-cpu-temp": "Temp CPU",
@@ -2675,6 +2677,10 @@
           "description": "Comando da eseguire dalle voci immagine negli appunti; usa {path} per il percorso file, {stdin} per segnare la posizione stdin, oppure ometti {path} per inviare automaticamente in pipe",
           "label": "Comando azione immagine",
           "placeholder": "gimp {path} o satty -f -"
+        },
+        "clipboard-keep-from-closed-apps": {
+          "description": "Mantieni disponibile l'ultimo elemento copiato per incollarlo dopo la chiusura dell'applicazione da cui lo hai copiato",
+          "label": "Mantieni gli appunti dalle app chiuse"
         },
         "clipboard-storage": {
           "button": "Riprova",

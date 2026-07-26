@@ -838,7 +838,7 @@ std::vector<settings::GestureActionOption> SettingsWindow::gestureActionCatalog(
     if (handler.command == noctalia::bar::kExecVerb || handler.command == noctalia::bar::kNoneVerb) {
       continue;
     }
-    if (!handler.bindable) {
+    if (handler.actionEditorVisibility == IpcService::ActionEditorVisibility::Hidden) {
       continue;
     }
     options.push_back(

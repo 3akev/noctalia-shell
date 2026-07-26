@@ -54,7 +54,7 @@
         "scroll-short": "S"
       },
       "media": {
-        "nothing-playing": "无播放内容",
+        "nothing-playing": "暂无播放内容",
         "playing": "正在播放"
       },
       "network": {
@@ -231,7 +231,7 @@
       "media": {
         "idle": "空闲",
         "no-active-player": "无活动播放器",
-        "nothing-playing": "无播放内容",
+        "nothing-playing": "暂无播放内容",
         "paused": "已暂停",
         "playback-unavailable": "无法播放",
         "playing": "正在播放",
@@ -250,7 +250,7 @@
     },
     "media": {
       "active-player": "活动播放器",
-      "nothing-playing": "无播放内容",
+      "nothing-playing": "暂无播放内容",
       "now-playing": "正在播放",
       "start-playback": "在 MPRIS 应用中开始播放"
     },
@@ -516,9 +516,11 @@
         "show-keyboard-layout": "键盘布局",
         "show-label": "显示标签",
         "show-login-button": "登录按钮",
+        "show-media": "媒体",
         "show-password-hint": "密码提示",
         "show-session-buttons": "会话按钮",
         "show-vpn-label": "显示 VPN 标签",
+        "show-weather": "天气",
         "show-when-idle": "空闲时显示",
         "stat": "统计项",
         "stat-cpu-temp": "CPU 温度",
@@ -571,7 +573,7 @@
       }
     },
     "media": {
-      "nothing-playing": "无播放内容"
+      "nothing-playing": "暂无播放内容"
     },
     "volume": {
       "mic": "麦克风",
@@ -2676,6 +2678,10 @@
           "label": "图片操作命令",
           "placeholder": "gimp {path} 或 satty -f -"
         },
+        "clipboard-keep-from-closed-apps": {
+          "description": "从应用复制内容后，即使该应用关闭，仍可粘贴最后复制的内容",
+          "label": "应用关闭后保留剪贴板"
+        },
         "clipboard-storage": {
           "button": "重试",
           "description-cancelled": "Secret Service 解锁提示已取消。剪贴板历史记录仅在本次会话中可用。",
@@ -3365,7 +3371,7 @@
         },
         "hide-when-no-media": {
           "description": "没有可用的 MPRIS 播放器时隐藏媒体小组件",
-          "label": "无播放内容时隐藏"
+          "label": "无媒体时隐藏"
         },
         "hide-when-no-unread": {
           "description": "没有未读通知时隐藏通知小组件",
