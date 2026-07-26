@@ -134,8 +134,8 @@ namespace {
   // `shell.panel_anchor_bar` wins when set; otherwise `barName` is the opening
   // source bar. A named bar that does not exist fails loudly (nullopt).
   // Prefer an enabled bar on the output; if none is enabled there (e.g. a bar-less
-  // monitor), still return a resolved bar so openPanel can fall back to centered
-  // floating via attached-panel availability.
+  // monitor), still return a resolved bar so openPanel can use a center-screen
+  // floating layout via attached-panel availability.
   std::optional<BarConfig> resolvePanelBarConfig(
       ConfigService* configService, CompositorPlatform* platform, wl_output* output, std::string_view barName = {}
   ) {
@@ -178,7 +178,7 @@ namespace {
       }
     }
 
-    // Bar-less output: keep opening panels (centered/floating), not abort.
+    // Bar-less output: keep opening panels on floating surfaces rather than aborting.
     return resolve(bars.front());
   }
 
@@ -585,11 +585,11 @@ void PanelManager::openPanel(const std::string& panelId, PanelOpenRequest reques
   const AttachedRevealDirection detachedDirection = detachedRevealDirection(panelPosition, barConfig.position);
   const bool useScreenPosition =
       activePlacement == PanelPlacement::Floating && panelPosition != "auto" && panelPosition != "center";
-  const bool useCenteredPlacement = (activePlacement == PanelPlacement::Floating && panelPosition == "center")
+  const bool useCenterScreenLayout = (activePlacement == PanelPlacement::Floating && panelPosition == "center")
       || (activePlacement == PanelPlacement::Attached
           && m_attachedPanelAvailabilityCallback != nullptr
           && !m_attachedPanelAvailabilityCallback(request.output, m_sourceBarName));
-  const bool useFloatingAnchor = !useCenteredPlacement
+  const bool useFloatingAnchor = !useCenterScreenLayout
       && request.hasAnchorPosition
       && openNearClickEnabled(m_activePanel, m_activePanelId, m_config);
   const auto detachedShadowBleed =
@@ -601,7 +601,7 @@ void PanelManager::openPanel(const std::string& panelId, PanelOpenRequest reques
   const auto barRect = resolveBarVisibleRect(barConfig, outputWidth, outputHeight);
   const bool multipleBarsOnEdge =
       hasMultipleEnabledBarsOnEdge(m_config, m_platform, request.output, barConfig.position);
-  const bool useReservedEdgePlacement = !useCenteredPlacement
+  const bool useReservedEdgePlacement = !useCenterScreenLayout
       && !useScreenPosition
       && multipleBarsOnEdge
       && barConfig.reserveSpace
@@ -620,7 +620,7 @@ void PanelManager::openPanel(const std::string& panelId, PanelOpenRequest reques
   std::int32_t standaloneMarginRight = 0;
   std::int32_t standaloneMarginBottom = 0;
   std::int32_t standaloneMarginLeft = 0;
-  if (!useCenteredPlacement) {
+  if (!useCenterScreenLayout) {
     const std::int32_t barWidth = std::max(0, barRect.right - barRect.left);
     const std::int32_t barHeight = std::max(0, barRect.bottom - barRect.top);
     const auto centeredAlongBarX = clampMargin(
@@ -688,7 +688,7 @@ void PanelManager::openPanel(const std::string& panelId, PanelOpenRequest reques
     }
   }
 
-  if (useCenteredPlacement) {
+  if (useCenterScreenLayout) {
     standaloneAnchor = LayerShellAnchor::Top | LayerShellAnchor::Left;
     standaloneMarginLeft = (outputWidth - static_cast<std::int32_t>(panelWidth)) / 2 - detachedShadowBleed.left;
     standaloneMarginTop = (outputHeight - static_cast<std::int32_t>(panelHeight)) / 2 - detachedShadowBleed.up;
@@ -710,7 +710,7 @@ void PanelManager::openPanel(const std::string& panelId, PanelOpenRequest reques
   // bar's reserved edge so the panel tracks the bar's real on-screen position;
   // subtract the bar's own reservation on the main axis to avoid double-counting.
   // Reproduces the prior absolute placement when nothing else reserves space.
-  const bool useBarRelativeDetached = !useCenteredPlacement && !useScreenPosition && !useReservedEdgePlacement;
+  const bool useBarRelativeDetached = !useCenterScreenLayout && !useScreenPosition && !useReservedEdgePlacement;
   if (useBarRelativeDetached) {
     const std::int32_t barReserved =
         barConfig.reserveSpace ? reservedBarEdgeDistance(barConfig, m_config->config().shell.shadow) : 0;
@@ -794,9 +794,9 @@ void PanelManager::openPanel(const std::string& panelId, PanelOpenRequest reques
       .anchor = standaloneAnchor,
       .width = requestedSurfaceWidth,
       .height = requestedSurfaceHeight,
-      // Centered panels ignore exclusive zones; filled axes must respect them
-      // (that is what makes the compositor subtract bars and other clients).
-      .exclusiveZone = useCenteredPlacement && !fillWidth && !fillHeight ? -1 : 0,
+      // Floating panels at the center position ignore exclusive zones; filled axes
+      // must respect them so the compositor subtracts bars and other clients.
+      .exclusiveZone = useCenterScreenLayout && !fillWidth && !fillHeight ? -1 : 0,
       .marginTop = standaloneMarginTop,
       .marginRight = standaloneMarginRight,
       .marginBottom = standaloneMarginBottom,

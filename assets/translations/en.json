@@ -1401,7 +1401,7 @@
       "browse-store": "Browse Plugins",
       "panels": {
         "open-near-click": {
-          "description": "Position the panel near the bar widget that opened it; openings without a bar trigger are centered",
+          "description": "Position the panel near the bar widget that opened it when attached or floating with position auto",
           "label": "Along Bar"
         },
         "placement": {
@@ -2302,23 +2302,23 @@
           "label": "List Item Background"
         },
         "open-near-click-clipboard": {
-          "description": "Position the clipboard panel near the bar widget that opened it; openings without a bar trigger are centered",
+          "description": "Position the clipboard panel near the bar widget that opened it when attached or floating with position auto",
           "label": "Along Bar"
         },
         "open-near-click-control-center": {
-          "description": "Position Control Center near the bar widget that opened it; openings without a bar trigger are centered",
+          "description": "Position Control Center near the bar widget that opened it when attached or floating with position auto",
           "label": "Along Bar"
         },
         "open-near-click-launcher": {
-          "description": "Position the launcher near the bar widget that opened it; openings without a bar trigger are centered",
+          "description": "Position the launcher near the bar widget that opened it when attached or floating with position auto",
           "label": "Along Bar"
         },
         "open-near-click-session": {
-          "description": "Position the session panel near the bar widget that opened it; openings without a bar trigger are centered",
+          "description": "Position the session panel near the bar widget that opened it when attached or floating with position auto",
           "label": "Along Bar"
         },
         "open-near-click-wallpaper": {
-          "description": "Position the wallpaper picker near the bar widget that opened it; openings without a bar trigger are centered",
+          "description": "Position the wallpaper picker near the bar widget that opened it when attached or floating with position auto",
           "label": "Along Bar"
         },
         "panel-anchor-bar": {
@@ -3275,7 +3275,7 @@
           "label": "Custom Labels"
         },
         "detached-panel": {
-          "description": "Open the drawer as a floating panel with its own background instead of merging with the bar",
+          "description": "Open the drawer as a floating panel instead of anchoring it to the bar edge",
           "label": "Detached Panel"
         },
         "device": {

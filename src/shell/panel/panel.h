@@ -71,9 +71,8 @@ public:
   // each update/layout pass. Lets content that arrives or changes after the
   // scene build request keyboard focus (e.g. a plugin input with focus = true).
   [[nodiscard]] virtual InputArea* takePendingFocusArea() { return nullptr; }
-  // Panel placement policy. `Attached` merges with the bar when a suitable host
-  // exists, `Floating` opens detached near the bar, and `Centered` opens in the
-  // middle of the target output.
+  // Panel placement policy. `Attached` anchors the panel surface to a suitable
+  // bar edge; `Floating` opens detached and uses panelScreenPosition().
   [[nodiscard]] virtual PanelPlacement panelPlacement() const noexcept { return PanelPlacement::Floating; }
   // Floating screen position (one of kPanelPositions). Plugin panels override; built-in
   // panels resolve through shell.panel.*_position in PanelManager.
