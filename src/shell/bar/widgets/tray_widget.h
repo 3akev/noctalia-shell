@@ -33,6 +33,7 @@ public:
     float inlineEntryGap = Style::spaceXs;
     bool matchAdjacentSpacing = false;
     std::optional<float> customItemSize;
+    // Read by TrayDrawerPanel, not by TrayWidget: they live here so the tray widget definition owns their defaults.
     double drawerItemSize = Style::baseGlyphSize;
     bool detachedPanel = false;
   };

@@ -1737,6 +1737,8 @@ widget_definition_test = executable('widget_definition_test',
   dependencies: [
     xkbcommon_dep,
     tomlplusplus_dep,
+    # tray_widget.h reaches tray_service.h, which includes <sdbus-c++/sdbus-c++.h>.
+    sdbus_cpp_dep,
   ],
 )
 

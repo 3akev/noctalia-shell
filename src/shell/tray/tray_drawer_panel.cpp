@@ -3,6 +3,7 @@
 #include "config/config_service.h"
 #include "dbus/tray/tray_service.h"
 #include "shell/bar/widgets/tray_widget.h"
+#include "shell/bar/widgets/tray_widget_definition.h"
 #include "shell/panel/panel_manager.h"
 #include "shell/tray/tray_identifier.h"
 #include "util/string_utils.h"
@@ -10,8 +11,7 @@
 #include <algorithm>
 #include <vector>
 
-TrayDrawerPanel::TrayDrawerPanel(TrayService* tray, ConfigService* config, std::size_t drawerColumns)
-    : m_tray(tray), m_config(config), m_drawerColumns(std::clamp<std::size_t>(drawerColumns, 1U, 5U)) {}
+TrayDrawerPanel::TrayDrawerPanel(TrayService* tray, ConfigService* config) : m_tray(tray), m_config(config) {}
 
 TrayDrawerPanel::~TrayDrawerPanel() = default;
 
@@ -141,15 +141,14 @@ void TrayDrawerPanel::doUpdate(Renderer& renderer) {
 }
 
 std::size_t TrayDrawerPanel::currentDrawerColumns() const {
-  if (m_config == nullptr) {
-    return m_drawerColumns;
+  const WidgetConfig* trayConfig = nullptr;
+  if (m_config != nullptr) {
+    if (const auto it = m_config->config().widgets.find("tray"); it != m_config->config().widgets.end()) {
+      trayConfig = &it->second;
+    }
   }
-  if (const auto it = m_config->config().widgets.find("tray"); it != m_config->config().widgets.end()) {
-    return static_cast<std::size_t>(std::clamp<std::int64_t>(
-        it->second.getInt("drawer_columns", static_cast<std::int64_t>(TrayWidget::Options{}.panelGridColumns)), 1, 5
-    ));
-  }
-  return m_drawerColumns;
+  // The definition owns the default and the valid range, and resolve() clamps to it.
+  return trayWidgetDefinition().resolve(trayConfig, "tray", TrayWidgetDefinitionContext{}).panelGridColumns;
 }
 
 std::size_t TrayDrawerPanel::visibleItemCount() const {

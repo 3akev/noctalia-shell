@@ -540,6 +540,11 @@ namespace noctalia::bar {
         throw std::logic_error("widget definition type cannot be empty");
       }
       for (std::size_t i = 0; i < fields.size(); ++i) {
+        if (!fields[i].resolve || !fields[i].valuesEqual) {
+          throw std::logic_error(
+              std::format("widget definition '{}' field '{}' was not built by field<>()", type, fields[i].schema.key)
+          );
+        }
         for (std::size_t j = i + 1; j < fields.size(); ++j) {
           if (fields[i].schema.key == fields[j].schema.key) {
             throw std::logic_error(
