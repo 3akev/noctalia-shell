@@ -649,7 +649,21 @@ void DesktopWidgetsEditor::applySettingChange(const std::string& key, WidgetSett
     if (state == nullptr) {
       return;
     }
-    state->settings[key] = value;
+
+    bool rebuildInspector = settingChangeAffectsInspectorVisibility(state->type, key) || key == "background";
+    if (lockscreen_login_box::isLoginBoxWidget(*state)
+        && (key == lockscreen_login_box::kShowMediaKey || key == lockscreen_login_box::kShowWeatherKey)) {
+      const bool* enabled = std::get_if<bool>(&value);
+      if (enabled == nullptr) {
+        return;
+      }
+      if (!lockscreen_login_box::applyMediaWeatherToggle(state->settings, key, *enabled)) {
+        // Last remaining info extra cannot be disabled; snap the toggle back.
+        rebuildInspector = true;
+      }
+    } else {
+      state->settings[key] = value;
+    }
 
     if (lockscreen_login_box::isLoginBoxWidget(*state)
         && (key == lockscreen_login_box::kLayoutKey || key == lockscreen_login_box::kShowSessionButtonsKey)) {
@@ -685,8 +699,6 @@ void DesktopWidgetsEditor::applySettingChange(const std::string& key, WidgetSett
     if (view.transformNode == nullptr) {
       return;
     }
-
-    const bool rebuildInspector = settingChangeAffectsInspectorVisibility(state->type, key) || key == "background";
 
     if (view.widget != nullptr && view.widget->applySetting(key, value, state->settings, *m_renderContext)) {
       applyViewState(view, *state, true);

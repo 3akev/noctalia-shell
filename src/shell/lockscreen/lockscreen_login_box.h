@@ -24,6 +24,8 @@ namespace lockscreen_login_box {
   constexpr std::string_view kLayoutCompact = "compact";
   constexpr std::string_view kLayoutRegular = "regular";
   constexpr std::string_view kShowSessionButtonsKey = "show_session_buttons";
+  constexpr std::string_view kShowMediaKey = "show_media";
+  constexpr std::string_view kShowWeatherKey = "show_weather";
   constexpr std::string_view kInputOpacityKey = "input_opacity";
   constexpr std::string_view kInputRadiusKey = "input_radius";
   constexpr std::string_view kCenterPasswordTextKey = "center_password_text";
@@ -50,7 +52,19 @@ namespace lockscreen_login_box {
     bool showCapsLock = true;
     bool showKeyboardLayout = true;
     bool showSessionButtons = true;
+    bool showMedia = true;
+    bool showWeather = true;
   };
+
+  // Regular info row: at least one of media/weather must stay enabled.
+  struct InfoExtrasVisibility {
+    bool showMedia = false;
+    bool showWeather = false;
+  };
+
+  [[nodiscard]] InfoExtrasVisibility
+  resolveInfoExtrasVisibility(bool regular, const LoginBoxStyle& style, bool mediaReady, bool weatherReady);
+  [[nodiscard]] float infoExtraBudget(float contentWidth, bool showSelf, bool showOther);
 
   [[nodiscard]] bool isLoginBoxWidget(const DesktopWidgetState& state);
   [[nodiscard]] bool isLoginBoxWidgetType(std::string_view type);
@@ -128,6 +142,10 @@ namespace lockscreen_login_box {
   );
   void applyAllDefaultSettings(std::unordered_map<std::string, WidgetSettingValue>& settings);
   void normalizeSettings(std::unordered_map<std::string, WidgetSettingValue>& settings);
+  // Returns false when disabling would leave both media and weather off (caller should snap the toggle back).
+  [[nodiscard]] bool applyMediaWeatherToggle(
+      std::unordered_map<std::string, WidgetSettingValue>& settings, std::string_view key, bool enabled
+  );
 
   void ensureWidgets(std::vector<DesktopWidgetState>& widgets, const WaylandConnection& wayland);
 

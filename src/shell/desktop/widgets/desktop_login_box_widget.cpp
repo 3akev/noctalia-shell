@@ -21,6 +21,8 @@ namespace {
         || key == "background_radius"
         || key == lockscreen_login_box::kLayoutKey
         || key == lockscreen_login_box::kShowSessionButtonsKey
+        || key == lockscreen_login_box::kShowMediaKey
+        || key == lockscreen_login_box::kShowWeatherKey
         || key == lockscreen_login_box::kShowLoginButtonKey
         || key == lockscreen_login_box::kInputOpacityKey
         || key == lockscreen_login_box::kInputRadiusKey;
@@ -142,30 +144,49 @@ void DesktopLoginBoxWidget::doLayout(Renderer& renderer) {
       );
     }
     const float halfGap = Style::spaceSm;
-    const float halfWidth = std::max(40.0f, (panelWidth - padH * 2.0f - halfGap) * 0.5f);
+    const float contentWidth = panelWidth - padH * 2.0f;
+    const bool showMedia = style.showMedia;
+    const bool showWeather = style.showWeather;
+    const bool mediaAlone = showMedia && !showWeather;
+    const bool weatherAlone = showWeather && !showMedia;
+    const float mediaWidth = lockscreen_login_box::infoExtraBudget(contentWidth, showMedia, showWeather);
+    const float weatherWidth = lockscreen_login_box::infoExtraBudget(contentWidth, showWeather, showMedia);
+    const float ghostHeight = std::max(0.0f, rows.info - Style::spaceXs * 2.0f);
     if (m_mediaGhost != nullptr) {
-      m_mediaGhost->setVisible(true);
-      m_mediaGhost->setPosition(padH + Style::spaceXs, contentTop + Style::spaceXs);
-      m_mediaGhost->setSize(halfWidth - Style::spaceXs, std::max(0.0f, rows.info - Style::spaceXs * 2.0f));
-      m_mediaGhost->setStyle(
-          RoundedRectStyle{
-              .fill = colorForRole(ColorRole::Primary, 0.18f),
-              .fillMode = FillMode::Solid,
-              .radius = Style::scaledRadius(style.inputRadius),
-          }
-      );
+      m_mediaGhost->setVisible(showMedia);
+      if (showMedia) {
+        const float ghostWidth =
+            mediaAlone ? std::max(40.0f, contentWidth * 0.55f) : std::max(0.0f, mediaWidth - Style::spaceXs);
+        const float ghostX = mediaAlone ? padH + (contentWidth - ghostWidth) * 0.5f : padH + Style::spaceXs;
+        m_mediaGhost->setPosition(ghostX, contentTop + Style::spaceXs);
+        m_mediaGhost->setSize(ghostWidth, ghostHeight);
+        m_mediaGhost->setStyle(
+            RoundedRectStyle{
+                .fill = colorForRole(ColorRole::Primary, 0.18f),
+                .fillMode = FillMode::Solid,
+                .radius = Style::scaledRadius(style.inputRadius),
+            }
+        );
+      }
     }
     if (m_weatherGhost != nullptr) {
-      m_weatherGhost->setVisible(true);
-      m_weatherGhost->setPosition(padH + halfWidth + halfGap + Style::spaceXs, contentTop + Style::spaceXs);
-      m_weatherGhost->setSize(halfWidth - Style::spaceXs, std::max(0.0f, rows.info - Style::spaceXs * 2.0f));
-      m_weatherGhost->setStyle(
-          RoundedRectStyle{
-              .fill = colorForRole(ColorRole::Secondary, 0.18f),
-              .fillMode = FillMode::Solid,
-              .radius = Style::scaledRadius(style.inputRadius),
-          }
-      );
+      m_weatherGhost->setVisible(showWeather);
+      if (showWeather) {
+        const float ghostWidth =
+            weatherAlone ? std::max(40.0f, contentWidth * 0.7f) : std::max(0.0f, weatherWidth - Style::spaceXs);
+        const float ghostX = weatherAlone ? padH + (contentWidth - ghostWidth) * 0.5f
+            : showMedia                   ? padH + mediaWidth + halfGap + Style::spaceXs
+                                          : padH + Style::spaceXs;
+        m_weatherGhost->setPosition(ghostX, contentTop + Style::spaceXs);
+        m_weatherGhost->setSize(ghostWidth, ghostHeight);
+        m_weatherGhost->setStyle(
+            RoundedRectStyle{
+                .fill = colorForRole(ColorRole::Secondary, 0.18f),
+                .fillMode = FillMode::Solid,
+                .radius = Style::scaledRadius(style.inputRadius),
+            }
+        );
+      }
     }
     contentTop += rows.info + Style::spaceSm;
 

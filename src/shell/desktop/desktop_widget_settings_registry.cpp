@@ -437,6 +437,23 @@ namespace desktop_settings {
       auto showSessionButtons = boolSpec("show_session_buttons", true);
       showSessionButtons.visibleWhen = regularOnly;
       add(std::move(showSessionButtons));
+      // Hide the remaining-enabled toggle so Regular always keeps one info extra.
+      WidgetSettingVisibility mediaToggleVisible;
+      mediaToggleVisible.all = {
+          WidgetSettingVisibilityCondition{"layout", {"regular"}},
+          WidgetSettingVisibilityCondition{"show_weather", {"true"}},
+      };
+      auto showMedia = boolSpec("show_media", true);
+      showMedia.visibleWhen = mediaToggleVisible;
+      add(std::move(showMedia));
+      WidgetSettingVisibility weatherToggleVisible;
+      weatherToggleVisible.all = {
+          WidgetSettingVisibilityCondition{"layout", {"regular"}},
+          WidgetSettingVisibilityCondition{"show_media", {"true"}},
+      };
+      auto showWeather = boolSpec("show_weather", true);
+      showWeather.visibleWhen = weatherToggleVisible;
+      add(std::move(showWeather));
       add(boolSpec("show_login_button", true));
       add(boolSpec("show_password_hint", true));
       add(boolSpec("show_caps_lock", true));
