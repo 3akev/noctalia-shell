@@ -775,6 +775,7 @@ _noctalia_sources = files(
   'src/system/keyboard_backlight_service.cpp',
   'src/system/lock_keys_service.cpp',
   'src/system/distro_info.cpp',
+  'src/system/disk_mounts.cpp',
   'src/system/format_units.cpp',
   'src/system/hardware_info.cpp',
   'src/system/icon_resolver.cpp',
@@ -1366,6 +1367,32 @@ cpu_stat_test = executable('cpu_stat_test',
 )
 
 test('cpu_stat', cpu_stat_test)
+
+disk_mounts_test = executable('disk_mounts_test',
+  sources: files(
+    'tests/disk_mounts_test.cpp',
+    'src/system/disk_mounts.cpp',
+  ),
+  include_directories: _noctalia_inc,
+)
+
+test('disk_mounts', disk_mounts_test)
+
+system_monitor_service_test = executable('system_monitor_service_test',
+  sources: files(
+    'tests/system_monitor_service_test.cpp',
+    'src/system/system_monitor_service.cpp',
+    'src/system/cpu_stat.cpp',
+    'src/system/cpu_temp_sensor.cpp',
+    'src/system/format_units.cpp',
+    'src/system/intel_gpu.cpp',
+    'src/core/log.cpp',
+  ),
+  dependencies: [dl_dep],
+  include_directories: _noctalia_inc,
+)
+
+test('system_monitor_service', system_monitor_service_test)
 
 i18n_language_tag_test = executable('i18n_language_tag_test',
   sources: files(
