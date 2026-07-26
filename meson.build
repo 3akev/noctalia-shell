@@ -756,6 +756,7 @@ _noctalia_sources = files(
   'src/shell/bar/widgets/test_widget.cpp',
   'src/shell/bar/widgets/theme_mode_widget.cpp',
   'src/shell/bar/widgets/tray_widget.cpp',
+  'src/shell/bar/widgets/tray_widget_definition.cpp',
   'src/shell/bar/widgets/volume_widget.cpp',
   'src/shell/bar/widgets/brightness_widget.cpp',
   'src/shell/bar/widgets/brightness_widget_definition.cpp',
@@ -1719,6 +1720,7 @@ widget_definition_test = executable('widget_definition_test',
     'src/shell/bar/widgets/settings_widget_definition.cpp',
     'src/shell/bar/widgets/spacer_widget_definition.cpp',
     'src/shell/bar/widgets/text_widget_definition.cpp',
+    'src/shell/bar/widgets/tray_widget_definition.cpp',
     'src/shell/bar/widgets/wallpaper_widget_definition.cpp',
     'src/shell/bar/widgets/weather_widget_definition.cpp',
     'src/config/widget_config.cpp',
@@ -1735,6 +1737,8 @@ widget_definition_test = executable('widget_definition_test',
   dependencies: [
     xkbcommon_dep,
     tomlplusplus_dep,
+    # tray_widget.h reaches tray_service.h, which includes <sdbus-c++/sdbus-c++.h>.
+    sdbus_cpp_dep,
   ],
 )
 

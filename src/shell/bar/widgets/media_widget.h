@@ -35,8 +35,6 @@ public:
     bool hideAlbumArt = false;
     bool hideArtist = false;
     bool artistFirst = false;
-
-    bool operator==(const Options&) const = default;
   };
 
   MediaWidget(MprisService* mpris, HttpClient* httpClient, wl_output* output, Options options);
