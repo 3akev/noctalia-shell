@@ -334,6 +334,9 @@ void Application::syncClipboardService() {
   m_wayland.setClipboardService(&m_clipboardService);
   Input::setTextClipboard(&m_clipboardService);
   m_clipboardService.setHistoryRetentionEnabled(enabled);
+  // Taking the selection over when its owner exits belongs to that same live
+  // transport, so it follows its own setting rather than history retention.
+  m_clipboardService.setKeepFromClosedApps(m_configService.config().shell.clipboardKeepFromClosedApps);
   m_clipboardService.setMaxHistoryEntries(
       static_cast<std::size_t>(m_configService.config().shell.clipboardHistoryMaxEntries)
   );

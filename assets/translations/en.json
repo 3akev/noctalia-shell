@@ -2678,6 +2678,10 @@
           "label": "Image Action Command",
           "placeholder": "gimp {path} or satty -f -"
         },
+        "clipboard-keep-from-closed-apps": {
+          "description": "Keep the last copied item available to paste after the application you copied it from closes",
+          "label": "Keep Clipboard From Closed Apps"
+        },
         "clipboard-storage": {
           "button": "Retry",
           "description-cancelled": "The Secret Service prompt was cancelled. Clipboard history remains available for this session only.",

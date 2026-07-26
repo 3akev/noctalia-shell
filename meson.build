@@ -1879,6 +1879,28 @@ clipboard_storage_permissions_test = executable('clipboard_storage_permissions_t
 
 test('clipboard_storage_permissions', clipboard_storage_permissions_test)
 
+clipboard_service_test = executable('clipboard_service_test',
+  sources: files(
+    'tests/clipboard_service_test.cpp',
+    'src/config/atomic_file.cpp',
+    'src/core/log.cpp',
+    'src/security/encrypted_file_store.cpp',
+    'src/security/secret_store.cpp',
+    'src/security/secure_buffer.cpp',
+    'src/security/storage_key_provider.cpp',
+    'src/wayland/clipboard_service.cpp',
+  ) + _protocol_headers + _protocol_sources,
+  include_directories: _noctalia_inc,
+  dependencies: [
+    libsecret_dep,
+    libsodium_dep,
+    nlohmann_dep,
+    wayland_client_dep,
+  ],
+)
+
+test('clipboard_service', clipboard_service_test)
+
 image_source_log_test = executable('image_source_log_test',
   sources: files(
     'tests/image_source_log_test.cpp',
