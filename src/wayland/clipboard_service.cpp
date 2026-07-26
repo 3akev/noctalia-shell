@@ -1340,12 +1340,12 @@ void ClipboardService::finishRead(bool discard) {
     kLog.debug("selection of {} bytes is too large to keep for adoption", data.size());
   }
 
-  std::shared_ptr<const std::vector<std::uint8_t>> payload;
+  ClipboardEntry entry;
   if (m_keepFromClosedApps && data.size() <= kMaxSelectionBackupBytes) {
     // Backed up before the history entry is built, and shared rather than
     // copied: this is the buffer that can be large, while the history copy
     // below is bounded by the per-kind entry limit.
-    payload = std::make_shared<const std::vector<std::uint8_t>>(std::move(data));
+    const auto payload = std::make_shared<const std::vector<std::uint8_t>>(std::move(data));
     m_selectionBackup = SelectionBackup{
         .mimeTypes = mimeTypesForPayload(mimeType),
         .dataMimeType = mimeType,
@@ -1356,20 +1356,17 @@ void ClipboardService::finishRead(bool discard) {
       // History would drop it; do not copy bytes that are not going to be kept.
       return;
     }
+    entry.data = *payload;
+  } else {
+    entry.data = std::move(data);
   }
 
-  ClipboardEntry entry;
   entry.storageId = generateStorageId();
   entry.mimeTypes = std::move(mimeTypes);
   if (!std::ranges::contains(entry.mimeTypes, mimeType)) {
     entry.mimeTypes.push_back(mimeType);
   }
   entry.dataMimeType = mimeType;
-  if (payload != nullptr) {
-    entry.data = *payload;
-  } else {
-    entry.data = std::move(data);
-  }
   entry.byteSize = entry.data.size();
   entry.payloadLoaded = true;
   entry.payloadPath = payloadPathForId(entry.storageId);
