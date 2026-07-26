@@ -46,11 +46,40 @@ namespace {
   constexpr float kMediaArtSize = lockscreen_login_box::kRegularMediaArtSize;
   constexpr float kWeatherGlyphSize = 28.0f;
   constexpr float kForecastGlyphSize = lockscreen_login_box::kRegularForecastGlyphSize;
-  constexpr float kForecastMinWeatherBudget = 280.0f;
-  constexpr float kForecastMinWeatherBudgetAlone = 200.0f;
   constexpr float kLayoutChipMaxWidth = 96.0f;
   constexpr int kForecastDayCountPaired = 3;
   constexpr int kForecastDayCountAlone = 5;
+  constexpr float kWeatherCurrentMinText = 56.0f;
+
+  [[nodiscard]] int fitForecastDays(
+      Renderer& renderer, float weatherBudget, float weatherGlyphSize, float forecastGlyphSize, float captionSize,
+      int maxDays
+  ) {
+    if (maxDays <= 0 || weatherBudget <= 0.0f) {
+      return 0;
+    }
+    // Vertical forecast column width is dominated by the hi/lo caption.
+    const float tempsW = renderer.measureText("99°/99°", captionSize).width;
+    const float dayW = renderer.measureText("Wed", captionSize).width;
+    const float colW = std::max({tempsW, dayW, forecastGlyphSize}) + Style::spaceXs;
+    const float currentMin = weatherGlyphSize + Style::spaceSm + kWeatherCurrentMinText;
+    float remaining = weatherBudget - currentMin - Style::spaceMd;
+    if (remaining < colW) {
+      return 0;
+    }
+    const int fit = 1 + static_cast<int>((remaining - colW) / (colW + Style::spaceSm));
+    return std::clamp(fit, 0, maxDays);
+  }
+
+  [[nodiscard]] float forecastBlockWidth(Renderer& renderer, int dayCount, float forecastGlyphSize, float captionSize) {
+    if (dayCount <= 0) {
+      return 0.0f;
+    }
+    const float tempsW = renderer.measureText("99°/99°", captionSize).width;
+    const float dayW = renderer.measureText("Wed", captionSize).width;
+    const float colW = std::max({tempsW, dayW, forecastGlyphSize}) + Style::spaceXs;
+    return colW * static_cast<float>(dayCount) + Style::spaceSm * static_cast<float>(dayCount - 1);
+  }
 
   bool parseColorWallpaperPath(std::string_view path, Color& out) {
     constexpr std::string_view kPrefix = "color:";
@@ -261,6 +290,7 @@ LockSurface::LockSurface(WaylandConnection& connection, ConfigService* config) :
               .gap = Style::spaceMd,
               .widthPolicy = FlexSizePolicy::Fill,
               .heightPolicy = FlexSizePolicy::Content,
+              .clipChildren = true,
               .flexGrow = 1.0f,
               .visible = false,
           }
@@ -331,6 +361,7 @@ LockSurface::LockSurface(WaylandConnection& connection, ConfigService* config) :
               .gap = Style::spaceSm,
               .widthPolicy = FlexSizePolicy::Content,
               .heightPolicy = FlexSizePolicy::Content,
+              .clipChildren = true,
           }
       )
   );
@@ -975,8 +1006,9 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
   const bool mediaAlone = showMedia && !showWeather;
   const float mediaBudget = lockscreen_login_box::infoExtraBudget(contentWidth, showMedia, showWeather);
   const float weatherBudget = lockscreen_login_box::infoExtraBudget(contentWidth, showWeather, showMedia);
-  const float forecastMinBudget = weatherAlone ? kForecastMinWeatherBudgetAlone : kForecastMinWeatherBudget;
-  const bool showForecast = showWeather && weatherBudget >= forecastMinBudget;
+  const int maxForecastDays = weatherAlone ? kForecastDayCountAlone : kForecastDayCountPaired;
+  // Placeholder until fonts/glyphs are scaled below; recomputed after contentScale.
+  int forecastDaysFit = 0;
   const bool showLayoutChip =
       loginVisible && loginStyle.showKeyboardLayout && m_layoutChip != nullptr && m_layoutChip->visible();
   const bool showSession = regular && loginStyle.showSessionButtons && !m_sessionButtons.empty();
@@ -994,6 +1026,13 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
   const float weatherGlyphSize = kWeatherGlyphSize * contentScale;
   const float forecastGlyphSize = kForecastGlyphSize * contentScale;
   const float sessionGlyphSize = 16.0f * contentScale;
+
+  forecastDaysFit = showWeather
+      ? fitForecastDays(*renderer, weatherBudget, weatherGlyphSize, forecastGlyphSize, captionSize, maxForecastDays)
+      : 0;
+  const bool showForecast = forecastDaysFit > 0;
+  const float forecastWidth =
+      showForecast ? forecastBlockWidth(*renderer, forecastDaysFit, forecastGlyphSize, captionSize) : 0.0f;
 
   if (m_mediaArt != nullptr) {
     m_mediaArt->setSize(mediaArtSize, mediaArtSize);
@@ -1022,6 +1061,20 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
   }
   if (m_forecastRow != nullptr) {
     m_forecastRow->setVisible(showForecast);
+  }
+  for (std::size_t i = 0; i < m_forecastColumns.size(); ++i) {
+    auto& column = m_forecastColumns[i];
+    if (column.column == nullptr) {
+      continue;
+    }
+    if (!showForecast || i >= static_cast<std::size_t>(forecastDaysFit)) {
+      column.column->setVisible(false);
+      continue;
+    }
+    // Re-show columns that sync filled but a prior narrower layout hid.
+    if (column.day != nullptr && !column.day->text().empty()) {
+      column.column->setVisible(true);
+    }
   }
   if (m_weatherGlyph != nullptr) {
     m_weatherGlyph->setGlyphSize(weatherGlyphSize);
@@ -1055,8 +1108,12 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
     m_mediaArtist->setEllipsize(TextEllipsize::End);
   }
 
-  const float weatherTextMax = showForecast ? std::max(56.0f, weatherBudget * (weatherAlone ? 0.28f : 0.42f))
-                                            : std::max(56.0f, weatherBudget - weatherGlyphSize - Style::spaceSm);
+  // Reserve measured forecast width so current weather + forecast never overflow the half-row.
+  const float weatherTextMax = showForecast
+      ? std::max(
+            kWeatherCurrentMinText, weatherBudget - weatherGlyphSize - Style::spaceSm - Style::spaceMd - forecastWidth
+        )
+      : std::max(kWeatherCurrentMinText, weatherBudget - weatherGlyphSize - Style::spaceSm);
   if (m_weatherTemp != nullptr) {
     m_weatherTemp->setMaxWidth(weatherTextMax);
     m_weatherTemp->setEllipsize(TextEllipsize::End);
