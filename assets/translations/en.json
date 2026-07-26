@@ -1141,6 +1141,7 @@
         "general": "General",
         "greeter": "Greeter",
         "grouping": "Grouping",
+        "history": "History",
         "home": "Home",
         "hot-corners": "Hot Corners",
         "idle": "Idle",
@@ -2198,6 +2199,10 @@
         "toast-opacity": {
           "description": "Background opacity of notification toasts",
           "label": "Background Opacity"
+        },
+        "history-retention-hours": {
+          "description": "Automatically remove notification history entries older than this many hours (0 to keep forever)",
+          "label": "Keep history for"
         }
       },
       "panels": {
