@@ -168,7 +168,7 @@ void Application::initUiRenderSurfacesAndSettings() {
     m_lockscreenWidgetsController.toggleEdit();
     if (!wasEditing && m_lockscreenWidgetsController.isEditing()) {
       if (m_settingsWindow.isOpen()) {
-        m_settingsWindow.close();
+        DeferredCall::callLater([this]() { m_settingsWindow.close(); });
       }
       notify::info(
           "Noctalia", i18n::tr("notifications.internal.lockscreen-widgets-editor"),
@@ -957,7 +957,7 @@ void Application::initWidgetControllersAndCallbacks() {
   });
   m_desktopWidgetsController.setOnEnterEditCallback([this]() {
     if (m_settingsWindow.isOpen()) {
-      m_settingsWindow.close();
+      DeferredCall::callLater([this]() { m_settingsWindow.close(); });
     }
   });
   m_iconThemePollSource.setChangeCallback([this]() { onIconThemeChanged(); });
