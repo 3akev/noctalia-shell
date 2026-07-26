@@ -60,6 +60,7 @@
 #include "shell/bar/widgets/text_widget_definition.h"
 #include "shell/bar/widgets/theme_mode_widget.h"
 #include "shell/bar/widgets/tray_widget.h"
+#include "shell/bar/widgets/tray_widget_definition.h"
 #include "shell/bar/widgets/volume_widget.h"
 #include "shell/bar/widgets/wallpaper_widget.h"
 #include "shell/bar/widgets/wallpaper_widget_definition.h"
@@ -480,22 +481,16 @@ std::unique_ptr<Widget> WidgetFactory::create(
   }
 
   if (type == "tray") {
-    TrayWidgetOptions options{
-        .hiddenItems = wc != nullptr ? wc->getStringList("hidden") : std::vector<std::string>{},
-        .pinnedItems = wc != nullptr ? wc->getStringList("pinned") : std::vector<std::string>{},
-        .drawerMode = wc != nullptr ? wc->getBool("drawer", false) : false,
-        .itemActivated = {},
-        .barPosition = barPosition,
-        .panelGridMode = false,
-        .panelGridColumns = static_cast<std::size_t>(
-            std::clamp<std::int64_t>(wc != nullptr ? wc->getInt("drawer_columns", 3) : 3, 1, 5)
-        ),
-        .inlineEntryGap = widgetSpacing,
-        .matchAdjacentSpacing = wc != nullptr ? wc->getBool("match_adjacent_spacing", false) : false,
-    };
-    auto widget = std::make_unique<TrayWidget>(m_configService, m_tray, std::move(options));
-    widget->setContentScale(contentScale);
-    return widget;
+    return createWidget<TrayWidget>(
+        contentScale, m_configService, m_tray,
+        trayWidgetDefinition().resolve(
+            wc, settingContext,
+            TrayWidgetDefinitionContext{
+                .barPosition = barPosition,
+                .inlineEntryGap = widgetSpacing,
+            }
+        )
+    );
   }
 
   if (type == "volume") {

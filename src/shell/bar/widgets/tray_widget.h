@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -19,22 +20,24 @@ class Image;
 class InputArea;
 class Glyph;
 
-struct TrayWidgetOptions {
-  std::vector<std::string> hiddenItems;
-  std::vector<std::string> pinnedItems;
-  bool drawerMode = false;
-  std::function<void()> itemActivated;
-  std::string barPosition = "top";
-  bool panelGridMode = false;
-  std::size_t panelGridColumns = 3;
-  float inlineEntryGap = Style::spaceXs;
-  bool matchAdjacentSpacing = false;
-  std::optional<float> customItemSize;
-};
-
 class TrayWidget : public Widget {
 public:
-  TrayWidget(ConfigService& config, TrayService* tray, TrayWidgetOptions options = {});
+  struct Options {
+    std::vector<std::string> hiddenItems;
+    std::vector<std::string> pinnedItems;
+    bool drawerMode = false;
+    std::function<void()> itemActivated;
+    std::string barPosition = "top";
+    bool panelGridMode = false;
+    std::size_t panelGridColumns = 3;
+    float inlineEntryGap = Style::spaceXs;
+    bool matchAdjacentSpacing = false;
+    std::optional<float> customItemSize;
+    double drawerItemSize = Style::baseGlyphSize;
+    bool detachedPanel = false;
+  };
+
+  TrayWidget(ConfigService& config, TrayService* tray, Options options);
 
   void create() override;
   [[nodiscard]] bool wantsBarHoverHighlight() const noexcept override { return false; }

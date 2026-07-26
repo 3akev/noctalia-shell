@@ -25,6 +25,7 @@
 #include "shell/bar/widgets/settings_widget_definition.h"
 #include "shell/bar/widgets/spacer_widget_definition.h"
 #include "shell/bar/widgets/text_widget_definition.h"
+#include "shell/bar/widgets/tray_widget_definition.h"
 #include "shell/bar/widgets/wallpaper_widget_definition.h"
 #include "shell/bar/widgets/weather_widget_definition.h"
 #include "shell/settings/font_family_catalog.h"
@@ -114,6 +115,7 @@ namespace settings {
         projectWidgetDefinition<settingsWidgetDefinition>(),
         projectWidgetDefinition<spacerWidgetDefinition>(),
         projectWidgetDefinition<textWidgetDefinition>(),
+        projectWidgetDefinition<trayWidgetDefinition>(),
         projectWidgetDefinition<wallpaperWidgetDefinition>(),
         projectWidgetDefinition<weatherWidgetDefinition>(),
     };
@@ -1002,24 +1004,6 @@ namespace settings {
               break;
             }
           }
-        }
-      } else if (type == "tray") {
-        add(stringListSpec("hidden"));
-        add(stringListSpec("pinned"));
-        add(boolSpec("match_adjacent_spacing", false));
-        add(boolSpec("drawer", false));
-        {
-          const WidgetSettingVisibility drawerOn{"drawer", {"true"}};
-          auto cols = intSpec("drawer_columns", 3, 1.0, 5.0, 1.0);
-          cols.visibleWhen = drawerOn;
-          add(std::move(cols));
-          auto drawerItemSize =
-              doubleSpec("drawer_item_size", static_cast<double>(Style::baseGlyphSize), 8.0, 64.0, 1.0);
-          drawerItemSize.visibleWhen = drawerOn;
-          add(std::move(drawerItemSize));
-          auto detachedPanel = boolSpec("detached_panel", false);
-          detachedPanel.visibleWhen = drawerOn;
-          add(std::move(detachedPanel));
         }
       } else if (type == "volume") {
         add(segmentedSpec("device", "output", volumeDeviceOptions));

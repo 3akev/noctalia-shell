@@ -20,7 +20,7 @@ PanelPlacement TrayDrawerPanel::panelPlacement() const noexcept {
     return PanelPlacement::Attached;
   }
   if (const auto it = m_config->config().widgets.find("tray"); it != m_config->config().widgets.end()) {
-    if (it->second.getBool("detached_panel", false)) {
+    if (it->second.getBool("detached_panel", TrayWidget::Options{}.detachedPanel)) {
       return PanelPlacement::Floating;
     }
   }
@@ -33,7 +33,7 @@ std::optional<float> TrayDrawerPanel::currentDrawerItemSize() const {
   }
   if (const auto it = m_config->config().widgets.find("tray"); it != m_config->config().widgets.end()) {
     if (it->second.hasSetting("drawer_item_size")) {
-      return static_cast<float>(it->second.getDouble("drawer_item_size", static_cast<double>(Style::baseGlyphSize)));
+      return static_cast<float>(it->second.getDouble("drawer_item_size", TrayWidget::Options{}.drawerItemSize));
     }
   }
   return std::nullopt;
@@ -70,7 +70,7 @@ void TrayDrawerPanel::create() {
   }
   m_drawerWidget = std::make_unique<TrayWidget>(
       *m_config, m_tray,
-      TrayWidgetOptions{
+      TrayWidget::Options{
           .hiddenItems = hiddenItems,
           .pinnedItems = pinnedItems,
           .drawerMode = false,
@@ -145,7 +145,9 @@ std::size_t TrayDrawerPanel::currentDrawerColumns() const {
     return m_drawerColumns;
   }
   if (const auto it = m_config->config().widgets.find("tray"); it != m_config->config().widgets.end()) {
-    return static_cast<std::size_t>(std::clamp<std::int64_t>(it->second.getInt("drawer_columns", 3), 1, 5));
+    return static_cast<std::size_t>(std::clamp<std::int64_t>(
+        it->second.getInt("drawer_columns", static_cast<std::int64_t>(TrayWidget::Options{}.panelGridColumns)), 1, 5
+    ));
   }
   return m_drawerColumns;
 }
