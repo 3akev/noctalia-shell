@@ -25,7 +25,7 @@ write_if_changed() {
     rm -f "$tmp"
 }
 
-if [ ! -f "$rc_file" ] && [ ! -L "$rc_file" ]; then
+if [ ! -f "$rc_file" ]; then
     cat >"$rc_file" <<'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <labwc_config>

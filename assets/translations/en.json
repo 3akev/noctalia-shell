@@ -1488,6 +1488,24 @@
         "title": "Plugin Store"
       }
     },
+    "templates": {
+      "store": {
+        "browse": "Browse Templates",
+        "categories": "Categories",
+        "category-all": "All",
+        "empty": "No templates match your filters",
+        "enabled-count": "{count} enabled",
+        "filter-all": "All",
+        "filter-enabled": "Enabled",
+        "results-count": "{count} templates",
+        "search-placeholder": "Search templates…",
+        "sort-category-asc": "Sort by category (A-Z)",
+        "sort-category-desc": "Sort by category (Z-A)",
+        "sort-name-asc": "Sort by name (A-Z)",
+        "sort-name-desc": "Sort by name (Z-A)",
+        "title": "Community Templates"
+      }
+    },
     "schema": {
       "accessibility": {
         "high-contrast": {
@@ -2930,7 +2948,7 @@
           "label": "Built-In Templates"
         },
         "community-ids": {
-          "description": "Toggle cached community templates to render on each theme change",
+          "description": "Browse and enable community templates applied on each theme change",
           "empty": "No community templates are available yet. Enable community templates and refresh the catalog first.",
           "label": "Community Templates"
         },

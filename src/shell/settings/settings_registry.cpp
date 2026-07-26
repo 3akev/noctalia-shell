@@ -845,15 +845,17 @@ namespace settings {
         ToggleSetting{cfg.theme.templates.enableCommunityTemplates}, "theme templates community"
     ));
     {
+      const std::size_t enabledCount = cfg.theme.templates.communityIds.size();
       auto e = makeEntry(
           SettingsSection::Templates, "community", tr("settings.schema.templates.community-ids.label"),
-          tr("settings.schema.templates.community-ids.description"), {"theme", "templates", "community_ids"},
-          TemplateGridSetting{
-              .options = env.communityTemplates,
-              .selectedValues = cfg.theme.templates.communityIds,
-              .emptyText = tr("settings.schema.templates.community-ids.empty"),
+          enabledCount == 0 ? tr("settings.schema.templates.community-ids.description")
+                            : tr("settings.templates.store.enabled-count", "count", std::to_string(enabledCount)),
+          {},
+          ButtonSetting{
+              .label = tr("settings.templates.store.browse"),
+              .glyph = "apps",
           },
-          "theme templates community apps discord fuzzel vscode walker"
+          "theme templates community apps discord fuzzel vscode walker store browse"
       );
       e.visibleWhen = communityTemplatesOn;
       entries.push_back(std::move(e));
