@@ -1019,6 +1019,9 @@ struct ShellConfig {
   std::string launchAppsCustomCommand;
   /// When false, disables Wayland clipboard integration (history panel, data-control binding, Input paste/copy hooks).
   bool clipboardEnabled = true;
+  /// When true, the shell takes over the selection once the application that copied it exits, so the last copied item
+  /// stays pasteable. Independent of history retention: this keeps the live clipboard, not the stored history.
+  bool clipboardKeepFromClosedApps = true;
   /// Maximum unpinned clipboard history entries retained (pinned entries are exempt).
   int clipboardHistoryMaxEntries = static_cast<int>(noctalia::config::kClipboardHistoryDefaultEntries);
   /// When true, clearing clipboard history or deleting unpinned entries from the panel asks for confirmation first.
