@@ -79,8 +79,7 @@ namespace lockscreen_login_box {
   constexpr float kCompactMinPanelWidth = 240.0f;
   // Min width for media + weather; forecast needs more.
   constexpr float kRegularMinPanelWidth = 720.0f;
-  constexpr float kCompactMinPanelHeight = 64.0f;
-  constexpr float kCompactMaxPanelHeight = 120.0f;
+  constexpr float kCompactMaxPanelHeight = 140.0f;
   constexpr float kRegularMaxPanelHeight = 320.0f;
 
   // Matches lock-surface media art / forecast glyph sizes used in Regular layout.

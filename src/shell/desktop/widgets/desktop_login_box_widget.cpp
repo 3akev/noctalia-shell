@@ -24,6 +24,8 @@ namespace {
         || key == lockscreen_login_box::kShowMediaKey
         || key == lockscreen_login_box::kShowWeatherKey
         || key == lockscreen_login_box::kShowLoginButtonKey
+        || key == lockscreen_login_box::kShowPasswordHintKey
+        || key == lockscreen_login_box::kShowCapsLockKey
         || key == lockscreen_login_box::kInputOpacityKey
         || key == lockscreen_login_box::kInputRadiusKey;
   }
@@ -213,8 +215,22 @@ void DesktopLoginBoxWidget::doLayout(Renderer& renderer) {
     if (m_weatherGhost != nullptr) {
       m_weatherGhost->setVisible(false);
     }
+    const bool showStatusGhost = style.showPasswordHint || style.showCapsLock;
+    const float statusHeight = showStatusGhost ? lockscreen_login_box::regularStatusContentHeight() : 0.0f;
     if (m_statusGhost != nullptr) {
-      m_statusGhost->setVisible(false);
+      m_statusGhost->setVisible(showStatusGhost);
+      if (showStatusGhost) {
+        m_statusGhost->setPosition(padH, contentTop);
+        m_statusGhost->setSize(panelWidth - padH * 2.0f, statusHeight);
+        m_statusGhost->setStyle(
+            RoundedRectStyle{
+                .fill = colorForRole(ColorRole::Surface, 0.55f),
+                .fillMode = FillMode::Solid,
+                .radius = Style::scaledRadius(style.inputRadius),
+            }
+        );
+        contentTop += statusHeight + Style::spaceSm;
+      }
     }
   }
 
@@ -232,13 +248,15 @@ void DesktopLoginBoxWidget::doLayout(Renderer& renderer) {
         style.showLoginButton ? std::max(120.0f, contentWidth - buttonWidth - gap) : std::max(120.0f, contentWidth);
     buttonX = contentLeft + inputWidth + gap;
   } else {
-    const lockscreen_login_box::PanelContentLayout layout =
-        lockscreen_login_box::panelContentLayout(panelWidth, panelHeight, style.showLoginButton);
-    passwordTop = layout.contentTop;
-    passwordHeight = layout.controlHeight;
-    contentLeft = layout.contentLeft;
-    inputWidth = layout.inputWidth;
-    buttonX = layout.buttonX;
+    const float contentWidth = panelWidth - Style::spaceLg * 2.0f;
+    const float buttonWidth = style.showLoginButton ? passwordHeight : 0.0f;
+    const float gap = Style::spaceSm;
+    inputWidth =
+        style.showLoginButton ? std::max(120.0f, contentWidth - buttonWidth - gap) : std::max(120.0f, contentWidth);
+    buttonX = contentLeft + inputWidth + gap;
+    // Vertically center the password row in the remaining space under any status ghost.
+    const float remaining = std::max(passwordHeight, panelHeight - contentTop - padV);
+    passwordTop = contentTop + std::max(0.0f, (remaining - passwordHeight) * 0.5f);
   }
 
   if (m_passwordGhost != nullptr) {

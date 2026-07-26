@@ -186,11 +186,12 @@ namespace lockscreen_login_box {
   }
 
   float minPanelHeight(LayoutMode layout, bool showSessionButtons) {
+    const float pad = Style::spaceSm * 2.0f;
     if (layout != LayoutMode::Regular) {
-      return kCompactMinPanelHeight;
+      // Always reserve the status strip: idle hint/caps and auth messages share it.
+      return pad + regularStatusContentHeight() + Style::spaceSm + Style::controlHeight;
     }
     // paddingV + info + status (hint/caps) + password [+ session] + gaps
-    const float pad = Style::spaceSm * 2.0f;
     const int gapCount = showSessionButtons ? 3 : 2;
     float height = pad
         + regularInfoContentHeight()
@@ -214,7 +215,7 @@ namespace lockscreen_login_box {
 
   float defaultPanelHeight(LayoutMode layout, bool showSessionButtons) {
     if (layout != LayoutMode::Regular) {
-      return 70.0f;
+      return minPanelHeight(layout, showSessionButtons);
     }
     return minPanelHeight(layout, showSessionButtons) + Style::spaceMd;
   }

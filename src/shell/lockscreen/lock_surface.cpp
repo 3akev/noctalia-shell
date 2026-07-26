@@ -991,6 +991,7 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
   const float contentWidth = std::max(0.0f, panelWidth - 2.0f * Style::spaceLg);
 
   const bool regular = loginVisible && loginStyle.layout == lockscreen_login_box::LayoutMode::Regular;
+  m_loginPanel->setJustify(regular ? FlexJustify::Start : FlexJustify::Center);
   ensureLayoutChipInPasswordRow();
 
   if (regular && loginStyle.showSessionButtons) {
@@ -1014,10 +1015,14 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
   const bool showSession = regular && loginStyle.showSessionButtons && !m_sessionButtons.empty();
 
   bool statusError = false;
-  const bool showStatus = regular && !resolveStatusText(loginStyle, statusError).empty() && isLoginBoxEnabled();
+  const bool hasStatusText = !resolveStatusText(loginStyle, statusError).empty() && isLoginBoxEnabled();
+  // Compact shares the status strip with Regular (hint/caps/auth); layout used to
+  // reserve height only for Regular while updateCopy still showed the text.
+  const bool showStatus = loginVisible && hasStatusText;
   const lockscreen_login_box::RegularRowHeights rows = regular
       ? lockscreen_login_box::regularRowHeights(panelHeight, showSession, showStatus)
       : lockscreen_login_box::RegularRowHeights{};
+  const float compactStatusHeight = showStatus ? lockscreen_login_box::regularStatusContentHeight() : 0.0f;
   const float contentScale = regular ? rows.scale : 1.0f;
   m_regularContentScale = contentScale;
   const float captionSize = Style::fontSizeCaption * contentScale;
@@ -1138,8 +1143,9 @@ void LockSurface::layoutScene(std::uint32_t width, std::uint32_t height) {
   if (m_statusPanel != nullptr) {
     m_statusPanel->setMaxWidth(contentWidth);
     m_statusPanel->setRadius(Style::scaledRadius(loginStyle.inputRadius));
-    m_statusPanel->setMinHeight(showStatus ? rows.status : 0.0f);
-    m_statusPanel->setMaxHeight(showStatus ? rows.status : 0.0f);
+    const float statusHeight = regular ? (showStatus ? rows.status : 0.0f) : compactStatusHeight;
+    m_statusPanel->setMinHeight(statusHeight);
+    m_statusPanel->setMaxHeight(statusHeight);
     m_statusPanel->setFlexGrow(0.0f);
   }
   if (m_statusLabel != nullptr) {
