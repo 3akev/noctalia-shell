@@ -203,9 +203,7 @@ std::unique_ptr<Flex> ScreenTimeTab::create() {
   auto usageCard = ui::column({
       .out = &m_usageCard,
       .gap = Style::spaceMd * scale,
-      .configure = [scale, opacity = panelCardOpacity(), borders = panelBordersEnabled()](Flex& card) {
-        applySectionCardStyle(card, scale, opacity, borders);
-      },
+      .configure = [scale, opacity = panelCardOpacity()](Flex& card) { applySectionCardStyle(card, scale, opacity); },
   });
 
   usageCard->addChild(

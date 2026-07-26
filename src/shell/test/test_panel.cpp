@@ -856,7 +856,7 @@ std::unique_ptr<Flex> TestPanel::buildTextLabSection(float scale) {
         .align = FlexAlign::Start,
         .gap = Style::spaceSm * scale,
         .configure = [this, scale](Flex& col) {
-          col.setCardStyle(scale, panelCardOpacity(), panelBordersEnabled());
+          col.setCardStyle(scale, panelCardOpacity());
           col.setRadius(Style::scaledRadiusLg(scale));
           col.setPadding(Style::spaceMd * scale);
         },

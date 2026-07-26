@@ -407,9 +407,7 @@ std::unique_ptr<Flex> NetworkTab::create() {
 
   auto currentCard = ui::column({
       .out = &m_currentCard,
-      .configure = [scale, opacity = panelCardOpacity(), borders = panelBordersEnabled()](Flex& card) {
-        applySectionCardStyle(card, scale, opacity, borders);
-      },
+      .configure = [scale, opacity = panelCardOpacity()](Flex& card) { applySectionCardStyle(card, scale, opacity); },
   });
   addTitle(*currentCard, i18n::tr("control-center.network.current-connection"), scale);
 
@@ -456,9 +454,7 @@ std::unique_ptr<Flex> NetworkTab::create() {
   auto passwordCard = ui::column({
       .out = &m_passwordCard,
       .visible = false,
-      .configure = [scale, opacity = panelCardOpacity(), borders = panelBordersEnabled()](Flex& card) {
-        applySectionCardStyle(card, scale, opacity, borders);
-      },
+      .configure = [scale, opacity = panelCardOpacity()](Flex& card) { applySectionCardStyle(card, scale, opacity); },
   });
 
   passwordCard->addChild(
@@ -851,11 +847,10 @@ void NetworkTab::rebuildApList(Renderer& renderer) {
     );
   } else {
     const float opacity = panelCardOpacity();
-    const bool borders = panelBordersEnabled();
 
     if (!vpns.empty()) {
       auto vpnCard = ui::column({
-          .configure = [scale, opacity, borders](Flex& card) { applySectionCardStyle(card, scale, opacity, borders); },
+          .configure = [scale, opacity](Flex& card) { applySectionCardStyle(card, scale, opacity); },
       });
 
       auto vpnHeader = makeCardHeaderRow(i18n::tr("control-center.network.vpns"), scale);
@@ -898,7 +893,7 @@ void NetworkTab::rebuildApList(Renderer& renderer) {
 
     {
       auto wifiCard = ui::column({
-          .configure = [scale, opacity, borders](Flex& card) { applySectionCardStyle(card, scale, opacity, borders); },
+          .configure = [scale, opacity](Flex& card) { applySectionCardStyle(card, scale, opacity); },
       });
 
       auto wifiHeader = makeCardHeaderRow(i18n::tr("control-center.network.wifi"), scale);

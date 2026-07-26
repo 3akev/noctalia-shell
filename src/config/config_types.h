@@ -900,7 +900,7 @@ struct ShellConfig {
 
   struct PanelConfig {
     PanelTransparencyMode transparencyMode = PanelTransparencyMode::Solid;
-    bool borders = true;             // panel shell outline and in-panel section cards
+    bool borders = true;             // outline on floating panel surfaces
     bool shadow = true;              // cast the global [shell.shadow] from panel surfaces
     bool listItemBackground = false; // filled rounded background behind launcher/clipboard list items
     PanelPlacement launcherPlacement = PanelPlacement::Floating;
@@ -993,6 +993,7 @@ struct ShellConfig {
   bool inputBorders = true;
   bool popupBorders = true;
   bool popupShadows = true;
+  bool cardBorders = true;
   std::string fontFamily = "sans-serif";
   std::string lang; // empty = auto-detect from $LC_ALL/$LC_MESSAGES/$LANG
   std::string timeFormat = "{:%H:%M}";

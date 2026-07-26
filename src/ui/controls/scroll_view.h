@@ -39,7 +39,9 @@ public:
   void clearBorder();
   void setRadius(float radius);
   void setSoftness(float softness);
-  void setCardStyle(float scale = 1.0f, float fillOpacity = 1.0f, bool showBorder = true);
+  // Section card background. The outline follows the [shell].card_borders
+  // toggle unless a caller passes an explicit showBorder.
+  void setCardStyle(float scale = 1.0f, float fillOpacity = 1.0f, bool showBorder = Style::cardBordersEnabled());
   void bindState(ScrollViewState* state);
   void setOnScrollChanged(std::function<void(float)> callback);
 

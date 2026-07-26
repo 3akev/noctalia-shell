@@ -315,7 +315,6 @@ void PersistentPanelHost::buildScene(Instance& instance, std::uint32_t width, st
   instance.contentNode = contentWrapper.get();
   instance.panel->setAnimationManager(&instance.animations);
   instance.panel->setPanelCardOpacity(shell::panel_surface::cardOpacity(m_config, backgroundOpacity));
-  instance.panel->setPanelBordersEnabled(m_config->config().shell.panel.borders);
   instance.panel->create();
   instance.panel->onOpen(instance.panel->pendingOpenContext());
   instance.panel->setPendingOpenContext({});
@@ -573,7 +572,6 @@ void PersistentPanelHost::onConfigReloaded() {
     const float backgroundOpacity = shell::panel_surface::backgroundOpacity(m_config);
     instance->panel->setContentScale(shell::panel_surface::contentScale(m_config));
     instance->panel->setPanelCardOpacity(shell::panel_surface::cardOpacity(m_config, backgroundOpacity));
-    instance->panel->setPanelBordersEnabled(m_config->config().shell.panel.borders);
     if (instance->bgNode != nullptr) {
       instance->bgNode->setPanelStyle(m_config->config().shell.panel.borders);
       instance->bgNode->setFill(colorSpecFromRole(ColorRole::Surface, backgroundOpacity));

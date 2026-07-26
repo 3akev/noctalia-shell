@@ -229,7 +229,6 @@ namespace ui {
     std::optional<float> softness = std::nullopt;
     std::optional<float> cardStyleScale = std::nullopt;
     std::optional<float> cardStyleFillOpacity = std::nullopt;
-    std::optional<bool> cardStyleShowBorder = std::nullopt;
     std::optional<float> width = std::nullopt;
     std::optional<float> height = std::nullopt;
     std::optional<float> flexGrow = std::nullopt;

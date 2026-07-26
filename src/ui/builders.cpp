@@ -432,9 +432,7 @@ namespace ui {
   std::unique_ptr<Box> box(BoxProps props) {
     auto control = std::make_unique<Box>();
     if (props.cardStyleScale.has_value()) {
-      control->setCardStyle(
-          *props.cardStyleScale, props.cardStyleFillOpacity.value_or(1.0f), props.cardStyleShowBorder.value_or(true)
-      );
+      control->setCardStyle(*props.cardStyleScale, props.cardStyleFillOpacity.value_or(1.0f));
     }
     if (props.fill.has_value()) {
       control->setFill(*props.fill);

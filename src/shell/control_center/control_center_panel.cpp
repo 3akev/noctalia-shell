@@ -99,7 +99,6 @@ void ControlCenterPanel::create() {
   for (auto& tab : m_tabs) {
     tab->setContentScale(scale);
     tab->setPanelCardOpacity(panelCardOpacity());
-    tab->setPanelBordersEnabled(panelBordersEnabled());
   }
 
   auto rootLayout = ui::row({
@@ -303,14 +302,6 @@ void ControlCenterPanel::create() {
   syncTabVisibility();
   m_firstOpenAfterCreate = true;
   selectTab(m_activeTab);
-}
-
-void ControlCenterPanel::onPanelBordersChanged(bool enabled) {
-  for (auto& tab : m_tabs) {
-    if (tab != nullptr) {
-      tab->setPanelBordersEnabled(enabled);
-    }
-  }
 }
 
 void ControlCenterPanel::onPanelCardOpacityChanged(float opacity) {
