@@ -679,9 +679,8 @@ void SettingsWindow::maybeOpenPendingWidgetInspector() {
   m_pendingEditorSheetNoGrab = true;
   // The inspector takes a per-lane path {"bar", name, <lane>} (same shape the lane-card gear passes);
   // resolve which lane this widget lives in so it isn't a 2-element path that mislocates the bar name.
-  openWidgetInspectorEditor(
-      barWidgetLanePath(m_config->config(), m_selectedBarName, widgetName), std::move(widgetName)
-  );
+  std::vector<std::string> lanePath = barWidgetLanePath(m_config->config(), m_selectedBarName, widgetName);
+  openWidgetInspectorEditor(std::move(lanePath), std::move(widgetName));
 }
 
 void SettingsWindow::requestSceneRebuild() {

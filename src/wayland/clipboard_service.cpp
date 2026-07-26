@@ -1436,16 +1436,17 @@ bool ClipboardService::migrateLegacyHistory() {
     }
   }
 
-  auto sessionEntries = std::move(m_history);
-  m_history.clear();
+  // Only the non-retention path replaces the live history, so only it needs the session entries kept
+  // aside for the restores below.
+  std::deque<ClipboardEntry> sessionEntries;
   m_historyBytes = 0;
   if (m_historyRetention) {
-    m_history = std::move(sessionEntries);
     for (const auto& entry : m_history) {
       m_historyBytes += entry.byteSize;
     }
     mergePersistedHistory(std::move(legacyEntries));
   } else {
+    sessionEntries = std::move(m_history);
     m_history = std::move(legacyEntries);
     for (const auto& entry : m_history) {
       m_historyBytes += entry.byteSize;
