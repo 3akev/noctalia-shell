@@ -178,6 +178,8 @@ public:
   void scriptSetWallpaper(std::string connector, std::string path);
   // Toggle a host panel by id ("author/plugin:panel"). Queued, applied on the main thread.
   void scriptTogglePanel(std::string panelId);
+  // Open the settings window at this plugin's own settings. Queued, applied on the main thread.
+  void scriptOpenSettings();
   [[nodiscard]] bool scriptCopyToClipboard(std::string text, std::string mimeType);
   [[nodiscard]] std::optional<std::string> scriptFocusedOutputName() const;
 

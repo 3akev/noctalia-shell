@@ -516,6 +516,12 @@ void Application::initStyleThemeAndWayland() {
   // Let a plugin toggle one of its own panels.
   m_scriptApi.setTogglePanelHook([this](const std::string& panelId) { m_panelManager.togglePanel(panelId); });
 
+  m_scriptApi.setOpenPluginSettingsHook([this](const std::string& pluginId) {
+    if (!m_panelManager.openPluginSettings(pluginId)) {
+      kLog.warn("plugin openSettings ignored: \"{}\" has no settings", pluginId);
+    }
+  });
+
   m_themeService.setResolvedCallback([this, lastResolvedThemeMode = std::optional<std::string>{},
                                       syncScriptApiWallpaperDirectory](
                                          const noctalia::theme::GeneratedPalette& generated, std::string_view mode

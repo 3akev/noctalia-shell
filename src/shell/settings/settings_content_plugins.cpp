@@ -301,18 +301,7 @@ namespace settings {
       }
 
       const auto* manifest = scripting::PluginRegistry::instance().findManifest(plugin.id);
-      const bool hasSettings = [&]() {
-        if (manifest == nullptr) {
-          return false;
-        }
-        if (!manifest->settings.empty()) {
-          return true;
-        }
-        return std::ranges::any_of(manifest->entries, [](const scripting::PluginEntry& entry) {
-          return entry.kind == scripting::PluginEntryKind::Panel && !entry.settings.empty();
-        });
-      }();
-      if (enabled && manifest != nullptr && hasSettings && ctx.onConfigure) {
+      if (enabled && manifest != nullptr && pluginHasSettings(*manifest) && ctx.onConfigure) {
         r->addChild(
             ui::button({
                 .glyph = "settings",
@@ -555,6 +544,15 @@ namespace settings {
     }
 
   } // namespace
+
+  bool pluginHasSettings(const scripting::PluginManifest& manifest) {
+    if (!manifest.settings.empty()) {
+      return true;
+    }
+    return std::ranges::any_of(manifest.entries, [](const scripting::PluginEntry& entry) {
+      return entry.kind == scripting::PluginEntryKind::Panel && !entry.settings.empty();
+    });
+  }
 
   void buildPluginSettingsEditor(
       Flex& body, const Config& cfg, SettingsControlFactory& factory, const std::string& pluginId,

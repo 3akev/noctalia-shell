@@ -11,6 +11,7 @@
 #include "ipc/ipc_service.h"
 #include "render/render_context.h"
 #include "render/scene/input_area.h"
+#include "scripting/plugin_id.h"
 #include "shell/bar/bar_corner_shape.h"
 #include "shell/bar/bar_reserved_zone.h"
 #include "shell/clipboard/clipboard_panel.h"
@@ -342,6 +343,10 @@ void PanelManager::setOpenWidgetSettingsCallback(std::function<void(std::string,
   m_openWidgetSettings = std::move(callback);
 }
 
+void PanelManager::setOpenPluginSettingsCallback(std::function<bool(std::string)> callback) {
+  m_openPluginSettings = std::move(callback);
+}
+
 void PanelManager::setCloseSettingsWindowCallback(std::function<void()> callback) {
   m_closeSettingsWindow = std::move(callback);
 }
@@ -361,6 +366,16 @@ void PanelManager::openSettingsWindow(std::string context) {
   if (m_openSettingsWindow) {
     m_openSettingsWindow(std::move(context));
   }
+}
+
+bool PanelManager::openPluginSettings(const std::string& pluginId) {
+  if (!m_openPluginSettings) {
+    return false;
+  }
+  if (isOpen() && !m_closing) {
+    closePanel();
+  }
+  return m_openPluginSettings(pluginId);
 }
 
 void PanelManager::closeSettingsWindow() {
@@ -2650,6 +2665,29 @@ void PanelManager::registerIpc(IpcService& ipc) {
         return "ok\n";
       },
       "[bar-name widget-name]", "Open the settings window at a bar widget; from a widget gesture, targets that widget"
+  );
+
+  ipc.registerHandler(
+      "settings-open-plugin",
+      [this](const std::string& args) -> std::string {
+        const auto parts = noctalia::ipc::splitWords(args);
+        if (parts.size() != 1) {
+          return "error: settings-open-plugin takes <plugin-id> (e.g. noctalia/notes)\n";
+        }
+        const std::string& pluginId = parts[0];
+        if (!scripting::isValidPluginId(pluginId)) {
+          return std::format("error: \"{}\" is not a plugin id (expected author/plugin)\n", pluginId);
+        }
+
+        if (!m_openPluginSettings) {
+          return "error: settings window unavailable\n";
+        }
+        if (!openPluginSettings(pluginId)) {
+          return std::format("error: plugin \"{}\" is not enabled or has no settings\n", pluginId);
+        }
+        return "ok\n";
+      },
+      "<plugin-id>", "Open the settings window at a plugin's settings (e.g. noctalia/notes)"
   );
 
   ipc.registerHandler(

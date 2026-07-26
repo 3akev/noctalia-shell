@@ -555,6 +555,15 @@ namespace {
     return 0;
   }
 
+  // openSettings() — open the settings window at this plugin's own settings. The plugin id comes
+  // from the host, so a plugin can only ever open its own page.
+  int luau_openSettings(lua_State* L) {
+    if (auto* host = hostForState(L)) {
+      host->scriptOpenSettings();
+    }
+    return 0;
+  }
+
   int luau_isDarkMode(lua_State* L) {
     auto* host = hostForState(L);
     lua_pushboolean(L, host != nullptr && host->api().isDarkMode() ? 1 : 0);
@@ -1437,6 +1446,7 @@ namespace {
       {"setWallpaperEnabled", luau_setWallpaperEnabled},
       {"setWallpaper", luau_setWallpaper},
       {"togglePanel", luau_togglePanel},
+      {"openSettings", luau_openSettings},
       {"isDarkMode", luau_isDarkMode},
       {"wallpaperDirectory", luau_wallpaperDirectory},
       {"notify", luau_notify},
@@ -2222,6 +2232,14 @@ void LuauHost::scriptTogglePanel(std::string panelId) {
   if (m_scriptContext != nullptr) {
     m_scriptContext->sideEffects.push_back(
         {.kind = scripting::ScriptSideEffectKind::TogglePanel, .title = std::move(panelId), .body = {}}
+    );
+  }
+}
+
+void LuauHost::scriptOpenSettings() {
+  if (m_scriptContext != nullptr) {
+    m_scriptContext->sideEffects.push_back(
+        {.kind = scripting::ScriptSideEffectKind::OpenPluginSettings, .title = m_pluginId, .body = {}}
     );
   }
 }

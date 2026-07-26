@@ -1955,14 +1955,7 @@ void SettingsWindow::openPluginSettingsEditor(std::string pluginId) {
       return;
     }
     const auto* manifest = scripting::PluginRegistry::instance().findManifest(pluginId);
-    if (manifest == nullptr) {
-      return;
-    }
-    const bool hasSettings =
-        !manifest->settings.empty() || std::ranges::any_of(manifest->entries, [](const scripting::PluginEntry& entry) {
-          return entry.kind == scripting::PluginEntryKind::Panel && !entry.settings.empty();
-        });
-    if (!hasSettings) {
+    if (manifest == nullptr || !settings::pluginHasSettings(*manifest)) {
       return;
     }
 

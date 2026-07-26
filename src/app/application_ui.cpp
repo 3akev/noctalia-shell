@@ -836,6 +836,9 @@ void Application::initBarDockAndLayout() {
   m_panelManager.setOpenWidgetSettingsCallback([this](std::string barName, std::string widgetName) {
     m_settingsWindow.openToBarWidget(std::move(barName), std::move(widgetName));
   });
+  m_panelManager.setOpenPluginSettingsCallback([this](std::string pluginId) {
+    return m_settingsWindow.openToPlugin(std::move(pluginId));
+  });
   m_panelManager.setAttachedPanelGeometryCallback(
       [this](wl_output* output, std::string_view barName, std::optional<AttachedPanelGeometry> geometry) {
         m_bar.setAttachedPanelGeometry(output, barName, geometry);
