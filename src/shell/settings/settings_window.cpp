@@ -814,10 +814,20 @@ bool SettingsWindow::onPointerEvent(const PointerEvent& event) {
   if (m_configExportDialogPopup != nullptr && m_configExportDialogPopup->onPointerEvent(event)) {
     return true;
   }
-  // Dialog: block parent input while open; dismiss only via Escape / close.
+  // Dialog: block settings-parent input while open; dismiss only via Escape / close.
+  // Events for other shell surfaces must not be swallowed here — Application still
+  // needs to forward them to the bar, dock, notifications, etc.
   if (m_configExportDialogPopup != nullptr
       && m_configExportDialogPopup->isOpen()
       && !m_configExportDialogPopup->isInitializing()) {
+    if (!ownsKeyboardSurface(event.surface)) {
+      return false;
+    }
+    // Keep m_pointerInside honest while the parent is inert behind the dialog.
+    if (event.type == PointerEvent::Type::Leave && event.surface == m_surface->wlSurface()) {
+      m_pointerInside = false;
+      m_inputDispatcher.pointerLeave();
+    }
     return true;
   }
   if (m_searchPickerPopup != nullptr && m_searchPickerPopup->onPointerEvent(event)) {
@@ -834,8 +844,17 @@ bool SettingsWindow::onPointerEvent(const PointerEvent& event) {
   if (m_editorSheetPopup != nullptr && m_editorSheetPopup->onPointerEvent(event)) {
     return true;
   }
-  // Dialog sheet: block parent input while open; dismiss only via Escape / close.
+  // Dialog sheet: block settings-parent input while open; dismiss only via Escape / close.
+  // Events for other shell surfaces must not be swallowed here — Application still
+  // needs to forward them to the bar, dock, notifications, etc.
   if (m_editorSheetPopup != nullptr && m_editorSheetPopup->isOpen() && !m_editorSheetPopup->isInitializing()) {
+    if (!ownsKeyboardSurface(event.surface)) {
+      return false;
+    }
+    if (event.type == PointerEvent::Type::Leave && event.surface == m_surface->wlSurface()) {
+      m_pointerInside = false;
+      m_inputDispatcher.pointerLeave();
+    }
     return true;
   }
 
