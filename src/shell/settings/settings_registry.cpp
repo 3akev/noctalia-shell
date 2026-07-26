@@ -3462,15 +3462,20 @@ namespace settings {
           gesturePath.emplace_back(key);
 
           const auto& overrideActions = ovr.deadZone.actions;
-          const auto overridden = overrideActions.has_value() ? overrideActions->find(key) : overrideActions->end();
+          std::string configured;
+          if (overrideActions.has_value()) {
+            const auto overridden = overrideActions->find(key);
+            if (overridden != overrideActions->end()) {
+              configured = overridden->second;
+            }
+          }
           const auto inherited = bar.deadZone.actions.find(key);
           entries.push_back(makeEntry(
               section, "dead-zone", tr(std::string(noctalia::bar::gestureLabelKey(gesture))),
               tr("settings.schema.bar.dead-zone-action.description"), std::move(gesturePath),
               GestureActionSetting{
                   .gestureKey = key,
-                  .configured = overrideActions.has_value() && overridden != overrideActions->end() ? overridden->second
-                                                                                                    : std::string{},
+                  .configured = std::move(configured),
                   .defaultAction =
                       inherited != bar.deadZone.actions.end() ? inherited->second : deadZoneDefault(gesture),
               },
