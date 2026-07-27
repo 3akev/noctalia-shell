@@ -2430,7 +2430,9 @@
         },
         "calendar-edit": {
           "button": "Edit",
-          "description": "Update this calendar account"
+          "button-reconnect": "Reconnect",
+          "description": "Update this calendar account",
+          "description-reconnect": "Google authorization is missing. Reconnect this account."
         },
         "calendar-event-date-format": {
           "description": "The date format shown in the event card for the selected date",
@@ -2450,7 +2452,7 @@
           "description-error": "The encrypted calendar event cache could not be opened or saved.",
           "description-locked": "Encrypted storage is locked or access was denied. Fix access and retry.",
           "description-migration": "The plaintext calendar event cache is waiting to be encrypted. It is preserved until migration succeeds.",
-          "description-missing-key": "The configured encrypted storage key is missing. Existing calendar cache files have been preserved.",
+          "description-missing-key": "The calendar event cache key is missing. Account credentials use separate storage; existing cache files have been preserved.",
           "description-opening": "The encrypted calendar event cache is being opened.",
           "description-recovery": "The calendar event cache could not be authenticated or is damaged. Retry after restoring the correct key, or reset private storage.",
           "description-unavailable": "No Secret Service provider is available. Calendar events remain available for this session only.",

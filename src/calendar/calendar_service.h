@@ -90,6 +90,9 @@ public:
   [[nodiscard]] const std::string& connectingAccountId() const noexcept { return m_connect.accountId; }
   [[nodiscard]] calendar::CredentialState credentialState() const noexcept { return m_credentials.state(); }
   [[nodiscard]] bool credentialMigrationPending() const noexcept { return m_credentials.migrationPending(); }
+  [[nodiscard]] bool googleAccountNeedsReconnect(const std::string& accountId) const {
+    return m_credentials.refreshTokenMissing(accountId);
+  }
   [[nodiscard]] CachePersistenceState cachePersistenceState() const noexcept { return m_cachePersistenceState; }
   [[nodiscard]] bool cacheMigrationPending() const noexcept { return m_cacheMigrationPending; }
   [[nodiscard]] bool hasEncryptedCache() const;
