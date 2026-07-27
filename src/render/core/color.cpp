@@ -131,6 +131,20 @@ void rgbToHsv(const Color& rgb, float& h, float& s, float& v) {
   h = h - std::floor(h);
 }
 
+Color lerpColorInHsv(const Color& a, const Color& b, float t) {
+  float h0, s0, v0;
+  rgbToHsv(a, h0, s0, v0);
+  float h1, s1, v1;
+  rgbToHsv(b, h1, s1, v1);
+  float hDelta = h1 - h0;
+  if (hDelta > 0.5f) {
+    hDelta -= 1.0f;
+  } else if (hDelta < -0.5f) {
+    hDelta += 1.0f;
+  }
+  return hsv(h0 + hDelta * t, s0 + (s1 - s0) * t, v0 + (v1 - v0) * t, a.a + (b.a - a.a) * t);
+}
+
 float relativeLuminance(const Color& color) {
   return 0.2126f * linearizedColorChannel(color.r)
       + 0.7152f * linearizedColorChannel(color.g)
