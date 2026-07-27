@@ -309,7 +309,7 @@
         "actions": {
           "open": "Aç",
           "save": "Kaydet",
-          "select-folder": "Dosya Seç"
+          "select-folder": "Klasörü Seç"
         },
         "empty-filtered": "Mevcut filtreye uyan dosya yok",
         "filename-placeholder": "Dosya adı",
@@ -325,7 +325,7 @@
           "default": "Dosya diyalogu",
           "open": "Dosya Aç",
           "save": "Dosyayı Kaydet",
-          "select-folder": "Dosya Seç"
+          "select-folder": "Klasör Seç"
         }
       },
       "glyph-picker": {

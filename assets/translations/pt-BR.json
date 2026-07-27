@@ -325,7 +325,7 @@
         "dark": "Modo Escuro",
         "light": "Modo Claro"
       },
-      "keyboard-layout": "Layout",
+      "keyboard-layout": "Layout de Teclado",
       "media": "Mídia",
       "mic-mute": "Microfone",
       "nightlight": "Luz Noturna",
@@ -991,7 +991,7 @@
         },
         "inspector": {
           "add-instance-title": "Adicionar novo widget nomeado {widget} a {lane}",
-          "add-title": "Add widget a {lane}",
+          "add-title": "Adiciona Widget a {lane}",
           "move-to-lane": "Mover para {lane}"
         },
         "instance": {
@@ -1027,6 +1027,7 @@
           "empty": "Nenhuma configuração corresponde aos filtros atuais.",
           "groups": {
             "actions": "Ações",
+            "behavior": "Comportamento",
             "grouping": "Agrupamento",
             "presentation": "Apresentação",
             "runtime": "Tempo de Execução",
@@ -1087,7 +1088,7 @@
     },
     "idle": {
       "behavior": {
-        "add": "Adicionar comportamento",
+        "add": "Adicionar Comportamento",
         "command-label": "Comando ocioso",
         "command-placeholder": "notify-send \"Idle\"",
         "kind": {
@@ -1215,7 +1216,7 @@
     },
     "notifications": {
       "filter": {
-        "add": "Adicionar filtro",
+        "add": "Adicionar Filtro",
         "add-title": "Adicionar Filtro de Notificação",
         "allow-permanent": "Autorização permanente",
         "allowed-urgencies-label": "Urgências permitidas",
@@ -1436,8 +1437,8 @@
         "empty": "Nenhuma configuração disponível."
       },
       "sources": {
-        "add": "Adicionar fonte",
-        "add-title": "Adicionar fonte de plugin",
+        "add": "Adicionar Fonte",
+        "add-title": "Adicionar Fonte de Plugin",
         "auto-update": "Auto-atualizar plugins",
         "auto-update-desc": "Verificar em fontes ativas por novas versões em segundo plano e manter plugins instalados atualizados",
         "edit": "Editar fonte",
@@ -2216,6 +2217,10 @@
           "description": "Escolha até seis botões de atalho para a guia inicial",
           "label": "Atalhos do Início"
         },
+        "home-shortcuts-show-labels": {
+          "description": "Mostrar rótulos de texto sob ícones de atalho na aba de início",
+          "label": "Mostra Rótulos de Atalhos"
+        },
         "launcher-app-grid": {
           "description": "Exibe uma grade de ícones de aplicativos com legendas abaixo deles quando os resultados forem apenas aplicativos",
           "label": "Visão em Grade de Apps"
@@ -2542,7 +2547,7 @@
             "label": "Intervalo de Polling do Disco"
           },
           "gpu-poll": {
-            "description": "Segundos entre as coletas de temperatura da GPU, uso  e amostras da VRAM. Amostra da GPU são coletadas somente quando algo mostra estatísticas da GPU, ou seja, uma máquina em modo de espera nunca é acordada (0 desativa completamente)",
+            "description": "Segundos entre as coletas de temperatura da GPU, uso  e amostras da VRAM; Amostra da GPU são coletadas somente quando algo mostra estatísticas da GPU, ou seja, uma máquina em modo de espera nunca é acordada (0 desativa completamente)",
             "label": "Intervalo de Polling da GPU"
           },
           "label": "Monitor do Sistema",
@@ -3030,7 +3035,7 @@
       }
     },
     "session-actions": {
-      "add": "Adicionar ação",
+      "add": "Adicionar Ação",
       "clear-glyph": "Apagar",
       "command-label": "Comando do Shell",
       "command-placeholder": "Comando bash opcional; deixe em branco para o comportamento padrão",
@@ -3163,6 +3168,8 @@
         "rate": "Consumo",
         "regular": "Normal",
         "replace": "Substituir",
+        "scroll-gesture": "Uma vez por gesto",
+        "scroll-steps": "Cada etapa",
         "shared": "Compartilhado",
         "short": "Curto",
         "swap-percent": "Porcentagem de Swap",
@@ -3352,7 +3359,7 @@
           "label": "Agrupar por Espaço de Trabalho"
         },
         "group-single-icon-per-app": {
-          "description": "Ao agrupar por espaço de trabalho com ícones, recolha várias janelas do mesmo app num único ícone com um indicador de contagem.",
+          "description": "Ao agrupar por espaço de trabalho com ícones, recolha várias janelas do mesmo app num único ícone com um indicador de contagem",
           "label": "Ícone único por App"
         },
         "height": {
@@ -3544,7 +3551,7 @@
         "pinned": {
           "description": "IDs dos itens do tray que permanecem visíveis na barra com o modo drawer ativado",
           "label": "Itens Fixados",
-          "taskbar-description": "Apps de área de trabalho que permanecem na barra de tarefas quando não estão em execução. Ignorados quando Agrupar por Espaço de Trabalho está ativada.",
+          "taskbar-description": "Apps de área de trabalho que permanecem na barra de tarefas quando não estão em execução; Ignorados quando Agrupar por Espaço de Trabalho está ativada",
           "taskbar-label": "Apps Fixados"
         },
         "pinned-opacity": {
@@ -3562,6 +3569,10 @@
         "script": {
           "description": "Caminho para o script lua",
           "label": "Script"
+        },
+        "scroll-repeat": {
+          "description": "Escolha se ações de rolagem seguem semânticas de comando, executa uma vez por gesto ou repete para cada etapa de rolagem",
+          "label": "Repetição de Rolagem"
         },
         "show-active-indicator": {
           "description": "Exibir um pequeno ponto abaixo do ícone da janela ativa na barra de tarefas",
@@ -3604,7 +3615,7 @@
           "label": "Exibir Temperatura"
         },
         "show-vpn-label": {
-          "description": "Mostrar nome de VPN: substitui rótulo de rede em modo de substituição, adiciona rótulo próximo ao ícone de VPN em ambos modos",
+          "description": "Substitui rótulo de rede com rótulo da VPN em modo de substituição; adiciona rótulo próximo ao ícone de VPN em ambos modos",
           "label": "Mostrar Rótulo VPN"
         },
         "show-when-idle": {

@@ -2436,7 +2436,7 @@
             "label": "Festplatten-Abfrageintervall"
           },
           "gpu-poll": {
-            "description": "Sekunden zwischen den Stichproben von GPU-Temperatur und VRAM (0 deaktiviert, was das Aufwecken einer dedizierten GPU vermeidet; 5 ist ein gutes Intervall bei aktivierter Erfassung)",
+            "description": "Sekunden zwischen GPU-Temperatur-, Auslastungs- und VRAM-Messungen; die GPU wird nur abgefragt, wenn etwas eine GPU-Statistik anzeigt, sodass ein inaktiver Rechner nie aufgeweckt wird (0 deaktiviert vollständig)",
             "label": "GPU-Abfrageintervall"
           },
           "label": "Systemmonitor",
@@ -3160,7 +3160,7 @@
           "label": "Nach Arbeitsbereich gruppieren"
         },
         "group-single-icon-per-app": {
-          "description": "Fasse beim Gruppieren nach Arbeitsbereich mehrere Fenster derselben App zu einem Icon mit Zähler-Badge zusammen",
+          "description": "Fasse beim Gruppieren nach Arbeitsbereich mit Icons mehrere Fenster derselben App zu einem Icon mit Zähler-Badge zusammen",
           "label": "Ein Icon pro App"
         },
         "height": {
@@ -3408,7 +3408,7 @@
           "label": "Temperatur anzeigen"
         },
         "show-vpn-label": {
-          "description": "Zeige VPN-Beschriftung statt Schnittstellen-Beschriftung neben dem Icon an",
+          "description": "Ersetzt die Netzwerkbeschriftung durch die VPN-Beschriftung im Ersetzungsmodus; fügt die VPN-Beschriftung neben dem VPN-Icon im Beide-Modus hinzu",
           "label": "VPN-Beschriftung anzeigen"
         },
         "show-when-idle": {

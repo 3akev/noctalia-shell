@@ -325,7 +325,7 @@
         "dark": "Dark Mode",
         "light": "Light Mode"
       },
-      "keyboard-layout": "Layout",
+      "keyboard-layout": "Keyboard Layout",
       "media": "Media",
       "mic-mute": "Microphone",
       "nightlight": "Night Light",
@@ -943,7 +943,7 @@
         "rename-save": "Save"
       },
       "widget": {
-        "add": "Add widget",
+        "add": "Add Widget",
         "detail": {
           "custom": "custom widget"
         },
@@ -991,7 +991,7 @@
         },
         "inspector": {
           "add-instance-title": "Add new named {widget} widget to {lane}",
-          "add-title": "Add widget to {lane}",
+          "add-title": "Add Widget to {lane}",
           "move-to-lane": "Move to {lane}"
         },
         "instance": {
@@ -1088,7 +1088,7 @@
     },
     "idle": {
       "behavior": {
-        "add": "Add behavior",
+        "add": "Add Behavior",
         "command-label": "Idle command",
         "command-placeholder": "notify-send \"Idle\"",
         "kind": {
@@ -1216,7 +1216,7 @@
     },
     "notifications": {
       "filter": {
-        "add": "Add filter",
+        "add": "Add Filter",
         "add-title": "Add Notification Filter",
         "allow-permanent": "Allow permanent",
         "allowed-urgencies-label": "Allowed urgencies",
@@ -1437,8 +1437,8 @@
         "empty": "No settings available."
       },
       "sources": {
-        "add": "Add source",
-        "add-title": "Add plugin source",
+        "add": "Add Source",
+        "add-title": "Add Plugin Source",
         "auto-update": "Auto-update plugins",
         "auto-update-desc": "Check enabled sources for new versions in the background and keep installed plugins current",
         "edit": "Edit source",
@@ -2549,7 +2549,7 @@
             "label": "Disk Poll Interval"
           },
           "gpu-poll": {
-            "description": "Seconds between GPU temperature, usage, and VRAM samples. The GPU is only sampled while something displays a GPU stat, so an idle machine is never woken (0 disables it entirely)",
+            "description": "Seconds between GPU temperature, usage, and VRAM samples; the GPU is only sampled while something displays a GPU stat, so an idle machine is never woken (0 disables entirely)",
             "label": "GPU Poll Interval"
           },
           "label": "System Monitor",
@@ -3037,7 +3037,7 @@
       }
     },
     "session-actions": {
-      "add": "Add action",
+      "add": "Add Action",
       "clear-glyph": "Clear",
       "command-label": "Shell command",
       "command-placeholder": "Optional bash command, leave empty for built-in behavior",
@@ -3297,7 +3297,7 @@
           "label": "Display"
         },
         "display-mode": {
-          "description": "Render the battery as a graphical shape, a Tabler glyph, or label only",
+          "description": "Render the battery as a graphical shape, a Tabler icon, or label only",
           "label": "Display Mode"
         },
         "drawer": {
@@ -3361,7 +3361,7 @@
           "label": "Group by Workspace"
         },
         "group-single-icon-per-app": {
-          "description": "When grouping by workspace with icons, collapse multiple windows from the same app into one icon with a count badge.",
+          "description": "When grouping by workspace with icons, collapse multiple windows from the same app into one icon with a count badge",
           "label": "Single Icon per App"
         },
         "height": {
@@ -3553,7 +3553,7 @@
         "pinned": {
           "description": "Tray item IDs that stay visible in the bar when drawer mode is enabled",
           "label": "Pinned Items",
-          "taskbar-description": "Desktop apps that stay on the taskbar when not running. Ignored while Group by Workspace is on.",
+          "taskbar-description": "Desktop apps that stay on the taskbar when not running; ignored while Group by Workspace is on",
           "taskbar-label": "Pinned Apps"
         },
         "pinned-opacity": {
@@ -3617,7 +3617,7 @@
           "label": "Show Temperature"
         },
         "show-vpn-label": {
-          "description": "Show VPN name: replaces network label in replace mode, adds label next to VPN icon in both mode",
+          "description": "Replaces network label with VPN label in replace mode; adds VPN label next to VPN icon in both mode",
           "label": "Show VPN Label"
         },
         "show-when-idle": {
