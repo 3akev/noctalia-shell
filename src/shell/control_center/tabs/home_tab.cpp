@@ -3,6 +3,7 @@
 #include "config/config_service.h"
 #include "core/build_info.h"
 #include "core/deferred_call.h"
+#include "core/files/directory_scanner.h"
 #include "core/input/keybind_matcher.h"
 #include "core/log.h"
 #include "cursor-shape-v1-client-protocol.h"
@@ -248,7 +249,7 @@ std::unique_ptr<Flex> HomeTab::create() {
     options.mode = FileDialogMode::Open;
     options.defaultViewMode = FileDialogViewMode::Grid;
     options.title = i18n::tr("control-center.home.select-avatar");
-    options.extensions = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".gif"};
+    options.extensions = DirectoryScanner::imageExtensionFilter(false);
     options.startDirectory = avatarStartDirectory(m_accounts, m_config);
 
     (void)FileDialog::open(std::move(options), [this](std::optional<std::filesystem::path> pickedPath) {

@@ -207,6 +207,10 @@ endif
 # ── System: libwebp (WebP decode and thumbnail encode) ───────────────────────
 libwebp_dep = dependency('libwebp', required: true)
 
+# ── System: libjxl (JPEG XL decode) ───────────────────────────────────────────
+libjxl_dep          = dependency('libjxl', required: true)
+libjxl_threads_dep  = dependency('libjxl_threads', required: true)
+
 # ── Vendored: Luau (Roblox's Lua fork) ────────────────────────────────────────
 # Built as a quiet static library; only VM + Compiler + Bytecode + Ast + Common are vendored.
 _luau_sources = files(
@@ -1002,6 +1006,8 @@ noctalia_exe = executable('noctalia',
     tomlplusplus_dep,
     md4c_dep,
     libwebp_dep,
+    libjxl_dep,
+    libjxl_threads_dep,
     luau_dep,
   ] + jemalloc_deps + (dl_dep.found() ? [dl_dep] : []),
   include_directories: _noctalia_inc,
@@ -1041,6 +1047,8 @@ notification_history_utf8_test = executable('notification_history_utf8_test',
   ),
   dependencies: [
     libwebp_dep,
+    libjxl_dep,
+    libjxl_threads_dep,
     nlohmann_dep,
   ],
   include_directories: _noctalia_inc,
@@ -1591,6 +1599,8 @@ ui_tree_reconciler_test = executable('ui_tree_reconciler_test',
     egl_dep,
     librsvg_dep,
     libwebp_dep,
+    libjxl_dep,
+    libjxl_threads_dep,
     nlohmann_dep,
     xkbcommon_dep,
   ],
@@ -1965,6 +1975,8 @@ image_file_loader_data_uri_test = executable('image_file_loader_data_uri_test',
     cairo_dep,
     librsvg_dep,
     libwebp_dep,
+    libjxl_dep,
+    libjxl_threads_dep,
   ],
   include_directories: _noctalia_inc,
 )
@@ -1978,11 +1990,28 @@ ico_decoder_test = executable('ico_decoder_test',
   ),
   dependencies: [
     libwebp_dep,
+    libjxl_dep,
+    libjxl_threads_dep,
   ],
   include_directories: _noctalia_inc,
 )
 
 test('ico_decoder', ico_decoder_test)
+
+jxl_decoder_test = executable('jxl_decoder_test',
+  sources: files(
+    'tests/jxl_decoder_test.cpp',
+    'src/render/core/image_decoder.cpp',
+  ),
+  dependencies: [
+    libwebp_dep,
+    libjxl_dep,
+    libjxl_threads_dep,
+  ],
+  include_directories: _noctalia_inc,
+)
+
+test('jxl_decoder', jxl_decoder_test)
 
 app_identity_test = executable('app_identity_test',
   sources: files(

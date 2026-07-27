@@ -1,5 +1,6 @@
 #include "shell/test/test_panel.h"
 
+#include "core/files/directory_scanner.h"
 #include "render/animation/animation_manager.h"
 #include "render/core/color.h"
 #include "render/render_context.h"
@@ -498,7 +499,7 @@ void TestPanel::create() {
           FileDialogOptions options;
           options.mode = FileDialogMode::Open;
           options.title = "Select Image";
-          options.extensions = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".gif"};
+          options.extensions = DirectoryScanner::imageExtensionFilter(false);
           (void)FileDialog::open(std::move(options), [this](std::optional<std::filesystem::path> result) {
             if (m_fileDialogResultLabel == nullptr) {
               return;

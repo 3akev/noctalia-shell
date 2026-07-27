@@ -2,6 +2,7 @@
 
 #include "compositors/compositor_detect.h"
 #include "config/config_service.h"
+#include "core/files/directory_scanner.h"
 #include "core/log.h"
 #include "core/process/process.h"
 #include "core/random.h"
@@ -98,11 +99,6 @@ namespace {
     return params;
   }
 
-  bool hasImageExtension(const std::filesystem::path& path) {
-    const std::string ext = StringUtils::toLower(path.extension().string());
-    return ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".webp" || ext == ".bmp" || ext == ".gif";
-  }
-
   [[nodiscard]] std::optional<std::string>
   resolveWallpaperPath(std::string_view path, std::optional<std::string_view> callerCwd = std::nullopt) {
     if (path.empty()) {
@@ -167,7 +163,7 @@ namespace {
         if (!it->is_regular_file(typeEc) || typeEc) {
           continue;
         }
-        if (hasImageExtension(it->path())) {
+        if (DirectoryScanner::isImagePath(it->path())) {
           out.push_back(it->path().string());
         }
       }
@@ -184,7 +180,7 @@ namespace {
       if (!entry.is_regular_file(typeEc) || typeEc) {
         continue;
       }
-      if (hasImageExtension(entry.path())) {
+      if (DirectoryScanner::isImagePath(entry.path())) {
         out.push_back(entry.path().string());
       }
     }

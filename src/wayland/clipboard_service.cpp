@@ -58,6 +58,7 @@ namespace {
   constexpr std::array kImageMimeTypes = {
       std::string_view{"image/png"},
       std::string_view{"image/jpeg"},
+      std::string_view{"image/jxl"},
   };
 
   constexpr std::array kPasswordHintMimeTypes = {
@@ -141,6 +142,8 @@ namespace {
       return ".jpg";
     if (mimeType == "image/webp")
       return ".webp";
+    if (mimeType == "image/jxl")
+      return ".jxl";
     if (mimeType == "image/gif")
       return ".gif";
     if (mimeType == "image/bmp")

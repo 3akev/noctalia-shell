@@ -2,6 +2,7 @@
 
 #include "config/config_service.h"
 #include "config/config_types.h"
+#include "core/files/directory_scanner.h"
 #include "cursor-shape-v1-client-protocol.h"
 #include "i18n/i18n.h"
 #include "render/scene/node.h"
@@ -1672,7 +1673,7 @@ namespace settings {
             options.mode = FileDialogMode::Open;
             options.defaultViewMode = FileDialogViewMode::Grid;
             options.title = i18n::tr("settings.widgets.settings.custom-image.dialog-title");
-            options.extensions = {".png", ".jpg", ".jpeg", ".webp", ".svg", ".bmp", ".gif"};
+            options.extensions = DirectoryScanner::imageExtensionFilter(true);
             options.startDirectory = "/usr/share/icons";
             ctx.makeRow(
                 *panel, entry,

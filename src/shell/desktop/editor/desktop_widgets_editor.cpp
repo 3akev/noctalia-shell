@@ -2,6 +2,7 @@
 
 #include "config/config_service.h"
 #include "core/deferred_call.h"
+#include "core/files/directory_scanner.h"
 #include "core/input/key_modifiers.h"
 #include "core/input/key_symbols.h"
 #include "core/input/keybind_matcher.h"
@@ -1555,7 +1556,7 @@ void DesktopWidgetsEditor::addWidget(const std::string& outputName, const std::s
     FileDialogOptions options;
     options.mode = FileDialogMode::Open;
     options.title = i18n::tr("desktop-widgets.editor.dialogs.select-sticker-image");
-    options.extensions = {".png", ".jpg", ".jpeg", ".webp", ".svg", ".gif"};
+    options.extensions = DirectoryScanner::imageExtensionFilter(true);
     if (!FileDialog::open(std::move(options), [this, widgetId](std::optional<std::filesystem::path> result) {
           deferEditorMutation([this, widgetId, result = std::move(result)]() {
             auto* state = findWidgetState(widgetId);

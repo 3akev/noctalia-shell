@@ -1,3 +1,4 @@
+#include "core/files/directory_scanner.h"
 #include "cursor-shape-v1-client-protocol.h"
 #include "i18n/i18n.h"
 #include "render/core/render_styles.h"
@@ -618,7 +619,7 @@ namespace {
               FileDialogOptions options;
               options.mode = FileDialogMode::Open;
               options.title = i18n::tr("desktop-widgets.editor.dialogs.select-sticker-image");
-              options.extensions = {".png", ".jpg", ".jpeg", ".webp", ".svg", ".gif"};
+              options.extensions = DirectoryScanner::imageExtensionFilter(true);
               (void)FileDialog::open(std::move(options), [editor, key](std::optional<std::filesystem::path> result) {
                 if (result) {
                   editor->applySettingChange(key, result->string());

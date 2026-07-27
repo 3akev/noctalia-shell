@@ -1,6 +1,7 @@
 #include "shell/setup_wizard/setup_wizard_panel.h"
 
 #include "config/config_service.h"
+#include "core/files/directory_scanner.h"
 #include "core/files/resource_paths.h"
 #include "core/log.h"
 #include "i18n/i18n.h"
@@ -252,7 +253,7 @@ void SetupWizardPanel::create() {
                 options.mode = FileDialogMode::Open;
                 options.defaultViewMode = FileDialogViewMode::Grid;
                 options.title = i18n::tr("setup-wizard.select-wallpaper");
-                options.extensions = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".gif"};
+                options.extensions = DirectoryScanner::imageExtensionFilter(false);
                 std::filesystem::path startDir;
                 if (!m_wallpaperDir.empty()) {
                   startDir = m_wallpaperDir;
