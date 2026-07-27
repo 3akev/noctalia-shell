@@ -16,6 +16,7 @@
 #include "shell/wallpaper/wallpaper_instance.h"
 #include "shell/wallpaper/wallpaper_paths.h"
 #include "theme/theme_service.h"
+#include "ui/builders.h"
 #include "ui/controls/box.h"
 #include "ui/palette.h"
 #include "util/file_utils.h"
@@ -1300,9 +1301,9 @@ void Wallpaper::createInstance(const WaylandOutput& output) {
   instance->surface->setRenderContext(m_renderContext);
   instance->surface->setClickThrough(true);
 
-  instance->sceneRoot = std::make_unique<Node>();
+  instance->sceneRoot = ui::node({});
   instance->sceneRoot->setAnimationManager(&instance->animations);
-  auto fillNode = std::make_unique<Box>();
+  auto fillNode = ui::box({});
   instance->fillNode = static_cast<Box*>(instance->sceneRoot->addChild(std::move(fillNode)));
   auto wallpaperNode = std::make_unique<WallpaperNode>();
   instance->wallpaperNode = static_cast<WallpaperNode*>(instance->sceneRoot->addChild(std::move(wallpaperNode)));

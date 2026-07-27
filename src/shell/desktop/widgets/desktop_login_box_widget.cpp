@@ -32,7 +32,7 @@ namespace {
 } // namespace
 
 void DesktopLoginBoxWidget::create() {
-  auto rootNode = std::make_unique<Node>();
+  auto rootNode = ui::node({});
 
   auto panel = ui::box({});
   m_panel = panel.get();

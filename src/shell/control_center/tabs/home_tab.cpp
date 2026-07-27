@@ -271,7 +271,7 @@ std::unique_ptr<Flex> HomeTab::create() {
     });
   };
 
-  auto avatarArea = std::make_unique<InputArea>();
+  auto avatarArea = ui::inputArea({});
   avatarArea->setSize(avatarSize, avatarSize);
   avatarArea->setHitShape(InputArea::HitShape::Circle);
   avatarArea->setFocusable(true);
@@ -843,7 +843,7 @@ InputArea* HomeTab::addCardOverlay(Flex& card, std::function<void()> onActivate)
 }
 
 InputArea* HomeTab::addCardOverlay(Flex& card, std::function<void()> onActivate, CardOverlayOptions options) {
-  auto area = std::make_unique<InputArea>();
+  auto area = ui::inputArea({});
   area->setParticipatesInLayout(false);
   area->setZIndex(3);
   area->setCursorShape(WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_POINTER);

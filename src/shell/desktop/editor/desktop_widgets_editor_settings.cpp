@@ -1041,7 +1041,7 @@ void DesktopWidgetsEditor::resetSelectedWidgetSettings() {
 void DesktopWidgetsEditor::buildInspector(
     OverlaySurface& surface, Node& root, const DesktopWidgetState& selectedState
 ) {
-  auto handleArea = std::make_unique<InputArea>();
+  auto handleArea = ui::inputArea({});
   handleArea->setParticipatesInLayout(false);
   handleArea->setZIndex(1);
   handleArea->setCursorShape(WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_MOVE);

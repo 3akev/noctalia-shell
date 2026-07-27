@@ -369,7 +369,7 @@ std::unique_ptr<Flex> WeatherTab::create() {
         })
     );
 
-    auto hitArea = std::make_unique<InputArea>();
+    auto hitArea = ui::inputArea({});
     hitArea->setAcceptedButtons(0);
     hitArea->setParticipatesInLayout(false);
     hitArea->setZIndex(2);

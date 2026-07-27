@@ -271,7 +271,7 @@ std::unique_ptr<Flex> ScreenTimeTab::create() {
     );
 
     for (std::size_t series = 0; series < kMaxChartSeries; ++series) {
-      auto hitArea = std::make_unique<InputArea>();
+      auto hitArea = ui::inputArea({});
       hitArea->setParticipatesInLayout(false);
       hitArea->setVisible(false);
       hitArea->setOnClick([this, bucketIndex](const InputArea::PointerData&) { openDayDetail(bucketIndex); });

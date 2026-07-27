@@ -9,6 +9,7 @@
 #include "shell/lockscreen/lock_surface.h"
 #include "shell/lockscreen/lockscreen_login_box.h"
 #include "time/time_format.h"
+#include "ui/builders.h"
 #include "wayland/wayland_connection.h"
 
 #include <algorithm>
@@ -265,7 +266,7 @@ void LockscreenWidgetsHost::attachToSurface(WidgetInstance& instance) {
     return;
   }
 
-  auto transformNode = std::make_unique<Node>();
+  auto transformNode = ui::node({});
   transformNode->setAnimationManager(&instance.animations);
   instance.transformNode = layer->addChild(std::move(transformNode));
   instance.transformNode->addChild(instance.widget->releaseRoot());

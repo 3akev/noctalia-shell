@@ -37,7 +37,7 @@ DesktopMediaPlayerWidget::DesktopMediaPlayerWidget(MprisService* mpris, HttpClie
 DesktopMediaPlayerWidget::~DesktopMediaPlayerWidget() { m_aliveGuard.reset(); }
 
 void DesktopMediaPlayerWidget::create() {
-  auto rootNode = std::make_unique<Node>();
+  auto rootNode = ui::node({});
 
   auto artwork = ui::image({
       .out = &m_artwork,

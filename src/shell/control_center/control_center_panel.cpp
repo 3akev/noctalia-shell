@@ -122,7 +122,7 @@ void ControlCenterPanel::create() {
         },
     });
 
-    auto sidebarScrollArea = std::make_unique<InputArea>();
+    auto sidebarScrollArea = ui::inputArea({});
     sidebarScrollArea->setParticipatesInLayout(false);
     sidebarScrollArea->setZIndex(-1);
     m_sidebarScrollArea = sidebarScrollArea.get();
@@ -216,7 +216,7 @@ void ControlCenterPanel::create() {
       .flexGrow = 4.0f,
   });
 
-  auto dismissArea = std::make_unique<InputArea>();
+  auto dismissArea = ui::inputArea({});
   dismissArea->setParticipatesInLayout(false);
   dismissArea->setZIndex(-1);
   dismissArea->setFocusable(false);

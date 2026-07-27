@@ -645,7 +645,7 @@ void DesktopWidgetsEditor::rebuildScene(OverlaySurface& surface) {
   surface.lassoBox = nullptr;
   surface.toolbar = nullptr;
 
-  auto root = std::make_unique<InputArea>();
+  auto root = ui::inputArea({});
   root->setEnabled(false);
   root->setAnimationManager(&surface.animations);
   if (m_renderContext != nullptr && m_wayland != nullptr) {
@@ -686,7 +686,7 @@ void DesktopWidgetsEditor::rebuildScene(OverlaySurface& surface) {
   dim->setZIndex(0);
   root->addChild(std::move(dim));
 
-  auto backgroundArea = std::make_unique<InputArea>();
+  auto backgroundArea = ui::inputArea({});
   backgroundArea->setPosition(0.0f, 0.0f);
   backgroundArea->setFrameSize(root->width(), root->height());
   backgroundArea->setZIndex(1);
@@ -832,7 +832,7 @@ void DesktopWidgetsEditor::rebuildScene(OverlaySurface& surface) {
     view.intrinsicWidth = std::max(1.0f, widget->intrinsicWidth());
     view.intrinsicHeight = std::max(1.0f, widget->intrinsicHeight());
 
-    auto bodyArea = std::make_unique<InputArea>();
+    auto bodyArea = ui::inputArea({});
     view.bodyArea = bodyArea.get();
     view.transformNode = view.bodyArea;
     view.transformNode->setFrameSize(view.intrinsicWidth, view.intrinsicHeight);
@@ -888,7 +888,7 @@ void DesktopWidgetsEditor::rebuildScene(OverlaySurface& surface) {
     SecondarySelectionVisual visual;
     visual.widgetId = selectedId;
 
-    auto borderTransform = std::make_unique<Node>();
+    auto borderTransform = ui::node({});
     borderTransform->setZIndex(102);
     borderTransform->setHitTestVisible(false);
     visual.transform = borderTransform.get();
@@ -920,7 +920,7 @@ void DesktopWidgetsEditor::rebuildScene(OverlaySurface& surface) {
   if (selectedIt != surface.views.end()) {
     selectedIt->second.bodyArea->setZIndex(101);
 
-    auto selectionFrameTransform = std::make_unique<Node>();
+    auto selectionFrameTransform = ui::node({});
     selectionFrameTransform->setZIndex(100);
     surface.selectionFrameTransform = selectionFrameTransform.get();
 
@@ -942,7 +942,7 @@ void DesktopWidgetsEditor::rebuildScene(OverlaySurface& surface) {
       surface.rotationRing = ring.get();
       surface.selectionFrameTransform->addChild(std::move(ring));
 
-      auto rotateArea = std::make_unique<InputArea>();
+      auto rotateArea = ui::inputArea({});
       rotateArea->setZIndex(1);
       rotateArea->setOnPress([this, id = m_selectedWidgetId](const InputArea::PointerData& data) {
         if (data.button != BTN_LEFT) {
@@ -965,7 +965,7 @@ void DesktopWidgetsEditor::rebuildScene(OverlaySurface& surface) {
 
     root->addChild(std::move(selectionFrameTransform));
 
-    auto selectionBorderTransform = std::make_unique<Node>();
+    auto selectionBorderTransform = ui::node({});
     selectionBorderTransform->setZIndex(102);
     selectionBorderTransform->setHitTestVisible(false);
     surface.selectionBorderTransform = selectionBorderTransform.get();
@@ -1008,7 +1008,7 @@ void DesktopWidgetsEditor::rebuildScene(OverlaySurface& surface) {
       surface.scaleHandles[i] = scaleHandle.get();
       root->addChild(std::move(scaleHandle));
 
-      auto scaleArea = std::make_unique<InputArea>();
+      auto scaleArea = ui::inputArea({});
       scaleArea->setZIndex(105);
       scaleArea->setOnPress([this, id = m_selectedWidgetId, corner](const InputArea::PointerData& data) {
         if (data.button != BTN_LEFT) {
@@ -1034,7 +1034,7 @@ void DesktopWidgetsEditor::rebuildScene(OverlaySurface& surface) {
     updateSelectionVisuals(surface);
   }
 
-  auto toolbarHandleArea = std::make_unique<InputArea>();
+  auto toolbarHandleArea = ui::inputArea({});
   toolbarHandleArea->setParticipatesInLayout(false);
   toolbarHandleArea->setZIndex(1);
   toolbarHandleArea->setCursorShape(WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_MOVE);

@@ -156,7 +156,7 @@ public:
     }
     addChild(std::move(action));
 
-    auto area = std::make_unique<InputArea>();
+    auto area = ui::inputArea({});
     area->setPropagateEvents(true);
     area->setOnEnter([this](const InputArea::PointerData& /*data*/) { applyState(); });
     area->setOnLeave([this]() { applyState(); });
@@ -298,7 +298,7 @@ namespace {
           })
       );
 
-      auto area = std::make_unique<InputArea>();
+      auto area = ui::inputArea({});
       area->setPropagateEvents(true);
       area->setOnEnter([this](const InputArea::PointerData& /*data*/) { applyState(); });
       area->setOnLeave([this]() { applyState(); });

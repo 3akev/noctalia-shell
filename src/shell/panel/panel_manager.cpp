@@ -19,6 +19,7 @@
 #include "shell/screen_position.h"
 #include "shell/surface/shadow.h"
 #include "shell/tooltip/tooltip_manager.h"
+#include "ui/builders.h"
 #include "ui/controls/box.h"
 #include "ui/controls/context_menu_popup.h"
 #include "ui/controls/select_dropdown_popup.h"
@@ -2221,7 +2222,7 @@ void PanelManager::buildScene(std::uint32_t width, std::uint32_t height) {
   const auto h = static_cast<float>(height);
 
   if (m_sceneRoot == nullptr) {
-    m_sceneRoot = std::make_unique<Node>();
+    m_sceneRoot = ui::node({});
     m_sceneRoot->setAnimationManager(&m_animations);
     if (m_layerSurface != nullptr && m_renderContext != nullptr) {
       m_selectPopup = std::make_unique<SelectDropdownPopup>(m_platform->wayland(), *m_renderContext);
@@ -2235,32 +2236,32 @@ void PanelManager::buildScene(std::uint32_t width, std::uint32_t height) {
 
     Node* sceneParent = m_sceneRoot.get();
     if (m_attachedToBar) {
-      auto revealClip = std::make_unique<Node>();
+      auto revealClip = ui::node({});
       revealClip->setClipChildren(true);
       m_attachedRevealClipNode = m_sceneRoot->addChild(std::move(revealClip));
 
-      auto revealContent = std::make_unique<Node>();
+      auto revealContent = ui::node({});
       m_attachedRevealContentNode = m_attachedRevealClipNode->addChild(std::move(revealContent));
       sceneParent = m_attachedRevealContentNode;
     } else {
-      auto revealClip = std::make_unique<Node>();
+      auto revealClip = ui::node({});
       revealClip->setClipChildren(true);
       m_detachedRevealClipNode = m_sceneRoot->addChild(std::move(revealClip));
 
-      auto revealContent = std::make_unique<Node>();
+      auto revealContent = ui::node({});
       m_detachedRevealContentNode = m_detachedRevealClipNode->addChild(std::move(revealContent));
       sceneParent = m_detachedRevealContentNode;
     }
 
     if (hasDecoration && m_config != nullptr && shell::surface_shadow::enabled(true, m_config->config().shell.shadow)) {
-      auto shadow = std::make_unique<Box>();
+      auto shadow = ui::box({});
       m_panelShadowNode = static_cast<Box*>(sceneParent->addChild(std::move(shadow)));
       m_panelShadowNode->setZIndex(-1);
       m_panelShadowNode->setVisible(m_config->config().shell.panel.shadow);
     }
 
     if (hasDecoration) {
-      auto bg = std::make_unique<Box>();
+      auto bg = ui::box({});
       const bool panelBorders = m_config != nullptr && m_config->config().shell.panel.borders;
       bg->setPanelStyle(panelBorders);
       if (m_attachedToBar) {
@@ -2277,12 +2278,12 @@ void PanelManager::buildScene(std::uint32_t width, std::uint32_t height) {
     }
 
     if (hasDecoration && m_attachedToBar && m_attachedContactShadow) {
-      auto contactShadow = std::make_unique<Box>();
+      auto contactShadow = ui::box({});
       m_panelContactShadowNode = static_cast<Box*>(sceneParent->addChild(std::move(contactShadow)));
     }
 
     // Create panel content inside a wrapper node for staggered fade-in
-    auto contentWrapper = std::make_unique<Node>();
+    auto contentWrapper = ui::node({});
     m_contentNode = contentWrapper.get();
     m_activePanel->setAnimationManager(&m_animations);
     const float panelBackgroundOpacity =

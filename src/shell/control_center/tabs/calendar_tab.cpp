@@ -163,7 +163,7 @@ std::unique_ptr<Flex> CalendarTab::create() {
       .gap = Style::spaceMd * scale,
   });
 
-  auto calendarArea = std::make_unique<InputArea>();
+  auto calendarArea = ui::inputArea({});
   calendarArea->setFlexGrow(3.0f);
   calendarArea->setOnAxis([this](const InputArea::PointerData& data) {
     if (data.axis != WL_POINTER_AXIS_VERTICAL_SCROLL) {
@@ -821,7 +821,7 @@ void CalendarTab::rebuild() {
     }
 
     // Make the dot strip below the number select the day too, so the whole cell is clickable.
-    auto dotArea = std::make_unique<InputArea>();
+    auto dotArea = ui::inputArea({});
     dotArea->setSize(dayButtonSize, dotStripHeight);
     dotArea->setOnClick([selectDay](const InputArea::PointerData&) { selectDay(); });
     dotArea->addChild(std::move(dotStrip));

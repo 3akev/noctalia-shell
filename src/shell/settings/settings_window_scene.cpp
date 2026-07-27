@@ -2039,7 +2039,7 @@ void SettingsWindow::buildScene(std::uint32_t width, std::uint32_t height) {
   m_filterRow = nullptr;
   m_panelBackground = nullptr;
   m_contentContainer = nullptr;
-  m_sceneRoot = std::make_unique<Node>();
+  m_sceneRoot = ui::node({});
   m_sceneRoot->setSize(w, h);
   m_sceneRoot->setAnimationManager(&m_animations);
   if (m_surface != nullptr && m_renderContext != nullptr && m_wayland != nullptr) {

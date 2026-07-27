@@ -888,7 +888,7 @@ namespace {
 
       m_detail = nullptr;
 
-      auto area = std::make_unique<InputArea>();
+      auto area = ui::inputArea({});
       area->setPropagateEvents(true);
       area->setOnEnter([this](const InputArea::PointerData&) { applyState(); });
       area->setOnLeave([this]() { applyState(); });

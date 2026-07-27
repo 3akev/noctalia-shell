@@ -546,7 +546,7 @@ void ClipboardPanel::create() {
       .flexGrow = 1.0f,
   });
 
-  auto focusArea = std::make_unique<InputArea>();
+  auto focusArea = ui::inputArea({});
   focusArea->setFocusable(true);
   focusArea->setTabStop(false);
   focusArea->setVisible(false);
