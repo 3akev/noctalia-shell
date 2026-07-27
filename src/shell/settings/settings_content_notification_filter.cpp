@@ -106,7 +106,7 @@ namespace settings {
       matchPtr->setValue(row.match);
       return true;
     };
-    const auto persistDraft = [&]() {
+    const auto persistDraft = [&row, matchPtr, flushMatchContentFromInput, persist]() {
       flushMatchContentFromInput();
       const std::string draftMatch = normalizeNotificationMatchToken(matchPtr->value());
       if (!draftMatch.empty()) {
@@ -116,14 +116,14 @@ namespace settings {
       }
       persist();
     };
-    const auto commitMatch = [&]() {
+    const auto commitMatch = [flushMatchContentFromInput, flushMatchFromInput, persist]() {
       flushMatchContentFromInput();
       if (!flushMatchFromInput()) {
         return;
       }
       persist();
     };
-    const auto commitMatchContent = [&]() {
+    const auto commitMatchContent = [flushMatchContentFromInput, persist]() {
       flushMatchContentFromInput();
       persist();
     };
