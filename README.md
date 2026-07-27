@@ -264,9 +264,10 @@ just build
 just run
 ```
 
-Unit tests are built automatically for debug builds and skipped for release builds. Build and run them with
-`just test` (use `just test release` to force them on for a release build). Override the default with the meson
-`-Dtests=enabled|disabled|auto` option.
+Unit tests are not compiled by `just build`, which targets only the Noctalia executable. Build and run them explicitly
+with `just test` (use `just test release` to force them on for a release build). Direct Meson users can control test
+target generation with the `-Dtests=enabled|disabled|auto` option.
+Production sources compile once into an internal static library shared by the shell and test executables.
 
 Meson installs the binary and shipped assets using the normal prefix layout:
 
