@@ -230,7 +230,7 @@
       "avatar-error-title": "头像更新失败",
       "media": {
         "idle": "空闲",
-        "no-active-player": "无活动播放器",
+        "no-active-player": "暂无活动播放器",
         "nothing-playing": "暂无播放内容",
         "paused": "已暂停",
         "playback-unavailable": "无法播放",
@@ -258,7 +258,7 @@
       "connect": "连接",
       "current-connection": "当前连接",
       "external-ip": "WAN {ip}",
-      "no-networks": "范围内无网络",
+      "no-networks": "附近没有可用网络",
       "not-connected": "未连接",
       "password": "密码",
       "password-prompt": "输入密码",
@@ -276,8 +276,8 @@
       "clear-all": "清除所有通知",
       "dnd-off": "关闭勿扰模式",
       "dnd-on": "开启勿扰模式",
-      "empty-body": "最近的通知将显示在此处。",
-      "empty-title": "无通知",
+      "empty-body": "最近的通知会显示在这里。",
+      "empty-title": "暂无通知",
       "filter": {
         "all": "全部",
         "older": "较早",
@@ -295,7 +295,7 @@
       "performance-inhibited": "性能模式不可用",
       "peripherals": "已连接设备",
       "power-profile": "电源配置",
-      "time-to-empty": "剩余 {time}",
+      "time-to-empty": "剩余续航 {time}",
       "time-to-full": "距离充满 {time}",
       "unknown-device": "未知设备"
     },
@@ -808,7 +808,7 @@
         "discharging": "正在放电",
         "empty": "电量耗尽",
         "pending-discharge": "等待放电",
-        "plugged-in": "已插入电源"
+        "plugged-in": "已接通电源"
       },
       "tooltip": {
         "device": "电池",
@@ -816,7 +816,7 @@
         "health": "健康度",
         "rate": "功率",
         "status": "状态",
-        "time-left": "剩余时间",
+        "time-left": "剩余续航",
         "time-to-full": "距离充满",
         "unknown-device": "未知设备"
       }
@@ -1141,6 +1141,7 @@
         "general": "常规",
         "greeter": "Greeter",
         "grouping": "组合",
+        "history": "历史",
         "home": "主页",
         "hot-corners": "触发角",
         "idle": "空闲",
@@ -1400,7 +1401,7 @@
       "browse-store": "浏览插件",
       "panels": {
         "open-near-click": {
-          "description": "从状态栏打开面板时，将其显示在小组件附近；其他方式打开时居中显示",
+          "description": "在吸附或悬浮位置设为“跟随状态栏”时，将面板显示在打开它的状态栏小组件附近",
           "label": "沿状态栏打开"
         },
         "placement": {
@@ -1969,7 +1970,7 @@
           },
           "battery-plugged": {
             "description": "电池充满或等待充电时执行的命令",
-            "label": "插入电源时"
+            "label": "接通电源时"
           },
           "bluetooth-disabled": {
             "description": "蓝牙禁用时执行的命令",
@@ -2145,6 +2146,10 @@
           "description": "按发送方设置 Toast 通知、历史记录和提示音规则；按顺序匹配已启用的过滤器",
           "label": "通知过滤器"
         },
+        "history-retention-hours": {
+          "description": "自动移除超过指定小时的通知历史记录条目（设为 0 时永久保留）",
+          "label": "历史记录保留时长"
+        },
         "layer": {
           "description": "使用 Overlay 可使 Toast 通知显示在全屏应用上方，Top 则在全屏时被覆盖",
           "label": "Wayland 层级"
@@ -2212,7 +2217,7 @@
           "label": "主页快捷项"
         },
         "launcher-app-grid": {
-          "description": "当搜索结果仅包含应用时，以网格形式显示应用图标并在下方附带标签",
+          "description": "当搜索结果仅包含应用时，以网格形式显示应用图标，并在图标下方显示名称",
           "label": "应用网格视图"
         },
         "launcher-auto-paste": {
@@ -2297,23 +2302,23 @@
           "label": "列表项背景"
         },
         "open-near-click-clipboard": {
-          "description": "从状态栏打开剪贴板面板时，将其显示在小组件附近；其他方式打开时居中显示",
+          "description": "在吸附或悬浮位置设为“跟随状态栏”时，将剪贴板面板显示在打开它的状态栏小组件附近",
           "label": "沿状态栏打开"
         },
         "open-near-click-control-center": {
-          "description": "从状态栏打开控制中心时，将其显示在小组件附近；其他方式打开时居中显示",
+          "description": "在吸附或悬浮位置设为“跟随状态栏”时，将控制中心显示在打开它的状态栏小组件附近",
           "label": "沿状态栏打开"
         },
         "open-near-click-launcher": {
-          "description": "从状态栏打开启动器时，将其显示在小组件附近；其他方式打开时居中显示",
+          "description": "在吸附或悬浮位置设为“跟随状态栏”时，将启动器显示在打开它的状态栏小组件附近",
           "label": "沿状态栏打开"
         },
         "open-near-click-session": {
-          "description": "从状态栏打开会话面板时，将其显示在小组件附近；其他方式打开时居中显示",
+          "description": "在吸附或悬浮位置设为“跟随状态栏”时，将会话面板显示在打开它的状态栏小组件附近",
           "label": "沿状态栏打开"
         },
         "open-near-click-wallpaper": {
-          "description": "从状态栏打开壁纸选择器时，将其显示在小组件附近；其他方式打开时居中显示",
+          "description": "在吸附或悬浮位置设为“跟随状态栏”时，将壁纸选择器显示在打开它的状态栏小组件附近",
           "label": "沿状态栏打开"
         },
         "panel-anchor-bar": {
@@ -2930,7 +2935,7 @@
           "label": "内置模板"
         },
         "community-ids": {
-          "description": "选择每次更换主题时渲染的已缓存社区模板",
+          "description": "浏览并启用每次更换主题时渲染的社区模板",
           "empty": "暂无可用的社区模板。请先启用社区模板并刷新目录。",
           "label": "社区模板"
         },
@@ -3056,6 +3061,24 @@
       "error-key": "私密存储文件已删除，但无法重新打开安全存储。请恢复访问后重试。",
       "label": "恢复私密存储",
       "success": "私密存储重置成功。"
+    },
+    "templates": {
+      "store": {
+        "browse": "浏览模板",
+        "categories": "类别",
+        "category-all": "全部",
+        "empty": "没有符合当前筛选条件的模板",
+        "enabled-count": "已启用 {count} 项",
+        "filter-all": "全部",
+        "filter-enabled": "已启用",
+        "results-count": "{count} 个模板",
+        "search-placeholder": "搜索模板…",
+        "sort-category-asc": "按类别排序 (A-Z)",
+        "sort-category-desc": "按类别排序 (Z-A)",
+        "sort-name-asc": "按名称排序 (A-Z)",
+        "sort-name-desc": "按名称排序 (Z-A)",
+        "title": "社区模板"
+      }
     },
     "widgets": {
       "actions": {
@@ -3252,7 +3275,7 @@
           "label": "自定义标签"
         },
         "detached-panel": {
-          "description": "以带有独立背景的悬浮面板打开抽屉，而非吸附状态栏",
+          "description": "以悬浮面板打开抽屉，而非吸附状态栏",
           "label": "独立面板"
         },
         "device": {

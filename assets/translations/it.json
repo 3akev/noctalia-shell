@@ -1027,6 +1027,7 @@
           "empty": "Nessuna impostazione corrisponde ai filtri correnti.",
           "groups": {
             "actions": "Azioni",
+            "behavior": "Comportamento",
             "grouping": "Raggruppamento",
             "presentation": "Visualizzazione",
             "runtime": "Runtime",
@@ -1141,6 +1142,7 @@
         "general": "Generale",
         "greeter": "Greeter",
         "grouping": "Raggruppamento",
+        "history": "Cronologia",
         "home": "Home",
         "hot-corners": "Angoli attivi",
         "idle": "Inattività",
@@ -1400,7 +1402,7 @@
       "browse-store": "Sfoglia plugin",
       "panels": {
         "open-near-click": {
-          "description": "Posiziona il pannello vicino al widget della barra che lo ha aperto; le aperture senza barra di attivazione sono centrate",
+          "description": "Posiziona il pannello vicino al widget della barra che lo ha aperto quando è collegato o mobile con posizione automatica",
           "label": "Lungo la barra"
         },
         "placement": {
@@ -2145,6 +2147,10 @@
           "description": "Regole notifiche per mittente, cronologia e suoni; ha priorità il primo filtro abilitato corrispondente",
           "label": "Filtri notifiche"
         },
+        "history-retention-hours": {
+          "description": "Rimuovi automaticamente le voci della cronologia delle notifiche più vecchie di queste ore (0 per conservarle per sempre)",
+          "label": "Conserva la cronologia per"
+        },
         "layer": {
           "description": "Usa Overlay per mostrare le notifiche toast sopra le app a schermo intero",
           "label": "Layer Wayland"
@@ -2210,6 +2216,10 @@
         "home-shortcuts": {
           "description": "Scegli fino a sei pulsanti scorciatoia per la scheda home",
           "label": "Scorciatoie home"
+        },
+        "home-shortcuts-show-labels": {
+          "description": "Visualizza le etichette di testo sotto le icone di collegamento nella scheda Home",
+          "label": "Mostra etichette di scelta rapida"
         },
         "launcher-app-grid": {
           "description": "Mostra una griglia di icone delle applicazioni con le etichette sottostanti quando i risultati riguardano solo le app",
@@ -2297,23 +2307,23 @@
           "label": "Sfondo elenco item"
         },
         "open-near-click-clipboard": {
-          "description": "Posiziona il pannello degli appunti vicino al widget della barra che lo ha aperto; le aperture senza barra di attivazione sono centrate",
+          "description": "Posiziona il pannello degli appunti vicino al widget della barra che lo ha aperto quando è collegato o mobile con la posizione automatica",
           "label": "Lungo la barra"
         },
         "open-near-click-control-center": {
-          "description": "Posiziona il Centro di Controllo vicino al widget della barra che lo ha aperto; le aperture senza barra di attivazione sono centrate",
+          "description": "Posiziona il Centro di controllo vicino al widget della barra che lo ha aperto quando è collegato o mobile con posizione automatica",
           "label": "Lungo la barra"
         },
         "open-near-click-launcher": {
-          "description": "Posiziona il launcher vicino al widget della barra che lo ha aperto; le aperture senza barra di attivazione sono centrate",
+          "description": "Posiziona il launcher vicino al widget della barra che lo ha aperto quando è collegato o mobile con la posizione automatica",
           "label": "Lungo la barra"
         },
         "open-near-click-session": {
-          "description": "Posiziona il pannello della sessione vicino al widget della barra che lo ha aperto; le aperture senza barra di attivazione sono centrate",
+          "description": "Posiziona il pannello della sessione vicino al widget della barra che lo ha aperto quando è collegato o mobile con la posizione automatica",
           "label": "Lungo la barra"
         },
         "open-near-click-wallpaper": {
-          "description": "Posiziona il selettore di sfondi vicino al widget della barra che lo ha aperto; le aperture senza barra di attivazione sono centrate",
+          "description": "Posiziona il selettore di sfondi vicino al widget della barra che lo ha aperto quando è collegato o mobile con la posizione automatica",
           "label": "Lungo la barra"
         },
         "panel-anchor-bar": {
@@ -2930,7 +2940,7 @@
           "label": "Template integrati"
         },
         "community-ids": {
-          "description": "Attiva/disattiva i template della community in cache da renderizzare ad ogni cambio tema",
+          "description": "Sfoglia e attiva i template della community applicati a ogni modifica del tema",
           "empty": "Non ci sono template della community disponibili. Prima abilita i template della community e aggiorna il catalogo.",
           "label": "Template della community"
         },
@@ -3057,6 +3067,24 @@
       "label": "Recupera l'archiviazione privata",
       "success": "L'archiviazione privata è stata reimpostata correttamente."
     },
+    "templates": {
+      "store": {
+        "browse": "Sfoglia template",
+        "categories": "Categorie",
+        "category-all": "Tutti",
+        "empty": "Nessun template corrisponde ai tuoi filtri",
+        "enabled-count": "{count} abilitati",
+        "filter-all": "Tutti",
+        "filter-enabled": "Abilitato",
+        "results-count": "{count} template",
+        "search-placeholder": "Cerca template…",
+        "sort-category-asc": "Ordina per categoria (Z-A)",
+        "sort-category-desc": "Ordina per categoria (Z-A)",
+        "sort-name-asc": "Sort by name (Z-A)",
+        "sort-name-desc": "Sort by name (Z-A)",
+        "title": "Template della comunità"
+      }
+    },
     "widgets": {
       "actions": {
         "command-placeholder": "Comando della shell",
@@ -3140,6 +3168,8 @@
         "rate": "Livello",
         "regular": "Normale",
         "replace": "Sostituisci",
+        "scroll-gesture": "Una volta per gesto",
+        "scroll-steps": "Ogni passo",
         "shared": "Condiviso",
         "short": "Breve",
         "swap-percent": "Percentuale swap",
@@ -3252,7 +3282,7 @@
           "label": "Etichette personalizzate"
         },
         "detached-panel": {
-          "description": "Apri il cassetto come pannello flottante con sfondo proprio invece di unirlo alla barra",
+          "description": "Apri il cassetto come un pannello mobile invece di ancorarlo al bordo della barra",
           "label": "Pannello separato"
         },
         "device": {
@@ -3539,6 +3569,10 @@
         "script": {
           "description": "Percorso allo script lua",
           "label": "Script"
+        },
+        "scroll-repeat": {
+          "description": "Scegli se le azioni di scorrimento seguono la semantica dei comandi, vengono eseguite una volta per gesto o ripetute per ogni passaggio di scorrimento",
+          "label": "Ripeti scroll"
         },
         "show-active-indicator": {
           "description": "Mostra un piccolo punto sotto l'icona della finestra attiva nella taskbar",

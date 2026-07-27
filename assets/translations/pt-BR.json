@@ -1141,6 +1141,7 @@
         "general": "Geral",
         "greeter": "Greeter",
         "grouping": "Agrupamento",
+        "history": "Histórico",
         "home": "Início",
         "hot-corners": "Cantos Ativos",
         "idle": "Inatividade",
@@ -1400,7 +1401,7 @@
       "browse-store": "Navegar Plugins",
       "panels": {
         "open-near-click": {
-          "description": "Abrir o painel próximo ao widget da barra que o abriu; abrir sem um gatilho na barra é centralizado",
+          "description": "Posicionar o painel perto do widget o acionou quanto anexado ou flutuando com posicionamento automático",
           "label": "Abrir Próximo ao Clique"
         },
         "placement": {
@@ -2145,6 +2146,10 @@
           "description": "Regras por emissor de notificações, histórico e sons; o primeiro filtro compatível ativado prevalece",
           "label": "Filtros de Notificações"
         },
+        "history-retention-hours": {
+          "description": "Automaticamente remover histórico de notificações se existir por mais que esta quantidade de horas (0 para manter para sempre)",
+          "label": "Manter histórico apra"
+        },
         "layer": {
           "description": "Use Overlay para mostrar notificações flutuantes acima de apps em tela cheia",
           "label": "Camada Wayland"
@@ -2297,23 +2302,23 @@
           "label": "Fundo dos Itens de Lista"
         },
         "open-near-click-clipboard": {
-          "description": "Posicionar o painel da área de transferência perto do widget da barra que o acionou; se aberto sem um gatilho, fica centralizado",
+          "description": "Posicionar o painel da área de transferência perto do widget da barra que o acionou quanto anexando ou flutuando com posicionamento automático",
           "label": "Ao Longo da Barra"
         },
         "open-near-click-control-center": {
-          "description": "Posicionar a Central de Controle perto do widget da barra que a acionou; se aberta sem um gatilho, fica centralizada",
+          "description": "Posicionar a Central de Controle perto do widget da barra que a acionou quanto anexada ou flutuando com posicionamento automático",
           "label": "Abrir Próximo ao Clique"
         },
         "open-near-click-launcher": {
-          "description": "Posicionar o launcher perto do widget da barra que o acionou; se aberto sem um gatilho, fica centralizado",
+          "description": "Posicionar o launcher perto do widget da barra que o acionou quanto anexada ou flutuando com posicionamento automático",
           "label": "Abrir Próximo ao Clique"
         },
         "open-near-click-session": {
-          "description": "Posicionar o painel de sessão perto do widget da barra que o acionou; se aberto sem um gatilho, fica centralizado",
+          "description": "Posicionar o painel de sessão perto do widget da barra que o acionou quanto anexada ou flutuando com posicionamento automático",
           "label": "Abrir Próximo ao Clique"
         },
         "open-near-click-wallpaper": {
-          "description": "Posicionar o seletor de papéis de parede perto do widget da barra que o acionou; se aberto sem um gatilho, fica centralizado",
+          "description": "Posicionar o selector de papel de parede perto do widget da barra que o acionou quanto anexada ou flutuando com posicionamento automático",
           "label": "Abrir Próximo ao Clique"
         },
         "panel-anchor-bar": {
@@ -2930,7 +2935,7 @@
           "label": "Modelos Integrados"
         },
         "community-ids": {
-          "description": "Alterna a exibição em cache dos modelos da comunidade a cada alteração de tema",
+          "description": "Navegar e ativar modelos de comunidade aplicados em cada mudança de tema",
           "empty": "Ainda não há modelos da comunidade disponíveis. Primeiro, habilite os modelos de comunidade e atualize o catálogo.",
           "label": "Modelos da Comunidade"
         },
@@ -3056,6 +3061,24 @@
       "error-key": "Arquivos do armazenamento privado foram apagados, mas o armazenamento seguro não pôde ser reaberto. Corrija o acesso e tente novamente.",
       "label": "Recuperar Armazenamento Privado",
       "success": "Redefinição do armazenamento privado bem sucedida"
+    },
+    "templates": {
+      "store": {
+        "browse": "Navegar pelos modelos",
+        "categories": "Categorias",
+        "category-all": "Todas",
+        "empty": "Não há modelos semelhantes ao seu filtro",
+        "enabled-count": "{count} ativados",
+        "filter-all": "Todos",
+        "filter-enabled": "Ativado",
+        "results-count": "{count} modelos",
+        "search-placeholder": "Buscar modelos...",
+        "sort-category-asc": "Ordenar por categoria (A-Z)",
+        "sort-category-desc": "Ordenar por categoria (Z-A)",
+        "sort-name-asc": "Ordenar por nome (A-Z)",
+        "sort-name-desc": "Ordenar por nome (Z-A)",
+        "title": "Modelos da Comunidade"
+      }
     },
     "widgets": {
       "actions": {
@@ -3252,7 +3275,7 @@
           "label": "Rótulos Personalizados"
         },
         "detached-panel": {
-          "description": "Abre o drawer como um painel flutuante com seu próprio fundo, em vez de se mesclar com a barra",
+          "description": "Abre o drawer como um painel flutuante ao invés de ancorá-lo à extremidade da barra",
           "label": "Painel Descolado"
         },
         "device": {
