@@ -535,7 +535,7 @@ void TrayWidget::rebuild(Renderer& renderer) {
     }
     if (hasDrawerItems) {
       const float itemSize = m_customItemSize.value_or(Style::baseGlyphSize) * m_contentScale;
-      auto triggerArea = std::make_unique<InputArea>();
+      auto triggerArea = ui::inputArea({});
       auto* triggerPtr = triggerArea.get();
       m_drawerTrigger = triggerPtr;
       triggerArea->setSize(itemSize, itemSize);
@@ -747,7 +747,7 @@ void TrayWidget::rebuild(Renderer& renderer) {
     }
 
     if (overlayNode != nullptr && iconNode != nullptr) {
-      auto stack = std::make_unique<Node>();
+      auto stack = ui::node({});
       stack->setSize(itemSize, itemSize);
       iconNode->setPosition(std::round((itemSize - iconW) * 0.5f), std::round((itemSize - iconH) * 0.5f));
       overlayNode->setPosition(std::round((itemSize - overlayW) * 0.5f), std::round((itemSize - overlayH) * 0.5f));
@@ -759,7 +759,7 @@ void TrayWidget::rebuild(Renderer& renderer) {
     }
 
     // Wrap icon in InputArea for click handling
-    auto area = std::make_unique<InputArea>();
+    auto area = ui::inputArea({});
     area->setSize(itemSize, itemSize);
     iconNode->setPosition(std::round((itemSize - iconW) * 0.5f), std::round((itemSize - iconH) * 0.5f));
     auto itemId = item.id;

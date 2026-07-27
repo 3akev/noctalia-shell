@@ -299,7 +299,7 @@ KeyboardLayoutWidget::KeyboardLayoutWidget(
       m_glyphName(std::move(glyph)), m_customImage(std::move(customImage)) {}
 
 void KeyboardLayoutWidget::create() {
-  auto area = std::make_unique<InputArea>();
+  auto area = ui::inputArea({});
 
   if (m_customImage.enabled()) {
     area->addChild(ui::image({.out = &m_image, .fit = ImageFit::Contain}));

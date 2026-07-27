@@ -7,6 +7,7 @@
 #include "render/scene/node.h"
 #include "shell/bar/widget_action_dispatcher.h"
 #include "shell/bar/widget_gesture_defaults.h"
+#include "ui/builders.h"
 #include "ui/palette.h"
 
 #include <algorithm>
@@ -107,7 +108,7 @@ void Widget::setRoot(std::unique_ptr<Node> root) {
   m_innerBaseButtons = m_innerArea != nullptr ? m_innerArea->acceptedButtons() : 0;
   m_innerBaseScrollDirections = m_innerArea != nullptr ? m_innerArea->acceptedScrollDirections() : 0;
 
-  auto gestureArea = std::make_unique<InputArea>();
+  auto gestureArea = ui::inputArea({});
   m_gestureArea = gestureArea.get();
   // Nothing is bound until resolveGestureBindings() runs, and an area with no accepted buttons
   // never wins the dispatcher's ancestor walk.

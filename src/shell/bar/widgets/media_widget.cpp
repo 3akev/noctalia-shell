@@ -31,7 +31,7 @@ MediaWidget::MediaWidget(MprisService* mpris, HttpClient* httpClient, wl_output*
       m_artistFirst(options.artistFirst) {}
 
 void MediaWidget::create() {
-  auto area = std::make_unique<InputArea>();
+  auto area = ui::inputArea({});
   area->setOnEnter([this](const InputArea::PointerData&) {
     applyTitleScrollMode(m_label != nullptr && m_label->visible());
     this->requestUpdate();
