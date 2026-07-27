@@ -392,7 +392,6 @@ namespace lockscreen_login_box {
     if (!settings.contains(std::string(kShowLoginButtonKey))) {
       settings.insert_or_assign(std::string(kShowLoginButtonKey), true);
     }
-    settings.erase("show_password_hint");
     if (!settings.contains(std::string(kShowCapsLockKey))) {
       settings.insert_or_assign(std::string(kShowCapsLockKey), true);
     }

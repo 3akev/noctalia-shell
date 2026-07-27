@@ -20,6 +20,7 @@ namespace noctalia::config {
     constexpr int kRemainingWidgetGesturesMigrationVersion = 5;
     constexpr int kCustomButtonCommandsMigrationVersion = 6;
     constexpr int kDeadZoneActionsMigrationVersion = 7;
+    constexpr int kLockscreenLoginBoxDeprecatedSettingsMigrationVersion = 8;
     constexpr std::int64_t kMaxBarRadius = 500;
     constexpr std::array<std::string_view, 5> kBarRadiusKeys = {
         "radius", "radius_top_left", "radius_top_right", "radius_bottom_left", "radius_bottom_right",
@@ -378,6 +379,43 @@ namespace noctalia::config {
       });
     }
 
+    template <typename OnChanged>
+    void migrateLockscreenLoginBoxDeprecatedSettings(toml::table& root, OnChanged&& onChanged) {
+      auto* section = root["lockscreen_widgets"].as_table();
+      if (section == nullptr) {
+        return;
+      }
+      auto* widgets = (*section)["widget"].as_table();
+      if (widgets == nullptr) {
+        return;
+      }
+
+      for (auto& [widgetId, widgetNode] : *widgets) {
+        auto* widget = widgetNode.as_table();
+        if (widget == nullptr) {
+          continue;
+        }
+        const std::string type = (*widget)["type"].value_or(std::string{});
+        const std::string id(widgetId.str());
+        if (type != "login_box" && !id.starts_with("lockscreen-login-box@")) {
+          continue;
+        }
+        auto* settings = (*widget)["settings"].as_table();
+        if (settings == nullptr) {
+          continue;
+        }
+        if (settings->erase("show_password_hint") > 0) {
+          onChanged("lockscreen_widgets.widget." + id + ".settings");
+        }
+      }
+    }
+
+    void migrateLockscreenLoginBoxDeprecatedSettingsSidecar(toml::table& root, schema::Diagnostics& diag) {
+      migrateLockscreenLoginBoxDeprecatedSettings(root, [&diag](const std::string& path) {
+        diag.warn(path, "removed deprecated show_password_hint");
+      });
+    }
+
     void migrateCustomButtonCommandsSidecar(toml::table& root, schema::Diagnostics& diag) {
       migrateCustomButtonCommands(root, [&diag](const std::string& path, std::string_view message) {
         diag.warn(path, std::string(message));
@@ -473,6 +511,11 @@ namespace noctalia::config {
             .toVersion = kDeadZoneActionsMigrationVersion,
             .summary = "bar: move dead zone commands to gesture actions",
             .apply = migrateDeadZoneActionsSidecar,
+        },
+        {
+            .toVersion = kLockscreenLoginBoxDeprecatedSettingsMigrationVersion,
+            .summary = "lockscreen: drop removed login box show_password_hint setting",
+            .apply = migrateLockscreenLoginBoxDeprecatedSettingsSidecar,
         },
     };
     return migrations;
@@ -573,6 +616,13 @@ namespace noctalia::config {
           .migrationVersion = kDeadZoneActionsMigrationVersion,
           .path = path,
           .message = std::string(message),
+      });
+    });
+    migrateLockscreenLoginBoxDeprecatedSettings(root, [&issues](const std::string& path) {
+      issues.push_back({
+          .migrationVersion = kLockscreenLoginBoxDeprecatedSettingsMigrationVersion,
+          .path = path,
+          .message = "removed deprecated show_password_hint",
       });
     });
   }
