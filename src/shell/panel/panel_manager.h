@@ -128,6 +128,9 @@ public:
   void clearActivePopup();
 
   void refresh();
+  // Re-read preferredWidth/Height on the active detached panel and request a new
+  // layer-shell size (e.g. polkit growing when a password field appears).
+  void relayoutActivePanelPreferredSize();
   // Refresh a single panel by id, whichever host owns it. Used by content that
   // knows which panel it belongs to (e.g. a plugin panel's new UI tree).
   void refreshPanel(std::string_view panelId);

@@ -303,11 +303,7 @@ void Application::syncPolkitAgent() {
       return;
     }
     m_polkitIdleCloseTimer.stop();
-    // Open once the session has content to display so preferredHeight accounts for
-    // the real text. BeginAuthentication alone has neither responseRequired nor
-    // supplementaryMessage — skip it. show-info (fingerprint) sets supplementaryMessage
-    // without flipping responseRequired; request sets responseRequired without
-    // supplementaryMessage. Either is sufficient content to show.
+    // BeginAuthentication alone has no prompt yet; show-info and request both do.
     const bool hasContent = m_polkitAgent->isResponseRequired() || !m_polkitAgent->supplementaryMessage().empty();
     if (!hasContent && !m_panelManager.isOpenPanel("polkit")) {
       return;
