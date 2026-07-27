@@ -560,17 +560,15 @@ std::unique_ptr<Flex> HomeTab::create() {
         .configure =
             [enabled, isActive, showLabels, fillOpacity = panelCardOpacity(), scale](Button& button) {
               button.setDirection(FlexDirection::Vertical);
+              button.setJustify(FlexJustify::Center);
+              button.setAlign(FlexAlign::Center);
               if (showLabels) {
-                button.setAlign(FlexAlign::Stretch);
-                button.setJustify(FlexJustify::Start);
                 if (button.label() != nullptr) {
                   button.label()->setFontSize(Style::fontSizeMini * scale);
                   button.label()->setMaxLines(1);
                   button.label()->setTextAlign(TextAlign::Center);
                 }
               } else {
-                button.setAlign(FlexAlign::Center);
-                button.setJustify(FlexJustify::Center);
                 if (button.label() != nullptr) {
                   button.label()->setVisible(false);
                   button.label()->setParticipatesInLayout(false);
