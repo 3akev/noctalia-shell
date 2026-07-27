@@ -150,7 +150,7 @@ namespace {
 
 LockSurface::LockSurface(WaylandConnection& connection, ConfigService* config) : Surface(connection), m_config(config) {
   {
-    auto backgroundLayer = std::make_unique<Node>();
+    auto backgroundLayer = ui::node({});
     backgroundLayer->setZIndex(0);
     m_backgroundLayer = m_root.addChild(std::move(backgroundLayer));
   }
@@ -175,7 +175,7 @@ LockSurface::LockSurface(WaylandConnection& connection, ConfigService* config) :
   );
 
   {
-    auto widgetLayer = std::make_unique<Node>();
+    auto widgetLayer = ui::node({});
     widgetLayer->setZIndex(2);
     m_widgetLayer = m_root.addChild(std::move(widgetLayer));
   }
@@ -1355,32 +1355,38 @@ void LockSurface::rebuildSessionButtons() {
   }
 
   for (const auto& cfg : actions) {
-    auto button = std::make_unique<Button>();
-    Button* raw = button.get();
     const std::string labelText =
         cfg.label.has_value() && !cfg.label->empty() ? *cfg.label : i18n::tr(session_action::labelKey(cfg.action));
-    raw->setText(labelText);
-    raw->setGlyph(cfg.glyph.has_value() && !cfg.glyph->empty() ? *cfg.glyph : session_action::defaultGlyph(cfg.action));
-    raw->setVariant(lockscreenSessionVariant(cfg.variant));
-    raw->setDirection(FlexDirection::Horizontal);
-    raw->setAlign(FlexAlign::Center);
-    raw->setJustify(FlexJustify::Center);
-    raw->setGap(Style::spaceXs);
-    raw->setContentAlign(ButtonContentAlign::Center);
-    raw->setFontSize(Style::fontSizeCaption);
-    raw->setGlyphSize(16.0f);
-    raw->setPadding(Style::spaceXs, Style::spaceSm);
-    raw->setFillHeight(true);
-    raw->setMinHeight(0.0f);
-    raw->setMaxHeight(0.0f);
-    raw->setRadius(Style::scaledRadiusMd());
-    raw->setFlexGrow(1.0f);
-    raw->setOnClick([this, cfg]() {
-      if (m_sessionActions != nullptr) {
-        m_sessionActions->invoke(cfg);
-      }
+    auto button = ui::button({
+        .out = nullptr,
+        .text = labelText,
+        .glyph = cfg.glyph.has_value() && !cfg.glyph->empty() ? *cfg.glyph : session_action::defaultGlyph(cfg.action),
+        .fontSize = Style::fontSizeCaption,
+        .glyphSize = 16.0f,
+        .contentAlign = ButtonContentAlign::Center,
+        .variant = lockscreenSessionVariant(cfg.variant),
+        .minHeight = 0.0f,
+        .maxHeight = 0.0f,
+        .paddingV = Style::spaceXs,
+        .paddingH = Style::spaceSm,
+        .gap = Style::spaceXs,
+        .radius = Style::scaledRadiusMd(),
+        .flexGrow = 1.0f,
+        .onClick =
+            [this, cfg]() {
+              if (m_sessionActions != nullptr) {
+                m_sessionActions->invoke(cfg);
+              }
+            },
+        .configure =
+            [](Button& control) {
+              control.setDirection(FlexDirection::Horizontal);
+              control.setAlign(FlexAlign::Center);
+              control.setJustify(FlexJustify::Center);
+              control.setFillHeight(true);
+            },
     });
-    m_sessionButtons.push_back(raw);
+    m_sessionButtons.push_back(button.get());
     m_sessionRow->addChild(std::move(button));
   }
 }

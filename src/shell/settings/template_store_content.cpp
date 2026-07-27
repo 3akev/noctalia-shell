@@ -1,7 +1,6 @@
 #include "shell/settings/template_store_content.h"
 
 #include "config/config_service.h"
-#include "core/input/key_modifiers.h"
 #include "core/input/key_symbols.h"
 #include "core/input/keybind_matcher.h"
 #include "i18n/i18n.h"
@@ -17,7 +16,6 @@
 
 #include <algorithm>
 #include <cctype>
-#include <iterator>
 #include <set>
 
 namespace settings {
@@ -456,26 +454,28 @@ namespace settings {
     adapterPtr->setSelectedIds(&m_selectedIds);
     m_adapter = std::move(adapter);
 
-    auto grid = std::make_unique<VirtualGridView>();
     // Intrinsic height of the same card layout as built-in templates (padding + checkbox/text).
     auto probe = std::make_unique<TemplateStoreTile>(scale);
     probe->bind("Mg", "category", false, false, false, {});
     const float cardHeight = std::ceil(probe->measure(renderer, LayoutConstraints{}).height);
     // Floor above checkbox+tight padding — two caption lines need more than controlHeightSm alone.
     const float minCardHeight = (Style::controlHeightSm + Style::spaceSm * 2.0f) * scale;
-    grid->setMinCellWidth(128.0f * scale);
-    grid->setCellHeight(std::max(cardHeight, minCardHeight));
-    grid->setSquareCells(false);
-    grid->setColumnGap(Style::spaceSm * scale);
-    grid->setRowGap(Style::spaceSm * scale);
-    grid->setFillWidth(true);
-    grid->setFlexGrow(1.0f);
-    grid->setAdapter(adapterPtr);
-    m_grid = grid.get();
-    m_grid->setOnSelectionChanged([this](std::optional<std::size_t> index) {
-      m_selectedTemplateId = index.has_value() && *index < m_filteredIndices.size()
-          ? std::optional{m_catalog[m_filteredIndices[*index]].id}
-          : std::nullopt;
+    auto grid = ui::virtualGridView({
+        .out = &m_grid,
+        .minCellWidth = 128.0f * scale,
+        .cellHeight = std::max(cardHeight, minCardHeight),
+        .squareCells = false,
+        .columnGap = Style::spaceSm * scale,
+        .rowGap = Style::spaceSm * scale,
+        .adapter = adapterPtr,
+        .flexGrow = 1.0f,
+        .onSelectionChanged =
+            [this](std::optional<std::size_t> index) {
+              m_selectedTemplateId = index.has_value() && *index < m_filteredIndices.size()
+                  ? std::optional{m_catalog[m_filteredIndices[*index]].id}
+                  : std::nullopt;
+            },
+        .configure = [](VirtualGridView& view) { view.setFillWidth(true); },
     });
     if (const auto index = indexOfTemplateId(m_selectedTemplateId.value_or("")); index.has_value()) {
       m_grid->setSelectedIndex(index);
