@@ -521,13 +521,39 @@ std::unique_ptr<Flex> HomeTab::create() {
   grid->setMinCellHeight(0.0f);
   grid->setFlexGrow(kHomeShortcutsFlexGrow);
   m_shortcutsGrid = grid.get();
+
+  // Keep Shortcut instances across open/close so plugin file watches and runtimes
+  // are not recreated on every Control Center open. Match by id/type from config.
+  std::vector<std::unique_ptr<Shortcut>> previous;
+  previous.reserve(m_shortcutPads.size());
+  for (auto& pad : m_shortcutPads) {
+    previous.push_back(std::move(pad.shortcut));
+  }
   m_shortcutPads.clear();
+
+  auto takeReusable = [&previous](std::string_view type) -> std::unique_ptr<Shortcut> {
+    for (auto it = previous.begin(); it != previous.end(); ++it) {
+      if (*it != nullptr && (*it)->id() == type) {
+        auto found = std::move(*it);
+        previous.erase(it);
+        return found;
+      }
+    }
+    return nullptr;
+  };
 
   for (std::size_t i = 0; i < count; ++i) {
     const auto& sc = shortcuts[i];
-    auto shortcut = ShortcutRegistry::create(sc.type, m_services);
+    auto shortcut = takeReusable(sc.type);
+    const bool reused = shortcut != nullptr;
+    if (!reused) {
+      shortcut = ShortcutRegistry::create(sc.type, m_services);
+    }
     if (shortcut == nullptr) {
       continue;
+    }
+    if (reused) {
+      shortcut->onPanelOpen();
     }
 
     const bool showLabels = m_config != nullptr ? m_config->config().controlCenter.showShortcutLabels : true;
@@ -1255,7 +1281,15 @@ void HomeTab::onClose() {
   m_nextRealtimeUpdateAt = {};
   m_lastRealtimeMprisPollAt = {};
   m_shortcutsGrid = nullptr;
-  m_shortcutPads.clear();
+  // Keep Shortcut instances alive; drop only the UI pointers destroyed with the scene.
+  for (auto& pad : m_shortcutPads) {
+    if (pad.shortcut != nullptr) {
+      pad.shortcut->onPanelClose();
+    }
+    pad.button = nullptr;
+    pad.glyph = nullptr;
+    pad.label = nullptr;
+  }
 }
 
 void HomeTab::onPanelCardOpacityChanged(float opacity) {
