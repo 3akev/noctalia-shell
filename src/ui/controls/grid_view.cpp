@@ -89,6 +89,14 @@ void GridView::setMinCellHeight(float height) {
   markLayoutDirty();
 }
 
+void GridView::setSpanLastItem(bool span) {
+  if (m_spanLastItem == span) {
+    return;
+  }
+  m_spanLastItem = span;
+  markLayoutDirty();
+}
+
 LayoutSize GridView::doMeasure(Renderer& renderer, const LayoutConstraints& constraints) {
   float useW = width();
   if (constraints.hasExactWidth()) {
@@ -206,8 +214,17 @@ void GridView::doLayout(Renderer& renderer) {
     std::ranges::fill(columnWidths, uniformWidth);
     std::ranges::fill(rowHeights, uniformHeight);
 
-    for (Node* child : visibleChildren) {
-      layoutWithAssignedSize(child, uniformWidth, uniformHeight);
+    for (std::size_t index = 0; index < visibleChildren.size(); ++index) {
+      Node* child = visibleChildren[index];
+      float itemWidth = uniformWidth;
+      if (m_spanLastItem && index == visibleChildren.size() - 1 && columns > 0) {
+        const std::size_t col = index % columns;
+        const std::size_t colSpan = columns - col;
+        if (colSpan > 1) {
+          itemWidth = static_cast<float>(colSpan) * uniformWidth + static_cast<float>(colSpan - 1) * m_columnGap;
+        }
+      }
+      layoutWithAssignedSize(child, itemWidth, uniformHeight);
     }
   } else {
     if (hasFixedWidth && m_stretchItems) {
@@ -219,8 +236,20 @@ void GridView::doLayout(Renderer& renderer) {
       const std::size_t col = index % columns;
       const std::size_t row = index / columns;
 
+      float itemWidth = columnWidths[col];
+      if (m_spanLastItem && index == visibleChildren.size() - 1 && columns > 0) {
+        const std::size_t colSpan = columns - col;
+        if (colSpan > 1) {
+          itemWidth = 0.0f;
+          for (std::size_t c = col; c < columns; ++c) {
+            itemWidth += columnWidths[c];
+          }
+          itemWidth += static_cast<float>(colSpan - 1) * m_columnGap;
+        }
+      }
+
       if (hasFixedWidth && m_stretchItems && stretchedWidth > 0.0f) {
-        layoutWithAssignedSize(child, columnWidths[col], child->height());
+        layoutWithAssignedSize(child, itemWidth, child->height());
       } else {
         child->layout(renderer);
       }
