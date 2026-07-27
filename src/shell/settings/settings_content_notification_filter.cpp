@@ -73,7 +73,6 @@ namespace settings {
         .controlHeight = Style::controlHeight * scale,
         .horizontalPadding = Style::spaceSm * scale,
     });
-    matchInput->setOnChange([matchPtr](const std::string& /*t*/) { matchPtr->setInvalid(false); });
 
     auto matchContentBlock = ui::column(
         {.align = FlexAlign::Stretch, .gap = Style::spaceXs * scale},
@@ -268,13 +267,16 @@ namespace settings {
 
     parent.addChild(std::move(body));
 
+    Button* applyButton = nullptr;
     auto actions = ui::row(
         {.align = FlexAlign::Center, .gap = Style::spaceSm * scale, .fillWidth = true},
         ui::button({
+            .out = &applyButton,
             .text = i18n::tr("common.actions.apply"),
             .glyph = "check",
             .fontSize = Style::fontSizeBody * scale,
             .glyphSize = Style::fontSizeBody * scale,
+            .enabled = !normalizeNotificationMatchToken(row.match).empty(),
             .variant = ButtonVariant::Default,
             .minHeight = Style::controlHeight * scale,
             .paddingV = Style::spaceSm * scale,
@@ -293,6 +295,10 @@ namespace settings {
             },
         })
     );
+    matchPtr->setOnChange([matchPtr, applyButton](const std::string& text) {
+      matchPtr->setInvalid(false);
+      applyButton->setEnabled(!normalizeNotificationMatchToken(text).empty());
+    });
     parent.addChild(std::move(actions));
   }
 
