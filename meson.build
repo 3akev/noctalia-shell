@@ -407,7 +407,7 @@ _wlr_ls_h = custom_target('wlr-layer-shell-unstable-v1-client-header',
   output:  'wlr-layer-shell-unstable-v1-client-protocol.h',
   command: [
     'sh', '-c',
-    '"$1" client-header "$2" "$3" && sed -i.bak s/namespace/name_space/g "$3"',
+    '"$1" client-header "$2" "$3" && sed -i s/namespace/name_space/g "$3"',
     '_', wayland_scanner.full_path(), '@INPUT@', '@OUTPUT@',
   ],
 )
