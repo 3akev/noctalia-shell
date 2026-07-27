@@ -1712,7 +1712,7 @@ std::unique_ptr<Flex> AudioTab::create() {
       ui::row(
           {
               .align = FlexAlign::Stretch,
-              .gap = Style::spaceSm * scale,
+              .gap = Style::spaceMd * scale,
               // Keep volume cards at natural content height.
               .flexGrow = 0.0f,
           },
