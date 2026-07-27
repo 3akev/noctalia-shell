@@ -113,7 +113,7 @@ void ControlCenterPanel::create() {
         .out = &m_sidebar,
         .align = FlexAlign::Start,
         .gap = 0.0f,
-        .padding = Style::spaceSm * scale,
+        .padding = Style::spaceMd * scale,
         .fillWidth = false,
         .fillHeight = true,
         .configure = [this, scale](Flex& column) {
