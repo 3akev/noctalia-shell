@@ -530,15 +530,17 @@ std::unique_ptr<Flex> HomeTab::create() {
       continue;
     }
 
+    const bool showLabels = m_config != nullptr ? m_config->config().controlCenter.showShortcutLabels : true;
     const std::string label = shortcut->displayLabel();
     const bool enabled = shortcut->enabled();
     const bool isActive = shortcut->isToggle() && shortcut->active();
 
     const std::size_t padIdx = m_shortcutPads.size();
     auto btn = ui::button({
-        .text = label,
+        .text = showLabels ? std::optional<std::string>{label} : std::nullopt,
         .glyph = shortcut->displayIcon(),
         .glyphSize = Style::fontSizeTitle * 1.35f * scale,
+        .contentAlign = showLabels ? ButtonContentAlign::Start : ButtonContentAlign::Center,
         .minHeight = 0.0f,
         .padding = Style::spaceSm * scale,
         .gap = Style::spaceXs * scale,
@@ -556,16 +558,22 @@ std::unique_ptr<Flex> HomeTab::create() {
               }
             },
         .configure =
-            [enabled, isActive, fillOpacity = panelCardOpacity(), scale](Button& button) {
-              // Match media card column: Stretch so label width follows the cell; Center uses intrinsic text width and
-              // fights setMaxWidth.
-              button.setAlign(FlexAlign::Stretch);
-              // Label font only: Button::setFontSize also resizes the glyph. Mini + uiScale keeps tiles closer to
-              // other CC rows that use raw fontSizeCaption, while still scaling with shell.uiScale for consistency.
-              button.label()->setFontSize(Style::fontSizeMini * scale);
-              button.label()->setMaxLines(1);
-              button.label()->setTextAlign(TextAlign::Center);
+            [enabled, isActive, showLabels, fillOpacity = panelCardOpacity(), scale](Button& button) {
               button.setDirection(FlexDirection::Vertical);
+              button.setJustify(FlexJustify::Center);
+              button.setAlign(FlexAlign::Center);
+              if (showLabels) {
+                if (button.label() != nullptr) {
+                  button.label()->setFontSize(Style::fontSizeMini * scale);
+                  button.label()->setMaxLines(1);
+                  button.label()->setTextAlign(TextAlign::Center);
+                }
+              } else {
+                if (button.label() != nullptr) {
+                  button.label()->setVisible(false);
+                  button.label()->setParticipatesInLayout(false);
+                }
+              }
               applyShortcutButtonStyle(button, enabled, isActive, fillOpacity);
             },
     });
@@ -784,6 +792,7 @@ void HomeTab::doLayout(Renderer& renderer, float contentWidth, float bodyHeight)
   // Lock the shortcuts grid height to its square-cell natural size so it does not vary
   // when the media or clock cards change. The leftColumn stretches to match this height.
   if (m_shortcutsGrid != nullptr && !m_shortcutPads.empty()) {
+    const float scale = contentScale();
     const float gridW = m_shortcutsGrid->width();
     const float innerGridW = std::max(1.0f, gridW - m_shortcutsGrid->paddingLeft() - m_shortcutsGrid->paddingRight());
     const std::size_t cols = std::max<std::size_t>(1, std::min(m_shortcutsGrid->columns(), m_shortcutPads.size()));
@@ -794,6 +803,19 @@ void HomeTab::doLayout(Renderer& renderer, float contentWidth, float bodyHeight)
     // Cells aim for square but trimmed slightly so the grid stays compact and the bottom row
     // doesn't tower over the user card area. The width was capped earlier so this stays bounded.
     const float cellSide = cellWidth * kHomeShortcutSquareTrim;
+    const bool showLabels = m_config != nullptr ? m_config->config().controlCenter.showShortcutLabels : true;
+    for (auto& pad : m_shortcutPads) {
+      if (pad.glyph == nullptr) {
+        continue;
+      }
+      if (showLabels) {
+        pad.glyph->setGlyphSize(Style::fontSizeTitle * 1.35f * scale);
+      } else {
+        const float dynamicGlyphSize = std::clamp(cellSide * 0.42f, 26.0f * scale, 56.0f * scale);
+        pad.glyph->setGlyphSize(dynamicGlyphSize);
+      }
+    }
+
     const float measuredRowH = m_bottomRow != nullptr ? m_bottomRow->height() : m_shortcutsGrid->height();
     const float formulaH = static_cast<float>(rows) * cellSide
         + static_cast<float>(rows > 0 ? rows - 1 : 0) * m_shortcutsGrid->rowGap()

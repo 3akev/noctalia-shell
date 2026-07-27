@@ -1404,6 +1404,11 @@ namespace settings {
         },
         "quick settings shortcuts toggles wifi bluetooth caffeine night light dnd power media weather clipboard"
     ));
+    entries.push_back(makeEntry(
+        SettingsSection::ControlCenter, "general", tr("settings.schema.panels.home-shortcuts-show-labels.label"),
+        tr("settings.schema.panels.home-shortcuts-show-labels.description"), {"control_center", "show_shortcut_labels"},
+        ToggleSetting{cfg.controlCenter.showShortcutLabels}, "shortcuts labels text hide show titles"
+    ));
     {
       MultiSelectSetting tabs;
       const auto catalog = ControlCenterPanel::hideableTabCatalog();
