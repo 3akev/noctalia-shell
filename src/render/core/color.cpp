@@ -136,6 +136,16 @@ Color lerpColorInHsv(const Color& a, const Color& b, float t) {
   rgbToHsv(a, h0, s0, v0);
   float h1, s1, v1;
   rgbToHsv(b, h1, s1, v1);
+
+  // Hue is undefined when saturation is ~0; use the other endpoint's hue to avoid spurious tints.
+  constexpr float kHueEps = 1e-6f;
+  if (s0 <= kHueEps) {
+    h0 = h1;
+  }
+  if (s1 <= kHueEps) {
+    h1 = h0;
+  }
+
   float hDelta = h1 - h0;
   if (hDelta > 0.5f) {
     hDelta -= 1.0f;
