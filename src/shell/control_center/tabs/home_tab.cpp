@@ -561,18 +561,17 @@ std::unique_ptr<Flex> HomeTab::create() {
             [enabled, isActive, showLabels, fillOpacity = panelCardOpacity(), scale](Button& button) {
               button.setDirection(FlexDirection::Vertical);
               button.setJustify(FlexJustify::Center);
-              button.setAlign(FlexAlign::Center);
               if (showLabels) {
+                // Stretch so the label width follows the cell; Center uses intrinsic text
+                // width and fights setMaxWidth.
+                button.setAlign(FlexAlign::Stretch);
                 if (button.label() != nullptr) {
                   button.label()->setFontSize(Style::fontSizeMini * scale);
                   button.label()->setMaxLines(1);
                   button.label()->setTextAlign(TextAlign::Center);
                 }
               } else {
-                if (button.label() != nullptr) {
-                  button.label()->setVisible(false);
-                  button.label()->setParticipatesInLayout(false);
-                }
+                button.setAlign(FlexAlign::Center);
               }
               applyShortcutButtonStyle(button, enabled, isActive, fillOpacity);
             },
@@ -811,7 +810,7 @@ void HomeTab::doLayout(Renderer& renderer, float contentWidth, float bodyHeight)
       if (showLabels) {
         pad.glyph->setGlyphSize(Style::fontSizeTitle * 1.35f * scale);
       } else {
-        const float dynamicGlyphSize = std::clamp(cellSide * 0.42f, 26.0f * scale, 56.0f * scale);
+        const float dynamicGlyphSize = std::clamp(cellSide * 0.28f, 22.0f * scale, 44.0f * scale);
         pad.glyph->setGlyphSize(dynamicGlyphSize);
       }
     }
@@ -1300,7 +1299,10 @@ void HomeTab::syncScaledFonts() {
       pad.label->setFontSize(Style::fontSizeMini * s);
     }
     if (pad.glyph != nullptr) {
-      pad.glyph->setGlyphSize(Style::fontSizeTitle * 1.35f * s);
+      // Icon-only glyphs are sized from cell side in doLayout.
+      if (m_config == nullptr || m_config->config().controlCenter.showShortcutLabels) {
+        pad.glyph->setGlyphSize(Style::fontSizeTitle * 1.35f * s);
+      }
     }
   }
 }
