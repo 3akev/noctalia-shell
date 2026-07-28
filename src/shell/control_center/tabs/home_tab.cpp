@@ -853,8 +853,6 @@ void HomeTab::doLayout(Renderer& renderer, float contentWidth, float bodyHeight)
     }
 
     // Integer card heights track the snapped row height so top/bottom borders land on pixels.
-    // Pin both min and max: without maxHeight, fillHeight/flexGrow can stretch a card a fraction
-    // past the parent and clipChildren on the tab body cuts off the bottom border.
     if (m_mediaCard != nullptr && m_dateTimeCard != nullptr) {
       const float colGap = Style::spaceMd * contentScale();
       const float avail = std::max(0.0f, gridH - colGap);
@@ -863,9 +861,9 @@ void HomeTab::doLayout(Renderer& renderer, float contentWidth, float bodyHeight)
       const float dateH = std::max(0.0f, avail - mediaH);
 
       m_mediaCard->setMinHeight(mediaH);
-      m_mediaCard->setMaxHeight(mediaH);
+      m_mediaCard->setMaxHeight(0.0f);
       m_dateTimeCard->setMinHeight(dateH);
-      m_dateTimeCard->setMaxHeight(dateH);
+      m_dateTimeCard->setMaxHeight(0.0f);
     }
   }
 
