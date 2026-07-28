@@ -996,6 +996,7 @@ void Application::initWidgetControllersAndCallbacks() {
         m_colorPickerDialogPopup.requestLayout();
         m_glyphPickerDialogPopup.requestLayout();
         m_fileDialogPopup.requestLayout();
+        scheduleGreeterAutoSync();
       },
       "shell-font-family"
   );

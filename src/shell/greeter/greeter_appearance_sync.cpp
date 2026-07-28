@@ -298,6 +298,9 @@ namespace {
       }
     }
     root["corner_radius_scale"] = config.shell.cornerRadiusScale;
+    if (!config.shell.fontFamily.empty()) {
+      root["font_family"] = config.shell.fontFamily;
+    }
     appendSessionManifest(root, config.shell.session);
 
     const auto manifestPath = staging / "appearance.json";
@@ -547,9 +550,7 @@ namespace greeter {
         }
       }
     }
-    if (!writeManifest(
-            staging, config, resolvedThemeMode, wallpaperPath, installedWallpaperName, outputWallpapers
-        )) {
+    if (!writeManifest(staging, config, resolvedThemeMode, wallpaperPath, installedWallpaperName, outputWallpapers)) {
       finish(false);
       return GreeterSyncLaunch::Failed;
     }
