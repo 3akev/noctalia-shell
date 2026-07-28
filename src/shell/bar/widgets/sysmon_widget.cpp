@@ -341,7 +341,7 @@ Color SysmonWidget::currentValueColor(ColorSpec baseColor) {
   const Color highlight = resolveColorSpec(m_highlightColor);
   const auto [activityThreshold, criticalThreshold] = currentThresholds();
   const auto factor = static_cast<float>(gradientFactor(currentGradientValue(), activityThreshold, criticalThreshold));
-  return lerpColorInHsv(base, highlight, factor);
+  return lerpHsv(base, highlight, factor);
 }
 
 void SysmonWidget::syncIcon(Renderer& renderer) {

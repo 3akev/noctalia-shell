@@ -131,18 +131,18 @@ void rgbToHsv(const Color& rgb, float& h, float& s, float& v) {
   h = h - std::floor(h);
 }
 
-Color lerpColorInHsv(const Color& a, const Color& b, float t) {
+Color lerpHsv(const Color& a, const Color& b, float t) {
   float h0, s0, v0;
   rgbToHsv(a, h0, s0, v0);
   float h1, s1, v1;
   rgbToHsv(b, h1, s1, v1);
 
-  // Hue is undefined when saturation is ~0; use the other endpoint's hue to avoid spurious tints.
-  constexpr float kHueEps = 1e-6f;
-  if (s0 <= kHueEps) {
+  // Hue is undefined at negligible chroma; borrow the other endpoint's hue to avoid spurious tints.
+  constexpr float kChromaEpsilon = 1e-6f;
+  if (s0 * v0 <= kChromaEpsilon) {
     h0 = h1;
   }
-  if (s1 <= kHueEps) {
+  if (s1 * v1 <= kChromaEpsilon) {
     h1 = h0;
   }
 
