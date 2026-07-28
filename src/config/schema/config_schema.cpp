@@ -1244,6 +1244,22 @@ namespace noctalia::config::schema {
           field(&ShellConfig::PanelConfig::borders, "borders"),
           field(&ShellConfig::PanelConfig::shadow, "shadow"),
           field(&ShellConfig::PanelConfig::listItemBackground, "list_item_background"),
+          custom<ShellConfig::PanelConfig>(
+              "floating_layer",
+              [](const toml::table& tbl, ShellConfig::PanelConfig& out, std::string_view parentPath,
+                 Diagnostics& diag) {
+                if (auto v = tbl["floating_layer"].value<std::string>()) {
+                  if (*v == "top" || *v == "overlay") {
+                    out.floatingLayer = *v;
+                  } else {
+                    diag.warn(joinPath(parentPath, "floating_layer"), "expected top or overlay, got \"" + *v + "\"");
+                  }
+                }
+              },
+              [](toml::table& tbl, const ShellConfig::PanelConfig& in) {
+                tbl.insert_or_assign("floating_layer", in.floatingLayer);
+              }
+          ),
           enumField(&ShellConfig::PanelConfig::launcherPlacement, "launcher_placement", kPanelPlacements),
           enumField(&ShellConfig::PanelConfig::clipboardPlacement, "clipboard_placement", kPanelPlacements),
           enumField(&ShellConfig::PanelConfig::controlCenterPlacement, "control_center_placement", kPanelPlacements),

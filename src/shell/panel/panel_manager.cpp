@@ -266,6 +266,23 @@ namespace {
     return "auto";
   }
 
+  [[nodiscard]] bool usesConfiguredFloatingLayer(std::string_view panelId) {
+    return panelId == "clipboard"
+        || panelId == "control-center"
+        || panelId == "launcher"
+        || panelId == "session"
+        || panelId == "setup-wizard"
+        || panelId == "wallpaper";
+  }
+
+  [[nodiscard]] LayerShellLayer
+  resolveFloatingPanelLayer(const ConfigService* configService, std::string_view panelId, const Panel& panel) {
+    if (configService != nullptr && usesConfiguredFloatingLayer(panelId)) {
+      return layerShellLayerFromConfig(configService->config().shell.panel.floatingLayer);
+    }
+    return panel.layer();
+  }
+
   [[nodiscard]] bool openNearClickEnabledForPanel(const ConfigService* configService, std::string_view panelId) {
     if (panelId == "tray-drawer") {
       return true;
@@ -781,8 +798,10 @@ void PanelManager::openPanel(const std::string& panelId, PanelOpenRequest reques
       && barConfig.thickness > 0
       && outputWidth > 0
       && outputHeight > 0;
+  const LayerShellLayer floatingPanelLayer = resolveFloatingPanelLayer(m_config, m_activePanelId, *m_activePanel);
   const LayerShellLayer panelLayer =
-      useAttachedPlacement ? layerShellLayerFromConfig(barConfig.layer) : m_activePanel->layer();
+      useAttachedPlacement ? layerShellLayerFromConfig(barConfig.layer) : floatingPanelLayer;
+  m_panelLayer = panelLayer;
 
   const bool hasFocusGrab =
       m_platform != nullptr && m_platform->focusGrabService() != nullptr && m_platform->focusGrabService()->available();
@@ -806,7 +825,7 @@ void PanelManager::openPanel(const std::string& panelId, PanelOpenRequest reques
 
   auto surfaceConfig = LayerSurfaceConfig{
       .nameSpace = "noctalia-panel",
-      .layer = m_activePanel->layer(),
+      .layer = floatingPanelLayer,
       .anchor = standaloneAnchor,
       .width = requestedSurfaceWidth,
       .height = requestedSurfaceHeight,
@@ -848,6 +867,7 @@ void PanelManager::openPanel(const std::string& panelId, PanelOpenRequest reques
     m_layerSurface = nullptr;
     m_output = nullptr;
     m_wlSurface = nullptr;
+    m_panelLayer = LayerShellLayer::Top;
     m_activePanel = nullptr;
     m_activePanelId.clear();
     m_pendingOpenContext.clear();
@@ -1123,6 +1143,10 @@ void PanelManager::openPanel(const std::string& panelId, PanelOpenRequest reques
     m_attachedPanelGeometry.reset();
     m_attachedOpenAnimationPending = false;
     kLog.warn("panel manager: attached layer-shell failed for \"{}\", falling back to standalone", panelId);
+    if (m_panelLayer != floatingPanelLayer) {
+      m_clickShield.setLayer(floatingPanelLayer);
+      m_panelLayer = floatingPanelLayer;
+    }
   }
 
   auto layerSurface = std::make_unique<LayerSurface>(m_platform->wayland(), std::move(surfaceConfig));
@@ -2209,6 +2233,14 @@ void PanelManager::onConfigReloaded() {
   m_persistentHost.onConfigReloaded();
   if (!isOpen() || m_config == nullptr || m_activePanel == nullptr) {
     return;
+  }
+  if (!m_attachedToBar && m_layerSurface != nullptr) {
+    const LayerShellLayer panelLayer = resolveFloatingPanelLayer(m_config, m_activePanelId, *m_activePanel);
+    if (panelLayer != m_panelLayer) {
+      m_clickShield.setLayer(panelLayer);
+      m_layerSurface->setLayer(panelLayer);
+      m_panelLayer = panelLayer;
+    }
   }
 
   if (m_attachedToBar) {

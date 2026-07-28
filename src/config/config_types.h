@@ -902,9 +902,10 @@ struct ShellConfig {
 
   struct PanelConfig {
     PanelTransparencyMode transparencyMode = PanelTransparencyMode::Solid;
-    bool borders = true;             // outline on floating panel surfaces
-    bool shadow = true;              // cast the global [shell.shadow] from panel surfaces
-    bool listItemBackground = false; // filled rounded background behind launcher/clipboard list items
+    bool borders = true;                   // outline on floating panel surfaces
+    bool shadow = true;                    // cast the global [shell.shadow] from panel surfaces
+    bool listItemBackground = false;       // filled rounded background behind launcher/clipboard list items
+    std::string floatingLayer = "overlay"; // top | overlay; attached panels follow their bar
     PanelPlacement launcherPlacement = PanelPlacement::Floating;
     PanelPlacement clipboardPlacement = PanelPlacement::Floating;
     PanelPlacement controlCenterPlacement = PanelPlacement::Attached;

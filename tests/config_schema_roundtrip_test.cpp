@@ -445,6 +445,7 @@ location = "https://example.invalid/bad"
     c.shell.animation.speed = 1.5f;
     c.shell.shadow.direction = ShadowDirection::UpLeft;
     c.shell.panel.transparencyMode = PanelTransparencyMode::Glass;
+    c.shell.panel.floatingLayer = "top";
     c.shell.panel.launcherPlacement = PanelPlacement::Floating;
     c.shell.launcher.compact = true;
     c.shell.launcher.sortByUsage = false;
@@ -627,6 +628,36 @@ credential_source = "automatic"
 )");
     if (!unknownSource.hasErrors()) {
       fail("calendar: unknown credential source was not an error");
+    }
+  }
+
+  void checkPanelFloatingLayerValidation() {
+    const auto parse = [](std::string_view panelConfig, ShellConfig& shell) {
+      const toml::table table = toml::parse(panelConfig);
+      Diagnostics diagnostics;
+      readInto(table, shell, shellSchema(), "shell", diagnostics);
+      return diagnostics;
+    };
+
+    ShellConfig validShell;
+    const Diagnostics valid = parse("[panel]\nfloating_layer = \"top\"", validShell);
+    if (valid.hasErrors() || validShell.panel.floatingLayer != "top") {
+      fail("shell.panel.floating_layer: valid top layer was rejected");
+    }
+
+    ShellConfig invalidShell;
+    const Diagnostics invalid = parse("[panel]\nfloating_layer = \"bottom\"", invalidShell);
+    if (invalidShell.panel.floatingLayer != "overlay") {
+      fail("shell.panel.floating_layer: invalid value replaced the overlay default");
+    }
+    bool sawWarning = false;
+    for (const auto& entry : invalid.entries) {
+      if (entry.severity == Diagnostics::Severity::Warning && entry.path == "shell.panel.floating_layer") {
+        sawWarning = true;
+      }
+    }
+    if (!sawWarning) {
+      fail("shell.panel.floating_layer: invalid value did not produce a warning");
     }
   }
 
@@ -994,6 +1025,7 @@ widget_spacing = 8
   checkPluginSourceNameValidation();
   checkCalendarCredentialSourceValidation();
   checkStorageKeySourceValidation();
+  checkPanelFloatingLayerValidation();
   checkClamps();
   checkCustomColorFallback();
   checkTemplateConfigCustomColorsExport();
