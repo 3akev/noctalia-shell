@@ -13,6 +13,7 @@
 #include "util/string_utils.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -95,17 +96,78 @@ namespace {
     }
   }
 
-  [[nodiscard]] std::string resolveSyncWallpaperPath(const ConfigService& configService) {
-    const Config& config = configService.config();
-    if (config.theme.source != PaletteSource::Wallpaper) {
-      if (const auto output = readGreeterConfiguredOutput(); output.has_value() && !output->empty()) {
-        const std::string path = configService.getWallpaperPath(*output);
-        if (!path.empty()) {
-          return path;
-        }
+  [[nodiscard]] std::string sanitizeConnectorFileToken(std::string_view name) {
+    std::string out;
+    out.reserve(name.size());
+    for (const unsigned char c : name) {
+      if (std::isalnum(c) || c == '-' || c == '_' || c == '.') {
+        out.push_back(static_cast<char>(c));
+      } else {
+        out.push_back('_');
       }
     }
+    return out.empty() ? std::string("unknown") : out;
+  }
+
+  // Fallback single wallpaper when no per-output map is usable.
+  [[nodiscard]] std::string resolveSyncWallpaperPath(const ConfigService& configService) {
+    if (const auto output = readGreeterConfiguredOutput(); output.has_value() && !output->empty()) {
+      const std::string path = configService.getWallpaperPath(*output);
+      if (!path.empty()) {
+        return path;
+      }
+    }
+    const std::string defaultPath = configService.getDefaultWallpaperPath();
+    if (!defaultPath.empty()) {
+      return defaultPath;
+    }
     return configService.getGreeterSyncWallpaperPath();
+  }
+
+  struct StagedOutputWallpaper {
+    std::string connector;
+    std::string installedName;
+    std::string sourcePath;
+  };
+
+  // Stage every per-monitor wallpaper so the greeter can pick by connector name.
+  // File wallpapers are copied as wallpaper-<connector>.*; solid color: specs are
+  // kept as sourcePath only (no file) so the wallpapers map can still reference them.
+  [[nodiscard]] std::vector<StagedOutputWallpaper>
+  stageAllOutputWallpapers(const std::filesystem::path& staging, const ConfigService& configService) {
+    std::vector<StagedOutputWallpaper> staged;
+    for (const auto& [connector, sourcePath] : configService.monitorWallpaperPaths()) {
+      if (connector.empty() || sourcePath.empty()) {
+        continue;
+      }
+      if (sourcePath.starts_with("color:")) {
+        staged.push_back(StagedOutputWallpaper{connector, /*installedName=*/{}, sourcePath});
+        kLog.info("greeter sync: color wallpaper for '{}' -> {}", connector, sourcePath);
+        continue;
+      }
+      std::error_code ec;
+      const std::filesystem::path source(sourcePath);
+      if (!std::filesystem::is_regular_file(source, ec) || ec) {
+        kLog.warn("greeter sync: skip missing wallpaper for '{}': {}", connector, sourcePath);
+        continue;
+      }
+      const std::string extension = source.extension().string();
+      const std::string installedName =
+          "wallpaper-" + sanitizeConnectorFileToken(connector) + (extension.empty() ? "" : extension);
+      const auto destination = staging / installedName;
+      std::filesystem::copy_file(source, destination, std::filesystem::copy_options::overwrite_existing, ec);
+      if (ec) {
+        kLog.warn("greeter sync: failed to stage wallpaper for '{}': {}", connector, ec.message());
+        continue;
+      }
+      kLog.info("greeter sync: staged wallpaper for '{}' -> {}", connector, installedName);
+      staged.push_back(StagedOutputWallpaper{connector, installedName, sourcePath});
+    }
+    // unordered_map iteration order is unspecified; keep map/fallback deterministic.
+    std::ranges::sort(staged, [](const StagedOutputWallpaper& a, const StagedOutputWallpaper& b) {
+      return a.connector < b.connector;
+    });
+    return staged;
   }
 
   [[nodiscard]] std::string findApplyHelper() {
@@ -173,7 +235,8 @@ namespace {
 
   [[nodiscard]] bool writeManifest(
       const std::filesystem::path& staging, const Config& config, std::string_view resolvedMode,
-      const std::string& wallpaperPath, const std::string& installedWallpaperName
+      const std::string& wallpaperPath, const std::string& installedWallpaperName,
+      const std::vector<StagedOutputWallpaper>& outputWallpapers
   ) {
     nlohmann::json root;
     root["version"] = 1;
@@ -200,7 +263,7 @@ namespace {
 
     nlohmann::json wallpaper;
     if (!installedWallpaperName.empty()) {
-      wallpaper["path"] = (std::filesystem::path("/var/lib/noctalia-greeter") / installedWallpaperName).string();
+      wallpaper["path"] = (std::filesystem::path(kDefaultGreeterStateDir) / installedWallpaperName).string();
     } else if (!wallpaperPath.empty()) {
       wallpaper["path"] = wallpaperPath;
     }
@@ -209,7 +272,31 @@ namespace {
     if (fillColor.a > 0.0f) {
       wallpaper["fill_color"] = formatRgbHex(fillColor);
     }
-    root["wallpaper"] = std::move(wallpaper);
+    root["wallpaper"] = wallpaper;
+
+    // Per-output wallpapers (connector name -> installed path or color:). Greeter views select by output.
+    if (!outputWallpapers.empty()) {
+      nlohmann::json byOutput = nlohmann::json::object();
+      for (const auto& entry : outputWallpapers) {
+        nlohmann::json item;
+        if (!entry.installedName.empty()) {
+          item["path"] = (std::filesystem::path(kDefaultGreeterStateDir) / entry.installedName).string();
+        } else if (!entry.sourcePath.empty()) {
+          // color:#RRGGBB (or other non-staged specs) — preserve as-is.
+          item["path"] = entry.sourcePath;
+        } else {
+          continue;
+        }
+        item["fill_mode"] = wallpaper["fill_mode"];
+        if (wallpaper.contains("fill_color")) {
+          item["fill_color"] = wallpaper["fill_color"];
+        }
+        byOutput[entry.connector] = std::move(item);
+      }
+      if (!byOutput.empty()) {
+        root["wallpapers"] = std::move(byOutput);
+      }
+    }
     root["corner_radius_scale"] = config.shell.cornerRadiusScale;
     appendSessionManifest(root, config.shell.session);
 
@@ -428,9 +515,41 @@ namespace greeter {
       kLog.info("greeter sync: no compositor platform provided; skipping output layout sync");
     }
 
-    const std::string wallpaperPath = resolveSyncWallpaperPath(configService);
-    const std::string installedWallpaperName = stageWallpaper(staging, wallpaperPath);
-    if (!writeManifest(staging, config, resolvedThemeMode, wallpaperPath, installedWallpaperName)) {
+    const auto outputWallpapers = stageAllOutputWallpapers(staging, configService);
+    std::string wallpaperPath = resolveSyncWallpaperPath(configService);
+    std::string installedWallpaperName = stageWallpaper(staging, wallpaperPath);
+    // Prefer a staged per-output entry for the legacy single wallpaper when needed.
+    if (installedWallpaperName.empty() && !outputWallpapers.empty()) {
+      auto preferEntry = [&](const StagedOutputWallpaper& entry) {
+        wallpaperPath = entry.sourcePath;
+        installedWallpaperName = entry.installedName;
+      };
+      bool pinResolved = false;
+      if (const auto pin = readGreeterConfiguredOutput(); pin.has_value() && !pin->empty()) {
+        for (const auto& entry : outputWallpapers) {
+          if (entry.connector == *pin) {
+            preferEntry(entry);
+            pinResolved = true;
+            break;
+          }
+        }
+      }
+      // Pin hit (file or color:): keep it. Otherwise pick first staged file, else first entry.
+      if (!pinResolved) {
+        for (const auto& entry : outputWallpapers) {
+          if (!entry.installedName.empty()) {
+            preferEntry(entry);
+            break;
+          }
+        }
+        if (installedWallpaperName.empty() && wallpaperPath.empty()) {
+          preferEntry(outputWallpapers.front());
+        }
+      }
+    }
+    if (!writeManifest(
+            staging, config, resolvedThemeMode, wallpaperPath, installedWallpaperName, outputWallpapers
+        )) {
       finish(false);
       return GreeterSyncLaunch::Failed;
     }
