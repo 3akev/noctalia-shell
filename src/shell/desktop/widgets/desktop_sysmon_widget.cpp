@@ -562,7 +562,7 @@ Color DesktopSysmonWidget::currentValueColor(ColorSpec baseColor) const {
   const Color highlight = resolveColorSpec(m_highlightColor);
   const auto [activityThreshold, criticalThreshold] = currentThresholds();
   const auto factor = static_cast<float>(gradientFactor(currentGradientValue(), activityThreshold, criticalThreshold));
-  return lerpColor(base, highlight, factor);
+  return lerpHsv(base, highlight, factor);
 }
 
 std::pair<double, double> DesktopSysmonWidget::currentThresholds() const {
