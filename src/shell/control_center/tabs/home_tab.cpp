@@ -519,6 +519,7 @@ std::unique_ptr<Flex> HomeTab::create() {
   grid->setStretchItems(true);
   grid->setSquareCells(false);
   grid->setMinCellHeight(0.0f);
+  grid->setSpanLastItem(true);
   grid->setFlexGrow(kHomeShortcutsFlexGrow);
   m_shortcutsGrid = grid.get();
 
