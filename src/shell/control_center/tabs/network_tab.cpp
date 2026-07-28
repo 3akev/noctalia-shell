@@ -454,7 +454,10 @@ std::unique_ptr<Flex> NetworkTab::create() {
   auto passwordCard = ui::column({
       .out = &m_passwordCard,
       .visible = false,
-      .configure = [scale, opacity = panelCardOpacity()](Flex& card) { applySectionCardStyle(card, scale, opacity); },
+      .configure = [scale, opacity = panelCardOpacity()](Flex& card) {
+        applySectionCardStyle(card, scale, opacity);
+        card.setGap(Style::spaceMd * scale);
+      },
   });
 
   passwordCard->addChild(

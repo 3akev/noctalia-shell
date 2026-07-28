@@ -373,7 +373,7 @@ std::unique_ptr<Flex> HomeTab::create() {
   auto leftColumn = ui::column({
       .align = FlexAlign::Stretch,
       .justify = FlexJustify::Start,
-      .gap = Style::spaceSm * scale,
+      .gap = Style::spaceMd * scale,
       .fillWidth = true,
       .flexGrow = kHomeMainColumnFlexGrow,
   });
@@ -512,8 +512,8 @@ std::unique_ptr<Flex> HomeTab::create() {
 
   auto grid = std::make_unique<GridView>();
   grid->setColumns(kHomeShortcutGridColumns);
-  grid->setColumnGap(Style::spaceSm * scale);
-  grid->setRowGap(Style::spaceSm * scale);
+  grid->setColumnGap(Style::spaceMd * scale);
+  grid->setRowGap(Style::spaceMd * scale);
   grid->setPadding(0.0f);
   grid->setUniformCellSize(true);
   grid->setStretchItems(true);
@@ -841,28 +841,28 @@ void HomeTab::doLayout(Renderer& renderer, float contentWidth, float bodyHeight)
       }
     }
 
-    const float measuredRowH = m_bottomRow != nullptr ? m_bottomRow->height() : m_shortcutsGrid->height();
-    const float formulaH = static_cast<float>(rows) * cellSide
+    const float gridH = std::round(
+        static_cast<float>(rows) * cellSide
         + static_cast<float>(rows > 0 ? rows - 1 : 0) * m_shortcutsGrid->rowGap()
         + m_shortcutsGrid->paddingTop()
-        + m_shortcutsGrid->paddingBottom();
-    const float gridH = std::round(std::max(measuredRowH, formulaH));
+        + m_shortcutsGrid->paddingBottom()
+    );
     if (m_bottomRow != nullptr) {
       m_bottomRow->setMinHeight(gridH);
     }
 
     // Integer card heights track the snapped row height so top/bottom borders land on pixels.
     if (m_mediaCard != nullptr && m_dateTimeCard != nullptr) {
-      const float colGap = Style::spaceSm * contentScale();
+      const float colGap = Style::spaceMd * contentScale();
       const float avail = std::max(0.0f, gridH - colGap);
       const float cardGrowTotal = kHomeMediaCardFlexGrow + kHomeDateTimeCardFlexGrow;
       const float mediaH = std::round(avail * (kHomeMediaCardFlexGrow / cardGrowTotal));
       const float dateH = std::max(0.0f, avail - mediaH);
 
       m_mediaCard->setMinHeight(mediaH);
-      m_mediaCard->setMaxHeight(mediaH);
+      m_mediaCard->setMaxHeight(0.0f);
       m_dateTimeCard->setMinHeight(dateH);
-      m_dateTimeCard->setMaxHeight(dateH);
+      m_dateTimeCard->setMaxHeight(0.0f);
     }
   }
 
