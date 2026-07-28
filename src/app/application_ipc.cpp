@@ -607,6 +607,8 @@ void Application::initIpc() {
     });
   }
 
+  m_osdOverlay.registerIpc(m_ipcService);
+
   if (m_brightnessService != nullptr) {
     m_brightnessService->registerIpc(m_ipcService, [this]() {
       m_brightnessOsd.suppressFor(std::chrono::milliseconds(250));
