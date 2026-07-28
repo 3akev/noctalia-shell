@@ -1127,6 +1127,12 @@ void SettingsWindow::openCalendarAccountEditor(std::optional<std::string> accoun
   }
 
   auto populateSheetBody = [this, draft, scale](Flex& body) mutable {
+    if (m_config != nullptr && m_config->config().shell.offlineMode) {
+      body.addChild(
+          settings::makeOfflineModeNotice(scale, i18n::tr("settings.window.offline-mode-notice.calendar-account"))
+      );
+    }
+
     auto addField = [scale](Flex& parent, const std::string& label, std::unique_ptr<Node> control) {
       auto field = ui::column({
           .align = FlexAlign::Stretch,
@@ -2149,9 +2155,16 @@ void SettingsWindow::openPluginStore() {
                 return actions;
               },
               .populateSheetBody =
-                  [storeContent, this](Flex& body) {
+                  [storeContent, this, scale](Flex& body) {
                     if (m_renderContext == nullptr) {
                       return;
+                    }
+                    if (m_config != nullptr && m_config->config().shell.offlineMode) {
+                      body.addChild(
+                          settings::makeOfflineModeNotice(
+                              scale, i18n::tr("settings.window.offline-mode-notice.plugin-store")
+                          )
+                      );
                     }
                     storeContent->populateBody(body, *m_renderContext, m_asyncTextures);
                   },
@@ -2233,9 +2246,16 @@ void SettingsWindow::openCommunityTemplateStore() {
           .removeAction = nullptr,
           .createHeaderAction = nullptr,
           .populateSheetBody =
-              [storeContent, this](Flex& body) {
+              [storeContent, this, scale](Flex& body) {
                 if (m_renderContext == nullptr) {
                   return;
+                }
+                if (m_config != nullptr && m_config->config().shell.offlineMode) {
+                  body.addChild(
+                      settings::makeOfflineModeNotice(
+                          scale, i18n::tr("settings.window.offline-mode-notice.template-store")
+                      )
+                  );
                 }
                 storeContent->populateBody(body, *m_renderContext);
               },
