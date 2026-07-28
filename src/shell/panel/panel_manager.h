@@ -136,6 +136,11 @@ public:
   void refreshPanel(std::string_view panelId);
   // Close a panel by id, whichever host owns it.
   void closePanelById(std::string_view panelId);
+  // Arms the next frame tick for a panel by id, whichever host owns it. Requests
+  // a redraw: that queues a frame and flags the frame callback to run the panel's
+  // onFrameTick, so a panel can sustain its own animation loop without knowing
+  // which host it lives in.
+  void requestAnimationFrameForPanel(std::string_view panelId);
   // Reacts to a ConfigService reload while a panel is open: re-pulls the host bar's
   // per-panel-relevant config (attached background opacity), styling, and compositor
   // blur region. No-op when no panel is open.

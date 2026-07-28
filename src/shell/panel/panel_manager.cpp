@@ -1652,6 +1652,16 @@ void PanelManager::closePanelById(std::string_view panelId) {
   }
 }
 
+void PanelManager::requestAnimationFrameForPanel(std::string_view panelId) {
+  if (m_persistentHost.hasPanel(panelId)) {
+    m_persistentHost.requestAnimationFrame(panelId);
+    return;
+  }
+  if (isOpenPanel(panelId)) {
+    requestRedraw();
+  }
+}
+
 void PanelManager::onIconThemeChanged() {
   m_persistentHost.onIconThemeChanged();
   if (!isOpen() || m_activePanel == nullptr || m_surface == nullptr) {
