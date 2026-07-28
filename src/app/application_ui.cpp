@@ -803,6 +803,7 @@ void Application::initNotificationAndOsd() {
 
 void Application::initBarDockAndLayout() {
   m_trayMenu.initialize(m_wayland, &m_configService, m_trayService.get(), &m_renderContext);
+  m_trayMenu.setClosedCallback([this]() { m_bar.reevaluateAutoHideAfterPopup(); });
 
   m_bar.initialize({
       .platform = m_compositorPlatform,

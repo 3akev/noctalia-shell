@@ -1605,6 +1605,34 @@ void Bar::reevaluateAutoHide() {
   }
 }
 
+void Bar::reevaluateAutoHideAfterPopup() {
+  for (const auto& instance : m_instances) {
+    if (instance == nullptr || instance->surface == nullptr) {
+      continue;
+    }
+    wl_surface* const surface = instance->surface->wlSurface();
+    instance->pointerInside = m_platform != nullptr
+        && surface != nullptr
+        && m_platform->hasPointerPosition()
+        && m_platform->lastPointerSurface() == surface;
+    if (instance->pointerInside) {
+      instance->lastPointerSx = static_cast<float>(m_platform->lastPointerX());
+      instance->lastPointerSy = static_cast<float>(m_platform->lastPointerY());
+      instance->inputDispatcher.pointerEnter(
+          instance->lastPointerSx, instance->lastPointerSy, m_platform->lastInputSerial()
+      );
+      m_hoveredInstance = instance.get();
+    } else {
+      instance->inputDispatcher.pointerLeave();
+      if (m_hoveredInstance == instance.get()) {
+        m_hoveredInstance = nullptr;
+      }
+    }
+    instance->surface->requestRedraw();
+  }
+  reevaluateAutoHide();
+}
+
 bool Bar::isRunning() const noexcept {
   return std::ranges::any_of(m_instances, [](const auto& inst) { return inst->surface && inst->surface->isRunning(); });
 }
