@@ -2153,7 +2153,7 @@ void SettingsWindow::openPluginStore() {
                     if (m_renderContext == nullptr) {
                       return;
                     }
-                    storeContent->populateBody(body, *m_renderContext, nullptr);
+                    storeContent->populateBody(body, *m_renderContext, m_asyncTextures);
                   },
               .scale = scale,
               .minWidth = 800.0f,
