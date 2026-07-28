@@ -87,7 +87,7 @@ float SessionPanel::preferredWidth() const {
   const float w = kButtonMinWidth * static_cast<float>(n)
       + gap * static_cast<float>(n > 1 ? n - 1 : 0)
       + Style::panelPadding * 2.0f;
-  return scaled(gridEnabled() ? w : std::max(kPanelMinWidth, w));
+  return scaled(w);
 }
 
 float SessionPanel::preferredHeight() const {
