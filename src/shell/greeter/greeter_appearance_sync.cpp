@@ -25,6 +25,7 @@
 #include <system_error>
 #include <toml++/toml.hpp>
 #include <vector>
+#include <wayland-client-protocol.h>
 
 namespace {
 
@@ -36,6 +37,7 @@ namespace {
   constexpr std::string_view kDefaultGreeterStateDir = "/var/lib/noctalia-greeter";
   constexpr std::string_view kGreeterStateDirEnv = "NOCTALIA_GREETER_STATE_DIR";
   constexpr std::string_view kStagedOutputLayoutFileName = "output_layout";
+  constexpr std::string_view kStagedOutputTransformsFileName = "output_transforms";
 
   [[nodiscard]] std::string
   resolveProgramPath(std::string_view name, std::initializer_list<const char*> fallbackPaths) {
@@ -368,6 +370,71 @@ namespace {
     return layout;
   }
 
+  [[nodiscard]] std::optional<std::string> greeterTransformToken(std::int32_t transform) {
+    switch (transform) {
+    case WL_OUTPUT_TRANSFORM_NORMAL:
+      return std::string("normal");
+    case WL_OUTPUT_TRANSFORM_90:
+      return std::string("90");
+    case WL_OUTPUT_TRANSFORM_180:
+      return std::string("180");
+    case WL_OUTPUT_TRANSFORM_270:
+      return std::string("270");
+    case WL_OUTPUT_TRANSFORM_FLIPPED:
+      return std::string("flipped");
+    case WL_OUTPUT_TRANSFORM_FLIPPED_90:
+      return std::string("flipped-90");
+    case WL_OUTPUT_TRANSFORM_FLIPPED_180:
+      return std::string("flipped-180");
+    case WL_OUTPUT_TRANSFORM_FLIPPED_270:
+      return std::string("flipped-270");
+    default:
+      return std::nullopt;
+    }
+  }
+
+  [[nodiscard]] std::optional<std::string> buildGreeterOutputTransforms(const CompositorPlatform& platform) {
+    const auto& outputs = platform.outputs();
+    std::vector<const WaylandOutput*> ready;
+    ready.reserve(outputs.size());
+    for (const auto& output : outputs) {
+      if (!output.connectorName.empty() && !output.done) {
+        kLog.info("greeter sync: output '{}' not ready; skipping output transforms sync", output.connectorName);
+        return std::nullopt;
+      }
+      if (!output.done || output.connectorName.empty()) {
+        continue;
+      }
+      ready.push_back(&output);
+    }
+
+    if (ready.empty()) {
+      kLog.info("greeter sync: no ready outputs; skipping output transforms sync");
+      return std::nullopt;
+    }
+
+    std::ranges::sort(ready, [](const WaylandOutput* lhs, const WaylandOutput* rhs) {
+      return lhs->connectorName < rhs->connectorName;
+    });
+
+    std::string transforms;
+    for (const WaylandOutput* output : ready) {
+      const auto token = greeterTransformToken(output->transform);
+      if (!token.has_value()) {
+        kLog.warn(
+            "greeter sync: output '{}' has unknown transform {}; skipping output transforms sync",
+            output->connectorName, output->transform
+        );
+        return std::nullopt;
+      }
+      if (!transforms.empty()) {
+        transforms += "; ";
+      }
+      transforms += output->connectorName + ':' + *token;
+    }
+    return transforms;
+  }
+
   void logOutputLayoutForGreeter(const CompositorPlatform& platform) {
     const auto& outputs = platform.outputs();
     if (outputs.empty()) {
@@ -389,6 +456,9 @@ namespace {
     if (const auto layout = buildGreeterOutputLayout(platform)) {
       kLog.info("greeter sync: staging output_layout \"{}\"", *layout);
     }
+    if (const auto transforms = buildGreeterOutputTransforms(platform)) {
+      kLog.info("greeter sync: staging output_transforms \"{}\"", *transforms);
+    }
   }
 
   [[nodiscard]] bool stageOutputLayout(const std::filesystem::path& staging, std::string_view layout) {
@@ -399,6 +469,17 @@ namespace {
       return false;
     }
     out << layout << '\n';
+    return true;
+  }
+
+  [[nodiscard]] bool stageOutputTransforms(const std::filesystem::path& staging, std::string_view transforms) {
+    const auto transformsPath = staging / kStagedOutputTransformsFileName;
+    std::ofstream out(transformsPath);
+    if (!out.is_open()) {
+      kLog.warn("failed to open staged output transforms '{}'", transformsPath.string());
+      return false;
+    }
+    out << transforms << '\n';
     return true;
   }
 
@@ -514,8 +595,14 @@ namespace greeter {
           return GreeterSyncLaunch::Failed;
         }
       }
+      if (const auto transforms = buildGreeterOutputTransforms(*platform)) {
+        if (!stageOutputTransforms(staging, *transforms)) {
+          finish(false);
+          return GreeterSyncLaunch::Failed;
+        }
+      }
     } else {
-      kLog.info("greeter sync: no compositor platform provided; skipping output layout sync");
+      kLog.info("greeter sync: no compositor platform provided; skipping output layout/transforms sync");
     }
 
     const auto outputWallpapers = stageAllOutputWallpapers(staging, configService);
