@@ -102,7 +102,6 @@ public:
   void togglePanel(const std::string& panelId, PanelOpenRequest request);
   // IPC-friendly overload: asks CompositorPlatform for preferred interactive output.
   void togglePanel(const std::string& panelId);
-  void clearClipboardHistory();
 
   bool onPointerEvent(const PointerEvent& event);
   void onKeyboardEvent(const KeyboardEvent& event);
@@ -216,6 +215,7 @@ private:
 
   std::unique_ptr<Surface> m_surface;
   LayerSurface* m_layerSurface = nullptr;
+  LayerShellLayer m_panelLayer = LayerShellLayer::Top;
   // m_sceneRoot must be destroyed before m_animations — ~Node() calls cancelForOwner().
   // Also m_panels (which own their own Nodes parented under m_sceneRoot) must be destroyed
   // before m_animations for the same reason.

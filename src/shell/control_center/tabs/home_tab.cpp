@@ -309,7 +309,7 @@ std::unique_ptr<Flex> HomeTab::create() {
   avatarArea->setOnFocusGain(syncAvatarChrome);
   avatarArea->setOnFocusLoss(syncAvatarChrome);
   const auto configureUserDetailLabel = [scale](Label& label) {
-    label.setShadow(Color{0.0f, 0.0f, 0.0f, 0.36f}, 0.0f, 1.0f * scale);
+    label.setShadow(colorSpecFromRole(ColorRole::Shadow, 0.36f), 0.0f, 1.0f * scale);
   };
   auto userRow = ui::row(
       {.align = FlexAlign::Center, .gap = Style::spaceMd * scale}, std::move(avatarArea),
@@ -327,8 +327,9 @@ std::unique_ptr<Flex> HomeTab::create() {
               .fontSize = Style::fontSizeTitle * 1.12f * scale,
               .fontWeight = FontWeight::Bold,
               .color = colorSpecFromRole(ColorRole::OnSurface),
-              .configure =
-                  [scale](Label& label) { label.setShadow(Color{0.0f, 0.0f, 0.0f, 0.42f}, 0.0f, 1.0f * scale); },
+              .configure = [scale](
+                               Label& label
+                           ) { label.setShadow(colorSpecFromRole(ColorRole::Shadow, 0.42f), 0.0f, 1.0f * scale); },
           }),
           ui::label({
               .out = &m_userHost,
@@ -663,7 +664,6 @@ std::unique_ptr<Flex> HomeTab::createHeaderActions() {
 }
 
 void HomeTab::doLayout(Renderer& renderer, float contentWidth, float bodyHeight) {
-  (void)bodyHeight;
   if (m_rootLayout == nullptr) {
     return;
   }
@@ -853,8 +853,6 @@ void HomeTab::doLayout(Renderer& renderer, float contentWidth, float bodyHeight)
     }
 
     // Integer card heights track the snapped row height so top/bottom borders land on pixels.
-    // Pin both min and max: without maxHeight, fillHeight/flexGrow can stretch a card a fraction
-    // past the parent and clipChildren on the tab body cuts off the bottom border.
     if (m_mediaCard != nullptr && m_dateTimeCard != nullptr) {
       const float colGap = Style::spaceMd * contentScale();
       const float avail = std::max(0.0f, gridH - colGap);
@@ -863,9 +861,9 @@ void HomeTab::doLayout(Renderer& renderer, float contentWidth, float bodyHeight)
       const float dateH = std::max(0.0f, avail - mediaH);
 
       m_mediaCard->setMinHeight(mediaH);
-      m_mediaCard->setMaxHeight(mediaH);
+      m_mediaCard->setMaxHeight(0.0f);
       m_dateTimeCard->setMinHeight(dateH);
-      m_dateTimeCard->setMaxHeight(dateH);
+      m_dateTimeCard->setMaxHeight(0.0f);
     }
   }
 

@@ -2430,7 +2430,9 @@
         },
         "calendar-edit": {
           "button": "Editar",
-          "description": "Atualizar essa conta de Calendário"
+          "button-reconnect": "Reconectar",
+          "description": "Atualizar essa conta de Calendário",
+          "description-reconnect": "A autorização do Google está ausente. Reconecte esta conta."
         },
         "calendar-event-date-format": {
           "description": "O formato de hora mostrado no cartão do evento para a data selecionada",
@@ -3749,6 +3751,20 @@
       "native-title": "Configurações do Noctalia",
       "no-results": "Nenhuma configuração encontrada",
       "no-results-hint": "Tente um nome diferente de configuração ou uma tecla de config.",
+      "offline-mode-notice": {
+        "appearance": "O download de paletas da comunidade não funcionará.",
+        "calendar-account": "A descoberta e sincronização do calendário não funcionarão.",
+        "disable-hint": "Desative o Modo Off-line na seção Segurança.",
+        "launcher": "A busca de taxas de câmbio não funcionará.",
+        "location": "As consultas de clima e localização não funcionarão.",
+        "plugin-store": "As solicitações de catálogo e download de plugins remotos não funcionarão.",
+        "plugins": "As solicitações HTTP de plugins não funcionarão. Fontes Git ainda podem ser atualizadas.",
+        "security": "A consulta de IP externo e a telemetria não funcionarão.",
+        "services": "A sincronização da conta do calendário não funcionará.",
+        "template-store": "O download de modelos da comunidade não funcionará.",
+        "templates": "Os download e atualizações de modelos da comunidade não funcionarão.",
+        "title": "Modo Off-line"
+      },
       "reset-page": "Redefinir Página",
       "reset-page-confirm": "Confirmar Reinício",
       "search-placeholder": "Pesquisar configurações...",

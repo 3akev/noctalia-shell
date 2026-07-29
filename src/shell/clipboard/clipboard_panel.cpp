@@ -851,6 +851,10 @@ void ClipboardPanel::doUpdate(Renderer& renderer) {
   }
 
   if (m_lastChangeSerial != m_clipboard->changeSerial()) {
+    // The history moved underneath us — an IPC clear, another app's copy, a trim. A pending
+    // confirmation was armed against contents that are no longer on screen.
+    resetClearConfirmation();
+    resetDeleteConfirmation();
     applyFilter();
     if (m_filteredIndices.empty()) {
       m_selectedIndex = 0;
@@ -1479,26 +1483,6 @@ void ClipboardPanel::togglePinSelected() {
   PanelManager::instance().refresh();
 }
 
-void ClipboardPanel::clearHistoryFromIpc() {
-  if (m_clipboard == nullptr) {
-    return;
-  }
-
-  const auto& history = m_clipboard->history();
-  if (history.empty()) {
-    return;
-  }
-
-  resetClearConfirmation();
-  resetDeleteConfirmation();
-  const bool hasPinned = std::ranges::any_of(history, [](const ClipboardEntry& entry) { return entry.pinned; });
-  if (hasPinned) {
-    performClearUnpinnedHistory();
-  } else {
-    performClearAllHistory();
-  }
-}
-
 void ClipboardPanel::requestClearUnpinnedHistory() {
   if (m_clipboard == nullptr) {
     return;
@@ -1515,12 +1499,7 @@ void ClipboardPanel::requestClearUnpinnedHistory() {
   if (!confirmClear) {
     resetClearConfirmation();
     resetDeleteConfirmation();
-    const bool hasPinned = std::ranges::any_of(history, [](const ClipboardEntry& entry) { return entry.pinned; });
-    if (hasPinned) {
-      performClearUnpinnedHistory();
-    } else {
-      performClearAllHistory();
-    }
+    performClearUnpinnedHistory();
     return;
   }
 
@@ -1709,6 +1688,17 @@ bool ClipboardPanel::handleKeyEvent(std::uint32_t sym, std::uint32_t modifiers) 
 
   if (KeybindMatcher::matches(KeybindAction::Validate, sym, modifiers)) {
     activateSelected();
+    return true;
+  }
+
+  if (KeybindMatcher::matches(KeybindAction::Delete, sym, modifiers)) {
+    const std::size_t historyIndex = selectedHistoryIndex();
+    const auto& history = m_clipboard->history();
+    if (historyIndex < history.size() && m_deleteConfirmStorageId == history[historyIndex].storageId) {
+      deleteSelectedEntry();
+    } else {
+      requestDeleteSelectedEntry();
+    }
     return true;
   }
 

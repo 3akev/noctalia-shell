@@ -2046,6 +2046,10 @@
           "description": "Close popups, dismiss panels, or abort the current operation",
           "label": "Cancel"
         },
+        "delete": {
+          "description": "Delete the selected item",
+          "label": "Delete"
+        },
         "down": {
           "description": "Move focus or selection down one row",
           "label": "Navigate Down"
@@ -2208,6 +2212,10 @@
         "control-center-width": {
           "description": "Width of the control center panel in pixels (compact and no-sidebar modes scale down from this)",
           "label": "Control Center Width"
+        },
+        "floating-layer": {
+          "description": "Use Top if input method candidate windows are hidden behind floating panels; Overlay keeps panels above fullscreen content",
+          "label": "Floating Panel Layer"
         },
         "floating-offset": {
           "description": "Gap in pixels between a floating or detached panel and the bar edge",

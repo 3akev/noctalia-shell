@@ -111,6 +111,7 @@
 namespace {
   constexpr Logger kLog("app");
   constexpr std::string_view kPolkitAuthorityBusName = "org.freedesktop.PolicyKit1";
+  constexpr std::string_view kSecretServiceBusName = "org.freedesktop.secrets";
 
   void signal_handler(int signum) {
     if (signum == SIGTERM || signum == SIGINT) {
@@ -226,6 +227,63 @@ void Application::installNotificationBusNameWatch() {
         });
       });
   m_notificationBusNameWatchInstalled = true;
+}
+
+void Application::installSecretServiceNameWatch() {
+  if (m_secretServiceNameWatchInstalled || m_bus == nullptr) {
+    return;
+  }
+
+  m_secretServiceNameWatchProxy = sdbus::createProxy(
+      m_bus->connection(), sdbus::ServiceName{"org.freedesktop.DBus"}, sdbus::ObjectPath{"/org/freedesktop/DBus"}
+  );
+  m_secretServiceNameWatchProxy->uponSignal("NameOwnerChanged")
+      .onInterface("org.freedesktop.DBus")
+      .call([this](const std::string& name, const std::string& /*oldOwner*/, const std::string& newOwner) {
+        if (name != kSecretServiceBusName) {
+          return;
+        }
+        m_secretServiceOwned = !newOwner.empty();
+        if (!m_secretServiceOwned) {
+          return;
+        }
+        // A provider that just showed up is a fresh chance for every consumer that gave up.
+        m_storageKeyAutoRetried = false;
+        m_calendarCredentialAutoRetried = false;
+        kLog.info("secret service provider appeared on {}", kSecretServiceBusName);
+        DeferredCall::callLater([this]() { retrySecretServiceConsumers(); });
+      });
+  m_secretServiceNameWatchInstalled = true;
+
+  // The provider may have claimed the name between our first lookup and this watch. Consumers are
+  // still opening at this point, so their change callbacks drive the actual retry.
+  try {
+    bool hasOwner = false;
+    m_secretServiceNameWatchProxy->callMethod("NameHasOwner")
+        .onInterface("org.freedesktop.DBus")
+        .withArguments(std::string{kSecretServiceBusName})
+        .storeResultsTo(hasOwner);
+    m_secretServiceOwned = hasOwner;
+  } catch (const sdbus::Error& e) {
+    kLog.debug("secret service NameHasOwner failed: {}", e.what());
+  }
+}
+
+void Application::retrySecretServiceConsumers() {
+  if (!m_secretServiceOwned) {
+    return;
+  }
+  if (!m_storageKeyAutoRetried && m_storageKeyProvider.state() == security::StorageKeyState::Unavailable) {
+    m_storageKeyAutoRetried = true;
+    kLog.info("secret service is running; reopening encrypted storage");
+    DeferredCall::callLater([this]() { m_storageKeyProvider.retry(); });
+  }
+  if (!m_calendarCredentialAutoRetried
+      && m_calendarService.credentialState() == calendar::CredentialState::Unavailable) {
+    m_calendarCredentialAutoRetried = true;
+    kLog.info("secret service is running; reopening calendar credentials");
+    DeferredCall::callLater([this]() { m_calendarService.retryCredentialMigration(); });
+  }
 }
 
 bool Application::likelySupportsInSessionPolkit() const noexcept {
@@ -368,6 +426,7 @@ void Application::initServices() {
   m_storageKeyProvider.setChangeCallback([this]() {
     m_clipboardService.syncPersistence();
     m_calendarService.syncCachePersistence();
+    retrySecretServiceConsumers();
   });
   syncStorageKeyProvider();
   m_configService.addReloadCallback(
@@ -597,6 +656,7 @@ void Application::initStyleThemeAndWayland() {
   KeybindMatcher::setMatcher(KeybindAction::Down, bindKeybind(KeybindAction::Down));
   KeybindMatcher::setMatcher(KeybindAction::TabNext, bindKeybind(KeybindAction::TabNext));
   KeybindMatcher::setMatcher(KeybindAction::TabPrevious, bindKeybind(KeybindAction::TabPrevious));
+  KeybindMatcher::setMatcher(KeybindAction::Delete, bindKeybind(KeybindAction::Delete));
 
   Input::setValidateKeyMatcher([this](std::uint32_t sym, std::uint32_t modifiers) {
     return m_configService.matchesKeybind(KeybindAction::Validate, sym, modifiers);
@@ -945,6 +1005,9 @@ void Application::initSystemBusServices() {
       m_upowerService->setChangeCallback([this, shouldRefreshControlCenter]() {
         onUpowerStateChangedForHooks();
         m_batteryWarningMonitor.evaluate(m_configService.config().battery, *m_upowerService, m_notificationManager);
+        if (m_bluetoothService != nullptr) {
+          m_bluetoothService->refreshBatteryFromUPower();
+        }
         m_bar.refresh();
         m_settingsWindow.onExternalOptionsChanged();
         if (shouldRefreshControlCenter()) {
@@ -1069,7 +1132,7 @@ void Application::initSystemBusServices() {
     }
 
     try {
-      m_bluetoothService = std::make_unique<BluetoothService>(*m_systemBus);
+      m_bluetoothService = std::make_unique<BluetoothService>(*m_systemBus, m_upowerService.get());
       auto refreshBluetoothUi = [this, shouldRefreshControlCenter]() {
         m_bar.refresh();
         if (shouldRefreshControlCenter()) {
@@ -1273,6 +1336,7 @@ void Application::initSessionBusServices() {
     installNotificationBusNameWatch();
     syncNotificationDaemon();
     m_configService.addReloadCallback([this]() { syncNotificationDaemon(); });
+    installSecretServiceNameWatch();
 
     m_compositorPlatform.startKdeActiveWindow(*m_bus);
 

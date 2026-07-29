@@ -1101,6 +1101,15 @@ namespace settings {
       ));
     }
     entries.push_back(makeEntry(
+        SettingsSection::Panels, "general", tr("settings.schema.panels.floating-layer.label"),
+        tr("settings.schema.panels.floating-layer.description"), {"shell", "panel", "floating_layer"},
+        asSegmented(plainSelect(
+            {{"top", "settings.options.layer.top"}, {"overlay", "settings.options.layer.overlay"}},
+            cfg.shell.panel.floatingLayer
+        )),
+        "floating detached panel layer shell z-order input method popup fullscreen"
+    ));
+    entries.push_back(makeEntry(
         SettingsSection::Panels, "effects", tr("settings.schema.panels.transparency-mode.label"),
         tr("settings.schema.panels.transparency-mode.description"), {"shell", "panel", "transparency_mode"},
         asSegmented(enumSelect(kPanelTransparencyModes, cfg.shell.panel.transparencyMode)),
@@ -2097,6 +2106,14 @@ namespace settings {
         tr("settings.schema.keybinds.tab-next.description"), {"keybinds", "tab_next"},
         KeybindListSetting{.items = effectiveKeybindItems(cfg.keybinds.tabNext, KeybindAction::TabNext), .maxItems = 4},
         "keybind shortcut hotkey tab focus pane"
+    ));
+    entries.push_back(makeEntry(
+        SettingsSection::Keybinds, "keybinds", tr("settings.schema.keybinds.delete.label"),
+        tr("settings.schema.keybinds.delete.description"), {"keybinds", "delete"},
+        KeybindListSetting{
+            .items = effectiveKeybindItems(cfg.keybinds.deleteEntry, KeybindAction::Delete), .maxItems = 4
+        },
+        "keybind shortcut hotkey delete remove clear"
     ));
 
     // Niri-specific integrations

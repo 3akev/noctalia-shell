@@ -194,6 +194,11 @@ private:
   void startTrayService();
   void syncNotificationDaemon();
   void installNotificationBusNameWatch();
+  // gnome-keyring / kwalletd usually claim org.freedesktop.secrets a moment after Noctalia starts,
+  // so the first credential lookups report "no provider". Watch the bus name and re-drive the
+  // consumers that gave up once an owner appears.
+  void installSecretServiceNameWatch();
+  void retrySecretServiceConsumers();
   void scheduleNotificationShellRefresh();
   void syncPolkitAgent();
   [[nodiscard]] bool likelySupportsInSessionPolkit() const noexcept;
@@ -258,11 +263,12 @@ private:
   std::unique_ptr<NetworkSecretAgent> m_networkSecretAgent;
   ExternalIpService m_externalIpService{&m_httpClient, &m_configService};
   std::unique_ptr<IwdSecretAgent> m_iwdSecretAgent;
+  // Declared before m_bluetoothService so it outlives the raw pointer in that service.
+  std::unique_ptr<UPowerService> m_upowerService;
   std::unique_ptr<BluetoothService> m_bluetoothService;
   std::unique_ptr<BluetoothAgent> m_bluetoothAgent;
   Timer m_bluetoothResumeTimer;
   std::unique_ptr<PolkitAgent> m_polkitAgent;
-  std::unique_ptr<UPowerService> m_upowerService;
   std::optional<bool> m_notificationDaemonEnabled;
   bool m_notificationDaemonInitFailed = false;
   bool m_notificationShellRefreshScheduled = false;
@@ -277,6 +283,11 @@ private:
   std::unique_ptr<NotificationDBusHost> m_notificationDbus;
   std::unique_ptr<sdbus::IProxy> m_notificationBusNameWatchProxy;
   bool m_notificationBusNameWatchInstalled = false;
+  std::unique_ptr<sdbus::IProxy> m_secretServiceNameWatchProxy;
+  bool m_secretServiceNameWatchInstalled = false;
+  bool m_secretServiceOwned = false;
+  bool m_storageKeyAutoRetried = false;
+  bool m_calendarCredentialAutoRetried = false;
   std::unique_ptr<PipeWireService> m_pipewireService;
   std::unique_ptr<WirePlumberMixer> m_wirePlumberMixer;
   std::unique_ptr<EasyEffectsService> m_easyEffectsService;

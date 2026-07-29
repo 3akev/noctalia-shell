@@ -333,6 +333,7 @@ enum class KeybindAction : std::uint8_t {
   Down = 5,
   TabNext = 6,
   TabPrevious = 7,
+  Delete = 8,
 };
 
 [[nodiscard]] std::vector<KeyChord> defaultKeybindSet(KeybindAction action);
@@ -902,9 +903,10 @@ struct ShellConfig {
 
   struct PanelConfig {
     PanelTransparencyMode transparencyMode = PanelTransparencyMode::Solid;
-    bool borders = true;             // outline on floating panel surfaces
-    bool shadow = true;              // cast the global [shell.shadow] from panel surfaces
-    bool listItemBackground = false; // filled rounded background behind launcher/clipboard list items
+    bool borders = true;                   // outline on floating panel surfaces
+    bool shadow = true;                    // cast the global [shell.shadow] from panel surfaces
+    bool listItemBackground = false;       // filled rounded background behind launcher/clipboard list items
+    std::string floatingLayer = "overlay"; // top | overlay; attached panels follow their bar
     PanelPlacement launcherPlacement = PanelPlacement::Floating;
     PanelPlacement clipboardPlacement = PanelPlacement::Floating;
     PanelPlacement controlCenterPlacement = PanelPlacement::Attached;
@@ -1237,6 +1239,7 @@ struct KeybindsConfig {
   std::vector<KeyChord> down;
   std::vector<KeyChord> tabNext;
   std::vector<KeyChord> tabPrevious;
+  std::vector<KeyChord> deleteEntry;
 
   bool operator==(const KeybindsConfig&) const = default;
 };
