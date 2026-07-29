@@ -664,7 +664,6 @@ std::unique_ptr<Flex> HomeTab::createHeaderActions() {
 }
 
 void HomeTab::doLayout(Renderer& renderer, float contentWidth, float bodyHeight) {
-  (void)bodyHeight;
   if (m_rootLayout == nullptr) {
     return;
   }
