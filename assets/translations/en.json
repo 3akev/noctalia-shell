@@ -117,7 +117,18 @@
         "error": "Weather err",
         "loading": "Weather…",
         "no-location": "No location",
-        "off": "Weather off"
+        "off": "Weather off",
+        "tooltip": {
+          "condition": "Condition",
+          "high": "High",
+          "humidity": "Humidity",
+          "low": "Low",
+          "sunrise": "Sunrise",
+          "sunset": "Sunset",
+          "temperature": "Temperature",
+          "uv": "UV Index",
+          "wind": "Wind"
+        }
       }
     }
   },
