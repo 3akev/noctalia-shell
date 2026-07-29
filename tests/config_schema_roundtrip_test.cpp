@@ -411,6 +411,7 @@ location = "https://example.invalid/bad"
     c.keybinds.down = {*parseKeyChordSpec("Down")};
     c.keybinds.tabNext = defaultKeybindSet(KeybindAction::TabNext);
     c.keybinds.tabPrevious = defaultKeybindSet(KeybindAction::TabPrevious);
+    c.keybinds.deleteEntry = defaultKeybindSet(KeybindAction::Delete);
     c.hooks.commands[0] = {"notify-send hi"};
     c.hooks.commands[2] = {"cmd-a", "cmd-b"};
     c.idle.preActionFadeSeconds = 3.0f;

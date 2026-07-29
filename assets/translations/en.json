@@ -2046,6 +2046,10 @@
           "description": "Close popups, dismiss panels, or abort the current operation",
           "label": "Cancel"
         },
+        "delete": {
+          "description": "Delete the selected item",
+          "label": "Delete"
+        },
         "down": {
           "description": "Move focus or selection down one row",
           "label": "Navigate Down"
