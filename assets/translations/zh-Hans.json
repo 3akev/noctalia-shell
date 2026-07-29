@@ -1027,6 +1027,7 @@
           "empty": "没有符合当前筛选条件的设置。",
           "groups": {
             "actions": "操作",
+            "behavior": "行为",
             "grouping": "组合",
             "presentation": "外观",
             "runtime": "运行时",
@@ -2216,6 +2217,10 @@
           "description": "为主页选项卡选择最多六个快捷按钮",
           "label": "主页快捷项"
         },
+        "home-shortcuts-show-labels": {
+          "description": "在主页选项卡的快捷方式图标下方显示文本标签",
+          "label": "显示快捷项标签"
+        },
         "launcher-app-grid": {
           "description": "当搜索结果仅包含应用时，以网格形式显示应用图标，并在图标下方显示名称",
           "label": "应用网格视图"
@@ -3163,6 +3168,8 @@
         "rate": "功耗",
         "regular": "常规",
         "replace": "替换",
+        "scroll-gesture": "每次手势一次",
+        "scroll-steps": "每个滚动步长",
         "shared": "共享运行",
         "short": "简短",
         "swap-percent": "Swap 百分比",
@@ -3563,6 +3570,10 @@
           "description": "Lua 脚本的路径",
           "label": "脚本"
         },
+        "scroll-repeat": {
+          "description": "选择滚动操作是遵循命令语义、每次手势仅运行一次，还是针对每个滚动步长重复运行",
+          "label": "滚动重复模式"
+        },
         "show-active-indicator": {
           "description": "在任务栏中活动窗口图标下方显示小圆点",
           "label": "活动窗口指示器"
@@ -3604,7 +3615,7 @@
           "label": "显示气温"
         },
         "show-vpn-label": {
-          "description": "显示 VPN 名称：“替换”模式下会替换网络标签，“同时显示”模式下会显示在 VPN 图标旁",
+          "description": "“替换”模式下会替换网络标签；“同时显示”模式下会显示在 VPN 图标旁",
           "label": "显示 VPN 标签"
         },
         "show-when-idle": {

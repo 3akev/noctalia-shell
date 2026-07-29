@@ -325,7 +325,7 @@
         "dark": "Modalità scura",
         "light": "Modalità chiara"
       },
-      "keyboard-layout": "Layout",
+      "keyboard-layout": "Layout tastiera",
       "media": "Media",
       "mic-mute": "Microfono",
       "nightlight": "Luce notturna",
@@ -2430,7 +2430,9 @@
         },
         "calendar-edit": {
           "button": "Modifica",
-          "description": "Aggiorna questo account calendario"
+          "button-reconnect": "Riconnetti",
+          "description": "Aggiorna questo account calendario",
+          "description-reconnect": "Manca l'autorizzazione di Google. Riconnetti questo account."
         },
         "calendar-event-date-format": {
           "description": "Il formato della data mostrato nella scheda evento per la data selezionata",
@@ -2547,7 +2549,7 @@
             "label": "Intervallo disco"
           },
           "gpu-poll": {
-            "description": "Secondi tra valori campione di temperatura GPU, utilizzo e VRAM. La GPU viene campionata solo mentre qualcosa visualizza una statistica GPU, quindi a sistema inattivo non viene mai riattivata (0 la disabilita completamente)",
+            "description": "Secondi tra valori campione di temperatura GPU, utilizzo e VRAM; La GPU viene campionata solo mentre qualcosa visualizza una statistica GPU, quindi a sistema inattivo non viene mai riattivata (0 disabilita completamente)",
             "label": "Intervallo GPU"
           },
           "label": "Monitor di sistema",
@@ -3295,7 +3297,7 @@
           "label": "Visualizzazione"
         },
         "display-mode": {
-          "description": "Visualizza la batteria solo in forma grafica, glifo tab o solo etichetta",
+          "description": "Visualizza la batteria solo come forma grafica, icona Tabler o etichetta",
           "label": "Modalità visualizzazione"
         },
         "drawer": {
@@ -3359,7 +3361,7 @@
           "label": "Raggruppa per workspace"
         },
         "group-single-icon-per-app": {
-          "description": "Quando si raggruppa per area di lavoro con icone, comprimi più finestre della stessa app in un'unica icona con un badge di conteggio.",
+          "description": "Quando raggruppi per area di lavoro con icone, comprimi più finestre della stessa app in un'unica icona con un badge di conteggio",
           "label": "Un'icona per app"
         },
         "height": {
@@ -3551,7 +3553,7 @@
         "pinned": {
           "description": "ID elementi vassoio che restano visibili nella barra quando la modalità cassetto è abilitata",
           "label": "Elementi fissati",
-          "taskbar-description": "App desktop che rimangono sulla barra delle applicazioni quando non sono in esecuzione. Ignorato mentre il raggruppamento per area di lavoro è attivo.",
+          "taskbar-description": "App desktop che rimangono sulla barra delle applicazioni quando non sono in esecuzione; ignorato mentre il raggruppamento per area di lavoro è attivo",
           "taskbar-label": "App fissate"
         },
         "pinned-opacity": {
@@ -3615,7 +3617,7 @@
           "label": "Mostra temperatura"
         },
         "show-vpn-label": {
-          "description": "Mostra nome VPN: sostituisce l'etichetta di rete in modalità sostituzione, aggiunge l'etichetta accanto all'icona VPN in entrambe le modalità",
+          "description": "Sostituisce l'etichetta di rete con l'etichetta VPN in modalità di sostituzione; aggiunge l'etichetta VPN accanto all'icona VPN in entrambe le modalità",
           "label": "Mostra etichetta VPN"
         },
         "show-when-idle": {
@@ -3749,6 +3751,20 @@
       "native-title": "Impostazioni Noctalia",
       "no-results": "Nessuna impostazione trovata",
       "no-results-hint": "Prova un nome impostazione o una chiave configurazione diversa.",
+      "offline-mode-notice": {
+        "appearance": "I download delle palette della comunità non funzioneranno.",
+        "calendar-account": "Il rilevamento e la sincronizzazione del calendario non funzioneranno.",
+        "disable-hint": "Disattiva la modalità offline nella sezione Sicurezza.",
+        "launcher": "Il recupero del tasso di cambio valuta non funzionerà.",
+        "location": "Le ricerche su meteo e posizione non funzioneranno.",
+        "plugin-store": "Il catalogo dei plugin remoti e le richieste di download non funzioneranno.",
+        "plugins": "Le richieste HTTP dei plugin non funzioneranno. Le origini Git possono ancora essere aggiornate.",
+        "security": "La ricerca dell'IP esterno e la telemetria non funzioneranno.",
+        "services": "La sincronizzazione dell'account del calendario non funzionerà.",
+        "template-store": "I download dei template della community non funzioneranno.",
+        "templates": "I download e gli aggiornamenti dei template della community non funzioneranno.",
+        "title": "Modalità offline"
+      },
       "reset-page": "Ripristina pagina",
       "reset-page-confirm": "Conferma ripristino",
       "search-placeholder": "Cerca impostazioni...",
