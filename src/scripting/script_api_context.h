@@ -63,6 +63,27 @@ namespace scripting {
       return m_clipboardText;
     }
 
+    // Shell [shell].time_format / date_format — mirrored for noctalia.timeFormat() / dateFormat().
+    void setTimeFormat(std::string format) {
+      std::scoped_lock lock(m_mutex);
+      m_timeFormat = std::move(format);
+    }
+
+    [[nodiscard]] std::string timeFormat() const {
+      std::scoped_lock lock(m_mutex);
+      return m_timeFormat;
+    }
+
+    void setDateFormat(std::string format) {
+      std::scoped_lock lock(m_mutex);
+      m_dateFormat = std::move(format);
+    }
+
+    [[nodiscard]] std::string dateFormat() const {
+      std::scoped_lock lock(m_mutex);
+      return m_dateFormat;
+    }
+
     // Toggles the host wallpaper surface on an output. Wired to Wallpaper in Application;
     // invoked only on the main thread (from dispatchSideEffects).
     void setWallpaperEnabledHook(std::function<void(const std::string&, bool)> hook) {
@@ -125,6 +146,8 @@ namespace scripting {
     std::atomic<bool> m_darkMode{true};
     mutable std::mutex m_mutex;
     std::string m_wallpaperDirectory;
+    std::string m_timeFormat;
+    std::string m_dateFormat;
     std::vector<ScriptOutputInfo> m_outputs;
     std::optional<std::string> m_clipboardText;
     std::function<void(const std::string&, bool)> m_wallpaperEnabledHook;

@@ -535,6 +535,11 @@ void Application::initStyleThemeAndWayland() {
     );
   };
 
+  auto syncScriptApiShellTimeFormats = [this]() {
+    m_scriptApi.setTimeFormat(m_configService.config().shell.timeFormat);
+    m_scriptApi.setDateFormat(m_configService.config().shell.dateFormat);
+  };
+
   // Publish the connected outputs to plugin scripts (noctalia.outputs()), refreshed on every
   // output change so the worker-thread binding reads a race-free copy.
   m_syncScriptApiOutputs = [this]() {
@@ -604,8 +609,10 @@ void Application::initStyleThemeAndWayland() {
   });
   m_themeService.apply();
   syncScriptApiWallpaperDirectory();
+  syncScriptApiShellTimeFormats();
   m_configService.addReloadCallback([this]() { m_themeService.onConfigReload(); }, "theme");
   m_configService.addReloadCallback(syncScriptApiWallpaperDirectory, "wallpaper");
+  m_configService.addReloadCallback(syncScriptApiShellTimeFormats, "shell-time-formats");
   {
     static ShellAppIconColorizationSettings lastAppIconColorization =
         shellAppIconColorizationSettings(m_configService.config().shell);

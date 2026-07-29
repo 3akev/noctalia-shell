@@ -780,6 +780,26 @@ namespace {
     return 1;
   }
 
+  int luau_timeFormat(lua_State* L) {
+    auto* host = hostForState(L);
+    std::string format = host != nullptr ? host->api().timeFormat() : std::string{};
+    if (format.empty()) {
+      format = "{:%H:%M}";
+    }
+    lua_pushlstring(L, format.data(), format.size());
+    return 1;
+  }
+
+  int luau_dateFormat(lua_State* L) {
+    auto* host = hostForState(L);
+    std::string format = host != nullptr ? host->api().dateFormat() : std::string{};
+    if (format.empty()) {
+      format = "%A, %x";
+    }
+    lua_pushlstring(L, format.data(), format.size());
+    return 1;
+  }
+
   int luau_isValidTimezone(lua_State* L) {
     size_t len = 0;
     const char* name = luaL_checklstring(L, 1, &len);
@@ -1540,6 +1560,8 @@ namespace {
       {"getenv", luau_getenv},
       {"expandPath", luau_expandPath},
       {"formatTime", luau_formatTime},
+      {"timeFormat", luau_timeFormat},
+      {"dateFormat", luau_dateFormat},
       {"isValidTimezone", luau_isValidTimezone},
       {"setUpdateInterval", luau_setUpdateInterval},
       {"readFile", luau_readFile},
