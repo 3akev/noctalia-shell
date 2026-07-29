@@ -14,7 +14,7 @@
 #include "scripting/plugin_id.h"
 #include "shell/bar/bar_corner_shape.h"
 #include "shell/bar/bar_reserved_zone.h"
-#include "shell/clipboard/clipboard_panel.h"
+#include "shell/panel/panel.h"
 #include "shell/panel/panel_surface_style.h"
 #include "shell/screen_position.h"
 #include "shell/surface/shadow.h"
@@ -1434,16 +1434,6 @@ void PanelManager::togglePanel(const std::string& panelId) {
   }
   // Output left unset: openPanel resolves it (focus source, else compositor probe).
   openPanel(panelId, PanelOpenRequest{});
-}
-
-void PanelManager::clearClipboardHistory() {
-  const auto it = m_panels.find("clipboard");
-  if (it == m_panels.end()) {
-    return;
-  }
-  if (auto* clipboardPanel = dynamic_cast<ClipboardPanel*>(it->second.get())) {
-    clipboardPanel->clearHistoryFromIpc();
-  }
 }
 
 bool PanelManager::onPointerEvent(const PointerEvent& event) {

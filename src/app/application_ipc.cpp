@@ -419,7 +419,8 @@ void Application::initIpc() {
   m_ipcService.registerHandler(
       "clipboard-clear",
       [this](const std::string&) -> std::string {
-        m_panelManager.clearClipboardHistory();
+        // Pinned entries survive; with nothing pinned this clears the whole history.
+        m_clipboardService.clearUnpinnedHistory();
         return "ok\n";
       },
       "", "Clear clipboard history"
