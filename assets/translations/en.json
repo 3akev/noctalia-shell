@@ -29,7 +29,7 @@
   "bar": {
     "screenshot": {
       "choose-display": "Choose display",
-      "confirm-region": "Enter or Space to capture · Esc to cancel · Drag to reselect",
+      "confirm-region": "{copy} to copy · {save} to save · Enter or Space for defaults · {cancel} to cancel · Drag to reselect",
       "fullscreen": "Full screen",
       "overlay-alloc-failed": "Could not display the screenshot overlay (GPU out of video memory?)",
       "region": "Select region"
@@ -266,6 +266,7 @@
       "start-playback": "Start playback in an MPRIS app"
     },
     "network": {
+      "available": "Available",
       "connect": "Connect",
       "current-connection": "Current Connection",
       "external-ip": "WAN {ip}",
@@ -274,6 +275,7 @@
       "password": "Password",
       "password-prompt": "Enter password",
       "password-prompt-for": "Enter password for {ssid}",
+      "saved": "Saved",
       "unavailable-detail": "Install and enable NetworkManager, wpa_supplicant, or iwd to manage networks from here.",
       "unavailable-title": "Network service unavailable",
       "vpns": "VPNs",
@@ -528,8 +530,9 @@
         "show-label": "Show Label",
         "show-login-button": "Login Button",
         "show-media": "Media",
-        "show-unlock-hint": "Unlock Hint",
+        "show-password-hint": "Password Hint",
         "show-session-buttons": "Session Buttons",
+        "show-unlock-hint": "Unlock Hint",
         "show-vpn-label": "Show VPN Label",
         "show-weather": "Weather",
         "show-when-idle": "Show When Idle",
@@ -2064,6 +2067,10 @@
           "description": "Close popups, dismiss panels, or abort the current operation",
           "label": "Cancel"
         },
+        "copy": {
+          "description": "Copy the current selection or item",
+          "label": "Copy"
+        },
         "delete": {
           "description": "Delete the selected item",
           "label": "Delete"
@@ -2079,6 +2086,10 @@
         "right": {
           "description": "Move focus or selection to the right",
           "label": "Navigate Right"
+        },
+        "save": {
+          "description": "Save the current selection or item",
+          "label": "Save"
         },
         "tab-next": {
           "description": "Move focus to the next control",
@@ -2111,7 +2122,7 @@
           "label": "Desktop Capture"
         },
         "enabled": {
-          "description": "Enable session lock, logind integration, lock-before-sleep, and lock actions",
+          "description": "Enable session lock, logind integration, and lock actions",
           "label": "Lock Screen"
         },
         "fingerprint": {
@@ -3618,10 +3629,6 @@
           "description": "Show Caps Lock state",
           "label": "Show Caps Lock"
         },
-        "show-unlock-hint": {
-          "description": "Show the status card above the login box for unlock hints and auth prompts. Errors and Caps Lock warnings still appear when this is off.",
-          "label": "Unlock Hint"
-        },
         "show-condition": {
           "description": "Show weather condition text",
           "label": "Show Condition"
@@ -3649,6 +3656,10 @@
         "show-temperature": {
           "description": "Show current temperature text",
           "label": "Show Temperature"
+        },
+        "show-unlock-hint": {
+          "description": "Show the status card above the login box for unlock hints and auth prompts. Errors and Caps Lock warnings still appear when this is off.",
+          "label": "Unlock Hint"
         },
         "show-vpn-label": {
           "description": "Replaces network label with VPN label in replace mode; adds VPN label next to VPN icon in both mode",

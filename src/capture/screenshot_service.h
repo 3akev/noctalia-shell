@@ -37,8 +37,8 @@ public:
   };
 
   ScreenshotService(
-      WaylandConnection& wayland, CompositorPlatform& platform, NotificationManager& notifications,
-      ConfigService& config, ClipboardService* clipboard = nullptr
+      WaylandConnection& wayland, CompositorPlatform& platform, ConfigService& configService,
+      NotificationManager& notifications, ClipboardService* clipboard = nullptr
   );
   ~ScreenshotService();
 
@@ -145,7 +145,7 @@ private:
   WaylandConnection& m_wayland;
   CompositorPlatform& m_platform;
   NotificationManager& m_notifications;
-  ConfigService& m_config;
+  ConfigService& m_configService;
   ClipboardService* m_clipboard = nullptr;
   ScreencopyCapture m_capture;
   std::unique_ptr<capture::ScreenshotRegionOverlay> m_regionOverlay;

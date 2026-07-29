@@ -828,6 +828,8 @@ namespace noctalia::config::schema {
         keybindActionField(&KeybindsConfig::tabNext, "tab_next", KeybindAction::TabNext),
         keybindActionField(&KeybindsConfig::tabPrevious, "tab_previous", KeybindAction::TabPrevious),
         keybindActionField(&KeybindsConfig::deleteEntry, "delete", KeybindAction::Delete),
+        keybindActionField(&KeybindsConfig::copy, "copy", KeybindAction::Copy),
+        keybindActionField(&KeybindsConfig::save, "save", KeybindAction::Save),
     };
     return s;
   }

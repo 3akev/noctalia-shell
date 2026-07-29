@@ -4,6 +4,7 @@
 
 #include <functional>
 #include <memory>
+#include <string>
 #include <vector>
 
 class RenderContext;
@@ -13,6 +14,8 @@ struct PointerEvent;
 
 namespace capture {
 
+  enum class ConfirmAction { None, ForceClipboard, ForceSave };
+
   struct FrozenScreenshot {
     wl_output* output = nullptr;
     ScreencopyImage image;
@@ -20,7 +23,7 @@ namespace capture {
 
   class ScreenshotRegionOverlay {
   public:
-    using CompleteCallback = std::function<void(std::optional<LogicalRect>, wl_output* output)>;
+    using CompleteCallback = std::function<void(std::optional<LogicalRect>, wl_output* output, ConfirmAction action)>;
     using FailureCallback = std::function<void(const std::string& message)>;
 
     ScreenshotRegionOverlay();
@@ -29,6 +32,7 @@ namespace capture {
     void initialize(WaylandConnection& wayland, RenderContext* renderContext);
     void setCompleteCallback(CompleteCallback callback);
     void setFailureCallback(FailureCallback callback);
+    void setConfirmKeybindLabels(std::string copyLabel, std::string saveLabel, std::string cancelLabel);
     void setFrozenScreenshots(std::vector<FrozenScreenshot> screenshots);
     [[nodiscard]] std::vector<FrozenScreenshot> takeFrozenScreenshots();
     void begin(
@@ -56,7 +60,7 @@ namespace capture {
     void abortWithError(const std::string& message);
     void updateSelectionVisuals();
     void completeSelection();
-    void confirmPendingSelection();
+    void confirmPendingSelection(ConfirmAction action = ConfirmAction::None);
     void completeFullscreenPick(wl_output* output);
     [[nodiscard]] std::optional<LogicalRect> selectionRectIfValid() const;
 
@@ -67,6 +71,9 @@ namespace capture {
     std::vector<std::unique_ptr<Instance>> m_instances;
     std::vector<FrozenScreenshot> m_frozenScreenshots;
     std::optional<LogicalRect> m_abandonedRegion;
+    std::string m_copyKeybindLabel;
+    std::string m_saveKeybindLabel;
+    std::string m_cancelKeybindLabel;
     bool m_active = false;
     bool m_freezeScreen = false;
     bool m_fullscreenPick = false;
