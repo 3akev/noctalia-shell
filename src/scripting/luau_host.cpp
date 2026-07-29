@@ -766,8 +766,24 @@ namespace {
       unixSeconds = static_cast<std::int64_t>(raw);
     }
 
-    const std::string result = formatLocalUnixTime(unixSeconds, std::string_view(pattern, patternLen));
+    std::string_view timezone;
+    if (!lua_isnoneornil(L, 3)) {
+      size_t timezoneLen = 0;
+      const char* timezonePtr = luaL_checklstring(L, 3, &timezoneLen);
+      timezone = std::string_view(timezonePtr, timezoneLen);
+    }
+
+    const std::string result = timezone.empty()
+        ? formatLocalUnixTime(unixSeconds, std::string_view(pattern, patternLen))
+        : formatTimezoneUnixTime(unixSeconds, std::string_view(pattern, patternLen), timezone);
     lua_pushlstring(L, result.data(), result.size());
+    return 1;
+  }
+
+  int luau_isValidTimezone(lua_State* L) {
+    size_t len = 0;
+    const char* name = luaL_checklstring(L, 1, &len);
+    lua_pushboolean(L, isValidTimezone(std::string_view(name, len)) ? 1 : 0);
     return 1;
   }
 
@@ -1524,6 +1540,7 @@ namespace {
       {"getenv", luau_getenv},
       {"expandPath", luau_expandPath},
       {"formatTime", luau_formatTime},
+      {"isValidTimezone", luau_isValidTimezone},
       {"setUpdateInterval", luau_setUpdateInterval},
       {"readFile", luau_readFile},
       {"loadFont", luau_loadFont},
