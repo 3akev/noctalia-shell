@@ -1128,7 +1128,6 @@ if build_tests
     'ipc_service',
     'jxl_decoder',
     'kde_color_scheme',
-    'label_palette',
     'log',
     'math_provider',
     'notification_filter',
