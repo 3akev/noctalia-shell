@@ -186,6 +186,7 @@ void ControlCenterPanel::create() {
               .glyphSize = 21.0f * scale,
               .contentAlign = m_compact ? ButtonContentAlign::Center : ButtonContentAlign::Start,
               .variant = ButtonVariant::Tab,
+              .tooltip = m_compact ? i18n::tr(tab.titleKey) : std::string{},
               .minWidth = m_compact ? std::optional<float>{Style::controlHeightSm * scale} : std::optional<float>{},
               .minHeight = Style::controlHeightSm * scale,
               .paddingV = Style::spaceXs * scale,
