@@ -29,7 +29,7 @@
   "bar": {
     "screenshot": {
       "choose-display": "Scegli monitor",
-      "confirm-region": "Invio o Spazio per catturare · Esc per annullare · Trascina per riselezionare",
+      "confirm-region": "{copy} per copiare · {save} per salvare · Invio o Spazio per le impostazioni predefinite · {cancel} per annullare · Trascina per riselezionare",
       "fullscreen": "Schermo intero",
       "overlay-alloc-failed": "Impossibile visualizzare l'overlay dello screenshot (memoria GPU esaurita?)",
       "region": "Seleziona area"
@@ -968,6 +968,8 @@
           "border": "Bordo",
           "border-description": "Ruolo colore del contorno capsula; lascia Predefinito per nessun contorno",
           "clear": "Cancella",
+          "deselect": "Deseleziona",
+          "drag": "Riordina",
           "drawer-columns": "Colonne cassetto",
           "drawer-columns-description": "Numero di widget per riga nel pannello del cassetto",
           "drawer-detached": "Pannello staccato",
@@ -994,7 +996,12 @@
           "padding-description": "Spaziatura interna tra il bordo della capsula e i suoi widget, in pixel",
           "radius": "Raggio",
           "radius-description": "Raggio degli angoli capsula in pixel; Auto eredita il raggio capsula della barra",
+          "remove-from-group": "Rimuovi dal gruppo",
+          "remove-orphan": "Rimuovi gruppo sconosciuto",
+          "remove-widget": "Rimuovi dalla barra",
+          "select": "Seleziona per raggruppare",
           "selected": "{count} selezionati",
+          "settings-widget": "Impostazioni widget",
           "show": "Mostra gruppo",
           "show-widget": "Mostra widget",
           "style": "Stile",
@@ -2058,6 +2065,10 @@
           "description": "Chiude popup, ignora pannelli o annulla l'operazione corrente",
           "label": "Annulla"
         },
+        "copy": {
+          "description": "Copia la selezione o l'elemento corrente",
+          "label": "Copia"
+        },
         "delete": {
           "description": "Elimina l'elemento selezionato",
           "label": "Elimina"
@@ -2073,6 +2084,10 @@
         "right": {
           "description": "Sposta focus o selezione a destra",
           "label": "Naviga a destra"
+        },
+        "save": {
+          "description": "Salva la selezione o l'elemento corrente",
+          "label": "Salva"
         },
         "tab-next": {
           "description": "Sposta il focus sul controllo successivo",

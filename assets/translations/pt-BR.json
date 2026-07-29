@@ -29,7 +29,7 @@
   "bar": {
     "screenshot": {
       "choose-display": "Escolha o monitor",
-      "confirm-region": "Enter ou Espaço para capturar · Esc para cancelar · Arraste para reselecionar",
+      "confirm-region": "{copy} para copiar · {save} para salvar · Enter ou Espaço para padrões · {cancel} para cancelar · Arraste para reselecionar",
       "fullscreen": "Tela cheia",
       "overlay-alloc-failed": "Não foi possível mostrar a camada de captura de tela (GPU sem memória disponível?",
       "region": "Selecione a área"
@@ -117,7 +117,18 @@
         "error": "Erro no clima",
         "loading": "Clima...",
         "no-location": "Sem localização",
-        "off": "Clima desligado"
+        "off": "Clima desligado",
+        "tooltip": {
+          "condition": "Condição",
+          "high": "Máxima",
+          "humidity": "Umidade",
+          "low": "Mínima",
+          "sunrise": "Nascer do Sol",
+          "sunset": "Pôr do Sol",
+          "temperature": "Temperatura",
+          "uv": "Índice UV",
+          "wind": "Vento"
+        }
       }
     }
   },
@@ -519,6 +530,7 @@
         "show-media": "Mídia",
         "show-password-hint": "Dica de Senha",
         "show-session-buttons": "Botões de Sessão",
+        "show-unlock-hint": "Dica de Desbloqueio",
         "show-vpn-label": "Mostra Rótulo VPN",
         "show-weather": "Clima",
         "show-when-idle": "Mostrar Quando Ocioso",
@@ -956,6 +968,8 @@
           "border": "Borda",
           "border-description": "Cor do contorno da cápsula; deixe em Padrão para nenhum contorno.",
           "clear": "Apagar",
+          "deselect": "Desmarcar",
+          "drag": "Reordenar",
           "drawer-columns": "Número de ícones do tray por linha no painel do drawer.",
           "drawer-columns-description": "Número de widgets por linha no painel gaveta",
           "drawer-detached": "Painel Destacado",
@@ -982,7 +996,12 @@
           "padding-description": "Espaçamento interno entre a borda da cápsula e seus widgets, em pixels.",
           "radius": "Raio",
           "radius-description": "Raio do canto da cápsula em pixels; Automaticamente herda o raio da cápsula da barra",
+          "remove-from-group": "Remover do grupo",
+          "remove-orphan": "Remover grupo desconhecido",
+          "remove-widget": "Remover da barra",
+          "select": "Selecionar para agrupar",
           "selected": "{count} selecionado",
+          "settings-widget": "Configurações do widget",
           "show": "Exibir este grupo",
           "show-widget": "Exibir este widget",
           "style": "Estilo",
@@ -2046,6 +2065,14 @@
           "description": "Feche janelas pop-up, descarte painéis ou interrompa a operação atual",
           "label": "Cancelar"
         },
+        "copy": {
+          "description": "Copiar a seleção ou item atual",
+          "label": "Copiar"
+        },
+        "delete": {
+          "description": "Excluir o item selecionado",
+          "label": "Excluir"
+        },
         "down": {
           "description": "Mova o foco ou a seleção uma linha para baixo",
           "label": "Navegar para Baixo"
@@ -2057,6 +2084,10 @@
         "right": {
           "description": "Mova o foco ou a seleção para a direita",
           "label": "Navegar para Direita"
+        },
+        "save": {
+          "description": "Salvar a seleção ou item atual",
+          "label": "Salvar"
         },
         "tab-next": {
           "description": "Mover o foco para o próximo controle",
@@ -2208,6 +2239,9 @@
         "control-center-width": {
           "description": "Largura do painel da Central de Controle em pixels (os modos compacto e sem barra lateral são redimensionados a partir desse valor)",
           "label": "Largura da Central de Controle"
+        },
+        "floating-layer": {
+          "label": "Camada do Painel Flutuante"
         },
         "floating-offset": {
           "description": "Espaço, em pixels, entre um painel flutuante ou separado e a extremidade da barra",
@@ -3615,6 +3649,10 @@
         "show-temperature": {
           "description": "Mostrar texto com temperatura atual",
           "label": "Exibir Temperatura"
+        },
+        "show-unlock-hint": {
+          "description": "Exibir o card de status acima da caixa de login para dicas de desbloqueio e prompts de autenticação. Erros e avisos de Caps Lock ainda aparecem quando isso está desligado.",
+          "label": "Dica de Desbloqueio"
         },
         "show-vpn-label": {
           "description": "Substitui rótulo de rede com rótulo da VPN em modo de substituição; adiciona rótulo próximo ao ícone de VPN em ambos modos",
