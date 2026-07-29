@@ -2104,7 +2104,7 @@
           "label": "Desktop Capture"
         },
         "enabled": {
-          "description": "Enable session lock, logind integration, and lock actions",
+          "description": "Enable session lock, logind integration, lock-before-sleep, and lock actions",
           "label": "Lock Screen"
         },
         "fingerprint": {

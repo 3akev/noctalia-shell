@@ -910,6 +910,16 @@ void Application::initAuxServicesAndHooks() {
   }
 }
 
+void Application::releaseSleepDelayInhibitIfPending() {
+  if (!m_releaseSleepDelayWhenLocked) {
+    return;
+  }
+  m_releaseSleepDelayWhenLocked = false;
+  if (m_logindService != nullptr) {
+    m_logindService->releaseSleepDelayInhibit();
+  }
+}
+
 void Application::initSystemBusServices() {
   auto shouldRefreshControlCenter = [this]() { return m_panelManager.isOpenPanel("control-center"); };
 
@@ -930,7 +940,45 @@ void Application::initSystemBusServices() {
           // fade-complete cleanup races with process freeze.
           m_idleGraceOverlay.hide();
           if (sleeping) {
+            // Delay inhibit (acquired while lockscreen is enabled) holds sleep until we lock.
+            // Do not use runAfterSessionLocked here — that slot belongs to lock-and-suspend.
+            if (!m_configService.isLockScreenEnabled()) {
+              m_releaseSleepDelayWhenLocked = false;
+              if (m_logindService != nullptr) {
+                m_logindService->releaseSleepDelayInhibit();
+              }
+              return;
+            }
+            if (m_lockScreen.isSessionLocked()) {
+              m_releaseSleepDelayWhenLocked = false;
+              if (m_logindService != nullptr) {
+                m_logindService->releaseSleepDelayInhibit();
+              }
+              return;
+            }
+            m_releaseSleepDelayWhenLocked = true;
+            if (m_lockScreen.isActive()) {
+              return;
+            }
+            if (!m_lockScreen.lock()) {
+              m_releaseSleepDelayWhenLocked = false;
+              if (m_logindService != nullptr) {
+                m_logindService->releaseSleepDelayInhibit();
+              }
+              return;
+            }
+            // Deferred lock (no outputs yet) never reaches SessionLocked; do not block sleep.
+            if (!m_lockScreen.isActive()) {
+              m_releaseSleepDelayWhenLocked = false;
+              if (m_logindService != nullptr) {
+                m_logindService->releaseSleepDelayInhibit();
+              }
+            }
             return;
+          }
+          m_releaseSleepDelayWhenLocked = false;
+          if (m_configService.isLockScreenEnabled() && m_logindService != nullptr) {
+            (void)m_logindService->acquireSleepDelayInhibit();
           }
           kLog.info("system resumed; rechecking night light schedule");
           m_gammaService.reevaluateSchedule();
