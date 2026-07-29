@@ -843,6 +843,9 @@ namespace {
         for (std::size_t k = i; k < j; ++k) {
           entries.push_back(deviceEntry(items[k], joinTokens(std::span(tokens[k]).subspan(shared)), 1));
         }
+        if (j < items.size()) {
+          entries.push_back({.separator = true});
+        }
         i = j;
       } else {
         entries.push_back(deviceEntry(items[i], items[i].label));
