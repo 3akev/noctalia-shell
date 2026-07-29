@@ -528,7 +528,7 @@
         "show-label": "Show Label",
         "show-login-button": "Login Button",
         "show-media": "Media",
-        "show-password-hint": "Password Hint",
+        "show-unlock-hint": "Unlock Hint",
         "show-session-buttons": "Session Buttons",
         "show-vpn-label": "Show VPN Label",
         "show-weather": "Weather",
@@ -3606,6 +3606,10 @@
         "show-caps-lock": {
           "description": "Show Caps Lock state",
           "label": "Show Caps Lock"
+        },
+        "show-unlock-hint": {
+          "description": "Show the status card above the login box for unlock hints and auth prompts. Errors and Caps Lock warnings still appear when this is off.",
+          "label": "Unlock Hint"
         },
         "show-condition": {
           "description": "Show weather condition text",
