@@ -1856,6 +1856,12 @@ namespace settings {
         ToggleSetting{cfg.shell.screenshot.confirmRegion}, "screenshot capture confirm region selection"
     ));
     entries.push_back(makeEntry(
+        SettingsSection::Shell, "screenshot", tr("settings.schema.shell.screenshot-remember-last-region.label"),
+        tr("settings.schema.shell.screenshot-remember-last-region.description"),
+        {"shell", "screenshot", "remember_last_region"}, ToggleSetting{cfg.shell.screenshot.rememberLastRegion},
+        "screenshot capture remember last region selection"
+    ));
+    entries.push_back(makeEntry(
         SettingsSection::Shell, "screenshot", tr("settings.schema.shell.screenshot-show-cursor.label"),
         tr("settings.schema.shell.screenshot-show-cursor.description"), {"shell", "screenshot", "show_cursor"},
         ToggleSetting{cfg.shell.screenshot.showCursor}, "screenshot capture show cursor pointer mouse"

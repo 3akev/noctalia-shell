@@ -33,6 +33,7 @@
 #include <functional>
 #include <linux/input-event-codes.h>
 #include <memory>
+#include <utility>
 
 namespace capture {
   namespace {
@@ -189,18 +190,31 @@ namespace capture {
     return screenshots;
   }
 
-  void ScreenshotRegionOverlay::begin(bool freezeScreen, bool fullscreenPick, bool confirmRegion) {
+  void ScreenshotRegionOverlay::begin(
+      bool freezeScreen, bool fullscreenPick, bool confirmRegion, std::optional<LogicalRect> initialRegion
+  ) {
     if (m_wayland == nullptr || m_renderContext == nullptr) {
       return;
     }
     destroySurfaces();
+    m_abandonedRegion.reset();
     m_freezeScreen = freezeScreen;
     m_fullscreenPick = fullscreenPick;
     m_confirmRegion = confirmRegion && !fullscreenPick;
     m_confirming = false;
     m_active = true;
     m_dragging = false;
+    if (!fullscreenPick && initialRegion.has_value() && initialRegion->width >= 2 && initialRegion->height >= 2) {
+      m_startGlobalX = static_cast<double>(initialRegion->x);
+      m_startGlobalY = static_cast<double>(initialRegion->y);
+      m_currentGlobalX = static_cast<double>(initialRegion->x + initialRegion->width);
+      m_currentGlobalY = static_cast<double>(initialRegion->y + initialRegion->height);
+      m_confirming = true;
+    }
     ensureSurfaces();
+    if (m_confirming) {
+      updateSelectionVisuals();
+    }
     for (auto& inst : m_instances) {
       if (inst->surface != nullptr) {
         inst->surface->requestLayout();
@@ -228,11 +242,32 @@ namespace capture {
       if (!m_active) {
         return;
       }
+      m_abandonedRegion = selectionRectIfValid();
       cancel();
       if (m_onComplete) {
         m_onComplete(std::nullopt, nullptr);
       }
     });
+  }
+
+  std::optional<LogicalRect> ScreenshotRegionOverlay::takeAbandonedRegion() {
+    return std::exchange(m_abandonedRegion, std::nullopt);
+  }
+
+  std::optional<LogicalRect> ScreenshotRegionOverlay::selectionRectIfValid() const {
+    if (m_fullscreenPick) {
+      return std::nullopt;
+    }
+    const int globalX0 = static_cast<int>(std::floor(std::min(m_startGlobalX, m_currentGlobalX)));
+    const int globalY0 = static_cast<int>(std::floor(std::min(m_startGlobalY, m_currentGlobalY)));
+    const int globalX1 = static_cast<int>(std::ceil(std::max(m_startGlobalX, m_currentGlobalX)));
+    const int globalY1 = static_cast<int>(std::ceil(std::max(m_startGlobalY, m_currentGlobalY)));
+    const int width = globalX1 - globalX0;
+    const int height = globalY1 - globalY0;
+    if (width < 2 || height < 2) {
+      return std::nullopt;
+    }
+    return LogicalRect{.x = globalX0, .y = globalY0, .width = width, .height = height};
   }
 
   void ScreenshotRegionOverlay::onOutputChange() {

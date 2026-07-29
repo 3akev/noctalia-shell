@@ -31,10 +31,16 @@ namespace capture {
     void setFailureCallback(FailureCallback callback);
     void setFrozenScreenshots(std::vector<FrozenScreenshot> screenshots);
     [[nodiscard]] std::vector<FrozenScreenshot> takeFrozenScreenshots();
-    void begin(bool freezeScreen, bool fullscreenPick = false, bool confirmRegion = false);
+    void begin(
+        bool freezeScreen, bool fullscreenPick = false, bool confirmRegion = false,
+        std::optional<LogicalRect> initialRegion = std::nullopt
+    );
     void cancel();
     void cancelSelection();
     void onOutputChange();
+
+    // Valid ≥2×2 selection left behind by cancelSelection (cleared on read).
+    [[nodiscard]] std::optional<LogicalRect> takeAbandonedRegion();
 
     [[nodiscard]] bool isActive() const noexcept { return m_active; }
     [[nodiscard]] bool onPointerEvent(const PointerEvent& event);
@@ -52,6 +58,7 @@ namespace capture {
     void completeSelection();
     void confirmPendingSelection();
     void completeFullscreenPick(wl_output* output);
+    [[nodiscard]] std::optional<LogicalRect> selectionRectIfValid() const;
 
     WaylandConnection* m_wayland = nullptr;
     RenderContext* m_renderContext = nullptr;
@@ -59,6 +66,7 @@ namespace capture {
     FailureCallback m_onFailure;
     std::vector<std::unique_ptr<Instance>> m_instances;
     std::vector<FrozenScreenshot> m_frozenScreenshots;
+    std::optional<LogicalRect> m_abandonedRegion;
     bool m_active = false;
     bool m_freezeScreen = false;
     bool m_fullscreenPick = false;

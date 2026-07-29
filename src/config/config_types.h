@@ -975,6 +975,7 @@ struct ShellConfig {
     bool copyToClipboard = true;
     bool freezeScreen = true;
     bool confirmRegion = false;
+    bool rememberLastRegion = false;
     bool showCursor = false;
     bool pipeToCommand = false;
     std::string pipeCommand;

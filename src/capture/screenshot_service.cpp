@@ -31,6 +31,7 @@
 #include <expected>
 #include <fcntl.h>
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <stb/stb_image_resize2.h>
 #include <sys/wait.h>
@@ -41,6 +42,27 @@ namespace {
 
   constexpr Logger kLog("screenshot");
   constexpr const char* kScreenshotPathEnv = "NOCTALIA_SCREENSHOT_PATH";
+  constexpr const char* kStateOwner = "screenshot";
+  constexpr const char* kLastRegionKey = "last_region";
+
+  [[nodiscard]] std::string encodeRegion(const LogicalRect& region) {
+    return std::format("{},{},{},{}", region.x, region.y, region.width, region.height);
+  }
+
+  [[nodiscard]] std::optional<LogicalRect> parseRegion(std::string_view text) {
+    int x = 0;
+    int y = 0;
+    int width = 0;
+    int height = 0;
+    const std::string copy(text);
+    if (std::sscanf(copy.c_str(), "%d,%d,%d,%d", &x, &y, &width, &height) != 4) {
+      return std::nullopt;
+    }
+    if (width < 2 || height < 2) {
+      return std::nullopt;
+    }
+    return LogicalRect{.x = x, .y = y, .width = width, .height = height};
+  }
 
   [[nodiscard]] std::string defaultFilenamePattern() { return "screenshot_%Y%m%d_%H%M%S"; }
 
@@ -511,13 +533,35 @@ namespace {
 } // namespace
 
 ScreenshotService::ScreenshotService(
-    WaylandConnection& wayland, CompositorPlatform& platform, NotificationManager& notifications,
+    WaylandConnection& wayland, CompositorPlatform& platform, NotificationManager& notifications, ConfigService& config,
     ClipboardService* clipboard
 )
-    : m_wayland(wayland), m_platform(platform), m_notifications(notifications), m_clipboard(clipboard),
-      m_capture(wayland) {}
+    : m_wayland(wayland), m_platform(platform), m_notifications(notifications), m_config(config),
+      m_clipboard(clipboard), m_capture(wayland) {}
 
 ScreenshotService::~ScreenshotService() = default;
+
+void ScreenshotService::rememberRegion(const LogicalRect& region) {
+  if (region.width < 2 || region.height < 2) {
+    return;
+  }
+  (void)m_config.setStateString(kStateOwner, kLastRegionKey, encodeRegion(region));
+}
+
+std::optional<LogicalRect> ScreenshotService::loadRememberedRegion() const {
+  const auto text = m_config.stateString(kStateOwner, kLastRegionKey);
+  if (!text.has_value()) {
+    return std::nullopt;
+  }
+  auto region = parseRegion(*text);
+  if (!region.has_value()) {
+    return std::nullopt;
+  }
+  if (intersectGlobalRegion(m_wayland, *region).empty()) {
+    return std::nullopt;
+  }
+  return region;
+}
 
 bool ScreenshotService::available() const noexcept { return m_capture.available(); }
 
@@ -560,6 +604,7 @@ ScreenshotService::OutputOptions ScreenshotService::outputOptionsFromConfig(cons
   options.pipeToCommand = screenshot.pipeToCommand;
   options.freezeScreen = screenshot.freezeScreen;
   options.confirmRegion = screenshot.confirmRegion;
+  options.rememberLastRegion = screenshot.rememberLastRegion;
   options.showCursor = screenshot.showCursor;
   options.pipeCommand = screenshot.pipeCommand;
   options.directory = screenshot.directory;
@@ -740,10 +785,14 @@ void ScreenshotService::ensureRegionOverlay() {
   });
   m_regionOverlay->setCompleteCallback([this](std::optional<LogicalRect> region, wl_output* output) {
     if (!region.has_value()) {
-      m_frozenScreenshots.clear();
       if (m_regionOverlay != nullptr) {
+        if (auto abandoned = m_regionOverlay->takeAbandonedRegion();
+            abandoned.has_value() && m_regionOutputOptions.rememberLastRegion) {
+          rememberRegion(*abandoned);
+        }
         m_regionOverlay->setFrozenScreenshots({});
       }
+      m_frozenScreenshots.clear();
       m_regionFullscreenPick = false;
       return;
     }
@@ -763,6 +812,9 @@ void ScreenshotService::ensureRegionOverlay() {
       m_regionFullscreenPick = false;
       return;
     }
+    if (m_regionOutputOptions.rememberLastRegion) {
+      rememberRegion(*region);
+    }
     if (m_regionOutputOptions.freezeScreen && m_regionOverlay != nullptr) {
       m_frozenScreenshots = m_regionOverlay->takeFrozenScreenshots();
     }
@@ -779,7 +831,9 @@ void ScreenshotService::startRegionOverlay(RenderContext& renderContext) {
   m_regionFullscreenPick = false;
   ensureRegionOverlay();
   m_regionOverlay->setFrozenScreenshots({});
-  m_regionOverlay->begin(false, false, m_regionOutputOptions.confirmRegion);
+  const std::optional<LogicalRect> initial =
+      m_regionOutputOptions.rememberLastRegion ? loadRememberedRegion() : std::nullopt;
+  m_regionOverlay->begin(false, false, m_regionOutputOptions.confirmRegion, initial);
 }
 
 void ScreenshotService::startFullscreenOverlay(RenderContext& renderContext) {
@@ -863,7 +917,11 @@ void ScreenshotService::finishFreezeCapture() {
 
   ensureRegionOverlay();
   m_regionOverlay->setFrozenScreenshots(std::move(m_frozenScreenshots));
-  m_regionOverlay->begin(true, m_regionFullscreenPick, !m_regionFullscreenPick && m_regionOutputOptions.confirmRegion);
+  const std::optional<LogicalRect> initial =
+      (!m_regionFullscreenPick && m_regionOutputOptions.rememberLastRegion) ? loadRememberedRegion() : std::nullopt;
+  m_regionOverlay->begin(
+      true, m_regionFullscreenPick, !m_regionFullscreenPick && m_regionOutputOptions.confirmRegion, initial
+  );
 }
 
 void ScreenshotService::abortFreezeCapture(const std::string& message) {
