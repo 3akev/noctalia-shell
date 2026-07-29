@@ -2046,6 +2046,10 @@
           "description": "关闭弹窗、收起面板或取消当前操作",
           "label": "取消"
         },
+        "delete": {
+          "description": "删除选中项",
+          "label": "删除"
+        },
         "down": {
           "description": "向下移动焦点或选中项",
           "label": "向下导航"
@@ -2208,6 +2212,10 @@
         "control-center-width": {
           "description": "控制中心面板的宽度（像素）；紧凑模式和无侧边栏模式会以此为基准按比例缩小",
           "label": "控制中心宽度"
+        },
+        "floating-layer": {
+          "description": "如果输入法候选窗口被悬浮面板遮挡，请使用 Top；Overlay 可使面板保持在全屏内容之上",
+          "label": "悬浮面板层级"
         },
         "floating-offset": {
           "description": "悬浮或独立面板与状态栏边缘的间距（像素）",
@@ -2430,7 +2438,9 @@
         },
         "calendar-edit": {
           "button": "编辑",
-          "description": "更新日历账户"
+          "button-reconnect": "重新连接",
+          "description": "更新日历账户",
+          "description-reconnect": "缺少 Google 账户授权。请重新连接此账户。"
         },
         "calendar-event-date-format": {
           "description": "事件卡片中所选日期的显示格式",
@@ -2450,7 +2460,7 @@
           "description-error": "无法打开或保存加密的日历事件缓存。",
           "description-locked": "加密存储已锁定或访问被拒绝。请恢复访问后重试。",
           "description-migration": "明文日历事件缓存正等待加密。迁移成功前，现有缓存将继续保留。",
-          "description-missing-key": "已配置的加密存储密钥缺失。现有日历缓存文件已保留。",
+          "description-missing-key": "日历事件缓存密钥缺失。账户凭据使用单独的存储；现有缓存文件已保留。",
           "description-opening": "正在打开加密的日历事件缓存。",
           "description-recovery": "日历事件缓存验证失败或已损坏。请恢复正确的密钥后重试，或重置私密存储。",
           "description-unavailable": "没有可用的 Secret Service 提供程序。日历事件仅在本次会话中可用。",
@@ -3168,8 +3178,8 @@
         "rate": "功耗",
         "regular": "常规",
         "replace": "替换",
-        "scroll-gesture": "每次手势一次",
-        "scroll-steps": "每个滚动步长",
+        "scroll-gesture": "每滚动操作",
+        "scroll-steps": "每滚动步长",
         "shared": "共享运行",
         "short": "简短",
         "swap-percent": "Swap 百分比",
@@ -3571,7 +3581,7 @@
           "label": "脚本"
         },
         "scroll-repeat": {
-          "description": "选择滚动操作是遵循命令语义、每次手势仅运行一次，还是针对每个滚动步长重复运行",
+          "description": "选择滚动重复模式：“自动”保持命令默认的滚动表现；“每滚动操作”忽略每次滚动的步长，仅每滚动时运行一次；“每滚动步长”根据每个滚动步长重复运行命令",
           "label": "滚动重复模式"
         },
         "show-active-indicator": {
@@ -3749,6 +3759,20 @@
       "native-title": "Noctalia 设置",
       "no-results": "未找到相关设置",
       "no-results-hint": "请尝试使用其他设置名称或配置键。",
+      "offline-mode-notice": {
+        "appearance": "社区配色方案下载将无法工作。",
+        "calendar-account": "日历发现与同步将无法工作。",
+        "disable-hint": "请在安全设置部分禁用离线模式。",
+        "launcher": "货币汇率获取将无法工作。",
+        "location": "天气与位置查询将无法工作。",
+        "plugin-store": "远程插件目录与下载请求将无法工作。",
+        "plugins": "插件 HTTP 请求将无法工作。Git 源仍可更新。",
+        "security": "外部 IP 查询与遥测将无法工作。",
+        "services": "日历账号同步将无法工作。",
+        "template-store": "社区模板下载将无法工作。",
+        "templates": "社区模板下载与更新将无法工作。",
+        "title": "离线模式"
+      },
       "reset-page": "重置页面",
       "reset-page-confirm": "确认重置",
       "search-placeholder": "搜索设置…",

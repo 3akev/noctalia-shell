@@ -528,8 +528,9 @@
         "show-label": "Show Label",
         "show-login-button": "Login Button",
         "show-media": "Media",
-        "show-unlock-hint": "Unlock Hint",
+        "show-password-hint": "Password Hint",
         "show-session-buttons": "Session Buttons",
+        "show-unlock-hint": "Unlock Hint",
         "show-vpn-label": "Show VPN Label",
         "show-weather": "Weather",
         "show-when-idle": "Show When Idle",
@@ -2111,7 +2112,7 @@
           "label": "Desktop Capture"
         },
         "enabled": {
-          "description": "Enable session lock, logind integration, lock-before-sleep, and lock actions",
+          "description": "Enable session lock, logind integration, and lock actions",
           "label": "Lock Screen"
         },
         "fingerprint": {
@@ -3614,10 +3615,6 @@
           "description": "Show Caps Lock state",
           "label": "Show Caps Lock"
         },
-        "show-unlock-hint": {
-          "description": "Show the status card above the login box for unlock hints and auth prompts. Errors and Caps Lock warnings still appear when this is off.",
-          "label": "Unlock Hint"
-        },
         "show-condition": {
           "description": "Show weather condition text",
           "label": "Show Condition"
@@ -3645,6 +3642,10 @@
         "show-temperature": {
           "description": "Show current temperature text",
           "label": "Show Temperature"
+        },
+        "show-unlock-hint": {
+          "description": "Show the status card above the login box for unlock hints and auth prompts. Errors and Caps Lock warnings still appear when this is off.",
+          "label": "Unlock Hint"
         },
         "show-vpn-label": {
           "description": "Replaces network label with VPN label in replace mode; adds VPN label next to VPN icon in both mode",

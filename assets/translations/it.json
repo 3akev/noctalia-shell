@@ -117,7 +117,18 @@
         "error": "Errore meteo",
         "loading": "Meteo...",
         "no-location": "Nessuna posizione",
-        "off": "Meteo disattivato"
+        "off": "Meteo disattivato",
+        "tooltip": {
+          "condition": "Condizione",
+          "high": "Massima",
+          "humidity": "Umidità",
+          "low": "Minima",
+          "sunrise": "Alba",
+          "sunset": "Tramonto",
+          "temperature": "Temperatura",
+          "uv": "Indice UV",
+          "wind": "Vento"
+        }
       }
     }
   },
@@ -519,6 +530,7 @@
         "show-media": "Media",
         "show-password-hint": "Suggerimento password",
         "show-session-buttons": "Pulsanti di sessione",
+        "show-unlock-hint": "Sblocca avvisi",
         "show-vpn-label": "Mostra etichetta VPN",
         "show-weather": "Meteo",
         "show-when-idle": "Mostra quando inattivo",
@@ -2046,6 +2058,10 @@
           "description": "Chiude popup, ignora pannelli o annulla l'operazione corrente",
           "label": "Annulla"
         },
+        "delete": {
+          "description": "Elimina l'elemento selezionato",
+          "label": "Elimina"
+        },
         "down": {
           "description": "Sposta focus o selezione giù di una riga",
           "label": "Naviga giù"
@@ -2208,6 +2224,10 @@
         "control-center-width": {
           "description": "Larghezza del pannello del centro di controllo in pixel (le modalità compatta e senza barra laterale si riducono rispetto a questo valore)",
           "label": "Larghezza Control Center"
+        },
+        "floating-layer": {
+          "description": "Usa Top se le finestre coinvolte al metodo di input sono nascoste dietro pannelli flottanti; Overlay mantiene i pannelli sopra il contenuto a schermo intero",
+          "label": "Layer del pannello flottante"
         },
         "floating-offset": {
           "description": "Spazio in pixel tra un pannello mobile o staccato e il bordo della barra",
@@ -2452,7 +2472,7 @@
           "description-error": "Impossibile aprire o salvare la cache degli eventi del calendario crittografata.",
           "description-locked": "L'archivio crittografato è bloccato o l'accesso è stato negato. Correggi l'accesso e riprova.",
           "description-migration": "La cache degli eventi del calendario in testo normale è in attesa di essere crittografata. Viene conservata finché la migrazione non ha esito positivo.",
-          "description-missing-key": "Manca la configurazione della chiave di archiviazione crittografata. I file della cache del calendario esistenti sono stati conservati.",
+          "description-missing-key": "Chiave della cache degli eventi del calendario mancante. Le credenziali dell'account utilizzano uno spazio di archiviazione separato; i file di cache esistenti sono stati preservati.",
           "description-opening": "È in corso l'apertura della cache degli eventi del calendario crittografati.",
           "description-recovery": "Non è stato possibile accedere alla cache eventi del calendario o la stessa è danneggiata. Riprovare dopo aver ripristinato la chiave corretta o reimpostato l'archivio privato.",
           "description-unavailable": "Nessun provider di Secret Service è disponibile. Gli eventi del calendario rimangono disponibili solo per questa sessione.",
@@ -3615,6 +3635,10 @@
         "show-temperature": {
           "description": "Mostra valore attuale della temperatura",
           "label": "Mostra temperatura"
+        },
+        "show-unlock-hint": {
+          "description": "Mostra la scheda di stato sopra la casella di accesso per avvisi di sblocco e prompt di autenticazione. Errori e avviso di capslock attivo verranno comunque visualizzati quando questo è disattivato.",
+          "label": "Sblocca avvisi"
         },
         "show-vpn-label": {
           "description": "Sostituisce l'etichetta di rete con l'etichetta VPN in modalità di sostituzione; aggiunge l'etichetta VPN accanto all'icona VPN in entrambe le modalità",
