@@ -18,8 +18,8 @@
 #include <filesystem>
 #include <fstream>
 #include <memory>
-#include <nlohmann/json.hpp>
 #include <optional>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <system_error>
@@ -38,6 +38,8 @@ namespace {
   constexpr std::string_view kGreeterStateDirEnv = "NOCTALIA_GREETER_STATE_DIR";
   constexpr std::string_view kStagedOutputLayoutFileName = "output_layout";
   constexpr std::string_view kStagedOutputTransformsFileName = "output_transforms";
+  // Staged sync.toml fragment (appearance + session); apply helper merges into live sync.toml.
+  constexpr std::string_view kStagedSyncTomlFileName = "sync.toml";
 
   [[nodiscard]] std::string
   resolveProgramPath(std::string_view name, std::initializer_list<const char*> fallbackPaths) {
@@ -64,8 +66,8 @@ namespace {
     return resolveColorSpec(*config.fillColor);
   }
 
-  void putPaletteColor(nlohmann::json& palette, std::string_view key, const Color& color) {
-    palette[std::string(key)] = formatRgbHex(color);
+  void putPaletteColor(toml::table& palette, std::string_view key, const Color& color) {
+    palette.insert_or_assign(std::string(key), formatRgbHex(color));
   }
 
   [[nodiscard]] std::filesystem::path greeterTomlPath() {
@@ -194,24 +196,24 @@ namespace {
     return staging;
   }
 
-  void putOptionalString(nlohmann::json& object, std::string_view key, const std::optional<std::string>& value) {
+  void putOptionalString(toml::table& table, std::string_view key, const std::optional<std::string>& value) {
     if (!value.has_value() || value->empty()) {
       return;
     }
-    object[std::string(key)] = *value;
+    table.insert_or_assign(std::string(key), *value);
   }
 
-  void appendSessionManifest(nlohmann::json& root, const ShellSessionConfig& session) {
-    nlohmann::json sessionJson;
-    nlohmann::json power;
+  void appendSessionToSyncToml(toml::table& root, const ShellSessionConfig& session) {
+    toml::table sessionTable;
+    toml::table power;
     putOptionalString(power, "suspend", session.power.suspend);
     putOptionalString(power, "reboot", session.power.reboot);
     putOptionalString(power, "shutdown", session.power.shutdown);
     if (!power.empty()) {
-      sessionJson["power"] = std::move(power);
+      sessionTable.insert("power", std::move(power));
     }
 
-    nlohmann::json actions = nlohmann::json::array();
+    toml::array actions;
     const auto& source = session.actions.empty() ? defaultSessionPanelActions() : session.actions;
     for (const SessionPanelActionConfig& row : source) {
       if (!row.enabled || !session_action::isKnown(row.action)) {
@@ -221,30 +223,48 @@ namespace {
         continue;
       }
 
-      nlohmann::json item;
-      item["action"] = row.action;
+      toml::table item;
+      item.insert_or_assign("action", row.action);
       putOptionalString(item, "command", row.command);
       putOptionalString(item, "label", row.label);
       putOptionalString(item, "glyph", row.glyph);
       if (row.variant != SessionActionButtonVariant::Default) {
-        item["variant"] = std::string(enumToKey(kSessionActionButtonVariants, row.variant));
+        item.insert_or_assign("variant", std::string(enumToKey(kSessionActionButtonVariants, row.variant)));
       }
       actions.push_back(std::move(item));
     }
-    sessionJson["actions"] = std::move(actions);
-    root["session"] = std::move(sessionJson);
+    if (!actions.empty()) {
+      sessionTable.insert("actions", std::move(actions));
+    }
+    if (!sessionTable.empty()) {
+      root.insert("session", std::move(sessionTable));
+    }
   }
 
-  [[nodiscard]] bool writeManifest(
+  [[nodiscard]] std::string formatToml(const toml::table& table) {
+    std::ostringstream out;
+    out << toml::toml_formatter{
+        table, toml::toml_formatter::default_flags & ~toml::format_flags::allow_literal_strings
+    };
+    return out.str();
+  }
+
+  // Stages a sync.toml fragment (appearance + session) for noctalia-greeter-apply-appearance.
+  [[nodiscard]] bool writeStagedSyncToml(
       const std::filesystem::path& staging, const Config& config, std::string_view resolvedMode,
       const std::string& wallpaperPath, const std::string& installedWallpaperName,
       const std::vector<StagedOutputWallpaper>& outputWallpapers
   ) {
-    nlohmann::json root;
-    root["version"] = 1;
-    root["theme_mode"] = resolvedMode;
+    toml::table root;
+    toml::table appearance;
+    appearance.insert_or_assign("scheme", "Synced");
+    appearance.insert_or_assign("theme_mode", std::string(resolvedMode));
+    appearance.insert_or_assign("corner_radius_scale", static_cast<double>(config.shell.cornerRadiusScale));
+    if (!config.shell.fontFamily.empty()) {
+      appearance.insert_or_assign("font_family", config.shell.fontFamily);
+    }
 
-    nlohmann::json palette;
+    toml::table palette;
     putPaletteColor(palette, "primary", ::palette.primary);
     putPaletteColor(palette, "on_primary", ::palette.onPrimary);
     putPaletteColor(palette, "secondary", ::palette.secondary);
@@ -261,57 +281,65 @@ namespace {
     putPaletteColor(palette, "shadow", ::palette.shadow);
     putPaletteColor(palette, "hover", ::palette.hover);
     putPaletteColor(palette, "on_hover", ::palette.onHover);
-    root["palette"] = std::move(palette);
+    appearance.insert("palette", std::move(palette));
 
-    nlohmann::json wallpaper;
+    toml::table wallpaper;
     if (!installedWallpaperName.empty()) {
-      wallpaper["path"] = (std::filesystem::path(kDefaultGreeterStateDir) / installedWallpaperName).string();
+      wallpaper.insert_or_assign(
+          "path", (std::filesystem::path(kDefaultGreeterStateDir) / installedWallpaperName).string()
+      );
     } else if (!wallpaperPath.empty()) {
-      wallpaper["path"] = wallpaperPath;
+      wallpaper.insert_or_assign("path", wallpaperPath);
     }
-    wallpaper["fill_mode"] = std::string(enumToKey(kWallpaperFillModes, config.wallpaper.fillMode));
+    const std::string fillMode = std::string(enumToKey(kWallpaperFillModes, config.wallpaper.fillMode));
+    wallpaper.insert_or_assign("fill_mode", fillMode);
     const Color fillColor = resolveWallpaperFillColor(config.wallpaper);
     if (fillColor.a > 0.0f) {
-      wallpaper["fill_color"] = formatRgbHex(fillColor);
+      wallpaper.insert_or_assign("fill_color", formatRgbHex(fillColor));
     }
-    root["wallpaper"] = wallpaper;
+    if (!wallpaper.empty()) {
+      appearance.insert("wallpaper", std::move(wallpaper));
+    }
 
-    // Per-output wallpapers (connector name -> installed path or color:). Greeter views select by output.
     if (!outputWallpapers.empty()) {
-      nlohmann::json byOutput = nlohmann::json::object();
+      toml::table byOutput;
       for (const auto& entry : outputWallpapers) {
-        nlohmann::json item;
+        toml::table item;
         if (!entry.installedName.empty()) {
-          item["path"] = (std::filesystem::path(kDefaultGreeterStateDir) / entry.installedName).string();
+          item.insert_or_assign(
+              "path", (std::filesystem::path(kDefaultGreeterStateDir) / entry.installedName).string()
+          );
         } else if (!entry.sourcePath.empty()) {
-          // color:#RRGGBB (or other non-staged specs) — preserve as-is.
-          item["path"] = entry.sourcePath;
+          item.insert_or_assign("path", entry.sourcePath);
         } else {
           continue;
         }
-        item["fill_mode"] = wallpaper["fill_mode"];
-        if (wallpaper.contains("fill_color")) {
-          item["fill_color"] = wallpaper["fill_color"];
+        item.insert_or_assign("fill_mode", fillMode);
+        if (fillColor.a > 0.0f) {
+          item.insert_or_assign("fill_color", formatRgbHex(fillColor));
         }
-        byOutput[entry.connector] = std::move(item);
+        byOutput.insert(entry.connector, std::move(item));
       }
       if (!byOutput.empty()) {
-        root["wallpapers"] = std::move(byOutput);
+        appearance.insert("wallpapers", std::move(byOutput));
       }
     }
-    root["corner_radius_scale"] = config.shell.cornerRadiusScale;
-    if (!config.shell.fontFamily.empty()) {
-      root["font_family"] = config.shell.fontFamily;
-    }
-    appendSessionManifest(root, config.shell.session);
 
-    const auto manifestPath = staging / "appearance.json";
-    std::ofstream out(manifestPath);
+    root.insert("appearance", std::move(appearance));
+    appendSessionToSyncToml(root, config.shell.session);
+
+    const auto syncPath = staging / kStagedSyncTomlFileName;
+    std::ofstream out(syncPath);
     if (!out.is_open()) {
-      kLog.warn("failed to open staging manifest '{}'", manifestPath.string());
+      kLog.warn("failed to open staged sync.toml '{}'", syncPath.string());
       return false;
     }
-    out << root.dump(2) << '\n';
+    out << "# noctalia-greeter staged sync.toml (merged into live sync.toml by apply-appearance)\n\n";
+    out << formatToml(root);
+    if (!out.good()) {
+      kLog.warn("failed to write staged sync.toml '{}'", syncPath.string());
+      return false;
+    }
     return true;
   }
 
@@ -637,7 +665,9 @@ namespace greeter {
         }
       }
     }
-    if (!writeManifest(staging, config, resolvedThemeMode, wallpaperPath, installedWallpaperName, outputWallpapers)) {
+    if (!writeStagedSyncToml(
+            staging, config, resolvedThemeMode, wallpaperPath, installedWallpaperName, outputWallpapers
+        )) {
       finish(false);
       return GreeterSyncLaunch::Failed;
     }
