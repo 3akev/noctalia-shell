@@ -179,6 +179,14 @@ namespace capture {
 
   void ScreenshotRegionOverlay::setFailureCallback(FailureCallback callback) { m_onFailure = std::move(callback); }
 
+  void ScreenshotRegionOverlay::setConfirmKeybindLabels(
+      std::string copyLabel, std::string saveLabel, std::string cancelLabel
+  ) {
+    m_copyKeybindLabel = std::move(copyLabel);
+    m_saveKeybindLabel = std::move(saveLabel);
+    m_cancelKeybindLabel = std::move(cancelLabel);
+  }
+
   void ScreenshotRegionOverlay::setFrozenScreenshots(std::vector<FrozenScreenshot> screenshots) {
     m_frozenScreenshots = std::move(screenshots);
   }
@@ -230,7 +238,7 @@ namespace capture {
       }
       cancel();
       if (m_onComplete) {
-        m_onComplete(std::nullopt, nullptr);
+        m_onComplete(std::nullopt, nullptr, ConfirmAction::None);
       }
     });
   }
@@ -441,9 +449,19 @@ namespace capture {
       if (!key.pressed) {
         return;
       }
-      if (m_confirming && KeySymbol::isEnterOrSpace(key.sym)) {
-        DeferredCall::callLater([this]() { confirmPendingSelection(); });
-        return;
+      if (m_confirming) {
+        if (KeybindMatcher::matches(KeybindAction::Copy, key.sym, key.modifiers)) {
+          DeferredCall::callLater([this]() { confirmPendingSelection(ConfirmAction::ForceClipboard); });
+          return;
+        }
+        if (KeybindMatcher::matches(KeybindAction::Save, key.sym, key.modifiers)) {
+          DeferredCall::callLater([this]() { confirmPendingSelection(ConfirmAction::ForceSave); });
+          return;
+        }
+        if (KeySymbol::isEnterOrSpace(key.sym)) {
+          DeferredCall::callLater([this]() { confirmPendingSelection(ConfirmAction::None); });
+          return;
+        }
       }
       if (KeybindMatcher::matches(KeybindAction::Cancel, key.sym, key.modifiers)) {
         cancelSelection();
@@ -641,9 +659,19 @@ namespace capture {
     }
 
     if (!KeybindMatcher::matches(KeybindAction::Cancel, event.sym, event.modifiers)) {
-      if (m_confirming && KeySymbol::isEnterOrSpace(event.sym)) {
-        confirmPendingSelection();
-        return true;
+      if (m_confirming) {
+        if (KeybindMatcher::matches(KeybindAction::Copy, event.sym, event.modifiers)) {
+          confirmPendingSelection(ConfirmAction::ForceClipboard);
+          return true;
+        }
+        if (KeybindMatcher::matches(KeybindAction::Save, event.sym, event.modifiers)) {
+          confirmPendingSelection(ConfirmAction::ForceSave);
+          return true;
+        }
+        if (KeySymbol::isEnterOrSpace(event.sym)) {
+          confirmPendingSelection(ConfirmAction::None);
+          return true;
+        }
       }
       return false;
     }
@@ -820,7 +848,12 @@ namespace capture {
           continue;
         }
         if (inst->confirmHintLabel != nullptr) {
-          inst->confirmHintLabel->setText(i18n::tr("bar.screenshot.confirm-region"));
+          inst->confirmHintLabel->setText(
+              i18n::tr(
+                  "bar.screenshot.confirm-region", "copy", m_copyKeybindLabel, "save", m_saveKeybindLabel, "cancel",
+                  m_cancelKeybindLabel
+              )
+          );
         }
         const auto surfaceW = static_cast<float>(inst->surface->width());
         const auto surfaceH = static_cast<float>(inst->surface->height());
@@ -844,7 +877,7 @@ namespace capture {
       m_active = false;
       destroySurfaces();
       if (m_onComplete) {
-        m_onComplete(std::nullopt, nullptr);
+        m_onComplete(std::nullopt, nullptr, ConfirmAction::None);
       }
       return;
     }
@@ -874,11 +907,11 @@ namespace capture {
         .height = height,
     };
     if (m_onComplete) {
-      m_onComplete(region, nullptr);
+      m_onComplete(region, nullptr, ConfirmAction::None);
     }
   }
 
-  void ScreenshotRegionOverlay::confirmPendingSelection() {
+  void ScreenshotRegionOverlay::confirmPendingSelection(ConfirmAction action) {
     if (!m_active || !m_confirming) {
       return;
     }
@@ -896,7 +929,7 @@ namespace capture {
 
     if (width < 2 || height < 2) {
       if (m_onComplete) {
-        m_onComplete(std::nullopt, nullptr);
+        m_onComplete(std::nullopt, nullptr, ConfirmAction::None);
       }
       return;
     }
@@ -908,14 +941,14 @@ namespace capture {
         .height = height,
     };
     if (m_onComplete) {
-      m_onComplete(region, nullptr);
+      m_onComplete(region, nullptr, action);
     }
   }
 
   void ScreenshotRegionOverlay::completeFullscreenPick(wl_output* output) {
     if (!m_active || output == nullptr || m_wayland == nullptr) {
       if (m_onComplete) {
-        m_onComplete(std::nullopt, nullptr);
+        m_onComplete(std::nullopt, nullptr, ConfirmAction::None);
       }
       return;
     }
@@ -925,7 +958,7 @@ namespace capture {
       m_active = false;
       destroySurfaces();
       if (m_onComplete) {
-        m_onComplete(std::nullopt, nullptr);
+        m_onComplete(std::nullopt, nullptr, ConfirmAction::None);
       }
       return;
     }
@@ -940,7 +973,7 @@ namespace capture {
         .height = out->logicalHeight,
     };
     if (m_onComplete) {
-      m_onComplete(region, output);
+      m_onComplete(region, output, ConfirmAction::None);
     }
   }
 
