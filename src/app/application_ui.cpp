@@ -507,7 +507,10 @@ void Application::initPanelManagerAndPanels() {
     m_panelManager.openPanel("wallpaper", PanelOpenRequest{.output = output});
   });
   m_settingsWindow.setCalendarService(&m_calendarService);
-  m_calendarService.setCredentialChangeCallback([this]() { m_settingsWindow.onExternalOptionsChanged(); });
+  m_calendarService.setCredentialChangeCallback([this]() {
+    m_settingsWindow.onExternalOptionsChanged();
+    retrySecretServiceConsumers();
+  });
   m_settingsWindow.setClipboardService(&m_clipboardService);
   m_clipboardService.setPersistenceChangeCallback([this]() { m_settingsWindow.onExternalOptionsChanged(); });
   m_settingsWindow.setResetEncryptedStorage([this]() {
