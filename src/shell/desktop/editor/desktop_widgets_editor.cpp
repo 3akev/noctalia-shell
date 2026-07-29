@@ -52,7 +52,7 @@ namespace {
   constexpr float kToolbarY = 68.0f;
   constexpr float kSelectionStroke = 2.0f;
   constexpr float kShadowExpand = 1.0f;
-  const Color kShadowColor = rgba(0.0f, 0.0f, 0.0f, 0.45f);
+  const ColorSpec kShadowColor = colorSpecFromRole(ColorRole::Shadow, 0.45f);
   constexpr float kRotatePadding = 14.0f;
   constexpr float kHandleSize = 14.0f;
   constexpr float kDisabledWidgetOpacity = 0.25f;
