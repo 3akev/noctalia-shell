@@ -3299,6 +3299,10 @@
           "description": "Centraliza as barras do visualizador em vez de alinhá-las à borda",
           "label": "Centralizado"
         },
+        "change-color-on-hover": {
+          "description": "Mude o preenchimento de espaço de trabalho e cores de rótulos quando o ponteiro pairar sobre",
+          "label": "Mudar Cor ao Passar o Mouse"
+        },
         "color": {
           "description": "Cor do ícone e rótulo deste widget; cores hexadecimais fixas também são suportadas",
           "label": "Cor"
