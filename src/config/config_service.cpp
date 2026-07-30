@@ -175,10 +175,12 @@ namespace {
       return;
     }
 
-    const bool showIcon = widget.getBool("show_icon", true);
+    const bool showGlyph = widget.getBool("show_glyph", true);
     const bool showLabel = widget.getBool("show_label", true);
-    if (!showIcon && !showLabel) {
-      throw std::runtime_error("widget." + std::string(widgetName) + ": show_icon and show_label cannot both be false");
+    if (!showGlyph && !showLabel) {
+      throw std::runtime_error(
+          "widget." + std::string(widgetName) + ": show_glyph and show_label cannot both be false"
+      );
     }
   }
 

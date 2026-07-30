@@ -3645,12 +3645,8 @@
           "description": "Show the widget glyph or custom image",
           "label": "Show Glyph"
         },
-        "show-icon": {
-          "description": "Show this widget's icon",
-          "label": "Show Icon"
-        },
         "show-label": {
-          "description": "Show text next to the icon",
+          "description": "Show the widget's text label",
           "label": "Show Label"
         },
         "show-num-lock": {

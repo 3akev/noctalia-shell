@@ -548,6 +548,43 @@ show_label = false
     expect(secondPassIssues.empty(), "sysmon presentation normalization was not idempotent");
   }
 
+  void checkKeyboardLayoutShowGlyphMigration() {
+    toml::table config = toml::parse(R"(
+[widget.keyboard_layout]
+show_icon = false
+
+[widget.named-layout]
+type = "keyboard_layout"
+show_icon = true
+show_glyph = false
+
+[widget.clock]
+show_icon = false
+)");
+    noctalia::config::LegacyConfigIssues issues;
+    noctalia::config::normalizeLegacyConfig(config, issues);
+
+    expect(
+        config["widget"]["keyboard_layout"]["show_glyph"].value<bool>() == std::optional<bool>{false}
+            && !config["widget"]["keyboard_layout"].as_table()->contains("show_icon"),
+        "implicit keyboard layout show_icon was not migrated"
+    );
+    expect(
+        config["widget"]["named-layout"]["show_glyph"].value<bool>() == std::optional<bool>{false}
+            && !config["widget"]["named-layout"].as_table()->contains("show_icon"),
+        "legacy keyboard layout setting overwrote canonical show_glyph"
+    );
+    expect(
+        config["widget"]["clock"]["show_icon"].value<bool>() == std::optional<bool>{false},
+        "another widget type was migrated as keyboard layout"
+    );
+    expect(issues.size() == 2, "expected one migration issue per keyboard layout widget");
+
+    noctalia::config::LegacyConfigIssues secondPassIssues;
+    noctalia::config::normalizeLegacyConfig(config, secondPassIssues);
+    expect(secondPassIssues.empty(), "keyboard layout show_glyph normalization was not idempotent");
+  }
+
   void checkVersionGating() {
     toml::table legacy = toml::parse(R"(
 [bar.main]
@@ -694,6 +731,7 @@ int main() {
   checkCustomButtonCommandsMigration();
   checkDeadZoneActionsMigration();
   checkSysmonPresentationMigration();
+  checkKeyboardLayoutShowGlyphMigration();
   checkVersionGating();
   checkReminderFingerprint();
   checkRegistryOrdering();
