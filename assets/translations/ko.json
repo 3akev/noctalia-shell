@@ -3116,10 +3116,37 @@
         "categories": "카테고리",
         "category-all": "모두",
         "empty": "필터와 일치하는 템플릿이 없습니다",
-        "enabled-count": "{count} 활성화됨"
+        "enabled-count": "{count}개 활성화됨",
+        "filter-all": "모두",
+        "filter-enabled": "활성화됨",
+        "results-count": "{count}개 템플릿",
+        "search-placeholder": "템플릿 검색...",
+        "sort-category-asc": "카테고리순 정렬 (A-Z)",
+        "sort-category-desc": "카테고리순 정렬 (Z-A)",
+        "sort-name-asc": "이름순 정렬 (A-Z)",
+        "sort-name-desc": "이름순 정렬 (Z-A)",
+        "title": "커뮤니티 템플릿"
       }
     },
     "widgets": {
+      "actions": {
+        "command-placeholder": "쉘 명령어",
+        "default": "기본값",
+        "disabled": "비활성화됨",
+        "run-command": "명령어 실행...",
+        "unset": "설정되지 않음"
+      },
+      "gestures": {
+        "back": "뒤로 가기 버튼",
+        "forward": "앞으로 가기 버튼",
+        "left": "좌클릭",
+        "middle": "중간 클릭",
+        "right": "우클릭",
+        "scroll-down": "아래 스크롤",
+        "scroll-left": "왼쪽 스크롤",
+        "scroll-right": "오른쪽 스크롤",
+        "scroll-up": "위 스크롤"
+      },
       "instances": {
         "cpu": "CPU",
         "date": "날짜",
@@ -3144,6 +3171,7 @@
         "auto": "자동",
         "before": "이전",
         "both": "둘 다",
+        "compact": "간결",
         "count": "개수",
         "cpu-temp": "CPU 온도",
         "cpu-usage": "CPU 사용률",
@@ -3183,6 +3211,8 @@
         "rate": "속도",
         "regular": "기본",
         "replace": "교체",
+        "scroll-gesture": "제스처당 한 번",
+        "scroll-steps": "움직임마다",
         "shared": "공유",
         "short": "짧게",
         "swap-percent": "스왑 퍼센트",
@@ -3194,6 +3224,10 @@
         "workspace-label-inside": "필 안쪽"
       },
       "settings": {
+        "actions": {
+          "description": "이 위젯에서 각 마우스 제스처가 수행할 동작을 설정합니다. 명령어를 선택하거나, 셸 명령어를 실행하거나, 기능을 비활성화할 수 있습니다.",
+          "label": "제스처 동작"
+        },
         "active-color": {
           "description": "활성 개인 정보 표시기에 사용되는 색상. 고정 hex 색상도 지원됩니다",
           "label": "활성 색상"
@@ -3264,6 +3298,10 @@
         "centered": {
           "description": "시각화 바를 가장자리에 정렬하는 대신 가운데에 배치",
           "label": "가운데 정렬"
+        },
+        "change-color-on-hover": {
+          "description": "포인터가 워크스페이스 위에 있을 때 채우기 색상과 레이블 색상을 변경합니다",
+          "label": "마우스 오버 시 색상 변경"
         },
         "color": {
           "description": "이 위젯의 아이콘 및 레이블 색상 역할. 고정 hex 색상도 지원됩니다",
@@ -3579,6 +3617,10 @@
           "description": "lua 스크립트 경로",
           "label": "스크립트"
         },
+        "scroll-repeat": {
+          "description": "스크롤 동작이 명령어 의미론을 따를지, 제스처당 한 번만 실행될지, 아니면 각 스크롤 단계마다 반복될지 선택합니다",
+          "label": "스크롤 반복"
+        },
         "show-active-indicator": {
           "description": "태스크바의 활성 창 아이콘 아래에 작은 점 표시",
           "label": "활성 창 표시기"
@@ -3618,6 +3660,10 @@
         "show-temperature": {
           "description": "현재 온도 텍스트 표시",
           "label": "온도 표시"
+        },
+        "show-unlock-hint": {
+          "description": "잠금 해제 힌트 및 인증 프롬프트용 상태 카드를 로그인 창 위에 표시합니다. 이 옵션을 꺼도 오류 및 Caps Lock 경고는 계속 표시됩니다.",
+          "label": "잠금 해제 힌트"
         },
         "show-vpn-label": {
           "description": "VPN 이름 표시: 교체 모드에서는 네트워크 레이블을 대체하고, 둘 다 모드에서는 VPN 아이콘 옆에 레이블 추가",
@@ -3754,6 +3800,20 @@
       "native-title": "Noctalia 설정",
       "no-results": "설정을 찾을 수 없음",
       "no-results-hint": "다른 설정 이름이나 설정 키를 시도해 보세요.",
+      "offline-mode-notice": {
+        "appearance": "커뮤니티 팔레트 다운로드가 작동하지 않습니다.",
+        "calendar-account": "캘린더 검색 및 동기화가 작동하지 않습니다.",
+        "disable-hint": "보안 섹션에서 오프라인 모드를 비활성화하세요.",
+        "launcher": "환율 가져오기가 작동하지 않습니다.",
+        "location": "날씨 및 위치 조회가 작동하지 않습니다.",
+        "plugin-store": "원격 플러그인 카탈로그 및 다운로드 요청이 작동하지 않습니다.",
+        "plugins": "플러그인 HTTP 요청이 작동하지 않습니다. Git 소스는 계속 업데이트할 수 있습니다.",
+        "security": "외부 IP 조회 및 텔레메트리 전송이 작동하지 않습니다.",
+        "services": "캘린더 계정 동기화가 작동하지 않습니다.",
+        "template-store": "커뮤니티 템플릿 다운로드가 작동하지 않습니다.",
+        "templates": "커뮤니티 템플릿 다운로드 및 업데이트가 작동하지 않습니다.",
+        "title": "오프라인 모드"
+      },
       "reset-page": "페이지 초기화",
       "reset-page-confirm": "초기화 확인",
       "search-placeholder": "설정 검색…",
@@ -3898,6 +3958,7 @@
       "sort-date-desc": "날짜 순 정렬 (최신순)",
       "sort-name-asc": "이름 순 정렬 (A-Z)",
       "sort-name-desc": "이름 순 정렬 (Z-A)",
+      "sort-random": "랜덤 정렬 (셔플)",
       "title": "배경 화면"
     }
   },
