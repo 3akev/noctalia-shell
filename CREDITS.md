@@ -11,8 +11,7 @@ Noctalia is made possible by the incredible work of many open-source projects an
 
 ## Audio Assets
 
-- **[Universfield on Pixabay](https://pixabay.com/users/universfield-28281460/)** — Notification sound effect
-- **[Lucas McCallister on Freesound](http://www.freesound.org/samplesViewSingle.php?id=67091)** — Volume change feedback sound effect
+- **[Universfield on Pixabay](https://pixabay.com/users/universfield-28281460/)** — Notification & Volume change sound effects
 
 ## System Libraries
 
