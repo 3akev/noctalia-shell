@@ -23,6 +23,7 @@
   curl,
   libwebp,
   libjxl,
+  libsndfile,
   glib,
   polkit,
   librsvg,
@@ -98,6 +99,7 @@ lib.warnIf cudaSupport
     curl
     libwebp
     libjxl
+    libsndfile
     glib
     polkit
     librsvg
