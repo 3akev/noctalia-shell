@@ -39,6 +39,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages stb)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml))
@@ -102,6 +103,7 @@
            (librsvg-for-system)
            libjxl
            libqalculate
+           libsndfile
            libwebp
            libxkbcommon
            libxml2
