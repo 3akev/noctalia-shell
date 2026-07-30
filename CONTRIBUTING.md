@@ -42,6 +42,7 @@ Direct project dependencies are listed below; transitive dependencies are owned 
 | Credentials and encryption | `libsecret-1`, `libsodium` |
 | HTTP | `libcurl` |
 | XML | `libxml2` |
+| Calendar data | `libical` |
 | Config | `tomlplusplus` |
 | JSON | `nlohmann/json` |
 | Markdown | `md4c` |
