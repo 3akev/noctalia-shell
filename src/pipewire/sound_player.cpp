@@ -1,12 +1,12 @@
 #include "pipewire/sound_player.h"
 
 #include "core/log.h"
-#include "dr_wav.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <pipewire/pipewire.h>
+#include <sndfile.h>
 #include <spa/param/audio/raw-utils.h>
 #include <spa/param/param.h>
 #include <spa/pod/builder.h>
@@ -52,28 +52,32 @@ bool SoundPlayer::load(const std::string& name, const std::filesystem::path& pat
     return false;
   }
 
-  drwav wav{};
-  if (drwav_init_file(&wav, path.string().c_str(), nullptr) == DRWAV_FALSE) {
-    kLog.warn("failed to load sound \"{}\" from {}", name, path.string());
+  SF_INFO info{};
+  SNDFILE* file = sf_open(path.string().c_str(), SFM_READ, &info);
+  if (file == nullptr) {
+    kLog.warn("failed to load sound \"{}\" from {}: {}", name, path.string(), sf_strerror(nullptr));
+    return false;
+  }
+
+  if (info.frames <= 0 || info.channels <= 0 || info.samplerate <= 0) {
+    kLog.warn("sound \"{}\" from {} has no samples", name, path.string());
+    sf_close(file);
     return false;
   }
 
   SoundBuffer buffer;
-  buffer.sampleRate = wav.sampleRate;
-  buffer.channels = std::max<std::uint32_t>(1, wav.channels);
-  const std::uint64_t totalFrames = wav.totalPCMFrameCount;
-  const std::size_t totalSamples = static_cast<std::size_t>(totalFrames) * static_cast<std::size_t>(buffer.channels);
-  buffer.samples.resize(totalSamples);
+  buffer.sampleRate = static_cast<std::uint32_t>(info.samplerate);
+  buffer.channels = static_cast<std::uint32_t>(info.channels);
+  buffer.samples.resize(static_cast<std::size_t>(info.frames) * buffer.channels);
 
-  const std::uint64_t readFrames = drwav_read_pcm_frames_f32(&wav, totalFrames, buffer.samples.data());
-  drwav_uninit(&wav);
+  const sf_count_t readFrames = sf_readf_float(file, buffer.samples.data(), info.frames);
+  sf_close(file);
 
-  const std::size_t readSamples = static_cast<std::size_t>(readFrames) * static_cast<std::size_t>(buffer.channels);
-  if (readSamples == 0) {
+  if (readFrames <= 0) {
     kLog.warn("sound \"{}\" from {} has no samples", name, path.string());
     return false;
   }
-  buffer.samples.resize(readSamples);
+  buffer.samples.resize(static_cast<std::size_t>(readFrames) * buffer.channels);
 
   m_buffers[name] = std::move(buffer);
   kLog.info("loaded sound \"{}\" from {}", name, path.string());
