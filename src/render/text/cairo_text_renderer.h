@@ -65,6 +65,11 @@ public:
   // context to be current.
   void invalidateGlyphTextures();
   void abandonGlyphTextures() noexcept;
+  std::uint32_t takeRasterizeCount() noexcept {
+    const std::uint32_t count = m_rasterizeCount;
+    m_rasterizeCount = 0;
+    return count;
+  }
 
   [[nodiscard]] TextMetrics measure(
       std::string_view text, float fontSize, FontWeight fontWeight = FontWeight::Normal, float maxWidth = 0.0f,
@@ -219,6 +224,7 @@ private:
   CacheMap m_cache;
   LruList m_lru;
   std::size_t m_cacheBytes = 0;
+  std::uint32_t m_rasterizeCount = 0;
   int m_glMaxTextureSize = 0; // lazy-queried on first rasterize
 
   MetricsMap m_metricsCache;

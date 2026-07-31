@@ -82,7 +82,8 @@ private:
   void handleGraphicsReset(RenderGraphicsResetStatus status);
   void renderNode(
       const Node* node, const Mat3& parentTransform, float parentOpacity, float sw, float sh, float bw, float bh,
-      float clipLeft, float clipTop, float clipRight, float clipBottom, bool hasClip, bool ignoreNodeOpacity = false
+      float clipLeft, float clipTop, float clipRight, float clipBottom, bool hasClip, bool ignoreNodeOpacity,
+      bool parentPaintContained
   );
 
   std::unique_ptr<RenderBackend> m_backend;
@@ -92,6 +93,7 @@ private:
   float m_renderScale = 1.0f;
   std::uint64_t m_textMetricsGeneration = 1;
   std::uint64_t m_gpuResourceGeneration = 0;
+  std::uint32_t m_culledNodeCount = 0;
   bool m_glyphTexturesDirty = false;
   bool m_graphicsResetPending = false;
   std::function<void(RenderGraphicsResetStatus)> m_graphicsResetCallback;

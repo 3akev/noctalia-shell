@@ -100,6 +100,7 @@ public:
   [[nodiscard]] bool paintDirty() const noexcept { return m_paintDirty; }
   [[nodiscard]] bool layoutDirty() const noexcept { return m_layoutDirty; }
   [[nodiscard]] bool clipChildren() const noexcept { return m_clipChildren; }
+  [[nodiscard]] bool paintContained() const noexcept { return m_paintContained; }
   [[nodiscard]] bool hitTestVisible() const noexcept { return m_hitTestVisible; }
   [[nodiscard]] HitTestOutset hitTestOutset() const noexcept { return m_hitTestOutset; }
   [[nodiscard]] bool sizeAssignedByLayout() const noexcept { return m_sizeAssignedByLayout; }
@@ -126,6 +127,9 @@ public:
   void setVisible(bool visible);
   void setParticipatesInLayout(bool participatesInLayout);
   void setClipChildren(bool clipChildren);
+  // Promises that every node in this subtree paints within its own bounds (plus a small slack).
+  // Lets the renderer skip subtrees entirely outside the active clip.
+  void setPaintContained(bool paintContained);
   void setHitTestVisible(bool hitTestVisible);
   void setHitTestOutset(const HitTestOutset& outset);
   void setZIndex(std::int32_t zIndex);
@@ -198,6 +202,7 @@ private:
   bool m_paintDirty = true;
   bool m_layoutDirty = true;
   bool m_clipChildren = false;
+  bool m_paintContained = false;
   bool m_excludeSubtreeFromTabOrder = false;
   bool m_hitTestVisible = true;
   HitTestOutset m_hitTestOutset{};

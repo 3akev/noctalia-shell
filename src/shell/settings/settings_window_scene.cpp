@@ -860,7 +860,7 @@ std::vector<settings::GestureActionOption> SettingsWindow::gestureActionCatalog(
 settings::SettingsContentContext SettingsWindow::makeContentContext(
     const Config& cfg, const BarConfig* selectedBar, const BarMonitorOverride* selectedMonitorOverride
 ) {
-  const auto requestRebuild = [this]() { requestSceneRebuild(); };
+  const auto requestRebuild = [this]() { requestContentRebuild(/*refreshRegistry=*/true, /*refreshFilterRow=*/true); };
   const auto requestContent = [this]() { requestContentRebuild(); };
   const auto setOverride = [this](std::vector<std::string> path, ConfigOverrideValue value) {
     setSettingOverride(std::move(path), std::move(value));
@@ -1016,7 +1016,7 @@ void SettingsWindow::rebuildSettingsContent() {
           .renamingMonitorOverrideMatch = m_renamingMonitorOverrideMatch,
           .pendingDeleteMonitorOverrideBarName = m_pendingDeleteMonitorOverrideBarName,
           .pendingDeleteMonitorOverrideMatch = m_pendingDeleteMonitorOverrideMatch,
-          .requestRebuild = [this]() { requestSceneRebuild(); },
+          .requestRebuild = [this]() { requestContentRebuild(/*refreshRegistry=*/true, /*refreshFilterRow=*/true); },
           .renameBar =
               [this](std::string oldName, std::string newName) { renameBar(std::move(oldName), std::move(newName)); },
           .deleteBar = [this](std::string name) { deleteBar(std::move(name)); },
@@ -1299,12 +1299,12 @@ std::unique_ptr<Flex> SettingsWindow::buildFilterRow(
             .paddingV = Style::spaceXs * scale,
             .paddingH = Style::spaceSm * scale,
             .radius = Style::scaledRadiusMd(scale),
-            .onClick = [this, resetPageScope, resetPagePaths = std::move(resetPagePaths), requestRebuild,
-                        clearOverrides, pendingReset]() mutable {
+            .onClick = [this, resetPageScope, resetPagePaths = std::move(resetPagePaths), clearOverrides,
+                        pendingReset]() mutable {
               if (!pendingReset) {
                 m_pendingResetSettingPaths.clear();
                 m_pendingResetPageScope = resetPageScope;
-                requestRebuild();
+                requestContentRebuild(/*refreshRegistry=*/false, /*refreshFilterRow=*/true);
                 return;
               }
               clearOverrides(std::move(resetPagePaths));

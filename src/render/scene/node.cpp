@@ -285,6 +285,8 @@ void Node::setClipChildren(bool clipChildren) {
   markPaintDirty();
 }
 
+void Node::setPaintContained(bool paintContained) { m_paintContained = paintContained; }
+
 void Node::setHitTestVisible(bool hitTestVisible) { m_hitTestVisible = hitTestVisible; }
 
 void Node::setHitTestOutset(const HitTestOutset& outset) {

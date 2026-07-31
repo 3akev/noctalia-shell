@@ -967,6 +967,8 @@ CairoTextRenderer::CacheEntry* CairoTextRenderer::lookupOrRasterize(
     return &it->second;
   }
 
+  ++m_rasterizeCount;
+
   PangoLayout* layout = buildLayout(
       text, fontSize, fontWeight, maxWidth * m_contentScale, maxLines, align, fontFamily, ellipsize, useMarkup
   );
