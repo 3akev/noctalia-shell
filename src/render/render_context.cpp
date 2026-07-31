@@ -199,7 +199,6 @@ void RenderContext::renderScene(RenderTarget& target, Node* sceneRoot) {
   if (m_backend == nullptr || m_graphicsResetPending) {
     return;
   }
-  m_culledNodeCount = 0;
   const auto totalStart = std::chrono::steady_clock::now();
   if (!m_backend->beginFrame(target)) {
     return;
@@ -239,15 +238,6 @@ void RenderContext::renderScene(RenderTarget& target, Node* sceneRoot) {
   const RenderGraphicsResetStatus resetStatus = m_backend->graphicsResetStatus();
   ms = elapsedSince(totalStart);
   logSlowRenderOperation(ms, "renderScene took {:.1f}ms total", ms);
-  const std::uint32_t textRasterizeCount = m_textRenderer.takeRasterizeCount();
-  const std::uint32_t glyphRasterizeCount = m_glyphRenderer.takeRasterizeCount();
-  if (noctalia::profiling::enabled()
-      && (textRasterizeCount != 0 || glyphRasterizeCount != 0 || m_culledNodeCount != 0)) {
-    kLog.info(
-        "renderScene: text rasterized={} glyphs rasterized={} nodes culled={}", textRasterizeCount, glyphRasterizeCount,
-        m_culledNodeCount
-    );
-  }
   if (resetStatus != RenderGraphicsResetStatus::NoError) {
     handleGraphicsReset(resetStatus);
   }
@@ -366,7 +356,6 @@ void RenderContext::renderNode(
           || boundsLeft - kPaintCullSlack >= clipRight
           || boundsBottom + kPaintCullSlack <= clipTop
           || boundsTop - kPaintCullSlack >= clipBottom)) {
-    ++m_culledNodeCount;
     return;
   }
 

@@ -93,7 +93,6 @@ private:
   float m_renderScale = 1.0f;
   std::uint64_t m_textMetricsGeneration = 1;
   std::uint64_t m_gpuResourceGeneration = 0;
-  std::uint32_t m_culledNodeCount = 0;
   bool m_glyphTexturesDirty = false;
   bool m_graphicsResetPending = false;
   std::function<void(RenderGraphicsResetStatus)> m_graphicsResetCallback;

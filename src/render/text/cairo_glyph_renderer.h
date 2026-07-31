@@ -49,11 +49,6 @@ public:
   // render context to be current.
   void invalidateGlyphTextures();
   void abandonGlyphTextures() noexcept;
-  std::uint32_t takeRasterizeCount() noexcept {
-    const std::uint32_t count = m_rasterizeCount;
-    m_rasterizeCount = 0;
-    return count;
-  }
 
   [[nodiscard]] TextMetrics measureGlyph(char32_t codepoint, float fontSize);
 
@@ -108,7 +103,6 @@ private:
   CacheMap m_cache;
   LruList m_lru;
   std::size_t m_cacheBytes = 0;
-  std::uint32_t m_rasterizeCount = 0;
 
   static constexpr std::size_t kMaxCacheEntries = 512;
   static constexpr std::size_t kMaxCacheBytes = 8 * 1024 * 1024;

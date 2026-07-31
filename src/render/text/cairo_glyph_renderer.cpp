@@ -232,8 +232,6 @@ CairoGlyphRenderer::CacheEntry* CairoGlyphRenderer::lookupOrRasterize(char32_t c
     return &it->second;
   }
 
-  ++m_rasterizeCount;
-
   const float rasterSize = std::max(1.0f, fontSize * m_contentScale);
   FT_Set_Pixel_Sizes(m_face, 0, static_cast<FT_UInt>(std::round(rasterSize)));
 
