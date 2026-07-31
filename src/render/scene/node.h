@@ -183,7 +183,7 @@ protected:
 private:
   static bool
   pointInsideNode(const Node* node, float sceneX, float sceneY, float& localX, float& localY, bool includeHitOutset);
-  static Node* hitTestImpl(Node* node, float px, float py, bool allowOverflow);
+  static Node* hitTestImpl(Node* node, float px, float py, bool allowOverflow, const Mat3& parentTransform);
   NodeType m_type;
   float m_x = 0.0f;
   float m_y = 0.0f;
