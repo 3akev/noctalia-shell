@@ -3749,17 +3749,20 @@ std::string Bar::setBarAutoHideIpc(std::string_view args) {
 
   const auto parts = noctalia::ipc::splitWords(args);
   if (parts.empty() || parts.size() > 3) {
-    return "error: usage: bar-auto-hide-set <on|off|true|false|1|0> [bar-name] [monitor-selector]\n";
+    return "error: usage: bar-auto-hide-set <on|off|smart|true|false|1|0> [bar-name] [monitor-selector]\n";
   }
 
   const std::string& value = parts[0];
   bool enabled = false;
+  bool smart = false;
   if (value == "on" || value == "true" || value == "1") {
     enabled = true;
   } else if (value == "off" || value == "false" || value == "0") {
     enabled = false;
+  } else if (value == "smart") {
+    smart = true;
   } else {
-    return "error: invalid value (use on/off, true/false, 1/0)\n";
+    return "error: invalid value (use on/off/smart, true/false, 1/0)\n";
   }
 
   std::optional<std::string> barName;
@@ -3776,7 +3779,7 @@ std::string Bar::setBarAutoHideIpc(std::string_view args) {
     return *collectError;
   }
 
-  auto applyTransientAutoHide = [this, enabled](BarInstance& instance) {
+  auto applyTransientAutoHide = [this, enabled, smart](BarInstance& instance) {
     auto applySurfaceSpec = [this](BarInstance& inst) {
       if (inst.surface == nullptr) {
         return;
@@ -3790,8 +3793,10 @@ std::string Bar::setBarAutoHideIpc(std::string_view args) {
     instance.autoHideDisablePending = false;
     instance.animations.cancelForOwner(instance.slideRoot);
 
-    if (enabled) {
-      instance.barConfig.autoHide = true;
+    instance.barConfig.autoHide = enabled;
+    instance.barConfig.smartAutoHide = smart;
+
+    if (enabled || smart) {
       applySurfaceSpec(instance);
       if (instance.slideRoot != nullptr) {
         instance.slideRoot->setOpacity(1.0f);
@@ -3968,7 +3973,7 @@ void Bar::registerIpc(IpcService& ipc) {
 
   ipc.registerHandler(
       "bar-auto-hide-set", [this](const std::string& args) -> std::string { return setBarAutoHideIpc(args); },
-      "<on|off|true|false|1|0> [bar-name] [monitor-selector]", "Set auto-hide state for a bar"
+      "<on|off|smart|true|false|1|0> [bar-name] [monitor-selector]", "Set auto-hide state for a bar"
   );
 
   ipc.registerHandler(
