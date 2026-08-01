@@ -3003,7 +3003,9 @@ namespace settings {
     for (const auto laneKey : kLaneKeys) {
       auto lanePath = pathWithLastSegment(entry.path, std::string(laneKey));
       const auto laneItems = barWidgetItemsForPath(ctx.config, lanePath);
-      const bool overridden = ctx.configService != nullptr && ctx.configService->hasEffectiveOverride(lanePath);
+      // Lane content includes the styles of the capsule groups it holds, so an edit that only lands
+      // in the scope's capsule_group array still marks its lane as overridden.
+      const bool overridden = ctx.configService != nullptr && ctx.configService->hasEffectiveBarLaneOverride(lanePath);
       const bool hasGuiOverride = ctx.configService != nullptr && ctx.configService->hasOverride(lanePath);
       const bool monitorLaneExplicit = monitorWidgetListHasExplicitValue(ctx.config, lanePath);
       const bool inherited = isMonitorWidgetListPath(lanePath) && !monitorLaneExplicit;
@@ -3108,8 +3110,11 @@ namespace settings {
             })
         );
       }
+      // Reset reverts the whole lane: its widget list and the capsule groups it holds.
       if (overridden || (monitorLaneExplicit && hasGuiOverride)) {
-        laneHeader->addChild(ctx.makeResetButton(lanePath));
+        laneHeader->addChild(ctx.makeResetActionButton(lanePath, [resetBarLane = ctx.resetBarLane, lanePath]() {
+          resetBarLane(lanePath);
+        }));
       }
       lane->addChild(std::move(laneHeader));
 

@@ -1094,6 +1094,7 @@ if build_tests
     'caldav_client',
     'calendar_credential_store',
     'calendar_discovery_state',
+    'capsule_group_lane_override',
     'capsule_group_reconcile',
     'clipboard_service',
     'clipboard_storage_permissions',
