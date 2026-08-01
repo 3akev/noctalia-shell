@@ -2071,6 +2071,8 @@ namespace noctalia::config::schema {
           field(&BarCapsuleGroupStyle::padding, "padding", kBarCapsulePaddingRange),
           optionalFloatField(&BarCapsuleGroupStyle::radius, "radius", kBarCapsuleRadiusRangeF),
           field(&BarCapsuleGroupStyle::opacity, "opacity", kBarOpacityRange),
+          field(&BarCapsuleGroupStyle::accordion, "accordion"),
+          enumField(&BarCapsuleGroupStyle::accordionDirection, "accordion_direction", kBarAccordionDirections),
       };
       return s;
     }

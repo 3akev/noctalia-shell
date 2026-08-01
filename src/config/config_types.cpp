@@ -482,6 +482,8 @@ WidgetBarCapsuleSpec capsuleSpecFromGroup(const BarConfig& bar, const BarCapsule
     spec.radius = std::nullopt;
   }
   spec.opacity = group.opacity;
+  spec.accordion = group.accordion;
+  spec.accordionDirection = group.accordionDirection;
   spec.hoverHighlight = bar.hoverHighlight;
   return spec;
 }

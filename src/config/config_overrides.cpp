@@ -546,6 +546,10 @@ namespace {
                 row.insert_or_assign("radius", static_cast<double>(*item.radius));
               }
               row.insert_or_assign("opacity", static_cast<double>(item.opacity));
+              row.insert_or_assign("accordion", item.accordion);
+              row.insert_or_assign(
+                  "accordion_direction", std::string(enumToKey(kBarAccordionDirections, item.accordionDirection))
+              );
               array.push_back(std::move(row));
             }
             table.insert_or_assign(key, std::move(array));

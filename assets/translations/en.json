@@ -966,6 +966,10 @@
           "title": "Bar Widgets"
         },
         "group": {
+          "accordion": "Accordion",
+          "accordion-description": "Show only the first widget; hovering the capsule reveals the rest",
+          "accordion-direction": "Reveal direction",
+          "accordion-direction-description": "Side of the first widget where the hidden widgets unfold",
           "action": "Group",
           "border": "Border",
           "border-description": "Capsule outline color role; leave on Default for no outline",
@@ -1263,6 +1267,10 @@
       }
     },
     "options": {
+      "accordion-direction": {
+        "end": "After first widget",
+        "start": "Before first widget"
+      },
       "bar": {
         "auto-hide": {
           "off": "Off",

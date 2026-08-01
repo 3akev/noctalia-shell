@@ -2371,6 +2371,37 @@ namespace settings {
             mutateGroup([&](BarCapsuleGroupStyle& g) { g.radius = r; });
           })
       );
+      ctx.makeRow(
+          *panelPtr, groupEntry("accordion"),
+          ui::toggle({
+              .checked = style.accordion,
+              .scale = ctx.scale,
+              .onChange = [mutateGroup](bool checked) {
+                mutateGroup([&](BarCapsuleGroupStyle& g) { g.accordion = checked; });
+              },
+          })
+      );
+      // Direction only matters while accordion is on; the inspector rebuilds when the toggle commits.
+      if (style.accordion) {
+        ctx.makeRow(
+            *panelPtr, groupEntry("accordion-direction"),
+            ui::segmented({
+                .options =
+                    std::vector<ui::SegmentedOption>{
+                        {.label = i18n::tr("settings.options.accordion-direction.end")},
+                        {.label = i18n::tr("settings.options.accordion-direction.start")},
+                    },
+                .selectedIndex =
+                    static_cast<std::size_t>(style.accordionDirection == BarAccordionDirection::Start ? 1 : 0),
+                .scale = ctx.scale,
+                .onChange = [mutateGroup](std::size_t index) {
+                  mutateGroup([&](BarCapsuleGroupStyle& g) {
+                    g.accordionDirection = index == 1 ? BarAccordionDirection::Start : BarAccordionDirection::End;
+                  });
+                },
+            })
+        );
+      }
 
       body.addChild(std::move(panel));
       body.addChild(
