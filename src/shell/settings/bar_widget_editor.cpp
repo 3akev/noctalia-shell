@@ -2517,12 +2517,12 @@ namespace settings {
     struct LaneGroupPlan {
       bool groupable = false;
       std::string laneKey;
-      std::size_t firstIndex = 0;
-      std::vector<std::string> members; // contiguous selection in lane order
+      std::vector<std::size_t> indices; // selected lane positions, ascending
+      std::vector<std::string> members; // selection in lane order
     };
 
-    // Selection tokens are "<laneKey>#<index>". Grouping needs ≥2 selected widgets in one lane that are
-    // adjacent and none of which is already a group token.
+    // Selection tokens are "<laneKey>#<index>". Grouping needs ≥2 selected widgets in one lane, none of
+    // which is already a group token. They need not be adjacent: the group lands on the first one.
     LaneGroupPlan computeLaneGroupPlan(const SettingEntry& entry, const BarWidgetEditorContext& ctx) {
       LaneGroupPlan plan;
       const auto& selection = ctx.selectedLaneWidgets;
@@ -2545,11 +2545,6 @@ namespace settings {
         indices.push_back(static_cast<std::size_t>(std::strtoul(token.c_str() + hash + 1, nullptr, 10)));
       }
       std::ranges::sort(indices);
-      for (std::size_t k = 1; k < indices.size(); ++k) {
-        if (indices[k] != indices[k - 1] + 1) {
-          return plan; // not contiguous
-        }
-      }
 
       const std::vector<std::string> items =
           barWidgetItemsForPath(ctx.config, pathWithLastSegment(entry.path, laneKey));
@@ -2561,7 +2556,7 @@ namespace settings {
       }
       plan.groupable = true;
       plan.laneKey = laneKey;
-      plan.firstIndex = indices.front();
+      plan.indices = std::move(indices);
       return plan;
     }
 
@@ -2597,11 +2592,11 @@ namespace settings {
                 .paddingH = Style::spaceSm * ctx.scale,
                 .radius = Style::scaledRadiusSm(ctx.scale),
                 .onClick = [setOverrides = ctx.setOverrides, config = &ctx.config, laneKey = plan.laneKey,
-                            firstIndex = plan.firstIndex, members = plan.members, laneListPath = entry.path,
+                            indices = plan.indices, members = plan.members, laneListPath = entry.path,
                             &selectedLaneWidgets = ctx.selectedLaneWidgets,
                             openCapsuleGroupInspector = ctx.openCapsuleGroupInspector]() {
                   const std::vector<std::string> groupPath = capsuleGroupPathForLanePath(laneListPath);
-                  if (groupPath.empty()) {
+                  if (groupPath.empty() || indices.empty()) {
                     return;
                   }
                   std::vector<BarCapsuleGroupStyle> groups = capsuleGroupsForLanePath(*config, laneListPath);
@@ -2610,20 +2605,26 @@ namespace settings {
                   newGroup.members = members;
                   groups.push_back(std::move(newGroup));
 
-                  // Replace the contiguous selected run with a single group token.
+                  // Pull the selected widgets out of the lane, wherever they sit, and leave one group
+                  // token at the first of them. Unselected widgets in between keep their order.
                   std::vector<std::string> lanePath = pathWithLastSegment(laneListPath, laneKey);
-                  std::vector<std::string> lane = barWidgetItemsForPath(*config, lanePath);
-                  const std::size_t count = std::min(members.size(), lane.size() - std::min(firstIndex, lane.size()));
-                  if (firstIndex <= lane.size()) {
-                    lane.erase(
-                        lane.begin() + static_cast<std::ptrdiff_t>(firstIndex),
-                        lane.begin() + static_cast<std::ptrdiff_t>(firstIndex + count)
-                    );
-                    lane.insert(lane.begin() + static_cast<std::ptrdiff_t>(firstIndex), makeCapsuleGroupToken(newId));
+                  const std::vector<std::string> lane = barWidgetItemsForPath(*config, lanePath);
+                  if (indices.back() >= lane.size()) {
+                    return;
+                  }
+                  std::vector<std::string> nextLane;
+                  nextLane.reserve(lane.size());
+                  for (std::size_t i = 0; i < lane.size(); ++i) {
+                    if (i == indices.front()) {
+                      nextLane.push_back(makeCapsuleGroupToken(newId));
+                    }
+                    if (!std::ranges::binary_search(indices, i)) {
+                      nextLane.push_back(lane[i]);
+                    }
                   }
 
                   selectedLaneWidgets.clear();
-                  setOverrides({{lanePath, lane}, {groupPath, groups}});
+                  setOverrides({{lanePath, nextLane}, {groupPath, groups}});
                   if (openCapsuleGroupInspector) {
                     openCapsuleGroupInspector(laneListPath, newId);
                   }
@@ -2702,7 +2703,7 @@ namespace settings {
 
     static constexpr std::string_view kLaneKeys[] = {"start", "center", "end"};
 
-    // Selection toolbar: Group adjacent selected widgets, or clear the current selection.
+    // Selection toolbar: Group the selected widgets, or clear the current selection.
     if (!ctx.selectedLaneWidgets.empty()) {
       addLaneSelectionToolbar(*block, entry, ctx);
     }
