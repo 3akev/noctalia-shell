@@ -23,6 +23,7 @@ namespace noctalia::config {
     constexpr int kLockscreenLoginBoxDeprecatedSettingsMigrationVersion = 8;
     constexpr int kSysmonPresentationMigrationVersion = 9;
     constexpr int kKeyboardLayoutShowGlyphMigrationVersion = 10;
+    constexpr int kWorkspacesDisplayMigrationVersion = 11;
     constexpr std::int64_t kMaxBarRadius = 500;
     constexpr std::array<std::string_view, 5> kBarRadiusKeys = {
         "radius", "radius_top_left", "radius_top_right", "radius_bottom_left", "radius_bottom_right",
@@ -478,6 +479,46 @@ namespace noctalia::config {
       });
     }
 
+    template <typename OnChanged> void migrateWorkspacesDisplaySettings(toml::table& root, OnChanged&& onChanged) {
+      auto* widgets = root["widget"].as_table();
+      if (widgets == nullptr) {
+        return;
+      }
+
+      for (auto& [widgetName, widgetNode] : *widgets) {
+        auto* widget = widgetNode.as_table();
+        if (widget == nullptr || (*widget)["type"].value_or(std::string(widgetName.str())) != "workspaces") {
+          continue;
+        }
+
+        const auto display = (*widget)["display"].value<std::string>();
+        if (!display.has_value()) {
+          continue;
+        }
+
+        if (*display == "none") {
+          if (!widget->contains("show_labels")) {
+            widget->insert_or_assign("show_labels", false);
+          }
+        } else if (*display == "id" || *display == "name") {
+          if (!widget->contains("label_source")) {
+            widget->insert_or_assign("label_source", *display);
+          }
+        } else {
+          continue;
+        }
+
+        widget->erase("display");
+        onChanged("widget." + std::string(widgetName.str()));
+      }
+    }
+
+    void migrateWorkspacesDisplaySettingsSidecar(toml::table& root, schema::Diagnostics& diag) {
+      migrateWorkspacesDisplaySettings(root, [&diag](const std::string& path) {
+        diag.warn(path, "migrated workspaces display to label_source/show_labels");
+      });
+    }
+
     template <typename OnChanged> void migrateKeyboardLayoutShowGlyph(toml::table& root, OnChanged&& onChanged) {
       auto* widgets = root["widget"].as_table();
       if (widgets == nullptr) {
@@ -619,6 +660,11 @@ namespace noctalia::config {
             .summary = "widget: rename keyboard layout show_icon to show_glyph",
             .apply = migrateKeyboardLayoutShowGlyphSidecar,
         },
+        {
+            .toVersion = kWorkspacesDisplayMigrationVersion,
+            .summary = "widget: split workspaces display into label_source and show_labels",
+            .apply = migrateWorkspacesDisplaySettingsSidecar,
+        },
     };
     return migrations;
   }
@@ -739,6 +785,13 @@ namespace noctalia::config {
           .migrationVersion = kKeyboardLayoutShowGlyphMigrationVersion,
           .path = path,
           .message = "keyboard layout show_icon is now show_glyph",
+      });
+    });
+    migrateWorkspacesDisplaySettings(root, [&issues](const std::string& path) {
+      issues.push_back({
+          .migrationVersion = kWorkspacesDisplayMigrationVersion,
+          .path = path,
+          .message = "workspaces display is now label_source and show_labels",
       });
     });
   }

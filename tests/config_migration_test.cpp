@@ -548,6 +548,97 @@ show_label = false
     expect(secondPassIssues.empty(), "sysmon presentation normalization was not idempotent");
   }
 
+  void checkWorkspacesDisplayMigration() {
+    toml::table config = toml::parse(R"(
+[widget.none]
+type = "workspaces"
+display = "none"
+labels_only_when_occupied = true
+max_label_chars = 8
+
+[widget.named]
+type = "workspaces"
+display = "name"
+
+[widget.numbered]
+type = "workspaces"
+display = "id"
+
+[widget.canonical-labels]
+type = "workspaces"
+display = "none"
+show_labels = true
+
+[widget.canonical-source]
+type = "workspaces"
+display = "name"
+label_source = "id"
+
+[widget.lock_keys]
+type = "lock_keys"
+display = "short"
+
+[widget.invalid]
+type = "workspaces"
+display = "icon"
+
+# A bare [widget.workspaces] has no `type`; the widget name is the type.
+[widget.workspaces]
+display = "id"
+)");
+    noctalia::config::LegacyConfigIssues issues;
+    noctalia::config::normalizeLegacyConfig(config, issues);
+
+    expect(
+        config["widget"]["none"]["show_labels"].value<bool>() == std::optional<bool>{false}
+            && !config["widget"]["none"].as_table()->contains("display"),
+        "none display was not migrated to show_labels"
+    );
+    expect(
+        config["widget"]["none"]["labels_only_when_occupied"].value<bool>() == std::optional<bool>{true}
+            && config["widget"]["none"]["max_label_chars"].value<std::int64_t>() == std::optional<std::int64_t>{8},
+        "unchanged workspaces label settings were not preserved"
+    );
+    expect(
+        config["widget"]["named"]["label_source"].value<std::string>() == std::optional<std::string>{"name"}
+            && !config["widget"]["named"].as_table()->contains("display"),
+        "name display was not migrated to label_source"
+    );
+    expect(
+        config["widget"]["numbered"]["label_source"].value<std::string>() == std::optional<std::string>{"id"}
+            && !config["widget"]["numbered"].as_table()->contains("display"),
+        "id display was not migrated to label_source"
+    );
+    expect(
+        config["widget"]["canonical-labels"]["show_labels"].value<bool>() == std::optional<bool>{true}
+            && !config["widget"]["canonical-labels"].as_table()->contains("display"),
+        "legacy workspaces display overwrote canonical show_labels"
+    );
+    expect(
+        config["widget"]["canonical-source"]["label_source"].value<std::string>() == std::optional<std::string>{"id"}
+            && !config["widget"]["canonical-source"].as_table()->contains("display"),
+        "legacy workspaces display overwrote canonical label_source"
+    );
+    expect(
+        config["widget"]["lock_keys"]["display"].value<std::string>() == std::optional<std::string>{"short"},
+        "another widget type was migrated as workspaces"
+    );
+    expect(
+        config["widget"]["invalid"]["display"].value<std::string>() == std::optional<std::string>{"icon"},
+        "unknown workspaces display was migrated"
+    );
+    expect(
+        config["widget"]["workspaces"]["label_source"].value<std::string>() == std::optional<std::string>{"id"}
+            && !config["widget"]["workspaces"].as_table()->contains("display"),
+        "untyped [widget.workspaces] was not migrated"
+    );
+    expect(issues.size() == 6, "expected one migration issue per workspaces widget");
+
+    noctalia::config::LegacyConfigIssues secondPassIssues;
+    noctalia::config::normalizeLegacyConfig(config, secondPassIssues);
+    expect(secondPassIssues.empty(), "workspaces display normalization was not idempotent");
+  }
+
   void checkKeyboardLayoutShowGlyphMigration() {
     toml::table config = toml::parse(R"(
 [widget.keyboard_layout]
@@ -732,6 +823,7 @@ int main() {
   checkDeadZoneActionsMigration();
   checkSysmonPresentationMigration();
   checkKeyboardLayoutShowGlyphMigration();
+  checkWorkspacesDisplayMigration();
   checkVersionGating();
   checkReminderFingerprint();
   checkRegistryOrdering();

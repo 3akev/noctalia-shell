@@ -1237,65 +1237,6 @@ namespace settings {
       );
     }
 
-    [[nodiscard]] bool workspacesCompactStyleEnabled(
-        const Config& cfg, std::string_view widgetName, const std::vector<WidgetSettingSpec>& allSpecs
-    ) {
-      const std::string style = settingCurrentString(cfg, widgetName, "style", allSpecs);
-      return style == "minimal" || style == "focus_hint";
-    }
-
-    SelectSetting workspacesStyleSelectSetting(
-        const BarWidgetEditorContext& ctx, std::string_view widgetName, const WidgetSettingSpec& styleSpec,
-        const std::vector<WidgetSettingSpec>& allSpecs, std::string selectedValue
-    ) {
-      std::vector<SelectOption> options;
-      options.reserve(styleSpec.options.size());
-      for (const auto& option : styleSpec.options) {
-        options.push_back(
-            SelectOption{option.value, styleSpec.literalLabels ? option.labelKey : i18n::tr(option.labelKey)}
-        );
-      }
-      SelectSetting selectSetting{std::move(options), std::move(selectedValue)};
-      selectSetting.segmented = styleSpec.segmented;
-      const ConfigService* configService = ctx.configService;
-      selectSetting.groupedCommit = [configService, widgetName = std::string(widgetName),
-                                     allSpecs](std::string_view value, const std::vector<std::string>& path) {
-        std::vector<std::pair<std::vector<std::string>, ConfigOverrideValue>> overrides;
-        overrides.emplace_back(path, ConfigOverrideValue{std::string(value)});
-        if ((value == "minimal" || value == "focus_hint")
-            && configService != nullptr
-            && settingCurrentString(configService->config(), widgetName, "display", allSpecs) == "none") {
-          overrides.emplace_back(widgetSettingPath(widgetName, "display"), ConfigOverrideValue{std::string("id")});
-        }
-        return overrides;
-      };
-      return selectSetting;
-    }
-
-    SelectSetting workspacesDisplaySelectSetting(
-        const BarWidgetEditorContext& ctx, std::string_view widgetName, const WidgetSettingSpec& displaySpec,
-        const std::vector<WidgetSettingSpec>& allSpecs, std::string selectedValue
-    ) {
-      const bool compactStyle = workspacesCompactStyleEnabled(ctx.config, widgetName, allSpecs);
-      if (compactStyle && selectedValue == "none") {
-        selectedValue = "id";
-      }
-
-      std::vector<SelectOption> options;
-      options.reserve(displaySpec.options.size());
-      for (const auto& option : displaySpec.options) {
-        if (compactStyle && option.value == "none") {
-          continue;
-        }
-        options.push_back(
-            SelectOption{option.value, displaySpec.literalLabels ? option.labelKey : i18n::tr(option.labelKey)}
-        );
-      }
-      SelectSetting selectSetting{std::move(options), std::move(selectedValue)};
-      selectSetting.segmented = displaySpec.segmented;
-      return selectSetting;
-    }
-
     SelectSetting labelFontWeightSelectSetting(
         const WidgetSettingSpec& spec, std::string selectedValue, std::string_view fontFamily
     ) {
@@ -1800,10 +1741,6 @@ namespace settings {
                 spec, widgetLabelFontWeightSelectedValue(ctx.config, widgetName),
                 widgetResolvedFontFamily(ctx.config, widgetName)
             );
-          } else if (widgetType == "workspaces" && spec.schema.key == "display") {
-            selectSetting = workspacesDisplaySelectSetting(ctx, widgetName, spec, specs, selectedValue);
-          } else if (widgetType == "workspaces" && spec.schema.key == "style") {
-            selectSetting = workspacesStyleSelectSetting(ctx, widgetName, spec, specs, selectedValue);
           } else {
             std::vector<SelectOption> options;
             options.reserve(spec.options.size());
