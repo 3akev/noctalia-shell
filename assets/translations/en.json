@@ -746,7 +746,7 @@
       "launcher-usage-reset-success": "Usage data cleared.",
       "lockscreen-widgets-editor": "Lockscreen widget editor",
       "lockscreen-widgets-editor-blocked-locked": "Unlock the session before editing lockscreen widgets.",
-      "lockscreen-widgets-editor-enabled": "Lockscreen widget editor is on. Switch to an empty workspace so open windows do not cover the preview, then lock the session to verify the layout.",
+      "lockscreen-widgets-editor-enabled": "Lockscreen widget editor is on. Switch to an empty workspace so open windows do not cover the editor.",
       "mpris-disabled": "MPRIS disabled",
       "polkit-agent": "Polkit Agent",
       "polkit-no-session": "Polkit agent needs logind, elogind, or XDG_SESSION_ID. On seatd-only setups it cannot register for graphical prompts. Use terminal pkexec for greeter sync, or install elogind for in-session authentication.",
@@ -3242,10 +3242,6 @@
           "description": "Color used for active privacy indicators; fixed hex colors are also supported",
           "label": "Active Color"
         },
-        "active-indicator-color": {
-          "description": "Color used for the active window indicator; fixed hex colors are also supported",
-          "label": "Active Indicator Color"
-        },
         "active-opacity": {
           "description": "Opacity of the icon for the active (focused) window",
           "label": "Active Icon Opacity"
@@ -3537,10 +3533,6 @@
           "description": "Show units like percent / GiB / °C",
           "label": "Show Units"
         },
-        "label-source": {
-          "description": "What workspace labels show",
-          "label": "Label Source"
-        },
         "labels-only-when-occupied": {
           "description": "Hide workspace labels on empty, inactive workspaces",
           "label": "Labels Only When Occupied",
@@ -3666,10 +3658,6 @@
         "show-label": {
           "description": "Show the widget's text label",
           "label": "Show Label"
-        },
-        "show-labels": {
-          "description": "Show text labels on workspaces",
-          "label": "Show Labels"
         },
         "show-num-lock": {
           "description": "Show Num Lock state",

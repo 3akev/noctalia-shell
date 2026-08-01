@@ -206,6 +206,7 @@
       "pairing-detail": {
         "authorize": "Gelen eşleşme isteği kabul edilsin mi?",
         "authorize-service": "{uuid} servisine erişim versilsin mi?",
+        "confirm": "Bu kodun cihazda gözüken kod ile uyuştuğunu onaylayın:",
         "display-passkey": "Cihazda bu kodu girin:",
         "display-pin": "Cihazda bu PİN'i girin:",
         "passkey": "Cihazda gösterilen ana anahtarı girin:",
@@ -246,9 +247,15 @@
         "unknown-track": "Bilinmeyen parça"
       },
       "select-avatar": "Avatar Seç",
-      "unknown": "bilinmiyor"
+      "unknown": "bilinmiyor",
+      "weather": {
+        "data-unavailable": "Hava durumu verisi alınamadı.",
+        "disabled": "Hava durumu konfigde devre dışı bırakıldı.",
+        "fetching": "Tahminler alınıyor..."
+      }
     },
     "media": {
+      "active-player": "Aktif oynatıcı",
       "nothing-playing": "Hiçbir şey çalmıyor",
       "now-playing": "Şimdi çalıyor"
     },
@@ -269,7 +276,8 @@
       "wi-fi": "Wi-Fi",
       "wifi": "Wi-Fi",
       "wifi-off": "Wi-Fi kapalı",
-      "wifi-on": "Wi-Fi açık"
+      "wifi-on": "Wi-Fi açık",
+      "wired-connection": "Kablolu bağlantı"
     },
     "notifications": {
       "clear-all": "Tüm bildirimleri temizle"

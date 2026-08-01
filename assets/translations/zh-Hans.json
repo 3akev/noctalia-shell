@@ -966,6 +966,10 @@
           "title": "状态栏小组件"
         },
         "group": {
+          "accordion": "折叠",
+          "accordion-description": "仅显示首个小组件；悬停胶囊时展开其余小组件",
+          "accordion-direction": "展开方向",
+          "accordion-direction-description": "隐藏小组件从首个小组件展开的方向",
           "action": "组合",
           "border": "边框",
           "border-description": "将颜色应用于胶囊轮廓；保持“默认”时不显示轮廓",
@@ -1008,7 +1012,9 @@
           "show-widget": "显示小组件",
           "style": "样式",
           "title": "胶囊组",
-          "ungroup": "取消组合"
+          "ungroup": "取消组合",
+          "widget-spacing": "间距",
+          "widget-spacing-description": "组内小组件之间的间距（像素）；“自动”将继承状态栏的小组件间距设置"
         },
         "inspector": {
           "add-instance-title": "将新的{widget}具名小组件添加到{lane}",
@@ -1263,6 +1269,10 @@
       }
     },
     "options": {
+      "accordion-direction": {
+        "end": "首个小组件后",
+        "start": "首个小组件前"
+      },
       "bar": {
         "auto-hide": {
           "off": "关闭",
