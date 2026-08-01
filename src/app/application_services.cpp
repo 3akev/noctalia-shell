@@ -951,6 +951,15 @@ void Application::initSystemBusServices() {
           if (sleeping) {
             // Delay inhibit (acquired while lockscreen is enabled) holds sleep until we lock.
             // Do not use runAfterSessionLocked here — that slot belongs to lock-and-suspend.
+            if (m_skipLockOnNextSleep) {
+              // Noctalia-initiated suspend: skip lock-before-sleep (plain Suspend or already locked).
+              m_skipLockOnNextSleep = false;
+              m_releaseSleepDelayWhenLocked = false;
+              if (m_logindService != nullptr) {
+                m_logindService->releaseSleepDelayInhibit();
+              }
+              return;
+            }
             if (!m_configService.isLockScreenEnabled()) {
               m_releaseSleepDelayWhenLocked = false;
               if (m_logindService != nullptr) {
@@ -985,6 +994,7 @@ void Application::initSystemBusServices() {
             }
             return;
           }
+          m_skipLockOnNextSleep = false;
           m_releaseSleepDelayWhenLocked = false;
           if (m_configService.isLockScreenEnabled() && m_logindService != nullptr) {
             (void)m_logindService->acquireSleepDelayInhibit();
