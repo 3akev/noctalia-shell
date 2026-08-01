@@ -42,6 +42,8 @@ struct BarCapsuleGroupStyle {
   // Collapse the group to its first member; hovering the capsule reveals the rest inline.
   bool accordion = false;
   BarAccordionDirection accordionDirection = BarAccordionDirection::End;
+  // Gap between members inside the capsule, in logical pixels; unset inherits the bar's widget_spacing.
+  std::optional<std::int32_t> widgetSpacing;
 
   bool operator==(const BarCapsuleGroupStyle&) const = default;
 };
@@ -374,6 +376,8 @@ struct WidgetBarCapsuleSpec {
   // Accordion mode (capsule groups only): collapse to the first member; hover expands.
   bool accordion = false;
   BarAccordionDirection accordionDirection = BarAccordionDirection::End;
+  // Gap between group members; unset inherits the bar's widget_spacing. Meaningless for single widgets.
+  std::optional<float> widgetSpacing;
 
   bool operator==(const WidgetBarCapsuleSpec&) const = default;
 };

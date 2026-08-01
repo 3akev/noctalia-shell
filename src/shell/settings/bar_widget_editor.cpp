@@ -2256,6 +2256,46 @@ namespace settings {
       return wrap;
     }
 
+    // Spacing Auto | Custom segmented control + stepper (no label). "Auto" inherits the bar's widget spacing.
+    std::unique_ptr<Node> makeGroupSpacingControl(
+        const BarWidgetEditorContext& ctx, std::optional<std::int32_t> spacing, std::int32_t inherited,
+        std::function<void(std::optional<std::int32_t>)> onChange
+    ) {
+      const int spacingValue = std::clamp(static_cast<int>(spacing.value_or(inherited)), 0, 32);
+      auto wrap = ui::row({.align = FlexAlign::Center, .gap = Style::spaceSm * ctx.scale});
+      wrap->addChild(
+          ui::segmented({
+              .options =
+                  std::vector<ui::SegmentedOption>{
+                      {.label = i18n::tr("common.states.auto")},
+                      {.label = i18n::tr("common.states.custom")},
+                  },
+              .selectedIndex = static_cast<std::size_t>(spacing.has_value() ? 1 : 0),
+              .scale = ctx.scale,
+              .onChange = [onChange, spacingValue](std::size_t index) {
+                onChange(
+                    index == 0 ? std::optional<std::int32_t>{}
+                               : std::optional<std::int32_t>{static_cast<std::int32_t>(spacingValue)}
+                );
+              },
+          })
+      );
+      wrap->addChild(
+          ui::stepper({
+              .minValue = 0,
+              .maxValue = 32,
+              .step = 1,
+              .value = spacingValue,
+              .enabled = spacing.has_value(),
+              .scale = ctx.scale,
+              .onValueCommitted = [onChange](int v) {
+                onChange(std::optional<std::int32_t>{static_cast<std::int32_t>(v)});
+              },
+          })
+      );
+      return wrap;
+    }
+
     void addCapsuleGroupInspector(
         Flex& body, const std::vector<std::string>& laneListPath, const BarWidgetEditorContext& ctx
     ) {
@@ -2354,6 +2394,20 @@ namespace settings {
           makeGroupSliderControl(
               ctx, static_cast<double>(style.padding), 0.0, 48.0, 1.0, true, [mutateGroup](double v) {
                 mutateGroup([&](BarCapsuleGroupStyle& g) { g.padding = static_cast<float>(v); });
+              }
+          )
+      );
+      const BarConfig* laneBar = barForLanePath(ctx.config, laneListPath);
+      const BarMonitorOverride* laneOvr = monitorOverrideForLanePath(ctx.config, laneListPath);
+      // "Auto" inherits the spacing this lane actually resolves to, monitor override included.
+      const std::int32_t inheritedSpacing = laneOvr != nullptr && laneOvr->widgetSpacing.has_value()
+          ? *laneOvr->widgetSpacing
+          : (laneBar != nullptr ? laneBar->widgetSpacing : 6);
+      ctx.makeRow(
+          *panelPtr, groupEntry("widget-spacing"),
+          makeGroupSpacingControl(
+              ctx, style.widgetSpacing, inheritedSpacing, [mutateGroup](std::optional<std::int32_t> s) {
+                mutateGroup([&](BarCapsuleGroupStyle& g) { g.widgetSpacing = s; });
               }
           )
       );

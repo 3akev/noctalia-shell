@@ -550,6 +550,9 @@ namespace {
               row.insert_or_assign(
                   "accordion_direction", std::string(enumToKey(kBarAccordionDirections, item.accordionDirection))
               );
+              if (item.widgetSpacing.has_value()) {
+                row.insert_or_assign("widget_spacing", static_cast<std::int64_t>(*item.widgetSpacing));
+              }
               array.push_back(std::move(row));
             }
             table.insert_or_assign(key, std::move(array));

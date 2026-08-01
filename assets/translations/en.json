@@ -1012,7 +1012,9 @@
           "show-widget": "Show this widget",
           "style": "Style",
           "title": "Capsule group",
-          "ungroup": "Ungroup"
+          "ungroup": "Ungroup",
+          "widget-spacing": "Spacing",
+          "widget-spacing-description": "Gap between widgets in this group, in pixels; Auto inherits the bar's widget spacing"
         },
         "inspector": {
           "add-instance-title": "Add new named {widget} widget to {lane}",

@@ -2669,7 +2669,7 @@ void Bar::attachWidgetsToSections(BarInstance& instance) {
           isVertical ? FlexDirection::Vertical : FlexDirection::Horizontal,
           {
               .align = FlexAlign::Center,
-              .gap = widgetSpacing,
+              .gap = cap.widgetSpacing.value_or(widgetSpacing),
           }
       );
       Flex* innerPtr = inner.get();

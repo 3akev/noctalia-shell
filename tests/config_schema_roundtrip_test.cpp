@@ -236,6 +236,7 @@ location = "https://example.invalid/bad"
     group.opacity = 0.8f;
     group.accordion = true;
     group.accordionDirection = BarAccordionDirection::Start;
+    group.widgetSpacing = 10;
     bar.widgetCapsuleGroups = {group};
 
     BarMonitorOverride ovr;
@@ -933,7 +934,8 @@ widget_spacing = 8
     members = [ "clock", "weather" ]
     opacity = 0.80000001192092896
     padding = 20.0
-    radius = 14.0)";
+    radius = 14.0
+    widget_spacing = 10)";
 
   const Config probe = makeProbe();
   const toml::table serialized = config_export::serialize(probe);
