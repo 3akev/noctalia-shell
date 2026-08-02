@@ -3247,6 +3247,10 @@
           "description": "Color used for active privacy indicators; fixed hex colors are also supported",
           "label": "Active Color"
         },
+        "active-indicator-color": {
+          "description": "Color of the indicator below the active window icon",
+          "label": "Active Indicator Color"
+        },
         "active-opacity": {
           "description": "Opacity of the icon for the active (focused) window",
           "label": "Active Icon Opacity"
