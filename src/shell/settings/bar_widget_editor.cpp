@@ -971,101 +971,12 @@ namespace settings {
       return spec.schema.defaultValue;
     }
 
-    std::string settingCurrentString(
-        const Config& cfg, std::string_view widgetName, const std::string& key,
-        const std::vector<WidgetSettingSpec>& allSpecs
-    ) {
-      if (const auto it = cfg.widgets.find(std::string(widgetName)); it != cfg.widgets.end()) {
-        if (const auto settingIt = it->second.settings.find(key); settingIt != it->second.settings.end()) {
-          if (const auto* s = std::get_if<std::string>(&settingIt->second)) {
-            return *s;
-          }
-          if (const auto* i = std::get_if<std::int64_t>(&settingIt->second)) {
-            return std::to_string(*i);
-          }
-          if (const auto* b = std::get_if<bool>(&settingIt->second)) {
-            return *b ? "true" : "false";
-          }
-        }
-      }
-      for (const auto& s : allSpecs) {
-        if (s.schema.key == key) {
-          if (const auto* str = std::get_if<std::string>(&s.schema.defaultValue)) {
-            return *str;
-          }
-          if (const auto* i = std::get_if<std::int64_t>(&s.schema.defaultValue)) {
-            return std::to_string(*i);
-          }
-          if (const auto* b = std::get_if<bool>(&s.schema.defaultValue)) {
-            return *b ? "true" : "false";
-          }
-          break;
-        }
-      }
-      return {};
-    }
-
     [[nodiscard]] bool isBarHorizontal(const Config& cfg, std::string_view barName) {
       const BarConfig* bar = findBar(cfg, barName);
       if (bar == nullptr) {
         return true;
       }
       return bar->position != "left" && bar->position != "right";
-    }
-
-    bool isSettingVisible(
-        const Config& cfg, std::string_view widgetName, const WidgetSettingSpec& spec,
-        const std::vector<WidgetSettingSpec>& allSpecs
-    ) {
-      if (!spec.visibleWhen.has_value()) {
-        return true;
-      }
-      auto settingValueForKey = [&](const std::string& key) -> WidgetSettingValue {
-        if (const auto it = cfg.widgets.find(std::string(widgetName)); it != cfg.widgets.end()) {
-          if (const auto settingIt = it->second.settings.find(key); settingIt != it->second.settings.end()) {
-            return settingIt->second;
-          }
-        }
-        for (const auto& s : allSpecs) {
-          if (s.schema.key == key) {
-            return s.schema.defaultValue;
-          }
-        }
-        return {};
-      };
-      auto matches = [&](const WidgetSettingVisibilityCondition& condition) {
-        const WidgetSettingValue value = settingValueForKey(condition.key);
-        if (condition.nonEmpty) {
-          if (const auto* list = std::get_if<std::vector<std::string>>(&value)) {
-            return !list->empty();
-          }
-          if (const auto* str = std::get_if<std::string>(&value)) {
-            return !str->empty();
-          }
-          return false;
-        }
-        const auto currentValue = settingCurrentString(cfg, widgetName, condition.key, allSpecs);
-        for (const auto& v : condition.values) {
-          if (v == currentValue) {
-            return true;
-          }
-        }
-        return false;
-      };
-      for (const auto& condition : spec.visibleWhen->all) {
-        if (!matches(condition)) {
-          return false;
-        }
-      }
-      if (spec.visibleWhen->any.empty()) {
-        return true;
-      }
-      for (const auto& condition : spec.visibleWhen->any) {
-        if (matches(condition)) {
-          return true;
-        }
-      }
-      return false;
     }
 
     bool settingValueAsBool(const WidgetSettingValue& value) {
@@ -1431,9 +1342,7 @@ namespace settings {
 
       const auto widgetIt = ctx.config.widgets.find(widgetName);
       const WidgetConfig* widgetConfig = widgetIt != ctx.config.widgets.end() ? &widgetIt->second : nullptr;
-      auto specs = widgetSettingSpecs(
-          widgetType, widgetConfig, ctx.config.shell.fontFamily, ctx.supportsTaskbarWorkspaceGrouping
-      );
+      auto specs = widgetSettingSpecs(widgetType, widgetConfig, ctx.config.shell.fontFamily);
       if (specs.empty()) {
         return;
       }
@@ -1457,7 +1366,12 @@ namespace settings {
         if (spec.horizontalBarOnly && !barHorizontal) {
           continue;
         }
-        if (!isSettingVisible(ctx.config, widgetName, spec, specs)) {
+        if (!widgetSettingIsVisible(
+                ctx.config, widgetName, spec, specs,
+                WidgetSettingCapabilities{
+                    .taskbarWorkspaceGrouping = ctx.supportsTaskbarWorkspaceGrouping,
+                }
+            )) {
           continue;
         }
         if (spec.advanced && !ctx.showAdvanced) {

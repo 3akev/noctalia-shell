@@ -482,14 +482,15 @@ namespace noctalia::bar {
   // Retunes one of the registry-owned common widget settings for a single widget
   // type. A definition may adjust a common setting's default and presentation; it
   // can neither add nor remove common settings. The registry rejects a key that
-  // does not name exactly one common setting. `defaultValue` and `descriptionKey`
-  // replace; `visibleWhen` refines and must declare `all` conditions only, which
-  // are appended to the common setting's own conditions.
+  // does not name exactly one common setting. `defaultValue`, `descriptionKey`,
+  // and `replaceVisibleWhen` replace; `visibleWhen` refines and must declare `all`
+  // conditions only, which are appended to the common setting's own conditions.
   struct WidgetCommonSettingOverride {
     std::string_view key;
     std::optional<WidgetSettingValue> defaultValue;
     std::string_view descriptionKey;
     std::optional<settings::WidgetSettingVisibility> visibleWhen;
+    std::optional<settings::WidgetSettingVisibility> replaceVisibleWhen;
   };
 
   template <typename Options, typename Context = std::monostate> struct WidgetDefinition {

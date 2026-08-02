@@ -56,6 +56,7 @@
 #include "shell/bar/widgets/sysmon_widget.h"
 #include "shell/bar/widgets/sysmon_widget_definition.h"
 #include "shell/bar/widgets/taskbar_widget.h"
+#include "shell/bar/widgets/taskbar_widget_definition.h"
 #include "shell/bar/widgets/test_widget.h"
 #include "shell/bar/widgets/text_widget.h"
 #include "shell/bar/widgets/text_widget_definition.h"
@@ -320,70 +321,14 @@ std::unique_ptr<Widget> WidgetFactory::create(
   }
 
   if (type == "taskbar") {
-    TaskbarWidgetOptions options{
-        .groupByWorkspace = wc != nullptr ? wc->getBool("group_by_workspace", false) : false,
-        .showAllOutputs = wc != nullptr ? wc->getBool("show_all_outputs", false) : false,
-        .onlyActiveWorkspace = wc != nullptr ? wc->getBool("only_active_workspace", false) : false,
-        .showWorkspaceLabel = wc != nullptr ? wc->getBool("show_workspace_label", true) : true,
-        .workspaceLabelPlacement = WorkspaceLabelPlacement::Corner,
-        .workspaceGroupContent = WorkspaceGroupContent::Icons,
-        .hideEmptyWorkspaces = wc != nullptr ? wc->getBool("hide_empty_workspaces", false) : false,
-        .workspaceGroupCapsule = wc != nullptr ? wc->getBool("workspace_group_capsule", true) : true,
-        .focusedOutputOnly = wc != nullptr ? wc->getBool("focused_output_only", false) : false,
-        .minimal = wc != nullptr ? wc->getBool("minimal", false) : false,
-        .groupSingleIconPerApp = wc != nullptr ? wc->getBool("group_single_icon_per_app", false) : false,
-        .showActiveIndicator = wc != nullptr ? wc->getBool("show_active_indicator", true) : true,
-        .activeIndicatorColor = wc != nullptr ? wc->getColorSpec(
-                                                    "active_indicator_color", colorSpecFromRole(ColorRole::Primary),
-                                                    "widget." + name + ".active_indicator_color"
-                                                )
-                                              : colorSpecFromRole(ColorRole::Primary),
-        .activeOpacity = wc != nullptr ? static_cast<float>(wc->getDouble("active_opacity", 1.0)) : 1.0f,
-        .inactiveOpacity = wc != nullptr ? static_cast<float>(wc->getDouble("inactive_opacity", 1.0)) : 1.0f,
-        .pinnedOpacity = wc != nullptr ? static_cast<float>(wc->getDouble("pinned_opacity", 0.5)) : 0.5f,
-        .focusedColor = wc != nullptr
-            ? wc->getColorSpec(
-                  "focused_color", colorSpecFromRole(ColorRole::Primary), "widget." + name + ".focused_color"
-              )
-            : colorSpecFromRole(ColorRole::Primary),
-        .occupiedColor = wc != nullptr
-            ? wc->getColorSpec(
-                  "occupied_color", colorSpecFromRole(ColorRole::Secondary), "widget." + name + ".occupied_color"
-              )
-            : colorSpecFromRole(ColorRole::Secondary),
-        .emptyColor = wc != nullptr
-            ? wc->getColorSpec(
-                  "empty_color", colorSpecFromRole(ColorRole::Secondary), "widget." + name + ".empty_color"
-              )
-            : colorSpecFromRole(ColorRole::Secondary),
-        .urgentColor = wc != nullptr
-            ? wc->getColorSpec("urgent_color", colorSpecFromRole(ColorRole::Error), "widget." + name + ".urgent_color")
-            : colorSpecFromRole(ColorRole::Error),
-        .showWindowTitle = wc != nullptr ? wc->getBool("show_window_title", false) : false,
-        .windowTitleMaxWidth =
-            static_cast<float>(wc != nullptr ? wc->getDouble("window_title_max_width", 100.0) : 100.0),
-        .taskbarMaxWidth = static_cast<float>(wc != nullptr ? wc->getDouble("taskbar_max_width", 8192.0) : 8192.0),
-        .barPosition = barPosition,
-        .barName = barName,
-        .widgetName = name,
-    };
-    if (wc != nullptr) {
-      const std::string placement = wc->getString("workspace_label_placement", "corner");
-      if (placement == "centered") {
-        options.workspaceLabelPlacement = WorkspaceLabelPlacement::Centered;
-      } else if (placement == "inside") {
-        options.workspaceLabelPlacement = WorkspaceLabelPlacement::Inside;
-      }
-      const std::string groupContent = wc->getString("workspace_group_content", "icons");
-      if (groupContent == "count") {
-        options.workspaceGroupContent = WorkspaceGroupContent::Count;
-      } else if (groupContent == "dots") {
-        options.workspaceGroupContent = WorkspaceGroupContent::Dots;
-      }
-    }
-    auto widget = std::make_unique<TaskbarWidget>(m_platform, m_configService, output, std::move(options));
-    widget->setContentScale(contentScale);
-    return widget;
+    return createWidget<TaskbarWidget>(
+        contentScale, m_platform, m_configService, output, taskbarWidgetDefinition().resolve(wc, settingContext),
+        TaskbarWidgetContext{
+            .barPosition = barPosition,
+            .barName = barName,
+            .widgetName = name,
+        }
+    );
   }
 
   if (type == "theme_mode") {

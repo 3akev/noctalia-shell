@@ -26,6 +26,7 @@
 #include "shell/bar/widgets/settings_widget_definition.h"
 #include "shell/bar/widgets/spacer_widget_definition.h"
 #include "shell/bar/widgets/sysmon_widget_definition.h"
+#include "shell/bar/widgets/taskbar_widget_definition.h"
 #include "shell/bar/widgets/test_widget_definition.h"
 #include "shell/bar/widgets/text_widget_definition.h"
 #include "shell/bar/widgets/theme_mode_widget_definition.h"
@@ -140,6 +141,52 @@ int main() {
   checkDefinition("settings", settingsWidgetDefinition);
   checkDefinition("spacer", spacerWidgetDefinition);
   checkDefinition("sysmon", sysmonWidgetDefinition, SysmonWidgetDefinitionContext{});
+  checkDefinition("taskbar", taskbarWidgetDefinition);
+
+  Config taskbarConfig;
+  WidgetConfig taskbar;
+  taskbar.type = "taskbar";
+  taskbar.settings["group_by_workspace"] = true;
+  taskbar.settings["capsule"] = false;
+  taskbar.settings["show_window_title"] = true;
+  taskbarConfig.widgets.emplace("taskbar-test", std::move(taskbar));
+  const auto taskbarSpecs =
+      settings::widgetSettingSpecs("taskbar", &taskbarConfig.widgets.at("taskbar-test"), "sans-serif");
+  const auto settingVisible = [&](std::string_view key, bool workspaceGrouping) {
+    const auto spec = std::ranges::find(taskbarSpecs, key, [](const settings::WidgetSettingSpec& candidate) {
+      return std::string_view(candidate.schema.key);
+    });
+    if (spec == taskbarSpecs.end()) {
+      fail("taskbar", std::format("missing presentation spec '{}'", key));
+      return false;
+    }
+    return settings::widgetSettingIsVisible(
+        taskbarConfig, "taskbar-test", *spec, taskbarSpecs,
+        settings::WidgetSettingCapabilities{
+            .taskbarWorkspaceGrouping = workspaceGrouping,
+        }
+    );
+  };
+  if (settingVisible("group_by_workspace", false)
+      || !settingVisible("pinned", false)
+      || !settingVisible("show_window_title", false)
+      || !settingVisible("window_title_max_width", false)
+      || settingVisible("capsule_radius", false)) {
+    fail("taskbar", "unsupported workspace grouping did not use capability-gated defaults");
+  }
+  taskbarConfig.widgets.at("taskbar-test").settings["capsule"] = true;
+  if (!settingVisible("capsule_radius", false)) {
+    fail("taskbar", "unsupported workspace grouping hid the ordinary capsule radius");
+  }
+  taskbarConfig.widgets.at("taskbar-test").settings["capsule"] = false;
+  if (!settingVisible("group_by_workspace", true)
+      || settingVisible("pinned", true)
+      || !settingVisible("capsule_radius", true)) {
+    fail("taskbar", "supported workspace grouping did not expose grouped settings");
+  }
+  if (!taskbarConfig.widgets.at("taskbar-test").getBool("group_by_workspace", false)) {
+    fail("taskbar", "capability visibility mutated persisted workspace grouping");
+  }
   checkDefinition<true>("test", testWidgetDefinition);
   checkDefinition("text", textWidgetDefinition);
   checkDefinition<true>("theme_mode", themeModeWidgetDefinition);

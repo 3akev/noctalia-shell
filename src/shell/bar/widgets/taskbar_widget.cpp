@@ -197,7 +197,8 @@ namespace {
 } // namespace
 
 TaskbarWidget::TaskbarWidget(
-    CompositorPlatform& platform, ConfigService& config, wl_output* output, TaskbarWidgetOptions options
+    CompositorPlatform& platform, ConfigService& config, wl_output* output, TaskbarWidgetOptions options,
+    TaskbarWidgetContext context
 )
     : m_platform(platform), m_configService(config), m_output(output), m_configOptions(std::move(options)),
       m_showAllOutputs(m_configOptions.showAllOutputs), m_focusedOutputOnly(m_configOptions.focusedOutputOnly),
@@ -206,9 +207,10 @@ TaskbarWidget::TaskbarWidget(
       m_inactiveOpacity(m_configOptions.inactiveOpacity), m_pinnedOpacity(m_configOptions.pinnedOpacity),
       m_focusedColor(m_configOptions.focusedColor), m_occupiedColor(m_configOptions.occupiedColor),
       m_emptyColor(m_configOptions.emptyColor), m_urgentColor(m_configOptions.urgentColor),
-      m_windowTitleMaxWidth(m_configOptions.windowTitleMaxWidth), m_taskbarMaxWidth(m_configOptions.taskbarMaxWidth),
-      m_barPosition(std::move(m_configOptions.barPosition)), m_barName(std::move(m_configOptions.barName)),
-      m_widgetName(std::move(m_configOptions.widgetName)) {
+      m_windowTitleMaxWidth(static_cast<float>(m_configOptions.windowTitleMaxWidth)),
+      m_taskbarMaxWidth(static_cast<float>(m_configOptions.taskbarMaxWidth)),
+      m_barPosition(std::move(context.barPosition)), m_barName(std::move(context.barName)),
+      m_widgetName(std::move(context.widgetName)) {
   syncWorkspaceGroupingCapability();
   buildDesktopIconIndex();
 }
@@ -313,16 +315,7 @@ void TaskbarWidget::closeTaskModel(const TaskModel& task) {
   }
 }
 
-std::vector<std::string> TaskbarWidget::pinnedConfigIds() const {
-  if (m_widgetName.empty()) {
-    return {};
-  }
-  const auto it = m_configService.config().widgets.find(m_widgetName);
-  if (it == m_configService.config().widgets.end()) {
-    return {};
-  }
-  return it->second.getStringList("pinned");
-}
+const std::vector<std::string>& TaskbarWidget::pinnedConfigIds() const noexcept { return m_configOptions.pinned; }
 
 bool TaskbarWidget::taskMatchesDesktopEntry(const TaskModel& task, const DesktopEntry& entry) {
   const std::string entryIdLower = StringUtils::toLower(entry.id);
@@ -381,7 +374,9 @@ void TaskbarWidget::setEntryPinned(const DesktopEntry& entry, bool pinned) {
   } else {
     shell::dock::pinned_apps::removeEntry(pinnedList, entry);
   }
-  (void)m_configService.setOverride({"widget", m_widgetName, "pinned"}, std::move(pinnedList));
+  if (m_configService.setOverride({"widget", m_widgetName, "pinned"}, pinnedList)) {
+    m_configOptions.pinned = std::move(pinnedList);
+  }
 }
 
 void TaskbarWidget::launchDesktopEntry(const TaskModel& task) {
@@ -435,7 +430,7 @@ void TaskbarWidget::activateOrLaunchPinned(const TaskModel& task) {
 }
 
 void TaskbarWidget::applyPinnedMerge(std::vector<TaskModel>& tasks) {
-  const auto pinnedIds = pinnedConfigIds();
+  const auto& pinnedIds = pinnedConfigIds();
   if (pinnedIds.empty()) {
     return;
   }
