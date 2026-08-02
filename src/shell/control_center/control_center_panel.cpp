@@ -503,8 +503,9 @@ bool ControlCenterPanel::isTabVisible(TabId tab) const {
   if (!isTabFeatureAvailable(tab)) {
     return false;
   }
-  // Home is always shown so the panel never opens to an empty surface.
-  if (tab == TabId::Home || m_config == nullptr) {
+  // Home and the currently active tab are always shown so the panel never opens
+  // to an empty surface, even when the active tab was hidden via settings.
+  if (tab == TabId::Home || tab == m_activeTab || m_config == nullptr) {
     return true;
   }
   const auto& hidden = m_config->config().controlCenter.hiddenTabs;
@@ -759,10 +760,6 @@ void ControlCenterPanel::selectAdjacentVisibleTab(int direction) {
 }
 
 void ControlCenterPanel::selectTab(TabId tab, bool animated) {
-  if (!isTabVisible(tab)) {
-    tab = firstVisibleTab();
-  }
-
   const TabId previousTab = m_activeTab;
   const bool tabChanged = tab != previousTab;
 
@@ -836,7 +833,7 @@ ControlCenterSidebarMode ControlCenterPanel::sidebarModeForOpen(std::string_view
 ControlCenterPanel::TabId ControlCenterPanel::tabFromContext(std::string_view context) const {
   for (const auto& tab : kTabs) {
     if (context == tab.key) {
-      return isTabVisible(tab.id) ? tab.id : firstVisibleTab();
+      return tab.id;
     }
   }
   return TabId::Home;
