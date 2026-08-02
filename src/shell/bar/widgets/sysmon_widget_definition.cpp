@@ -266,6 +266,9 @@ const noctalia::bar::WidgetDefinition<SysmonWidget::Options, SysmonWidgetDefinit
           options.visualization = SysmonVisualization::Gauge;
         }
       },
+      .glyph = [](const Options& options) {
+        return options.glyph.empty() ? std::string(SysmonWidget::glyphName(options.stat)) : options.glyph;
+      },
   };
   return definition;
 }

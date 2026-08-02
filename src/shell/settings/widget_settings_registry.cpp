@@ -51,6 +51,7 @@
 #include <iterator>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 #include <unordered_set>
 #include <utility>
 
@@ -97,6 +98,7 @@ namespace settings {
       schema::WidgetSettingSchema (*schemaFields)();
       std::vector<WidgetSettingSpec> (*presentedSettingSpecs)();
       const std::vector<noctalia::bar::WidgetCommonSettingOverride>& (*commonOverrides)();
+      std::string (*glyph)(const WidgetConfig* config);
     };
 
     template <auto DefinitionAccessor> constexpr TypedWidgetDefinitionProjection projectWidgetDefinition() {
@@ -106,6 +108,18 @@ namespace settings {
           .presentedSettingSpecs = [] { return DefinitionAccessor().presentedSettingSpecs(); },
           .commonOverrides = []() -> const std::vector<noctalia::bar::WidgetCommonSettingOverride>& {
             return DefinitionAccessor().commonOverrides;
+          },
+          .glyph = [](const WidgetConfig* config) -> std::string {
+            const auto& definition = DefinitionAccessor();
+            if (!definition.glyph) {
+              return {};
+            }
+            if constexpr (requires { definition.resolve(config, definition.type); }) {
+              return definition.glyph(definition.resolve(config, definition.type));
+            } else {
+              using Definition = std::remove_cvref_t<decltype(definition)>;
+              return definition.glyph(definition.resolve(config, definition.type, typename Definition::ContextType{}));
+            }
           },
       };
     }
@@ -253,78 +267,13 @@ namespace settings {
       return "apps";
     }
 
-    std::string nonEmptyGlyph(std::string value, std::string_view fallback) {
-      return value.empty() ? std::string(fallback) : std::move(value);
-    }
-
     std::string widgetGlyph(std::string_view type, const WidgetConfig* config = nullptr) {
       if (auto pw = resolvePluginWidget(type)) {
         return pw->manifest->icon.empty() ? std::string("apps") : pw->manifest->icon;
       }
-      if (config == nullptr) {
-        return defaultWidgetGlyph(type);
-      }
-      if (type == "clipboard") {
-        return nonEmptyGlyph(config->getString("glyph", "clipboard"), "clipboard");
-      }
-      if (type == "control-center") {
-        return nonEmptyGlyph(config->getString("glyph", "noctalia"), "search");
-      }
-      if (type == "custom_button") {
-        return nonEmptyGlyph(config->getString("glyph", "heart"), "heart");
-      }
-      if (type == "launcher") {
-        return nonEmptyGlyph(config->getString("glyph", "search"), "search");
-      }
-      if (type == "session") {
-        return nonEmptyGlyph(config->getString("glyph", "shutdown"), "shutdown");
-      }
-      if (type == "settings") {
-        return nonEmptyGlyph(config->getString("glyph", "settings"), "search");
-      }
-      if (type == "wallpaper") {
-        return nonEmptyGlyph(config->getString("glyph", "wallpaper-selector"), "wallpaper-selector");
-      }
-      if (type == "keyboard_layout") {
-        return nonEmptyGlyph(config->getString("glyph", "keyboard"), "keyboard");
-      }
-      if (type == "sysmon") {
-        if (const std::string custom = config->getString("glyph", ""); !custom.empty()) {
-          return custom;
-        }
-        const std::string stat = config->getString("stat", "cpu_usage");
-        if (stat == "cpu_temp") {
-          return "cpu-temperature";
-        }
-        if (stat == "gpu_temp") {
-          return "temperature";
-        }
-        if (stat == "gpu_usage") {
-          return "gpu-usage";
-        }
-        if (stat == "gpu_vram" || stat == "ram_used" || stat == "ram_pct") {
-          return "memory";
-        }
-        if (stat == "swap_pct"
-            || stat == "disk_used_pct"
-            || stat == "disk_used"
-            || stat == "disk_free_pct"
-            || stat == "disk_free") {
-          return "storage";
-        }
-        if (stat == "net_rx") {
-          return "download";
-        }
-        if (stat == "net_tx") {
-          return "upload";
-        }
-      }
-      if (type == "volume") {
-        if (const std::string custom = config->getString("glyph", ""); !custom.empty()) {
-          return custom;
-        }
-        if (config->getString("device", "output") == "input") {
-          return "microphone";
+      if (const auto* projection = findTypedWidgetDefinitionProjection(type); projection != nullptr) {
+        if (auto glyph = projection->glyph(config); !glyph.empty()) {
+          return glyph;
         }
       }
       return defaultWidgetGlyph(type);

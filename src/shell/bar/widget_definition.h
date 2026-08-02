@@ -494,9 +494,14 @@ namespace noctalia::bar {
   };
 
   template <typename Options, typename Context = std::monostate> struct WidgetDefinition {
+    using ContextType = Context;
+
     std::string_view type;
     std::vector<WidgetDefinitionField<Options>> fields;
     std::function<void(Options&, const Context&)> finalize;
+    // Optional picker-glyph hook. It receives options resolved with a default context;
+    // an empty result uses the widget type's static glyph.
+    std::function<std::string(const Options&)> glyph;
     std::vector<WidgetCommonSettingOverride> commonOverrides;
 
     [[nodiscard]] Options resolve(const WidgetConfig* config, std::string_view settingContext) const

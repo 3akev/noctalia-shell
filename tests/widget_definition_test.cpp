@@ -34,6 +34,7 @@
 #include "shell/bar/widgets/volume_widget_definition.h"
 #include "shell/bar/widgets/wallpaper_widget_definition.h"
 #include "shell/bar/widgets/weather_widget_definition.h"
+#include "shell/settings/widget_settings_registry.h"
 #include "system/battery_warning_monitor.h"
 
 #include <algorithm>
@@ -208,6 +209,28 @@ int main() {
       std::ranges::find(inputGestures, noctalia::bar::Gesture::Right, &noctalia::bar::GestureBinding::gesture);
   if (inputMute == inputGestures.end() || inputMute->action != "mic-mute") {
     fail("volume", "input device did not select microphone gesture defaults");
+  }
+
+  Config glyphConfig;
+  glyphConfig.widgets.emplace("mic", inputVolume);
+  WidgetConfig networkDownload;
+  networkDownload.type = "sysmon";
+  networkDownload.settings["stat"] = std::string("net_rx");
+  glyphConfig.widgets.emplace("network-download", std::move(networkDownload));
+  const auto pickerEntries = settings::widgetPickerEntries(glyphConfig);
+  const auto pickerGlyph = [&](std::string_view name) -> std::string_view {
+    const auto entry = std::ranges::find(pickerEntries, name, &settings::WidgetPickerEntry::value);
+    if (entry == pickerEntries.end()) {
+      fail(name, "named widget is missing from picker entries");
+      return {};
+    }
+    return entry->icon;
+  };
+  if (pickerGlyph("mic") != "microphone") {
+    fail("volume", "input device did not select the microphone picker glyph");
+  }
+  if (pickerGlyph("network-download") != "download") {
+    fail("sysmon", "network receive stat did not select the download picker glyph");
   }
   checkDefinition("wallpaper", wallpaperWidgetDefinition);
   checkDefinition("weather", weatherWidgetDefinition);
