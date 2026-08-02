@@ -6,6 +6,7 @@
 #include "notification/notifications.h"
 #include "scripting/luau_host.h"
 #include "scripting/plugin_bindings.h"
+#include "scripting/plugin_id.h"
 #include "scripting/plugin_state_store.h"
 #include "scripting/script_api_context.h"
 #include "scripting/script_worker_pool.h"
@@ -37,7 +38,9 @@ namespace scripting {
     // Per-call budgets, spent in worker-thread CPU time (see threadCpuTime() in
     // luau_host.cpp).
     constexpr auto kLoadBudget = std::chrono::milliseconds(100);
-    constexpr auto kUpdateBudget = std::chrono::milliseconds(12);
+    // update() and async callbacks run on the same worker pool, so they get the same
+    // ceiling: a stricter update() only pushed authors to bounce work through runAsync.
+    constexpr auto kUpdateBudget = std::chrono::milliseconds(25);
     constexpr auto kCallbackBudget = std::chrono::milliseconds(25);
     // Error/crash budget: too many timeouts or hard errors in a window marks the
     // runtime unhealthy, which stops feeding it events until the next reload.
@@ -693,14 +696,24 @@ namespace scripting {
 
     ScriptResult processLoad(const ScriptEvent& event) {
       teardownHost(0, event.snapshot, ScriptExitReason::Reload);
+      // The host requires a canonical entry id. Refuse the load loudly here rather than
+      // letting the constructor throw on a worker thread.
+      if (!isValidPluginEntryId(runtimeName)) {
+        kLog.error("refusing to load '{}': not a canonical author/plugin:entry id", runtimeName);
+        ScriptResult failed;
+        failed.generation = generation;
+        failed.ok = false;
+        failed.error = "invalid entry id";
+        failed.unhealthy = true;
+        return failed;
+      }
 
-      host = std::make_unique<LuauHost>(scriptApi);
+      host = std::make_unique<LuauHost>(scriptApi, runtimeName);
       reportedModuleCount = 0;
       bindingContext.settings = &settings;
       bindingContext.host = host.get();
       bindingContext.ownerId = runtimeName;
       host->setPluginDir(pluginDir);
-      host->setPluginId(runtimeName.substr(0, runtimeName.find(':')));
       host->loadTranslations();
       host->setHttpClient(httpClient);
       host->setScriptContext(&bindingContext);

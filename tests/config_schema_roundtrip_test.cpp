@@ -163,6 +163,28 @@ location = "https://example.invalid/bad"
         fail("plugins: derived subdir for invalid plugin id " + id);
       }
     }
+
+    // Canonical entry ids gate host construction and state-store scoping, so the
+    // shapes that must not slip through are the near-misses: no colon, extra colons,
+    // and an empty or malformed entry segment.
+    const std::string validEntries[] = {
+        "noctalia/screen_recorder:widget", "me/hello:a", "Team/repo_2:entry-1", "a/b.c-d:e.f"
+    };
+    for (const auto& id : validEntries) {
+      if (!scripting::isValidPluginEntryId(id)) {
+        fail("plugins: rejected valid entry id " + id);
+      }
+    }
+
+    const std::string invalidEntries[] = {
+        "",          "me/hello",   "me/hello:",   ":widget",          "me/hello:a:b",
+        "mehello:a", "me/hello:.", "me/hello:..", "me/hello:wid get", "me/foo/bar:a",
+    };
+    for (const auto& id : invalidEntries) {
+      if (scripting::isValidPluginEntryId(id)) {
+        fail("plugins: accepted invalid entry id " + id);
+      }
+    }
   }
 
   // A fully-specified bar with a fully-specified monitor override. Every override
