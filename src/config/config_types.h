@@ -978,6 +978,12 @@ struct ShellConfig {
     bool operator==(const LauncherConfig&) const = default;
   };
 
+  struct KeyboardLayoutConfig {
+    std::unordered_map<std::string, std::string> customLabels;
+
+    bool operator==(const KeyboardLayoutConfig&) const = default;
+  };
+
   struct ScreenCornersConfig {
     bool enabled = false;
     std::int32_t size = 32;
@@ -1061,6 +1067,7 @@ struct ShellConfig {
   ShadowConfig shadow;
   PanelConfig panel;
   LauncherConfig launcher;
+  KeyboardLayoutConfig keyboardLayout;
   ScreenCornersConfig screenCorners;
   MprisConfig mpris;
   ScreenshotConfig screenshot;

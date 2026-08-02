@@ -66,7 +66,6 @@ namespace settings {
         .showAdvanced = ctx.showAdvanced,
         .showOverriddenOnly = ctx.showOverriddenOnly,
         .batteryDeviceOptions = ctx.batteryDeviceOptions,
-        .keyboardLayoutNames = ctx.keyboardLayoutNames,
         .editingWidgetName = ctx.editingWidgetName,
         .editingCapsuleGroupId = ctx.editingCapsuleGroupId,
         .selectedLaneWidgets = ctx.selectedLaneWidgets,
@@ -1171,6 +1170,8 @@ namespace settings {
               return nullptr;
             } else if constexpr (std::is_same_v<T, ListSetting>) {
               return nullptr;
+            } else if constexpr (std::is_same_v<T, StringMapSetting>) {
+              return nullptr;
             } else if constexpr (std::is_same_v<T, ShortcutListSetting>) {
               return nullptr;
             } else if constexpr (std::is_same_v<T, KeybindListSetting>) {
@@ -1325,6 +1326,8 @@ namespace settings {
           } else if (!isBarWidgetListPath(entry.path)) {
             makeListBlock(*activeSection, entry, *list);
           }
+        } else if (const auto* map = std::get_if<StringMapSetting>(&entry.control)) {
+          factory.makeStringMapBlock(*activeSection, entry, *map);
         } else if (const auto* shortcuts = std::get_if<ShortcutListSetting>(&entry.control)) {
           makeShortcutListBlock(*activeSection, entry, *shortcuts);
         } else if (const auto* keybindList = std::get_if<KeybindListSetting>(&entry.control)) {
