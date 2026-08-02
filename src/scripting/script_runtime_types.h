@@ -176,6 +176,7 @@ namespace scripting {
     Call,
     CallArgs,
     AsyncCommandResult,
+    AsyncFileResult,
     AsyncProcessMatchResult,
     AsyncHttpResult,
     SoundLoadResult,
@@ -225,6 +226,10 @@ namespace scripting {
     bool droppable = false;
     int callbackRef = 0;
     process::RunResult commandResult;
+    // AsyncFileResult payload.
+    bool fileOk = false;
+    std::string fileData;
+    std::string fileError;
     // AsyncHttpResult / HttpStreamClosed payload.
     bool httpOk = false;
     bool httpIsDownload = false;
