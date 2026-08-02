@@ -99,7 +99,18 @@ namespace settings {
       std::vector<WidgetSettingSpec> (*presentedSettingSpecs)();
       const std::vector<noctalia::bar::WidgetCommonSettingOverride>& (*commonOverrides)();
       std::string (*glyph)(const WidgetConfig* config);
+      std::optional<std::string> (*validateConfig)(const WidgetConfig* config);
     };
+
+    template <auto DefinitionAccessor> auto resolveProjectedOptions(const WidgetConfig* config) {
+      const auto& definition = DefinitionAccessor();
+      if constexpr (requires { definition.resolve(config, definition.type); }) {
+        return definition.resolve(config, definition.type);
+      } else {
+        using Definition = std::remove_cvref_t<decltype(definition)>;
+        return definition.resolve(config, definition.type, typename Definition::ContextType{});
+      }
+    }
 
     template <auto DefinitionAccessor> constexpr TypedWidgetDefinitionProjection projectWidgetDefinition() {
       return TypedWidgetDefinitionProjection{
@@ -111,15 +122,14 @@ namespace settings {
           },
           .glyph = [](const WidgetConfig* config) -> std::string {
             const auto& definition = DefinitionAccessor();
-            if (!definition.glyph) {
-              return {};
-            }
-            if constexpr (requires { definition.resolve(config, definition.type); }) {
-              return definition.glyph(definition.resolve(config, definition.type));
-            } else {
-              using Definition = std::remove_cvref_t<decltype(definition)>;
-              return definition.glyph(definition.resolve(config, definition.type, typename Definition::ContextType{}));
-            }
+            return definition.glyph ? definition.glyph(resolveProjectedOptions<DefinitionAccessor>(config))
+                                    : std::string{};
+          },
+          .validateConfig = [](const WidgetConfig* config) -> std::optional<std::string> {
+            const auto& definition = DefinitionAccessor();
+            return definition.validateOptions
+                ? definition.validateOptions(resolveProjectedOptions<DefinitionAccessor>(config))
+                : std::nullopt;
           },
       };
     }
@@ -456,6 +466,11 @@ namespace settings {
   const std::vector<WidgetTypeSpec>& widgetTypeSpecs() { return kWidgetTypeSpecs; }
 
   bool isBuiltInWidgetType(std::string_view type) { return findWidgetTypeSpec(type) != nullptr; }
+
+  std::optional<std::string> validateWidgetSemantics(std::string_view type, const WidgetConfig* config) {
+    const auto* projection = findTypedWidgetDefinitionProjection(type);
+    return projection != nullptr ? projection->validateConfig(config) : std::nullopt;
+  }
 
   bool isPluginWidgetType(std::string_view type) { return resolvePluginWidget(type).has_value(); }
 

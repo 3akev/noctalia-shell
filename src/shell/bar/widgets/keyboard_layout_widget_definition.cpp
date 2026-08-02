@@ -61,6 +61,12 @@ const noctalia::bar::WidgetDefinition<KeyboardLayoutWidget::Options>& keyboardLa
               }),
           },
       .glyph = [](const Options& options) { return options.glyph; },
+      .validateOptions = [](const Options& options) -> std::optional<std::string> {
+        if (!options.showGlyph && !options.showLabel) {
+          return "show_glyph and show_label cannot both be false";
+        }
+        return std::nullopt;
+      },
   };
   return definition;
 }

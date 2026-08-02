@@ -502,6 +502,9 @@ namespace noctalia::bar {
     // Optional picker-glyph hook. It receives options resolved with a default context;
     // an empty result uses the widget type's static glyph.
     std::function<std::string(const Options&)> glyph;
+    // Optional cross-field semantic check on resolved options. A returned string
+    // describes the invalid combination; nullopt means the options are valid.
+    std::function<std::optional<std::string>(const Options&)> validateOptions;
     std::vector<WidgetCommonSettingOverride> commonOverrides;
 
     [[nodiscard]] Options resolve(const WidgetConfig* config, std::string_view settingContext) const

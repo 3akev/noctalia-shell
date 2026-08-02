@@ -142,6 +142,33 @@ int main() {
   checkDefinition("settings", settingsWidgetDefinition);
   checkDefinition("spacer", spacerWidgetDefinition);
   checkDefinition("sysmon", sysmonWidgetDefinition, SysmonWidgetDefinitionContext{});
+
+  WidgetConfig invalidKeyboardLayout;
+  invalidKeyboardLayout.type = "keyboard_layout";
+  invalidKeyboardLayout.settings["show_glyph"] = false;
+  invalidKeyboardLayout.settings["show_label"] = false;
+  const auto keyboardError = settings::validateWidgetSemantics("keyboard_layout", &invalidKeyboardLayout);
+  if (!keyboardError.has_value() || *keyboardError != "show_glyph and show_label cannot both be false") {
+    fail("keyboard_layout", "invalid resolved options did not produce the semantic error");
+  }
+  invalidKeyboardLayout.settings["show_label"] = true;
+  if (settings::validateWidgetSemantics("keyboard_layout", &invalidKeyboardLayout).has_value()) {
+    fail("keyboard_layout", "valid resolved options produced a semantic error");
+  }
+
+  WidgetConfig invalidSysmon;
+  invalidSysmon.type = "sysmon";
+  invalidSysmon.settings["show_glyph"] = false;
+  invalidSysmon.settings["show_value"] = false;
+  invalidSysmon.settings["visualization"] = std::string("none");
+  const auto sysmonError = settings::validateWidgetSemantics("sysmon", &invalidSysmon);
+  if (!sysmonError.has_value() || *sysmonError != "show_glyph, show_value, and visualization cannot all be disabled") {
+    fail("sysmon", "invalid resolved options did not produce the semantic error");
+  }
+  invalidSysmon.settings["show_value"] = true;
+  if (settings::validateWidgetSemantics("sysmon", &invalidSysmon).has_value()) {
+    fail("sysmon", "valid resolved options produced a semantic error");
+  }
   checkDefinition("taskbar", taskbarWidgetDefinition);
 
   Config taskbarConfig;
