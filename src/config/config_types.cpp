@@ -570,19 +570,11 @@ bool outputMatchesSelector(const std::string& match, const WaylandOutput& output
     return true;
   }
 
-  // Word-boundary substring match on description. A bare substring search would
-  // let "DP-1" match "eDP-1" inside descriptions like "BOE 0x0BCA eDP-1".
-  if (!output.description.empty()) {
-    std::size_t pos = 0;
-    while ((pos = output.description.find(match, pos)) != std::string::npos) {
-      const bool startOk = (pos == 0 || std::isspace(static_cast<unsigned char>(output.description[pos - 1])) != 0);
-      const bool endOk =
-          (pos + match.size() == output.description.size()
-           || std::isspace(static_cast<unsigned char>(output.description[pos + match.size()])) != 0);
-      if (startOk && endOk) {
-        return true;
-      }
-      ++pos;
+  // Each identity field is searched independently so selector semantics don't depend on
+  // whether the compositor advertised output management, nor on any join order.
+  for (const std::string* field : {&output.description, &output.make, &output.model, &output.serialNumber}) {
+    if (StringUtils::containsWholeToken(*field, match)) {
+      return true;
     }
   }
   return false;
