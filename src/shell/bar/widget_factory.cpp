@@ -188,9 +188,7 @@ std::unique_ptr<Widget> WidgetFactory::create(
   }
 
   if (type == "caffeine") {
-    auto widget = std::make_unique<IdleInhibitorWidget>(m_idleInhibitor);
-    widget->setContentScale(contentScale);
-    return widget;
+    return createWidget<IdleInhibitorWidget>(contentScale, m_idleInhibitor);
   }
 
   if (type == "keyboard_layout") {
@@ -238,9 +236,7 @@ std::unique_ptr<Widget> WidgetFactory::create(
   }
 
   if (type == "nightlight") {
-    auto widget = std::make_unique<NightLightWidget>(m_nightLight);
-    widget->setContentScale(contentScale);
-    return widget;
+    return createWidget<NightLightWidget>(contentScale, m_nightLight);
   }
 
   if (type == "notifications") {
@@ -340,9 +336,7 @@ std::unique_ptr<Widget> WidgetFactory::create(
   }
 
   if (type == "test") {
-    auto widget = std::make_unique<TestWidget>(output);
-    widget->setContentScale(contentScale);
-    return widget;
+    return createWidget<TestWidget>(contentScale, output);
   }
 
   if (type == "taskbar") {
@@ -413,9 +407,7 @@ std::unique_ptr<Widget> WidgetFactory::create(
   }
 
   if (type == "theme_mode") {
-    auto widget = std::make_unique<ThemeModeWidget>(m_themeService);
-    widget->setContentScale(contentScale);
-    return widget;
+    return createWidget<ThemeModeWidget>(contentScale, m_themeService);
   }
 
   if (type == "tray") {

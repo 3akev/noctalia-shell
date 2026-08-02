@@ -6,6 +6,7 @@
 #include "shell/bar/widgets/battery_widget_definition.h"
 #include "shell/bar/widgets/bluetooth_widget_definition.h"
 #include "shell/bar/widgets/brightness_widget_definition.h"
+#include "shell/bar/widgets/caffeine_widget_definition.h"
 #include "shell/bar/widgets/clipboard_widget_definition.h"
 #include "shell/bar/widgets/clock_widget_definition.h"
 #include "shell/bar/widgets/control_center_widget_definition.h"
@@ -14,14 +15,18 @@
 #include "shell/bar/widgets/lock_keys_widget_definition.h"
 #include "shell/bar/widgets/media_widget_definition.h"
 #include "shell/bar/widgets/network_widget_definition.h"
+#include "shell/bar/widgets/nightlight_widget_definition.h"
 #include "shell/bar/widgets/notification_widget_definition.h"
+#include "shell/bar/widgets/power_profile_widget_definition.h"
 #include "shell/bar/widgets/privacy_widget_definition.h"
 #include "shell/bar/widgets/screenshot_widget_definition.h"
 #include "shell/bar/widgets/session_widget_definition.h"
 #include "shell/bar/widgets/settings_widget_definition.h"
 #include "shell/bar/widgets/spacer_widget_definition.h"
 #include "shell/bar/widgets/sysmon_widget_definition.h"
+#include "shell/bar/widgets/test_widget_definition.h"
 #include "shell/bar/widgets/text_widget_definition.h"
+#include "shell/bar/widgets/theme_mode_widget_definition.h"
 #include "shell/bar/widgets/tray_widget_definition.h"
 #include "shell/bar/widgets/wallpaper_widget_definition.h"
 #include "shell/bar/widgets/weather_widget_definition.h"
@@ -56,7 +61,7 @@ namespace {
   // projection, presentation projection, and resolution of both an absent config and one that spells
   // out every schema default. `type` is the string WidgetFactory::create() dispatches on, so a
   // definition that disagrees with it would silently never surface its settings.
-  template <typename Accessor, typename... Context>
+  template <bool AllowEmpty = false, typename Accessor, typename... Context>
   void checkDefinition(std::string_view type, Accessor accessor, const Context&... context) {
     try {
       const auto& definition = accessor();
@@ -65,7 +70,7 @@ namespace {
       }
 
       const auto schema = definition.schemaFields();
-      if (schema.empty()) {
+      if (schema.empty() && !AllowEmpty) {
         fail(type, "definition declares no fields");
         return;
       }
@@ -112,6 +117,7 @@ int main() {
   checkDefinition("battery", batteryWidgetDefinition, BatteryWidgetDefinitionContext{.batteryConfig = &batteryConfig});
   checkDefinition("bluetooth", bluetoothWidgetDefinition);
   checkDefinition("brightness", brightnessWidgetDefinition);
+  checkDefinition<true>("caffeine", caffeineWidgetDefinition);
   checkDefinition("clipboard", clipboardWidgetDefinition);
   checkDefinition("clock", clockWidgetDefinition);
   checkDefinition("control-center", controlCenterWidgetDefinition);
@@ -120,14 +126,18 @@ int main() {
   checkDefinition("lock_keys", lockKeysWidgetDefinition);
   checkDefinition("media", mediaWidgetDefinition);
   checkDefinition("network", networkWidgetDefinition);
+  checkDefinition<true>("nightlight", nightlightWidgetDefinition);
   checkDefinition("notifications", notificationWidgetDefinition);
+  checkDefinition<true>("power_profile", powerProfileWidgetDefinition);
   checkDefinition("privacy", privacyWidgetDefinition);
   checkDefinition("screenshot", screenshotWidgetDefinition);
   checkDefinition("session", sessionWidgetDefinition);
   checkDefinition("settings", settingsWidgetDefinition);
   checkDefinition("spacer", spacerWidgetDefinition);
   checkDefinition("sysmon", sysmonWidgetDefinition, SysmonWidgetDefinitionContext{});
+  checkDefinition<true>("test", testWidgetDefinition);
   checkDefinition("text", textWidgetDefinition);
+  checkDefinition<true>("theme_mode", themeModeWidgetDefinition);
   checkDefinition("tray", trayWidgetDefinition, TrayWidgetDefinitionContext{});
   checkDefinition("wallpaper", wallpaperWidgetDefinition);
   checkDefinition("weather", weatherWidgetDefinition);

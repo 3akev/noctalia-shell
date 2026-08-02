@@ -10,6 +10,7 @@
 #include "shell/bar/widgets/battery_widget_definition.h"
 #include "shell/bar/widgets/bluetooth_widget_definition.h"
 #include "shell/bar/widgets/brightness_widget_definition.h"
+#include "shell/bar/widgets/caffeine_widget_definition.h"
 #include "shell/bar/widgets/clipboard_widget_definition.h"
 #include "shell/bar/widgets/clock_widget_definition.h"
 #include "shell/bar/widgets/control_center_widget_definition.h"
@@ -18,14 +19,18 @@
 #include "shell/bar/widgets/lock_keys_widget_definition.h"
 #include "shell/bar/widgets/media_widget_definition.h"
 #include "shell/bar/widgets/network_widget_definition.h"
+#include "shell/bar/widgets/nightlight_widget_definition.h"
 #include "shell/bar/widgets/notification_widget_definition.h"
+#include "shell/bar/widgets/power_profile_widget_definition.h"
 #include "shell/bar/widgets/privacy_widget_definition.h"
 #include "shell/bar/widgets/screenshot_widget_definition.h"
 #include "shell/bar/widgets/session_widget_definition.h"
 #include "shell/bar/widgets/settings_widget_definition.h"
 #include "shell/bar/widgets/spacer_widget_definition.h"
 #include "shell/bar/widgets/sysmon_widget_definition.h"
+#include "shell/bar/widgets/test_widget_definition.h"
 #include "shell/bar/widgets/text_widget_definition.h"
+#include "shell/bar/widgets/theme_mode_widget_definition.h"
 #include "shell/bar/widgets/tray_widget_definition.h"
 #include "shell/bar/widgets/wallpaper_widget_definition.h"
 #include "shell/bar/widgets/weather_widget_definition.h"
@@ -108,6 +113,7 @@ namespace settings {
         projectWidgetDefinition<batteryWidgetDefinition>(),
         projectWidgetDefinition<bluetoothWidgetDefinition>(),
         projectWidgetDefinition<brightnessWidgetDefinition>(),
+        projectWidgetDefinition<caffeineWidgetDefinition>(),
         projectWidgetDefinition<clipboardWidgetDefinition>(),
         projectWidgetDefinition<clockWidgetDefinition>(),
         projectWidgetDefinition<controlCenterWidgetDefinition>(),
@@ -116,14 +122,18 @@ namespace settings {
         projectWidgetDefinition<lockKeysWidgetDefinition>(),
         projectWidgetDefinition<mediaWidgetDefinition>(),
         projectWidgetDefinition<networkWidgetDefinition>(),
+        projectWidgetDefinition<nightlightWidgetDefinition>(),
         projectWidgetDefinition<notificationWidgetDefinition>(),
+        projectWidgetDefinition<powerProfileWidgetDefinition>(),
         projectWidgetDefinition<privacyWidgetDefinition>(),
         projectWidgetDefinition<screenshotWidgetDefinition>(),
         projectWidgetDefinition<sessionWidgetDefinition>(),
         projectWidgetDefinition<settingsWidgetDefinition>(),
         projectWidgetDefinition<spacerWidgetDefinition>(),
         projectWidgetDefinition<sysmonWidgetDefinition>(),
+        projectWidgetDefinition<testWidgetDefinition>(),
         projectWidgetDefinition<textWidgetDefinition>(),
+        projectWidgetDefinition<themeModeWidgetDefinition>(),
         projectWidgetDefinition<trayWidgetDefinition>(),
         projectWidgetDefinition<wallpaperWidgetDefinition>(),
         projectWidgetDefinition<weatherWidgetDefinition>(),
