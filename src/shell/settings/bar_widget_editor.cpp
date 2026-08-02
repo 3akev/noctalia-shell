@@ -1682,7 +1682,6 @@ namespace settings {
             panel->addChild(makeGestureActionsSection(ctx, widgetName, std::move(body), visibleSpecs > 0));
             break;
           }
-          const bool customLabels = spec.schema.key == "custom_labels";
           const bool effectsProfileGlyphs = spec.schema.key == "effects_profile_glyphs";
           WidgetSettingStringMap entries;
           if (widgetConfig != nullptr) {
@@ -1699,16 +1698,14 @@ namespace settings {
               *panel, entry,
               StringMapSetting{
                   .entries = std::move(entries),
-                  .suggestedKeys = customLabels ? ctx.keyboardLayoutNames : std::vector<std::string>{},
+                  .suggestedKeys = {},
                   .keyPlaceholder = i18n::tr(
-                      customLabels               ? "settings.widgets.map-placeholders.layout-name"
-                          : effectsProfileGlyphs ? "settings.widgets.map-placeholders.effects-profile-name"
-                                                 : "settings.widgets.map-placeholders.key"
+                      effectsProfileGlyphs ? "settings.widgets.map-placeholders.effects-profile-name"
+                                           : "settings.widgets.map-placeholders.key"
                   ),
                   .valuePlaceholder = i18n::tr(
-                      customLabels               ? "settings.widgets.map-placeholders.label"
-                          : effectsProfileGlyphs ? "settings.widgets.map-placeholders.glyph-name"
-                                                 : "settings.widgets.map-placeholders.value"
+                      effectsProfileGlyphs ? "settings.widgets.map-placeholders.glyph-name"
+                                           : "settings.widgets.map-placeholders.value"
                   ),
               }
           );

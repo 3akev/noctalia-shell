@@ -30,6 +30,7 @@
 #include "shell/bar/widget_custom_image.h"
 #include "shell/bar/widgets/idle_inhibitor_widget.h"
 #include "shell/bar/widgets/keyboard_layout_widget.h"
+#include "shell/bar/widgets/keyboard_layout_widget_definition.h"
 #include "shell/bar/widgets/launcher_widget.h"
 #include "shell/bar/widgets/launcher_widget_definition.h"
 #include "shell/bar/widgets/lock_keys_widget.h"
@@ -192,22 +193,10 @@ std::unique_ptr<Widget> WidgetFactory::create(
   }
 
   if (type == "keyboard_layout") {
-    const std::string display = wc != nullptr ? wc->getString("display", "short") : std::string("short");
-    const bool showGlyph = wc != nullptr ? wc->getBool("show_glyph", true) : true;
-    const bool showLabel = wc != nullptr ? wc->getBool("show_label", true) : true;
-    const bool hideWhenSingleLayout = wc != nullptr ? wc->getBool("hide_when_single_layout", false) : false;
-    auto customLabels =
-        wc != nullptr ? wc->getStringMap("custom_labels") : std::unordered_map<std::string, std::string>{};
-    std::string glyph = wc != nullptr ? wc->getString("glyph", "keyboard") : std::string{"keyboard"};
-    if (glyph.empty()) {
-      glyph = "keyboard";
-    }
-    auto widget = std::make_unique<KeyboardLayoutWidget>(
-        m_platform, KeyboardLayoutWidget::parseDisplayMode(display), showGlyph, showLabel, hideWhenSingleLayout,
-        std::move(customLabels), std::move(glyph), customImageFor(wc)
+    return createWidget<KeyboardLayoutWidget>(
+        contentScale, m_platform, keyboardLayoutWidgetDefinition().resolve(wc, settingContext),
+        m_config.shell.keyboardLayout.customLabels
     );
-    widget->setContentScale(contentScale);
-    return widget;
   }
 
   if (type == "launcher") {

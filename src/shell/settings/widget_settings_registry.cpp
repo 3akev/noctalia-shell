@@ -15,6 +15,7 @@
 #include "shell/bar/widgets/clock_widget_definition.h"
 #include "shell/bar/widgets/control_center_widget_definition.h"
 #include "shell/bar/widgets/custom_button_widget_definition.h"
+#include "shell/bar/widgets/keyboard_layout_widget_definition.h"
 #include "shell/bar/widgets/launcher_widget_definition.h"
 #include "shell/bar/widgets/lock_keys_widget_definition.h"
 #include "shell/bar/widgets/media_widget_definition.h"
@@ -118,6 +119,7 @@ namespace settings {
         projectWidgetDefinition<clockWidgetDefinition>(),
         projectWidgetDefinition<controlCenterWidgetDefinition>(),
         projectWidgetDefinition<customButtonWidgetDefinition>(),
+        projectWidgetDefinition<keyboardLayoutWidgetDefinition>(),
         projectWidgetDefinition<launcherWidgetDefinition>(),
         projectWidgetDefinition<lockKeysWidgetDefinition>(),
         projectWidgetDefinition<mediaWidgetDefinition>(),
@@ -785,10 +787,6 @@ namespace settings {
       }
 
       auto add = [&](WidgetSettingSpec spec) { specs.push_back(std::move(spec)); };
-      const std::vector<WidgetSettingSelectOption> shortFull = {
-          {"short", "settings.widgets.options.short"},
-          {"full", "settings.widgets.options.full"},
-      };
       const std::vector<WidgetSettingSelectOption> workspaceLabelPlacement = {
           {"corner", "settings.widgets.options.workspace-label-corner"},
           {"centered", "settings.widgets.options.workspace-label-centered"},
@@ -805,35 +803,6 @@ namespace settings {
       };
       if (projection != nullptr) {
         specs = projection->presentedSettingSpecs();
-      } else if (type == "keyboard_layout") {
-        add(boolSpec("hide_when_single_layout", false));
-        add(boolSpec("show_glyph", true));
-        {
-          auto glyph = glyphSpec("glyph", "keyboard");
-          glyph.visibleWhen = WidgetSettingVisibility{"show_glyph", {"true"}};
-          add(std::move(glyph));
-        }
-        {
-          auto image = stringSpec("custom_image", "");
-          image.visibleWhen = WidgetSettingVisibility{"show_glyph", {"true"}};
-          add(std::move(image));
-        }
-        {
-          auto colorize = boolSpec("custom_image_colorize", false);
-          colorize.visibleWhen = WidgetSettingVisibility{"show_glyph", {"true"}};
-          add(std::move(colorize));
-        }
-        add(boolSpec("show_label", true));
-        {
-          auto display = segmentedSpec("display", "short", shortFull);
-          display.visibleWhen = WidgetSettingVisibility{"show_label", {"true"}};
-          add(std::move(display));
-        }
-        {
-          auto labels = stringMapSpec("custom_labels");
-          labels.visibleWhen = WidgetSettingVisibility{"show_label", {"true"}};
-          add(std::move(labels));
-        }
       } else if (type == "taskbar") {
         // Windows: what the taskbar lists and how each window tile looks.
         add(withGroup(boolSpec("show_all_outputs", false), "taskbar.windows"));

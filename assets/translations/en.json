@@ -1176,6 +1176,7 @@
         "idle": "Idle",
         "interface": "Interface",
         "keybinds": "Keybinds",
+        "keyboard-layout": "Keyboard Layout",
         "kinds": "Kinds",
         "launcher": "Launcher",
         "layout": "Layout",
@@ -2770,6 +2771,10 @@
           "description": "Replace pkexec/run0 for greeter Sync Now; the apply helper path and staging directory are appended automatically (example: ghostty -e pkexec)",
           "label": "Greeter Sync Privilege Command"
         },
+        "keyboard-layout-custom-labels": {
+          "description": "Map keyboard layout names to labels used throughout the shell",
+          "label": "Keyboard Layout Labels"
+        },
         "launch-apps-as-systemd-services": {
           "description": "Launches applications in separate systemd services so they don't share Noctalia's cgroup",
           "label": "Launch Apps as systemd Services",
@@ -3172,7 +3177,6 @@
         "effects-profile-name": "Profile name",
         "glyph-name": "Glyph name",
         "key": "Key",
-        "label": "Label",
         "layout-name": "Layout name",
         "value": "Value"
       },
@@ -3334,10 +3338,6 @@
         "custom-image-colorize": {
           "description": "Tint the custom image with the widget Icon Color setting",
           "label": "Colorize custom image"
-        },
-        "custom-labels": {
-          "description": "Map keyboard layout names to custom labels",
-          "label": "Custom Labels"
         },
         "detached-panel": {
           "description": "Open the drawer as a floating panel instead of anchoring it to the bar edge",
