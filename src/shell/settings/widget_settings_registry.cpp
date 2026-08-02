@@ -33,6 +33,7 @@
 #include "shell/bar/widgets/text_widget_definition.h"
 #include "shell/bar/widgets/theme_mode_widget_definition.h"
 #include "shell/bar/widgets/tray_widget_definition.h"
+#include "shell/bar/widgets/volume_widget_definition.h"
 #include "shell/bar/widgets/wallpaper_widget_definition.h"
 #include "shell/bar/widgets/weather_widget_definition.h"
 #include "shell/bar/widgets/workspaces_widget_definition.h"
@@ -137,6 +138,7 @@ namespace settings {
         projectWidgetDefinition<textWidgetDefinition>(),
         projectWidgetDefinition<themeModeWidgetDefinition>(),
         projectWidgetDefinition<trayWidgetDefinition>(),
+        projectWidgetDefinition<volumeWidgetDefinition>(),
         projectWidgetDefinition<wallpaperWidgetDefinition>(),
         projectWidgetDefinition<weatherWidgetDefinition>(),
         projectWidgetDefinition<workspacesWidgetDefinition>(),
@@ -410,14 +412,6 @@ namespace settings {
       spec.schema.minValue = minValue;
       spec.schema.maxValue = maxValue;
       return spec;
-    }
-
-    WidgetSettingSpec stringSpec(std::string_view key, std::string defaultValue = {}, bool advanced = false) {
-      return baseSpec(key, WidgetControlKind::String, std::move(defaultValue), advanced);
-    }
-
-    WidgetSettingSpec glyphSpec(std::string_view key, std::string defaultValue = {}, bool advanced = false) {
-      return baseSpec(key, WidgetControlKind::Glyph, std::move(defaultValue), advanced);
     }
 
     WidgetSettingSpec colorSpec(std::string_view key, std::string defaultValue = {}, bool advanced = false) {
@@ -797,10 +791,6 @@ namespace settings {
           {"count", "settings.widgets.options.count"},
           {"dots", "settings.widgets.options.dots"},
       };
-      const std::vector<WidgetSettingSelectOption> volumeDeviceOptions = {
-          {"output", "settings.widgets.options.output"},
-          {"input", "settings.widgets.options.input"},
-      };
       if (projection != nullptr) {
         specs = projection->presentedSettingSpecs();
       } else if (type == "taskbar") {
@@ -956,19 +946,6 @@ namespace settings {
             }
           }
         }
-      } else if (type == "volume") {
-        add(segmentedSpec("device", "output", volumeDeviceOptions));
-        {
-          auto glyph = glyphSpec("glyph", "");
-          glyph.descriptionKey = "settings.widgets.settings.glyph.volume-description";
-          add(std::move(glyph));
-        }
-        add(glyphSpec("mute_glyph", ""));
-        add(stringMapSpec("effects_profile_glyphs"));
-        add(stringSpec("custom_image", ""));
-        add(boolSpec("custom_image_colorize", false));
-        add(boolSpec("show_label", true));
-        add(colorSpec("mute_color", "error"));
       }
 
       specs.insert(

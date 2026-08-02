@@ -1,6 +1,7 @@
 // Every typed widget definition validates itself lazily: `field()` and `WidgetDefinition::validate()`
 // throw std::logic_error on the first resolve()/schemaFields() call, and WidgetFactory::create() does
 // not catch. Without this test a malformed definition ships as an uncaught exception at bar build.
+#include "shell/bar/widget_gesture_defaults.h"
 #include "shell/bar/widgets/active_window_widget_definition.h"
 #include "shell/bar/widgets/audio_visualizer_widget_definition.h"
 #include "shell/bar/widgets/battery_widget_definition.h"
@@ -29,10 +30,12 @@
 #include "shell/bar/widgets/text_widget_definition.h"
 #include "shell/bar/widgets/theme_mode_widget_definition.h"
 #include "shell/bar/widgets/tray_widget_definition.h"
+#include "shell/bar/widgets/volume_widget_definition.h"
 #include "shell/bar/widgets/wallpaper_widget_definition.h"
 #include "shell/bar/widgets/weather_widget_definition.h"
 #include "system/battery_warning_monitor.h"
 
+#include <algorithm>
 #include <exception>
 #include <format>
 #include <print>
@@ -141,6 +144,24 @@ int main() {
   checkDefinition("text", textWidgetDefinition);
   checkDefinition<true>("theme_mode", themeModeWidgetDefinition);
   checkDefinition("tray", trayWidgetDefinition, TrayWidgetDefinitionContext{});
+  checkDefinition("volume", volumeWidgetDefinition);
+
+  WidgetConfig inputVolume;
+  inputVolume.type = "volume";
+  inputVolume.settings["device"] = std::string("input");
+  inputVolume.settings["effects_profile_glyphs"] = WidgetSettingStringMap{{"Noise Canceling", "microphone"}};
+  const auto inputOptions = volumeWidgetDefinition().resolve(&inputVolume, "volume");
+  if (inputOptions.device != VolumeWidgetTarget::Input
+      || inputOptions.effectsProfileGlyphs
+          != std::unordered_map<std::string, std::string>{{"Noise Canceling", "microphone"}}) {
+    fail("volume", "input device or effects profile glyph map did not resolve");
+  }
+  const auto inputGestures = noctalia::bar::gestureDefaultsForType("volume", &inputVolume);
+  const auto inputMute =
+      std::ranges::find(inputGestures, noctalia::bar::Gesture::Right, &noctalia::bar::GestureBinding::gesture);
+  if (inputMute == inputGestures.end() || inputMute->action != "mic-mute") {
+    fail("volume", "input device did not select microphone gesture defaults");
+  }
   checkDefinition("wallpaper", wallpaperWidgetDefinition);
   checkDefinition("weather", weatherWidgetDefinition);
 

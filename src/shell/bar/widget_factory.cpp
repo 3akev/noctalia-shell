@@ -27,7 +27,6 @@
 #include "capture/screenshot_service.h"
 #include "scripting/plugin_manifest.h"
 #include "scripting/plugin_registry.h"
-#include "shell/bar/widget_custom_image.h"
 #include "shell/bar/widgets/idle_inhibitor_widget.h"
 #include "shell/bar/widgets/keyboard_layout_widget.h"
 #include "shell/bar/widgets/keyboard_layout_widget_definition.h"
@@ -64,6 +63,7 @@
 #include "shell/bar/widgets/tray_widget.h"
 #include "shell/bar/widgets/tray_widget_definition.h"
 #include "shell/bar/widgets/volume_widget.h"
+#include "shell/bar/widgets/volume_widget_definition.h"
 #include "shell/bar/widgets/wallpaper_widget.h"
 #include "shell/bar/widgets/wallpaper_widget_definition.h"
 #include "shell/bar/widgets/weather_widget.h"
@@ -88,15 +88,6 @@ namespace {
     auto widget = std::make_unique<T>(std::forward<Args>(args)...);
     widget->setContentScale(contentScale);
     return widget;
-  }
-
-  WidgetCustomImage customImageFor(const WidgetConfig* wc) {
-    if (wc == nullptr) {
-      return {};
-    }
-    return widget_custom_image::fromConfig(
-        wc->getString("custom_image", ""), wc->getBool("custom_image_colorize", false)
-    );
   }
 
 } // namespace
@@ -413,22 +404,9 @@ std::unique_ptr<Widget> WidgetFactory::create(
   }
 
   if (type == "volume") {
-    const bool showLabel = wc != nullptr ? wc->getBool("show_label", true) : true;
-    const std::string target = wc != nullptr ? wc->getString("device", "output") : std::string("output");
-    const auto volumeTarget = target == "input" ? VolumeWidgetTarget::Input : VolumeWidgetTarget::Output;
-    const ColorSpec muteColor = wc != nullptr
-        ? wc->getColorSpec("mute_color", colorSpecFromRole(ColorRole::Error), "widget." + name + ".mute_color")
-        : colorSpecFromRole(ColorRole::Error);
-    std::string glyphOverride = wc != nullptr ? wc->getString("glyph", "") : std::string{};
-    std::string muteGlyphOverride = wc != nullptr ? wc->getString("mute_glyph", "") : std::string{};
-    auto effectsProfileGlyphs =
-        wc != nullptr ? wc->getStringMap("effects_profile_glyphs") : std::unordered_map<std::string, std::string>{};
-    auto widget = std::make_unique<VolumeWidget>(
-        m_audio, m_easyEffects, output, showLabel, volumeTarget, muteColor, std::move(glyphOverride),
-        std::move(muteGlyphOverride), std::move(effectsProfileGlyphs), customImageFor(wc)
+    return createWidget<VolumeWidget>(
+        contentScale, m_audio, m_easyEffects, volumeWidgetDefinition().resolve(wc, settingContext)
     );
-    widget->setContentScale(contentScale);
-    return widget;
   }
 
   if (type == "wallpaper") {

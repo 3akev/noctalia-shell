@@ -63,6 +63,7 @@ namespace noctalia::bar {
         || std::is_floating_point_v<T>
         || std::is_same_v<T, std::string>
         || std::is_same_v<T, std::vector<std::string>>
+        || std::is_same_v<T, WidgetSettingStringMap>
         || std::is_same_v<T, ColorSpec>;
 
     template <typename T>
@@ -78,6 +79,8 @@ namespace noctalia::bar {
         return config::schema::WidgetSettingType::Double;
       } else if constexpr (std::is_same_v<T, std::vector<std::string>>) {
         return config::schema::WidgetSettingType::StringList;
+      } else if constexpr (std::is_same_v<T, WidgetSettingStringMap>) {
+        return config::schema::WidgetSettingType::StringMap;
       } else if constexpr (std::is_same_v<T, ColorSpec>) {
         return config::schema::WidgetSettingType::Color;
       } else {
@@ -105,6 +108,8 @@ namespace noctalia::bar {
         return settings::WidgetControlKind::Double;
       } else if constexpr (std::is_same_v<T, std::vector<std::string>>) {
         return settings::WidgetControlKind::StringList;
+      } else if constexpr (std::is_same_v<T, WidgetSettingStringMap>) {
+        return settings::WidgetControlKind::StringMap;
       } else if constexpr (std::is_same_v<T, ColorSpec>) {
         return settings::WidgetControlKind::ColorSpec;
       } else {
