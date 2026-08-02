@@ -44,6 +44,8 @@ public:
   using AsyncCommandResultHandler =
       std::function<void(std::uint64_t hostId, int callbackRef, process::RunResult result)>;
   using AsyncProcessMatchResultHandler = std::function<void(std::uint64_t hostId, int callbackRef, bool matched)>;
+  using AsyncFileResultHandler =
+      std::function<void(std::uint64_t hostId, int callbackRef, bool ok, std::string data, std::string error)>;
   using AsyncHttpResultHandler = std::function<
       void(std::uint64_t hostId, int callbackRef, bool ok, int status, std::string body, bool isDownload)>;
   using ColorPickerResultHandler =
@@ -84,6 +86,9 @@ public:
   );
   bool callAsyncCommandCallback(int callbackRef, const process::RunResult& result, std::chrono::milliseconds budget);
   bool callAsyncProcessMatchCallback(int callbackRef, bool matched, std::chrono::milliseconds budget);
+  bool callAsyncFileCallback(
+      int callbackRef, bool ok, const std::string& data, const std::string& error, std::chrono::milliseconds budget
+  );
   [[nodiscard]] bool lastCallTimedOut() const noexcept { return m_lastCallTimedOut; }
 
   lua_State* state() { return m_T; }
@@ -152,6 +157,7 @@ public:
   void setAsyncProcessMatchResultHandler(AsyncProcessMatchResultHandler handler) {
     m_asyncProcessMatchResultHandler = std::move(handler);
   }
+  void setAsyncFileResultHandler(AsyncFileResultHandler handler) { m_asyncFileResultHandler = std::move(handler); }
   void setHttpClient(HttpClient* client) { m_httpClient = client; }
   void setAsyncHttpResultHandler(AsyncHttpResultHandler handler) { m_asyncHttpResultHandler = std::move(handler); }
   void setColorPickerResultHandler(ColorPickerResultHandler handler) {
@@ -159,6 +165,8 @@ public:
   }
   [[nodiscard]] bool startAsyncCommand(std::string command, int callbackRef, std::chrono::milliseconds timeout);
   [[nodiscard]] bool startAsyncProcessMatch(std::vector<std::string> needles, int callbackRef);
+  // `path` is already resolved by resolveHostPath(). The result is delivered as cb(data, error).
+  [[nodiscard]] bool startAsyncFileRead(std::filesystem::path path, int callbackRef);
   // HTTP/download dispatch to the main-thread HttpClient; the response is delivered back as an
   // AsyncHttpResult event. `isDownload` selects the on_done(bool) vs on_response(table) callback shape.
   [[nodiscard]] bool startAsyncHttp(HttpRequest request, int callbackRef);
@@ -172,6 +180,7 @@ public:
   callColorPickerCallback(int callbackRef, const std::optional<std::string>& color, std::chrono::milliseconds budget);
   [[nodiscard]] bool hasAsyncCommandCallback(int callbackRef) const;
   [[nodiscard]] bool hasAsyncProcessMatchCallback(int callbackRef) const;
+  [[nodiscard]] bool hasAsyncFileCallback(int callbackRef) const;
   [[nodiscard]] bool hasAsyncHttpCallback(int callbackRef) const;
   [[nodiscard]] bool hasColorPickerCallback(int callbackRef) const;
   [[nodiscard]] bool hasSoundLoadCallback(int callbackRef) const;
@@ -274,12 +283,14 @@ private:
   // canonical paths of successfully loaded modules
   std::unordered_set<std::string> m_modulePaths;
   std::unordered_set<int> m_asyncCommandCallbackRefs;
+  std::unordered_set<int> m_asyncFileCallbackRefs;
   std::unordered_set<int> m_asyncProcessMatchCallbackRefs;
   std::unordered_set<int> m_asyncHttpCallbackRefs;
   std::unordered_set<int> m_colorPickerCallbackRefs;
   std::unordered_map<int, std::string> m_soundLoadCallbacks;
   HttpClient* m_httpClient = nullptr;
   AsyncCommandResultHandler m_asyncCommandResultHandler;
+  AsyncFileResultHandler m_asyncFileResultHandler;
   AsyncProcessMatchResultHandler m_asyncProcessMatchResultHandler;
   AsyncHttpResultHandler m_asyncHttpResultHandler;
   ColorPickerResultHandler m_colorPickerResultHandler;

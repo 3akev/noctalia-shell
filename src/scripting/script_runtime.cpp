@@ -438,6 +438,18 @@ namespace scripting {
       (void)enqueue(std::move(event));
     }
 
+    void enqueueAsyncFileResult(std::uint64_t hostId, int callbackRef, bool ok, std::string data, std::string error) {
+      ScriptEvent event;
+      event.kind = ScriptEventKind::AsyncFileResult;
+      event.hostId = hostId;
+      event.callbackRef = callbackRef;
+      event.fileOk = ok;
+      event.fileData = std::move(data);
+      event.fileError = std::move(error);
+      event.budget = kCallbackBudget;
+      (void)enqueue(std::move(event));
+    }
+
     void enqueueAsyncProcessMatchResult(std::uint64_t hostId, int callbackRef, bool matched) {
       ScriptEvent event;
       event.kind = ScriptEventKind::AsyncProcessMatchResult;
@@ -580,6 +592,16 @@ namespace scripting {
         bindingContext.beginCall(event.snapshot);
         const bool ok = host->callAsyncCommandCallback(event.callbackRef, event.commandResult, event.budget);
         return collectResult(event, "async command callback", ok);
+      }
+
+      if (event.kind == ScriptEventKind::AsyncFileResult) {
+        if (event.hostId != host->hostId() || !host->hasAsyncFileCallback(event.callbackRef)) {
+          return std::nullopt;
+        }
+        bindingContext.beginCall(event.snapshot);
+        const bool ok =
+            host->callAsyncFileCallback(event.callbackRef, event.fileOk, event.fileData, event.fileError, event.budget);
+        return collectResult(event, "async file callback", ok);
       }
 
       if (event.kind == ScriptEventKind::AsyncProcessMatchResult) {
@@ -734,6 +756,13 @@ namespace scripting {
           state->enqueueAsyncResult(hostId, callbackRef, std::move(result));
         }
       });
+      host->setAsyncFileResultHandler(
+          [weak](std::uint64_t hostId, int callbackRef, bool ok, std::string data, std::string error) {
+            if (auto state = weak.lock()) {
+              state->enqueueAsyncFileResult(hostId, callbackRef, ok, std::move(data), std::move(error));
+            }
+          }
+      );
       host->setAsyncProcessMatchResultHandler([weak](std::uint64_t hostId, int callbackRef, bool matched) {
         if (auto state = weak.lock()) {
           state->enqueueAsyncProcessMatchResult(hostId, callbackRef, matched);

@@ -15,6 +15,7 @@
 #include "scripting/plugin_id.h"
 #include "scripting/plugin_state_store.h"
 #include "scripting/script_api_context.h"
+#include "scripting/script_io_pool.h"
 #include "scripting/ui_handler_table.h"
 #include "system/app_identity.h"
 #include "system/desktop_entry.h"
@@ -61,6 +62,8 @@ namespace {
   constexpr std::size_t kMaxAsyncCommandOutputBytes = 1024 * 1024;
   constexpr std::size_t kMaxAsyncCommandsPerHost = 8;
   constexpr int kMaxGlobalAsyncCommands = 32;
+  constexpr std::size_t kMaxAsyncFileReadsPerHost = 4;
+  constexpr std::size_t kMaxAsyncFileBytes = 4 * 1024 * 1024;
   constexpr std::size_t kMaxAsyncProcessMatchesPerHost = 16;
   constexpr int kMaxGlobalAsyncProcessMatches = 64;
   // Identical call failures inside this window collapse into one logged line.
@@ -948,6 +951,25 @@ namespace {
     return 1;
   }
 
+  int luau_readFileAsync(lua_State* L) {
+    size_t len = 0;
+    const char* path = luaL_checklstring(L, 1, &len);
+    luaL_checktype(L, 2, LUA_TFUNCTION);
+    auto* host = hostForState(L);
+    if (host == nullptr) {
+      lua_pushboolean(L, 0);
+      return 1;
+    }
+
+    const int callbackRef = lua_ref(L, 2);
+    const bool accepted = host->startAsyncFileRead(resolveHostPath(host, std::string_view(path, len)), callbackRef);
+    if (!accepted) {
+      lua_unref(L, callbackRef);
+    }
+    lua_pushboolean(L, accepted ? 1 : 0);
+    return 1;
+  }
+
   int luau_loadFont(lua_State* L) {
     size_t len = 0;
     const char* path = luaL_checklstring(L, 1, &len);
@@ -1677,6 +1699,7 @@ namespace {
       {"isValidTimezone", luau_isValidTimezone},
       {"setUpdateInterval", luau_setUpdateInterval},
       {"readFile", luau_readFile},
+      {"readFileAsync", luau_readFileAsync},
       {"loadFont", luau_loadFont},
       {"writeFile", luau_writeFile},
       {"mkdirAll", luau_mkdirAll},
@@ -1926,6 +1949,45 @@ bool LuauHost::startAsyncCommand(std::string command, int callbackRef, std::chro
   return true;
 }
 
+bool LuauHost::startAsyncFileRead(std::filesystem::path path, int callbackRef) {
+  if (callbackRef <= LUA_REFNIL || m_asyncFileCallbackRefs.size() >= kMaxAsyncFileReadsPerHost) {
+    return false;
+  }
+  auto handler = m_asyncFileResultHandler;
+  if (!handler) {
+    return false;
+  }
+
+  m_asyncFileCallbackRefs.insert(callbackRef);
+  const bool queued = scripting::ScriptIoPool::instance().post([hostId = m_hostId, callbackRef, path = std::move(path),
+                                                                handler = std::move(handler)]() mutable {
+    std::ifstream file(path, std::ios::binary);
+    if (!file) {
+      handler(hostId, callbackRef, false, {}, "cannot open file");
+      return;
+    }
+
+    std::string contents(kMaxAsyncFileBytes + 1, '\0');
+    file.read(contents.data(), static_cast<std::streamsize>(contents.size()));
+    const auto read = file.gcount();
+    if (file.bad()) {
+      handler(hostId, callbackRef, false, {}, "cannot read file");
+      return;
+    }
+    if (read > static_cast<std::streamsize>(kMaxAsyncFileBytes)) {
+      handler(hostId, callbackRef, false, {}, "file too large");
+      return;
+    }
+    contents.resize(static_cast<std::size_t>(read));
+    handler(hostId, callbackRef, true, std::move(contents), {});
+  });
+  if (!queued) {
+    m_asyncFileCallbackRefs.erase(callbackRef);
+    return false;
+  }
+  return true;
+}
+
 bool LuauHost::startAsyncProcessMatch(std::vector<std::string> needles, int callbackRef) {
   if (needles.empty()
       || callbackRef <= LUA_REFNIL
@@ -1978,6 +2040,8 @@ bool LuauHost::startAsyncProcessMatch(std::vector<std::string> needles, int call
 bool LuauHost::hasAsyncCommandCallback(int callbackRef) const {
   return m_asyncCommandCallbackRefs.contains(callbackRef);
 }
+
+bool LuauHost::hasAsyncFileCallback(int callbackRef) const { return m_asyncFileCallbackRefs.contains(callbackRef); }
 
 bool LuauHost::hasAsyncProcessMatchCallback(int callbackRef) const {
   return m_asyncProcessMatchCallbackRefs.contains(callbackRef);
@@ -2452,6 +2516,35 @@ bool LuauHost::callAsyncCommandCallback(
   setTableBool(m_T, "stderrTruncated", result.errTruncated);
 
   return callWithBudget("async command callback", 1, 0, budget);
+}
+
+bool LuauHost::callAsyncFileCallback(
+    int callbackRef, bool ok, const std::string& data, const std::string& error, std::chrono::milliseconds budget
+) {
+  if (m_T == nullptr) {
+    return false;
+  }
+  const auto it = m_asyncFileCallbackRefs.find(callbackRef);
+  if (it == m_asyncFileCallbackRefs.end()) {
+    return false;
+  }
+  m_asyncFileCallbackRefs.erase(it);
+
+  lua_getref(m_T, callbackRef);
+  lua_unref(m_T, callbackRef);
+  if (!lua_isfunction(m_T, -1)) {
+    lua_pop(m_T, 1);
+    return false;
+  }
+
+  if (ok) {
+    lua_pushlstring(m_T, data.data(), data.size());
+    lua_pushnil(m_T);
+  } else {
+    lua_pushnil(m_T);
+    lua_pushlstring(m_T, error.data(), error.size());
+  }
+  return callWithBudget("async file callback", 2, 0, budget);
 }
 
 bool LuauHost::callAsyncProcessMatchCallback(int callbackRef, bool matched, std::chrono::milliseconds budget) {

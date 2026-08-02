@@ -578,6 +578,7 @@ _noctalia_sources = files(
   'src/scripting/plugin_source_locks.cpp',
   'src/scripting/plugin_source_paths.cpp',
   'src/scripting/plugin_state_store.cpp',
+  'src/scripting/script_io_pool.cpp',
   'src/scripting/script_runtime.cpp',
   'src/scripting/script_worker_pool.cpp',
   'src/scripting/plugin_bindings.cpp',
