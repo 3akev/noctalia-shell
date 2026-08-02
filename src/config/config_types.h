@@ -382,6 +382,20 @@ struct WidgetBarCapsuleSpec {
   bool operator==(const WidgetBarCapsuleSpec&) const = default;
 };
 
+struct CommonWidgetOptions {
+  bool enabled = true;
+  bool anchor = false;
+  bool interactive = true;
+  float contentScale = 1.0f;
+  std::optional<ColorSpec> color;
+  std::optional<ColorSpec> iconColor;
+  std::optional<std::int64_t> labelFontWeight;
+  std::string labelFontFamily;
+  WidgetBarCapsuleSpec capsule;
+  std::string scrollRepeat = "auto";
+  bool enableScroll = true;
+};
+
 struct WidgetConfig {
   std::string type; // widget type (e.g. "clock", "spacer"); defaults to the entry name
   std::unordered_map<std::string, WidgetSettingValue> settings;
@@ -408,6 +422,9 @@ struct WidgetConfig {
 // Merges `[bar.*]` capsule defaults with `[widget.*]` overrides (see CONFIG.md). Size/style fields such as
 // `radius` are populated even when `enabled` is false so widgets can reuse capsule styling internally.
 [[nodiscard]] WidgetBarCapsuleSpec resolveWidgetBarCapsuleSpec(const BarConfig& bar, const WidgetConfig* widget);
+[[nodiscard]] CommonWidgetOptions resolveCommonWidgetOptions(
+    const BarConfig& bar, const WidgetConfig* widget, std::string_view widgetType, float barScale
+);
 
 // Returns the group for `id` on this bar, or nullptr if `id` is empty or unregistered.
 [[nodiscard]] const BarCapsuleGroupStyle* findBarCapsuleGroupStyle(const BarConfig& bar, const std::string& id);

@@ -81,6 +81,10 @@ public:
       const noctalia::bar::WidgetActionBindings::ActionTable* barActions, std::string_view barContext,
       const noctalia::bar::WidgetActionDispatcher* dispatcher
   );
+  void applyCommonOptions(
+      const CommonWidgetOptions& options, FontWeight barFontWeight, const std::string& barFontFamily,
+      std::string_view logContext
+  );
   void setActionContext(IpcInvocationContext context) { m_actionContext = std::move(context); }
   [[nodiscard]] const noctalia::bar::WidgetActionBindings& gestureBindings() const noexcept {
     return m_gestureBindings;

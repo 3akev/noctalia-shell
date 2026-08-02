@@ -120,33 +120,6 @@ namespace {
     return !activeWorkspaceHasWindows(platform, output);
   }
 
-  [[nodiscard]] FontWeight parseWidgetLabelFontWeight(const WidgetConfig& config, FontWeight fallback) {
-    const auto it = config.settings.find("font_weight");
-    if (it == config.settings.end()) {
-      return fallback;
-    }
-
-    if (const auto* raw = std::get_if<std::int64_t>(&it->second)) {
-      return static_cast<FontWeight>(*raw);
-    }
-    return fallback;
-  }
-
-  // `[widget.*] font_family` override; empty/whitespace or absent inherits the bar-resolved family.
-  [[nodiscard]] std::string parseWidgetLabelFontFamily(const WidgetConfig& config, const std::string& fallback) {
-    const auto it = config.settings.find("font_family");
-    if (it == config.settings.end()) {
-      return fallback;
-    }
-    if (const auto* raw = std::get_if<std::string>(&it->second)) {
-      std::string trimmed = StringUtils::trim(*raw);
-      if (!trimmed.empty()) {
-        return trimmed;
-      }
-    }
-    return fallback;
-  }
-
   [[nodiscard]] int barAutoHideEdgeGutter(const BarConfig& cfg) noexcept {
     if (!barConfigUsesSlideSurface(cfg) || cfg.marginEdge <= 0) {
       return 0;
@@ -2308,27 +2281,22 @@ void Bar::populateWidgets(BarInstance& instance) {
     if (auto it = widgetConfigs.find(name); it != widgetConfigs.end()) {
       wcPtr = &it->second;
     }
-    const float contentScale = resolveWidgetContentScale(instance.barConfig.scale, wcPtr, "widget." + name + ".scale");
+    const std::string_view widgetType =
+        wcPtr != nullptr && !wcPtr->type.empty() ? std::string_view(wcPtr->type) : std::string_view(name);
+    const CommonWidgetOptions options =
+        resolveCommonWidgetOptions(instance.barConfig, wcPtr, widgetType, instance.barConfig.scale);
+    if (!options.enabled) {
+      return;
+    }
     auto widget = m_widgetFactory->create(
-        name, instance.output, contentScale, instance.barConfig.position, instance.barConfig.name,
-        static_cast<float>(instance.barConfig.widgetSpacing)
+        name, instance.output, options.contentScale, instance.barConfig.position, instance.barConfig.name,
+        static_cast<float>(instance.barConfig.widgetSpacing), options.enableScroll
     );
     if (widget == nullptr) {
       return;
     }
     widget->setConfigName(name);
-    if (wcPtr != nullptr) {
-      widget->setAnchor(wcPtr->getBool("anchor", false));
-      const std::string_view widgetType = !wcPtr->type.empty() ? wcPtr->type : std::string_view(name);
-      // Spacers are layout gaps by default; enable Interactive to use them as hot zones.
-      const bool interactiveDefault = widgetType != "spacer";
-      widget->setNonInteractive(!wcPtr->getBool("interactive", interactiveDefault));
-      if (!wcPtr->getBool("enabled", true)) {
-        return;
-      }
-    } else if (name == "spacer") {
-      widget->setNonInteractive(true);
-    }
+    widget->applyCommonOptions(options, labelFontWeight, barFontFamily, std::format("widget.{}", name));
     widget->setActionContext(
         IpcInvocationContext{
             .widgetName = name,
@@ -2341,22 +2309,16 @@ void Bar::populateWidgets(BarInstance& instance) {
         wcPtr != nullptr ? wcPtr->type : name, wcPtr, &instance.barConfig.actions,
         std::format("bar.{}", instance.barConfig.name), &m_actionDispatcher
     );
-    widget->setBarCapsuleSpec(
-        groupSpec != nullptr ? *groupSpec : resolveWidgetBarCapsuleSpec(instance.barConfig, wcPtr)
-    );
-    widget->setLabelFontWeight(
-        wcPtr != nullptr ? parseWidgetLabelFontWeight(*wcPtr, labelFontWeight) : labelFontWeight
-    );
-    widget->setLabelFontFamily(wcPtr != nullptr ? parseWidgetLabelFontFamily(*wcPtr, barFontFamily) : barFontFamily);
-    if (wcPtr != nullptr && wcPtr->hasSetting("color")) {
-      widget->setWidgetForeground(wcPtr->getOptionalColorSpec("color", "widget." + name + ".color"));
+    widget->setBarCapsuleSpec(groupSpec != nullptr ? *groupSpec : options.capsule);
+    if (options.color.has_value()) {
+      widget->setWidgetForeground(options.color);
     } else if (groupForeground != nullptr && groupForeground->has_value()) {
       widget->setWidgetForeground(*groupForeground);
     } else if (instance.barConfig.widgetColor.has_value()) {
       widget->setWidgetForeground(instance.barConfig.widgetColor);
     }
-    if (wcPtr != nullptr && wcPtr->hasSetting("icon_color")) {
-      widget->setWidgetIconColor(wcPtr->getOptionalColorSpec("icon_color", "widget." + name + ".icon_color"));
+    if (options.iconColor.has_value()) {
+      widget->setWidgetIconColor(options.iconColor);
     } else if (groupForeground != nullptr && groupForeground->has_value()) {
       widget->setWidgetIconColor(*groupForeground);
     } else if (instance.barConfig.widgetIconColor.has_value()) {
