@@ -268,19 +268,19 @@ namespace {
     static_cast<WaylandConnection*>(data)->onOutputHeadSerialNumber(head, serialNumber);
   }
 
-  // Mode listener: release the proxy only when the compositor sends 'finished'.
-  void modeFinished(void* /*data*/, zwlr_output_mode_v1* mode) { zwlr_output_mode_v1_release(mode); }
+  void outputModeFinished(void* data, zwlr_output_mode_v1* mode) {
+    static_cast<WaylandConnection*>(data)->onOutputModeFinished(mode);
+  }
 
   const zwlr_output_mode_v1_listener kOutputModeListener = {
       .size = [](void*, zwlr_output_mode_v1*, int32_t, int32_t) {},
       .refresh = [](void*, zwlr_output_mode_v1*, int32_t) {},
       .preferred = [](void*, zwlr_output_mode_v1*) {},
-      .finished = modeFinished,
+      .finished = outputModeFinished,
   };
 
-  // Retain mode proxies; released by mode.finished (compositor guarantees it before head.finished).
-  void outputHeadMode(void* /*data*/, zwlr_output_head_v1* /*head*/, zwlr_output_mode_v1* mode) {
-    zwlr_output_mode_v1_add_listener(mode, &kOutputModeListener, nullptr);
+  void outputHeadMode(void* data, zwlr_output_head_v1* head, zwlr_output_mode_v1* mode) {
+    static_cast<WaylandConnection*>(data)->onOutputHeadMode(head, mode);
   }
 
   void outputHeadFinished(void* data, zwlr_output_head_v1* head) {
@@ -833,6 +833,20 @@ void WaylandConnection::onOutputHeadSerialNumber(zwlr_output_head_v1* head, cons
   }
 }
 
+void WaylandConnection::onOutputHeadMode(zwlr_output_head_v1* /*head*/, zwlr_output_mode_v1* mode) {
+  if (mode == nullptr) {
+    return;
+  }
+  m_outputModes.insert(mode);
+  zwlr_output_mode_v1_add_listener(mode, &kOutputModeListener, this);
+}
+
+void WaylandConnection::onOutputModeFinished(zwlr_output_mode_v1* mode) {
+  if (m_outputModes.erase(mode) > 0) {
+    zwlr_output_mode_v1_release(mode);
+  }
+}
+
 void WaylandConnection::onOutputHeadFinished(zwlr_output_head_v1* head) {
   m_outputHeads.erase(head);
   zwlr_output_head_v1_release(head);
@@ -866,6 +880,10 @@ void WaylandConnection::matchPendingOutputHeads() {
 }
 
 void WaylandConnection::onOutputManagerFinished(zwlr_output_manager_v1* manager) {
+  for (auto* mode : m_outputModes) {
+    zwlr_output_mode_v1_release(mode);
+  }
+  m_outputModes.clear();
   for (const auto& entry : m_outputHeads) {
     zwlr_output_head_v1_release(entry.first);
   }
@@ -1354,6 +1372,10 @@ void WaylandConnection::cleanup() {
     m_screencopyManager = nullptr;
   }
 
+  for (auto* mode : m_outputModes) {
+    zwlr_output_mode_v1_release(mode);
+  }
+  m_outputModes.clear();
   for (const auto& entry : m_outputHeads) {
     zwlr_output_head_v1_release(entry.first);
   }
