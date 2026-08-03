@@ -1023,7 +1023,10 @@ namespace {
                                                             : std::max(0.0f, std::min(shellW, shellH) * 0.5f);
         bg->setRadius(capsuleRadius);
         placeCapsuleHoverBoxes(run, isVertical, shellW, shellH, contentX, contentY, capsuleRadius, widgetHoverPadding);
-        // Members outside the reveal window are clipped out; they must not take pointer input either.
+        // Members outside the reveal window are clipped out; while collapsed (or collapsing) the
+        // non-primary members are pointer-suppressed by reveal window so their hidden slots don't
+        // capture clicks. While expanded, every valid layout member stays unsuppressed so hover
+        // tracking and member interactions remain active across the reveal animation.
         if (run.accordion) {
           for (Widget* widget : run.widgets) {
             const Node* node = widget != nullptr ? widget->outerNode() : nullptr;
@@ -1033,11 +1036,15 @@ namespace {
               }
               continue;
             }
-            const float memberStart = contentMain + memberMainPos(node);
-            const float memberEnd = memberStart + memberMainExtent(node);
-            widget->setBarPointerSuppressed(
-                !(memberStart >= padMain - 0.5f && memberEnd <= padMain + revealMain + 0.5f)
-            );
+            if (run.accordionExpanded) {
+              widget->setBarPointerSuppressed(false);
+            } else {
+              const float memberStart = contentMain + memberMainPos(node);
+              const float memberEnd = memberStart + memberMainExtent(node);
+              widget->setBarPointerSuppressed(
+                  !(memberStart >= padMain - 0.5f && memberEnd <= padMain + revealMain + 0.5f)
+              );
+            }
           }
         }
       }
@@ -2740,13 +2747,23 @@ void Bar::animateWidgetHoverHighlight(BarInstance& instance, Widget& widget, boo
 
 void Bar::updateAccordionExpansion(BarInstance& instance, InputArea* hoveredArea) {
   Widget* target = widgetFromHoveredArea(instance, hoveredArea);
+
+  auto isPointerInsideRunShell = [&instance](const BarCapsuleRun& run) -> bool {
+    return instance.pointerInside && pointInsideNode(run.shell, instance.lastPointerSx, instance.lastPointerSy);
+  };
+
   bool changed = false;
   auto updateRuns = [&](std::vector<BarCapsuleRun>& runs) {
     for (auto& run : runs) {
       if (!run.accordion || run.shell == nullptr) {
         continue;
       }
-      const bool want = target != nullptr && std::ranges::contains(run.widgets, target);
+      bool want = target != nullptr && std::ranges::contains(run.widgets, target);
+      if (!want && (run.accordionExpanded || run.accordionProgress > 0.0f)) {
+        if (isPointerInsideRunShell(run)) {
+          want = true;
+        }
+      }
       if (want == run.accordionExpanded) {
         continue;
       }
@@ -3375,6 +3392,7 @@ bool Bar::onPointerEvent(const PointerEvent& event) {
     if (m_hoveredInstance != nullptr) {
       m_hoveredInstance->pointerInside = false;
       m_hoveredInstance->inputDispatcher.pointerLeave();
+      updateAccordionExpansion(*m_hoveredInstance, nullptr);
       const bool suppressAutoHide =
           (m_autoHideSuppressionCallback != nullptr) ? m_autoHideSuppressionCallback(*m_hoveredInstance) : false;
       if (barPointerHideAllowed(*m_hoveredInstance) && !suppressAutoHide) {
@@ -3396,6 +3414,7 @@ bool Bar::onPointerEvent(const PointerEvent& event) {
     if (m_hoveredInstance != hovered) {
       break;
     }
+    updateAccordionExpansion(*hovered, hovered->inputDispatcher.hoveredArea());
     break;
   }
   case PointerEvent::Type::Button: {
