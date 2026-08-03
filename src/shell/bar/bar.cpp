@@ -1050,12 +1050,11 @@ namespace {
                                                             : std::max(0.0f, std::min(shellW, shellH) * 0.5f);
         bg->setRadius(capsuleRadius);
         placeCapsuleHoverBoxes(run, isVertical, shellW, shellH, contentX, contentY, capsuleRadius, widgetHoverPadding);
-        // Members outside the reveal window are clipped out; when fully collapsed, non-primary
-        // members are pointer-suppressed so their hidden slots don't capture clicks. When expanded
-        // or expanding, all valid layout members must stay unsuppressed so hover tracking and
-        // member interactions remain active.
+        // Members outside the reveal window are clipped out; while collapsed (or collapsing) the
+        // non-primary members are pointer-suppressed by reveal window so their hidden slots don't
+        // capture clicks. While expanded, every valid layout member stays unsuppressed so hover
+        // tracking and member interactions remain active across the reveal animation.
         if (run.accordion) {
-          const bool isExpandingOrExpanded = run.accordionExpanded || run.accordionProgress > 0.0f;
           for (Widget* widget : run.widgets) {
             const Node* node = widget != nullptr ? widget->outerNode() : nullptr;
             if (widget == nullptr || node == nullptr || !node->visible() || !node->participatesInLayout()) {
@@ -1064,7 +1063,7 @@ namespace {
               }
               continue;
             }
-            if (isExpandingOrExpanded) {
+            if (run.accordionExpanded) {
               widget->setBarPointerSuppressed(false);
             } else {
               const float memberStart = contentMain + memberMainPos(node);
@@ -2788,15 +2787,7 @@ void Bar::updateAccordionExpansion(BarInstance& instance, InputArea* hoveredArea
   Widget* target = widgetFromHoveredArea(instance, hoveredArea);
 
   auto isPointerInsideRunShell = [&instance](const BarCapsuleRun& run) -> bool {
-    if (run.shell == nullptr || !instance.pointerInside) {
-      return false;
-    }
-    float lx = 0.0f;
-    float ly = 0.0f;
-    if (Node::mapFromScene(run.shell, instance.lastPointerSx, instance.lastPointerSy, lx, ly)) {
-      return lx >= -0.5f && lx <= run.shell->width() + 0.5f && ly >= -0.5f && ly <= run.shell->height() + 0.5f;
-    }
-    return false;
+    return instance.pointerInside && pointInsideNode(run.shell, instance.lastPointerSx, instance.lastPointerSy);
   };
 
   bool changed = false;
