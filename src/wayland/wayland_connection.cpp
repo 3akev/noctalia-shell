@@ -268,9 +268,19 @@ namespace {
     static_cast<WaylandConnection*>(data)->onOutputHeadSerialNumber(head, serialNumber);
   }
 
-  // Modes aren't needed here; release each one immediately instead of tracking it.
+  // Mode listener: release the proxy only when the compositor sends 'finished'.
+  void modeFinished(void* /*data*/, zwlr_output_mode_v1* mode) { zwlr_output_mode_v1_release(mode); }
+
+  const zwlr_output_mode_v1_listener kOutputModeListener = {
+      .size = [](void*, zwlr_output_mode_v1*, int32_t, int32_t) {},
+      .refresh = [](void*, zwlr_output_mode_v1*, int32_t) {},
+      .preferred = [](void*, zwlr_output_mode_v1*) {},
+      .finished = modeFinished,
+  };
+
+  // Retain mode proxies; released by mode.finished (compositor guarantees it before head.finished).
   void outputHeadMode(void* /*data*/, zwlr_output_head_v1* /*head*/, zwlr_output_mode_v1* mode) {
-    zwlr_output_mode_v1_release(mode);
+    zwlr_output_mode_v1_add_listener(mode, &kOutputModeListener, nullptr);
   }
 
   void outputHeadFinished(void* data, zwlr_output_head_v1* head) {
