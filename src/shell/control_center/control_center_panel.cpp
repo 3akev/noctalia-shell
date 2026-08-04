@@ -385,7 +385,7 @@ void ControlCenterPanel::doLayout(Renderer& renderer, float width, float height)
 }
 
 void ControlCenterPanel::doUpdate(Renderer& renderer) {
-  if (!isTabVisible(m_activeTab)) {
+  if (!isTabFeatureAvailable(m_activeTab) || (!m_activeTabForced && !isTabVisible(m_activeTab))) {
     selectTab(firstVisibleTab());
   } else {
     syncTabVisibility();
@@ -503,13 +503,19 @@ bool ControlCenterPanel::isTabVisible(TabId tab) const {
   if (!isTabFeatureAvailable(tab)) {
     return false;
   }
-  // Home and the currently active tab are always shown so the panel never opens
-  // to an empty surface, even when the active tab was hidden via settings.
-  if (tab == TabId::Home || tab == m_activeTab || m_config == nullptr) {
+  // Home is always shown so the panel never opens to an empty surface.
+  if (tab == TabId::Home || m_config == nullptr) {
     return true;
   }
   const auto& hidden = m_config->config().controlCenter.hiddenTabs;
   return !std::ranges::contains(hidden, tabKey(tab));
+}
+
+bool ControlCenterPanel::isTabShown(TabId tab) const {
+  if (tab == m_activeTab && m_activeTabForced) {
+    return isTabFeatureAvailable(tab);
+  }
+  return isTabVisible(tab);
 }
 
 std::vector<ControlCenterPanel::TabCatalogEntry> ControlCenterPanel::hideableTabCatalog() {
@@ -545,7 +551,7 @@ ControlCenterPanel::TabId ControlCenterPanel::firstVisibleTab() const {
 void ControlCenterPanel::syncTabVisibility() {
   for (const auto& meta : kTabs) {
     const std::size_t idx = tabIndex(meta.id);
-    const bool visible = isTabVisible(meta.id);
+    const bool visible = isTabShown(meta.id);
     if (m_tabButtons[idx] != nullptr) {
       m_tabButtons[idx]->setVisible(visible);
     }
@@ -563,7 +569,7 @@ void ControlCenterPanel::syncTabVisibility() {
 void ControlCenterPanel::updateTabChrome(TabId tab) {
   for (const auto& meta : kTabs) {
     const std::size_t idx = tabIndex(meta.id);
-    const bool tabEnabled = isTabVisible(meta.id);
+    const bool tabEnabled = isTabShown(meta.id);
     if (m_tabs[idx] != nullptr) {
       m_tabs[idx]->setActive(tabEnabled && meta.id == tab);
     }
@@ -593,7 +599,7 @@ void ControlCenterPanel::updateTabChrome(TabId tab) {
 void ControlCenterPanel::applyTabContainerVisibility(TabId activeTab) {
   for (const auto& meta : kTabs) {
     const std::size_t idx = tabIndex(meta.id);
-    const bool tabEnabled = isTabVisible(meta.id);
+    const bool tabEnabled = isTabShown(meta.id);
     if (m_tabContainers[idx] != nullptr) {
       m_tabContainers[idx]->setVisible(tabEnabled && meta.id == activeTab);
     }
@@ -649,7 +655,7 @@ void ControlCenterPanel::resetTabContainerTransforms() {
 int ControlCenterPanel::visibleTabOrdinal(TabId tab) const {
   int ordinal = 0;
   for (const auto& meta : kTabs) {
-    if (!isTabVisible(meta.id)) {
+    if (!isTabShown(meta.id)) {
       continue;
     }
     if (meta.id == tab) {
@@ -745,7 +751,7 @@ void ControlCenterPanel::selectAdjacentVisibleTab(int direction) {
 
   int ordinal = 0;
   for (const auto& meta : kTabs) {
-    if (!isTabVisible(meta.id)) {
+    if (!isTabShown(meta.id)) {
       continue;
     }
     if (ordinal == targetOrdinal) {
@@ -760,6 +766,11 @@ void ControlCenterPanel::selectAdjacentVisibleTab(int direction) {
 }
 
 void ControlCenterPanel::selectTab(TabId tab, bool animated) {
+  if (!isTabFeatureAvailable(tab)) {
+    tab = firstVisibleTab();
+  }
+  m_activeTabForced = !isTabVisible(tab);
+
   const TabId previousTab = m_activeTab;
   const bool tabChanged = tab != previousTab;
 
