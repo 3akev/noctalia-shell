@@ -153,6 +153,7 @@ private:
   void syncTabVisibility();
   [[nodiscard]] bool isTabFeatureAvailable(TabId tab) const;
   [[nodiscard]] bool isTabVisible(TabId tab) const;
+  [[nodiscard]] bool isTabShown(TabId tab) const;
   [[nodiscard]] static std::string_view tabKey(TabId tab);
   [[nodiscard]] TabId firstVisibleTab() const;
   [[nodiscard]] TabId tabFromContext(std::string_view context) const;
@@ -181,6 +182,7 @@ private:
   std::array<Flex*, kTabCount> m_tabContainers{};
   std::array<Flex*, kTabCount> m_tabHeaderActions{};
   TabId m_activeTab = TabId::Home;
+  bool m_activeTabForced = false;
   ConfigService* m_config = nullptr;
   MprisService* m_mpris = nullptr;
   NotificationManager* m_notificationManager = nullptr;
