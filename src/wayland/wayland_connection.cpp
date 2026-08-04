@@ -1481,7 +1481,7 @@ void WaylandConnection::logStartupSummary() const {
     const DetectedOutputScale detectedScale = detectOutputScale(output);
     if (detectedScale.available) {
       kLog.info(
-          "output {} global={} wl_scale={} detected_fractional_scale={:.3f} logical={}x{} mode={}x{} orientation={} "
+          "output {} global={} wl_scale={} detected_fractional_scale={:.3F} logical={}x{} mode={}x{} orientation={} "
           "desc=\"{}\"",
           outputLabel(output), output.name, output.scale, detectedScale.scale, output.logicalWidth,
           output.logicalHeight, output.width, output.height, detectedScale.rotated ? "rotated" : "normal",

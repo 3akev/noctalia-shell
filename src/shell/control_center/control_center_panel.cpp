@@ -35,10 +35,10 @@ namespace {
 
   constexpr auto kMprisRefreshMinInterval = std::chrono::milliseconds(750);
   // Full-height cards need room for rounded-rect AA before the tab viewport clips them.
-  constexpr float kTabViewportClipInset = 1.0f;
+  constexpr float kTabViewportClipInset = 1.0F;
 
   float tabContentHeight(float viewportHeight) {
-    return std::max(1.0f, std::floor(viewportHeight - kTabViewportClipInset));
+    return std::max(1.0F, std::floor(viewportHeight - kTabViewportClipInset));
   }
 
 } // namespace
@@ -81,10 +81,10 @@ float ControlCenterPanel::preferredWidth() const {
   case ControlCenterSidebarMode::Full:
     return fullSize * m_contentScale;
   case ControlCenterSidebarMode::None:
-    return fullSize * 0.75f * m_contentScale;
+    return fullSize * 0.75F * m_contentScale;
   default:
   case ControlCenterSidebarMode::Compact:
-    return fullSize * 0.85f * m_contentScale;
+    return fullSize * 0.85F * m_contentScale;
   }
 }
 
@@ -112,14 +112,14 @@ void ControlCenterPanel::create() {
       .out = &m_rootLayout,
       .align = FlexAlign::Stretch,
       .gap = Style::panelPadding * scale,
-      .padding = 0.0f,
+      .padding = 0.0F,
   });
 
   if (m_showSidebar) {
     auto sidebar = ui::column({
         .out = &m_sidebar,
         .align = FlexAlign::Start,
-        .gap = 0.0f,
+        .gap = 0.0F,
         .padding = Style::spaceMd * scale,
         .fillWidth = false,
         .fillHeight = true,
@@ -143,8 +143,8 @@ void ControlCenterPanel::create() {
         .out = &m_sidebarScrollView,
         .state = &m_sidebarScrollState,
         .scrollbarVisible = true,
-        .viewportPaddingH = 0.0f,
-        .viewportPaddingV = 0.0f,
+        .viewportPaddingH = 0.0F,
+        .viewportPaddingV = 0.0F,
         .fillWidth = false,
         .fillHeight = true,
         .width = sidebarScrollWidth,
@@ -183,7 +183,7 @@ void ControlCenterPanel::create() {
               .out = &m_tabButtons[idx],
               .text = m_compact ? std::optional<std::string>{} : std::optional<std::string>{i18n::tr(tab.titleKey)},
               .glyph = tab.glyph,
-              .glyphSize = 21.0f * scale,
+              .glyphSize = 21.0F * scale,
               .contentAlign = m_compact ? ButtonContentAlign::Center : ButtonContentAlign::Start,
               .variant = ButtonVariant::Tab,
               .tooltip = m_compact ? i18n::tr(tab.titleKey) : std::string{},
@@ -221,7 +221,7 @@ void ControlCenterPanel::create() {
       .align = FlexAlign::Stretch,
       .gap = Style::spaceMd * scale,
       .clipChildren = true,
-      .flexGrow = 4.0f,
+      .flexGrow = 4.0F,
   });
 
   auto dismissArea = ui::inputArea({});
@@ -251,7 +251,7 @@ void ControlCenterPanel::create() {
           .fontSize = Style::fontSizeTitle * scale,
           .fontWeight = FontWeight::Bold,
           .color = colorSpecFromRole(ColorRole::Primary),
-          .flexGrow = 1.0f,
+          .flexGrow = 1.0F,
       })
   );
 
@@ -285,14 +285,14 @@ void ControlCenterPanel::create() {
   auto bodies = ui::column({
       .out = &m_tabBodies,
       .align = FlexAlign::Stretch,
-      .gap = 0.0f,
+      .gap = 0.0F,
       .clipChildren = true,
-      .flexGrow = 1.0f,
+      .flexGrow = 1.0F,
   });
 
   for (std::size_t i = 0; i < kTabCount; ++i) {
     auto container = m_tabs[i]->create();
-    container->setFlexGrow(1.0f);
+    container->setFlexGrow(1.0F);
     container->setParticipatesInLayout(false);
     container->setVisible(false);
     m_tabContainers[i] = container.get();
@@ -336,29 +336,29 @@ void ControlCenterPanel::doLayout(Renderer& renderer, float width, float height)
   m_rootLayout->layout(renderer);
 
   const float contentInnerWidth =
-      std::max(0.0f, m_content->width() - (m_content->paddingLeft() + m_content->paddingRight()));
+      std::max(0.0F, m_content->width() - (m_content->paddingLeft() + m_content->paddingRight()));
   const float bodyWidth = m_tabBodies->width();
   const float bodyHeight = m_tabBodies->height();
   const float bodyContentHeight = tabContentHeight(bodyHeight);
 
   if (m_sidebarScrollArea != nullptr && m_sidebar != nullptr) {
-    m_sidebarScrollArea->setPosition(0.0f, 0.0f);
+    m_sidebarScrollArea->setPosition(0.0F, 0.0F);
     m_sidebarScrollArea->setSize(m_sidebar->width(), m_sidebar->height());
   }
 
   if (m_contentDismissArea != nullptr) {
-    m_contentDismissArea->setPosition(0.0f, 0.0f);
+    m_contentDismissArea->setPosition(0.0F, 0.0F);
     m_contentDismissArea->setFrameSize(m_content->width(), m_content->height());
   }
 
   if (m_contentHeader != nullptr) {
-    m_contentHeader->setSize(contentInnerWidth, 0.0f);
+    m_contentHeader->setSize(contentInnerWidth, 0.0F);
   }
 
   if (m_contentTitle != nullptr) {
-    const float actionsWidth = m_contentHeaderActions != nullptr ? m_contentHeaderActions->width() : 0.0f;
-    const float headerGap = m_contentHeader != nullptr ? m_contentHeader->gap() : 0.0f;
-    const float titleWidth = std::max(0.0f, contentInnerWidth - actionsWidth - headerGap);
+    const float actionsWidth = m_contentHeaderActions != nullptr ? m_contentHeaderActions->width() : 0.0F;
+    const float headerGap = m_contentHeader != nullptr ? m_contentHeader->gap() : 0.0F;
+    const float titleWidth = std::max(0.0F, contentInnerWidth - actionsWidth - headerGap);
     m_contentTitle->setMaxWidth(titleWidth);
   }
 
@@ -607,7 +607,7 @@ void ControlCenterPanel::applyTabContainerVisibility(TabId activeTab) {
 }
 
 void ControlCenterPanel::layoutTabContainers(float bodyWidth, float bodyHeight) {
-  const float travel = bodyHeight > 0.0f ? bodyHeight : 0.0f;
+  const float travel = bodyHeight > 0.0F ? bodyHeight : 0.0F;
   const float contentHeight = tabContentHeight(bodyHeight);
   for (std::size_t i = 0; i < kTabCount; ++i) {
     auto* container = m_tabContainers[i];
@@ -617,21 +617,21 @@ void ControlCenterPanel::layoutTabContainers(float bodyWidth, float bodyHeight) 
 
     container->setSize(bodyWidth, contentHeight);
 
-    float offsetY = 0.0f;
-    float opacity = 1.0f;
+    float offsetY = 0.0F;
+    float opacity = 1.0F;
     const auto tabId = static_cast<TabId>(i);
-    if (m_tabTransitionActive && travel > 0.0f) {
+    if (m_tabTransitionActive && travel > 0.0F) {
       const auto direction = static_cast<float>(m_tabTransitionDirection);
       if (tabId == m_tabTransitionOutgoing) {
         offsetY = -direction * travel * m_tabTransitionProgress;
-        opacity = 1.0f - 0.3f * m_tabTransitionProgress;
+        opacity = 1.0F - 0.3F * m_tabTransitionProgress;
       } else if (tabId == m_activeTab) {
-        offsetY = direction * travel * (1.0f - m_tabTransitionProgress);
-        opacity = 0.7f + 0.3f * m_tabTransitionProgress;
+        offsetY = direction * travel * (1.0F - m_tabTransitionProgress);
+        opacity = 0.7F + 0.3F * m_tabTransitionProgress;
       }
     }
 
-    container->setPosition(0.0f, offsetY);
+    container->setPosition(0.0F, offsetY);
     container->setOpacity(opacity);
     if (m_tabTransitionActive) {
       container->setZIndex(tabId == m_activeTab ? 1 : 0);
@@ -646,8 +646,8 @@ void ControlCenterPanel::resetTabContainerTransforms() {
     if (container == nullptr) {
       continue;
     }
-    container->setPosition(0.0f, 0.0f);
-    container->setOpacity(1.0f);
+    container->setPosition(0.0F, 0.0F);
+    container->setOpacity(1.0F);
     container->setZIndex(0);
   }
 }
@@ -682,7 +682,7 @@ void ControlCenterPanel::startTabTransition(TabId from, TabId to) {
 
   m_tabTransitionActive = true;
   m_tabTransitionOutgoing = from;
-  m_tabTransitionProgress = 0.0f;
+  m_tabTransitionProgress = 0.0F;
 
   const int fromOrdinal = visibleTabOrdinal(from);
   const int toOrdinal = visibleTabOrdinal(to);
@@ -703,7 +703,7 @@ void ControlCenterPanel::startTabTransition(TabId from, TabId to) {
   PanelManager::instance().requestFrameTick();
 
   m_tabTransitionAnimId = m_animations->animate(
-      0.0f, 1.0f, static_cast<float>(Style::animNormal), Easing::EaseOutCubic,
+      0.0F, 1.0F, static_cast<float>(Style::animNormal), Easing::EaseOutCubic,
       [this](float progress) {
         m_tabTransitionProgress = progress;
         applyTabTransitionLayout();
@@ -734,10 +734,10 @@ void ControlCenterPanel::wireSidebarScroll(InputArea* area) {
       return;
     }
     const float steps = data.scrollSteps();
-    if (steps == 0.0f) {
+    if (steps == 0.0F) {
       return;
     }
-    selectAdjacentVisibleTab(steps > 0.0f ? 1 : -1);
+    selectAdjacentVisibleTab(steps > 0.0F ? 1 : -1);
   });
 }
 
@@ -859,11 +859,11 @@ void ControlCenterPanel::layoutFullSidebarWidth(Renderer& renderer) {
 
   const float scale = contentScale();
   const float fontSize = Style::fontSizeBody * scale;
-  const float paddingH = Style::spaceSm * scale * 2.0f;
+  const float paddingH = Style::spaceSm * scale * 2.0F;
   const float gap = Style::spaceSm * scale;
-  const float glyphW = 21.0f * scale;
+  const float glyphW = 21.0F * scale;
 
-  float maxTabWidth = 0.0f;
+  float maxTabWidth = 0.0F;
   for (const auto& meta : kTabs) {
     if (!isTabVisible(meta.id)) {
       continue;
@@ -878,16 +878,16 @@ void ControlCenterPanel::layoutFullSidebarWidth(Renderer& renderer) {
   // Scrollbar gutter lives inside the scroll viewport; reserve it only when the nav overflows.
   float targetWidth = contentWidth;
   const float scrollHeight = m_sidebarScrollView->height();
-  if (scrollHeight > 0.0f) {
+  if (scrollHeight > 0.0F) {
     LayoutConstraints navConstraints;
     navConstraints.setExactWidth(contentWidth);
     const float navHeight = m_sidebarNav->measure(renderer, navConstraints).height;
-    if (navHeight > scrollHeight + 0.5f) {
+    if (navHeight > scrollHeight + 0.5F) {
       targetWidth = contentWidth + Style::scrollbarWidth + Style::scrollbarGap;
     }
   }
 
-  if (std::abs(m_sidebarScrollView->width() - targetWidth) > 0.5f) {
+  if (std::abs(m_sidebarScrollView->width() - targetWidth) > 0.5F) {
     m_sidebarScrollView->setSize(targetWidth, m_sidebarScrollView->height());
   }
 }

@@ -88,7 +88,7 @@ public:
   [[nodiscard]] bool deferExternalRefresh() const override;
   [[nodiscard]] bool deferPointerRelayout() const override;
   [[nodiscard]] float preferredWidth() const override;
-  [[nodiscard]] float preferredHeight() const override { return scaled(520.0f); }
+  [[nodiscard]] float preferredHeight() const override { return scaled(520.0F); }
   [[nodiscard]] PanelPlacement panelPlacement() const noexcept override;
 
 private:
@@ -194,7 +194,7 @@ private:
   std::chrono::steady_clock::time_point m_lastMprisRefreshAt;
   AnimationManager::Id m_tabTransitionAnimId = 0;
   TabId m_tabTransitionOutgoing = TabId::Home;
-  float m_tabTransitionProgress = 1.0f;
+  float m_tabTransitionProgress = 1.0F;
   int m_tabTransitionDirection = 1;
   bool m_tabTransitionActive = false;
   bool m_firstOpenAfterCreate = false;
