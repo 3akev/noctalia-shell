@@ -526,7 +526,7 @@ void TrayWidget::rebuild(Renderer& renderer) {
     m_drawerChevronGlyph.clear();
     bool hasDrawerItems = false;
     for (const auto& item : m_items) {
-      if (isHiddenItem(item) || isPinnedItem(item)) {
+      if (tray::isPassiveStatus(item) || isHiddenItem(item) || isPinnedItem(item)) {
         continue;
       }
       hasDrawerItems = true;
@@ -581,7 +581,7 @@ void TrayWidget::rebuild(Renderer& renderer) {
   Flex* gridRow = nullptr;
   std::size_t gridCol = 0;
   for (const auto& item : m_items) {
-    if (isHiddenItem(item)) {
+    if (tray::isPassiveStatus(item) || isHiddenItem(item)) {
       continue;
     }
     if (m_drawerMode && !isPinnedItem(item)) {

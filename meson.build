@@ -1161,6 +1161,7 @@ if build_tests
     'system_monitor_service',
     'taskbar_widget',
     'time_format',
+    'tray_identifier',
     'triad_workspace_backend',
     'ui_tree_reconciler',
     'wayland_toplevels_identity',
