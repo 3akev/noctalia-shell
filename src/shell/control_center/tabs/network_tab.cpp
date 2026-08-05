@@ -933,7 +933,14 @@ void NetworkTab::rebuildApList(Renderer& renderer) {
               .checkedImmediate = m_vpnVisible,
               .toggleSize = ToggleSize::Medium,
               .scale = scale,
-              .onChange = [this](bool checked) {
+              .onChange = [this, vpns](bool checked) {
+                if (!checked && m_network != nullptr) {
+                  for (const auto& vpn : vpns) {
+                    if (vpn.active) {
+                      m_network->deactivateVpnConnection(vpn);
+                    }
+                  }
+                }
                 m_vpnVisible = checked;
                 PanelManager::instance().refresh();
               },
