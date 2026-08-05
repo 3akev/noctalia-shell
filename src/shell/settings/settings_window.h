@@ -146,6 +146,7 @@ private:
   void requestSceneRebuild();
   void
   requestContentRebuild(bool refreshRegistry = false, bool refreshFilterRow = false, bool rebuildEditorSheet = false);
+  void scheduleDeferredRebuild();
   void markPluginListDirty();
   void refreshPluginListIfNeeded();
   void maybeOpenPendingEditor();
@@ -264,6 +265,10 @@ private:
   bool m_settingsRegistryRefreshRequested = false;
   bool m_filterRowRefreshRequested = false;
   bool m_deferredRebuildQueued = false;
+  bool m_deferredSceneRebuild = false;
+  bool m_deferredRefreshRegistry = false;
+  bool m_deferredRefreshFilterRow = false;
+  bool m_deferredRebuildEditorSheet = false;
   bool m_focusSearchOnRebuild = false;
   Input* m_settingsSearchInput = nullptr;
   bool m_scrollToPendingContentTarget = false;
