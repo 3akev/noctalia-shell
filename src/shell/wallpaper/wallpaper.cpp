@@ -1409,7 +1409,7 @@ void Wallpaper::loadWallpaper(WallpaperInstance& instance, const std::string& pa
     if (wpConfig.transitionOnStartup && !wpConfig.transitions.empty()) {
       instance.currentSourceKind = WallpaperSourceKind::Color;
       instance.currentTexture = {};
-      instance.currentColor = rgba(0.0F, 0.0F, 0.0F, 1.0F);
+      instance.currentColor = rgba(0.0F, 0.0F, 0.0F, 0.0F);
       instance.nextSourceKind = newSourceKind;
       instance.nextTexture = newTex;
       instance.nextColor = newColor;
