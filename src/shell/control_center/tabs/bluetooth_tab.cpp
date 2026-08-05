@@ -699,11 +699,18 @@ void BluetoothTab::rebuildDeviceList(Renderer& renderer) {
     devices = sortedDevices(m_service->devices());
   }
   const std::string nextKey = structureKey(devices);
-  if (listWidth == m_lastListWidth && nextKey == m_lastStructureKey) {
+  const bool structureChanged = nextKey != m_lastStructureKey;
+  if (listWidth == m_lastListWidth && !structureChanged) {
     return;
   }
   m_lastListWidth = listWidth;
   m_lastStructureKey = nextKey;
+
+  if (!structureChanged) {
+    m_list->layout(renderer);
+    return;
+  }
+
   const float scale = contentScale();
 
   m_powerToggle = nullptr;
