@@ -88,7 +88,7 @@ private:
   void applyProviderConfig(LauncherProvider& provider) const;
   void finishActivation(LauncherProvider& provider, const std::string& resultId, bool copied);
   [[nodiscard]] std::vector<LauncherResult> providerOverviewResults(std::string_view text) const;
-  void openAppActionsMenu(std::size_t index, float anchorX, float anchorY);
+  [[nodiscard]] bool openAppActionsMenu(std::size_t index, float anchorX, float anchorY);
   void rebuildCategoryFilter(const std::vector<LauncherCategory>& categories);
   void setCategoryFilterVisible(bool visible);
   void setActiveCategorySlot(std::size_t slotIndex);

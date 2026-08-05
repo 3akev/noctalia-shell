@@ -817,7 +817,9 @@ void LauncherPanel::create() {
   m_listAdapter->setResults(&m_results);
   m_gridAdapter->setResults(&m_results);
   const auto onActivate = [this](std::size_t index) { activateAt(index); };
-  const auto onSecondaryActivate = [this](std::size_t index, float ax, float ay) { openAppActionsMenu(index, ax, ay); };
+  const auto onSecondaryActivate = [this](std::size_t index, float ax, float ay) {
+    (void)openAppActionsMenu(index, ax, ay);
+  };
   m_listAdapter->setOnActivate(onActivate);
   m_listAdapter->setOnSecondaryActivate(onSecondaryActivate);
   m_gridAdapter->setOnActivate(onActivate);
@@ -1574,9 +1576,9 @@ void LauncherPanel::bindDetailResult() {
   m_detailScroll->setScrollOffset(0.0F);
 }
 
-void LauncherPanel::openAppActionsMenu(std::size_t index, float anchorX, float anchorY) {
+bool LauncherPanel::openAppActionsMenu(std::size_t index, float anchorX, float anchorY) {
   if (index >= m_results.size()) {
-    return;
+    return false;
   }
   const LauncherResult& base = m_results[index];
 
@@ -1588,18 +1590,18 @@ void LauncherPanel::openAppActionsMenu(std::size_t index, float anchorX, float a
     }
   }
   if (match == nullptr) {
-    return;
+    return false;
   }
 
   WaylandConnection* wl = PanelManager::instance().wayland();
   RenderContext* rc = PanelManager::instance().renderContext();
   if (wl == nullptr || rc == nullptr) {
-    return;
+    return false;
   }
 
   const auto parentCtx = PanelManager::instance().fallbackPopupParentContext();
   if (!parentCtx.has_value()) {
-    return;
+    return false;
   }
 
   if (m_actionsMenu == nullptr) {
@@ -1627,6 +1629,18 @@ void LauncherPanel::openAppActionsMenu(std::size_t index, float anchorX, float a
           .hasSubmenu = false,
       }
   );
+  // Desktop actions sit above pin/unpin so pin stays last in the menu.
+  for (std::int32_t i = 0; i < static_cast<std::int32_t>(actionsCopy.size()); ++i) {
+    entries.push_back(
+        ContextMenuControlEntry{
+            .id = i,
+            .label = actionsCopy[static_cast<std::size_t>(i)].name,
+            .enabled = true,
+            .separator = false,
+            .hasSubmenu = false,
+        }
+    );
+  }
   if (canPinToDock) {
     entries.push_back(
         ContextMenuControlEntry{
@@ -1642,17 +1656,6 @@ void LauncherPanel::openAppActionsMenu(std::size_t index, float anchorX, float a
         ContextMenuControlEntry{
             .id = kActionUnpinFromDock,
             .label = i18n::tr("launcher.context-menu.unpin-from-dock"),
-            .enabled = true,
-            .separator = false,
-            .hasSubmenu = false,
-        }
-    );
-  }
-  for (std::int32_t i = 0; i < static_cast<std::int32_t>(actionsCopy.size()); ++i) {
-    entries.push_back(
-        ContextMenuControlEntry{
-            .id = i,
-            .label = actionsCopy[static_cast<std::size_t>(i)].name,
             .enabled = true,
             .separator = false,
             .hasSubmenu = false,
@@ -1743,6 +1746,7 @@ void LauncherPanel::openAppActionsMenu(std::size_t index, float anchorX, float a
           },
       }
   );
+  return true;
 }
 
 void LauncherPanel::activateAt(std::size_t index) {
@@ -1866,6 +1870,22 @@ bool LauncherPanel::handleKeyEvent(std::uint32_t sym, std::uint32_t modifiers) {
   if (gridNav && KeybindMatcher::matches(KeybindAction::Right, sym, modifiers)) {
     moveSelection(1);
     return true;
+  }
+
+  // Validate+Shift opens the app context menu (Shift layered on the configured
+  // Validate chord). Menu navigation uses the Up/Down/Validate/Cancel keybinds.
+  if ((modifiers & KeyMod::Shift) != 0
+      && KeybindMatcher::matches(KeybindAction::Validate, sym, modifiers & ~KeyMod::Shift)) {
+    float anchorX = 0.0F;
+    float anchorY = 0.0F;
+    if (m_grid == nullptr || !m_grid->absoluteAnchorForIndex(m_selectedIndex, anchorX, anchorY)) {
+      if (m_grid != nullptr) {
+        Node::absolutePosition(m_grid, anchorX, anchorY);
+        anchorX += m_grid->width() * 0.5F;
+        anchorY += m_grid->height() * 0.5F;
+      }
+    }
+    return openAppActionsMenu(m_selectedIndex, anchorX, anchorY);
   }
 
   if (KeybindMatcher::matches(KeybindAction::Validate, sym, modifiers)) {

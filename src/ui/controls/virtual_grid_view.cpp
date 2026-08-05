@@ -561,6 +561,38 @@ void VirtualGridView::onSecondaryPointerPress(float localX, float localY) {
   }
 }
 
+bool VirtualGridView::absoluteAnchorForIndex(std::size_t index, float& outX, float& outY) const noexcept {
+  if (m_inputArea == nullptr
+      || m_layoutColumns == 0
+      || m_cellWidth <= 0.0F
+      || m_cellHeightResolved <= 0.0F
+      || index >= m_itemCount) {
+    return false;
+  }
+
+  // Prefer a live pool tile when the item is currently materialized.
+  for (std::size_t slot = 0; slot < m_pool.size(); ++slot) {
+    if (!m_slotBoundIndex[slot].has_value() || *m_slotBoundIndex[slot] != index || m_pool[slot] == nullptr) {
+      continue;
+    }
+    Node::absolutePosition(m_pool[slot], outX, outY);
+    outX += m_pool[slot]->width() * 0.5F;
+    outY += m_pool[slot]->height() * 0.5F;
+    return true;
+  }
+
+  const auto col = index % m_layoutColumns;
+  const auto row = index / m_layoutColumns;
+  const float colStride = m_cellWidth + m_columnGap;
+  const float rowStride = m_cellHeightResolved + m_rowGap;
+  float wx = 0.0F;
+  float wy = 0.0F;
+  Node::absolutePosition(m_inputArea, wx, wy);
+  outX = wx + static_cast<float>(col) * colStride + m_cellWidth * 0.5F;
+  outY = wy + static_cast<float>(row) * rowStride + m_cellHeightResolved * 0.5F;
+  return true;
+}
+
 std::optional<std::size_t> VirtualGridView::indexAt(float localX, float localY) const noexcept {
   if (m_layoutColumns == 0 || m_cellWidth <= 0.0F || m_cellHeightResolved <= 0.0F || m_itemCount == 0) {
     return std::nullopt;

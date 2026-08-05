@@ -89,6 +89,9 @@ public:
   void scrollToIndex(std::size_t index);
   void setSelectedIndex(std::optional<std::size_t> index);
   [[nodiscard]] std::optional<std::size_t> selectedIndex() const noexcept { return m_selectedIndex; }
+  // Surface-local anchor point for item `index` (cell center). False when layout
+  // metrics are unavailable or the index is out of range.
+  [[nodiscard]] bool absoluteAnchorForIndex(std::size_t index, float& outX, float& outY) const noexcept;
   // Items to move for a Page Up/Down step (one viewport of rows, at least one item).
   [[nodiscard]] std::size_t pageItemStride() const noexcept;
   // Column count from the most recent layout pass (for keyboard navigation).
