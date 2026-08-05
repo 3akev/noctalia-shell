@@ -727,43 +727,58 @@ void SettingsWindow::maybeOpenPendingEditor() {
 }
 
 void SettingsWindow::requestSceneRebuild() {
-  DeferredCall::callLater([this]() {
-    if (m_surface == nullptr) {
-      return;
-    }
-    m_rebuildRequested = true;
-    m_contentRebuildRequested = false;
-    m_settingsRegistryRefreshRequested = false;
-    m_filterRowRefreshRequested = false;
-    m_surface->requestLayout();
-    // The editor sheet edits the same config: rebuild its body so override/reset controls track
-    // value changes in place, the way the inline inspector did when the whole scene rebuilt.
-    if (m_editorSheetPopup != nullptr && m_editorSheetPopup->isOpen()) {
-      m_editorSheetPopup->rebuildBody();
-    }
-  });
+  m_deferredSceneRebuild = true;
+  scheduleDeferredRebuild();
 }
 
 void SettingsWindow::requestContentRebuild(bool refreshRegistry, bool refreshFilterRow, bool rebuildEditorSheet) {
-  DeferredCall::callLater([this, refreshRegistry, refreshFilterRow, rebuildEditorSheet]() {
+  m_deferredRefreshRegistry = m_deferredRefreshRegistry || refreshRegistry;
+  m_deferredRefreshFilterRow = m_deferredRefreshFilterRow || refreshFilterRow;
+  m_deferredRebuildEditorSheet = m_deferredRebuildEditorSheet || rebuildEditorSheet;
+  scheduleDeferredRebuild();
+}
+
+void SettingsWindow::scheduleDeferredRebuild() {
+  if (m_deferredRebuildQueued) {
+    return;
+  }
+  m_deferredRebuildQueued = true;
+  DeferredCall::callLater([this]() {
+    m_deferredRebuildQueued = false;
+    const bool sceneRebuild = m_deferredSceneRebuild;
+    const bool refreshRegistry = m_deferredRefreshRegistry;
+    const bool refreshFilterRow = m_deferredRefreshFilterRow;
+    const bool rebuildEditorSheet = m_deferredRebuildEditorSheet;
+    m_deferredSceneRebuild = false;
+    m_deferredRefreshRegistry = false;
+    m_deferredRefreshFilterRow = false;
+    m_deferredRebuildEditorSheet = false;
     if (m_surface == nullptr) {
       return;
     }
-    if (refreshRegistry) {
-      m_settingsRegistryRefreshRequested = true;
-    }
-    if (refreshFilterRow) {
-      m_filterRowRefreshRequested = true;
-    }
-    if (m_sceneRoot == nullptr || m_contentContainer == nullptr) {
+
+    if (sceneRebuild) {
       m_rebuildRequested = true;
+      m_contentRebuildRequested = false;
       m_settingsRegistryRefreshRequested = false;
       m_filterRowRefreshRequested = false;
-    } else if (!m_rebuildRequested) {
-      m_contentRebuildRequested = true;
+    } else {
+      if (refreshRegistry) {
+        m_settingsRegistryRefreshRequested = true;
+      }
+      if (refreshFilterRow) {
+        m_filterRowRefreshRequested = true;
+      }
+      if (m_sceneRoot == nullptr || m_contentContainer == nullptr) {
+        m_rebuildRequested = true;
+        m_settingsRegistryRefreshRequested = false;
+        m_filterRowRefreshRequested = false;
+      } else if (!m_rebuildRequested) {
+        m_contentRebuildRequested = true;
+      }
     }
     m_surface->requestLayout();
-    if (rebuildEditorSheet && m_editorSheetPopup != nullptr && m_editorSheetPopup->isOpen()) {
+    if ((sceneRebuild || rebuildEditorSheet) && m_editorSheetPopup != nullptr && m_editorSheetPopup->isOpen()) {
       m_editorSheetPopup->rebuildBody();
     }
   });
