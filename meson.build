@@ -1139,6 +1139,7 @@ if build_tests
     'keyboard_layout_label',
     'kde_color_scheme',
     'log',
+    'location_service',
     'math_provider',
     'monitor_selector',
     'notification_filter',
