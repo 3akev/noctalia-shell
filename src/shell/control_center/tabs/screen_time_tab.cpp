@@ -301,15 +301,37 @@ std::unique_ptr<Flex> ScreenTimeTab::create() {
             .color = colorSpecFromRole(ColorRole::OnSurfaceVariant),
             .flexGrow = 1.0F,
             .visible = false,
-            .configure = [this, bucketIndex](Label& label) {
+            .configure = [](Label& label) {
               label.setTextAlign(TextAlign::Center);
-              const auto requestHoverRedraw = [this]() { PanelManager::instance().requestRedraw(); };
-              label.setOnEnter([requestHoverRedraw](const InputArea::PointerData&) { requestHoverRedraw(); });
-              label.setOnLeave(requestHoverRedraw);
-              label.setOnClick([this, bucketIndex](const InputArea::PointerData&) { openDayDetail(bucketIndex); });
+              // Full-cell InputArea overlay owns hover/click/tooltip hits.
+              label.setHitTestVisible(false);
             },
         })
     );
+    auto labelHit = ui::inputArea({
+        .out = &bucketColumn.labelHit,
+        .visible = false,
+        .participatesInLayout = false,
+        .onEnter =
+            [this, bucketIndex](const InputArea::PointerData&) {
+              if (m_rangeDays <= 1 || !m_detailDayKey.empty()) {
+                return;
+              }
+              if (Label* dayLabel = m_bucketColumns[bucketIndex].label; dayLabel != nullptr) {
+                dayLabel->setColor(colorSpecFromRole(ColorRole::Primary));
+              }
+              PanelManager::instance().requestRedraw();
+            },
+        .onLeave =
+            [this, bucketIndex]() {
+              if (Label* dayLabel = m_bucketColumns[bucketIndex].label; dayLabel != nullptr) {
+                dayLabel->setColor(colorSpecFromRole(ColorRole::OnSurfaceVariant));
+              }
+              PanelManager::instance().requestRedraw();
+            },
+        .onClick = [this, bucketIndex](const InputArea::PointerData&) { openDayDetail(bucketIndex); },
+    });
+    labelCell->addChild(std::move(labelHit));
     chartLabelRow->addChild(std::move(labelCell));
   }
   usageCard->addChild(std::move(chartPlotRow));
@@ -777,13 +799,19 @@ void ScreenTimeTab::syncContent(Renderer& renderer) {
         columnWidgets.labelCell->setFlexGrow(1.0F);
       }
     }
+    if (columnWidgets.labelHit != nullptr && !bucketActive) {
+      columnWidgets.labelHit->setVisible(false);
+      columnWidgets.labelHit->clearTooltip();
+    }
 
     if (columnWidgets.label != nullptr) {
       if (!bucketActive) {
         columnWidgets.label->setVisible(false);
-        columnWidgets.label->clearTooltip();
       } else if (snapshot.hourlyBuckets) {
-        columnWidgets.label->clearTooltip();
+        if (columnWidgets.labelHit != nullptr) {
+          columnWidgets.labelHit->clearTooltip();
+          columnWidgets.labelHit->setVisible(false);
+        }
         const int hour = static_cast<int>(bucket);
         if (hour == 0) {
           columnWidgets.label->setText(i18n::tr("control-center.screen-time.hour-0"));
@@ -806,10 +834,16 @@ void ScreenTimeTab::syncContent(Renderer& renderer) {
         const auto dayTotal = bucket < snapshot.buckets.size() ? snapshot.buckets[bucket] : std::chrono::seconds{0};
         auto tip = appUsageTooltip(snapshot.bucketLabels[bucket], dayTotal);
         tip.push_back({.key = i18n::tr("control-center.screen-time.view-day"), .value = {}});
-        columnWidgets.label->setTooltip(std::move(tip));
+        if (columnWidgets.labelHit != nullptr) {
+          columnWidgets.labelHit->setTooltip(std::move(tip));
+          columnWidgets.labelHit->setVisible(true);
+        }
       } else {
         columnWidgets.label->setVisible(false);
-        columnWidgets.label->clearTooltip();
+        if (columnWidgets.labelHit != nullptr) {
+          columnWidgets.labelHit->setVisible(false);
+          columnWidgets.labelHit->clearTooltip();
+        }
       }
       columnWidgets.label->setFontSize(Style::fontSizeMini * scale);
     }
@@ -1002,6 +1036,12 @@ void ScreenTimeTab::layoutChart(Renderer& renderer) {
     m_chartLabelRow->layout(renderer);
   }
   for (auto& columnWidgets : m_bucketColumns) {
+    if (columnWidgets.labelCell != nullptr && columnWidgets.labelCell->visible() && columnWidgets.labelHit != nullptr) {
+      columnWidgets.labelHit->setPosition(0.0F, 0.0F);
+      columnWidgets.labelHit->setSize(
+          std::max(1.0F, columnWidgets.labelCell->width()), std::max(1.0F, columnWidgets.labelCell->height())
+      );
+    }
     if (columnWidgets.plotColumn == nullptr || !columnWidgets.plotColumn->visible()) {
       continue;
     }
@@ -1037,6 +1077,11 @@ void ScreenTimeTab::layoutChart(Renderer& renderer) {
 
 void ScreenTimeTab::syncDayLabelHover() {
   if (m_rangeDays <= 1 || !m_detailDayKey.empty()) {
+    for (auto& columnWidgets : m_bucketColumns) {
+      if (columnWidgets.label != nullptr && columnWidgets.label->visible()) {
+        columnWidgets.label->setColor(colorSpecFromRole(ColorRole::OnSurfaceVariant));
+      }
+    }
     return;
   }
 
@@ -1044,9 +1089,9 @@ void ScreenTimeTab::syncDayLabelHover() {
     if (columnWidgets.label == nullptr || !columnWidgets.label->visible()) {
       continue;
     }
+    const bool hovered = columnWidgets.labelHit != nullptr && columnWidgets.labelHit->hovered();
     columnWidgets.label->setColor(
-        columnWidgets.label->hovered() ? colorSpecFromRole(ColorRole::Primary)
-                                       : colorSpecFromRole(ColorRole::OnSurfaceVariant)
+        hovered ? colorSpecFromRole(ColorRole::Primary) : colorSpecFromRole(ColorRole::OnSurfaceVariant)
     );
   }
 }

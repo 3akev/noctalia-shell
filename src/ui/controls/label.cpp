@@ -211,16 +211,23 @@ void Label::setAutoScrollOnlyWhenHovered(bool enabled) {
 }
 
 void Label::syncHoverInteraction() {
-  if (!m_autoScroll || !m_autoScrollHoverOnly) {
-    setOnEnter(nullptr);
-    setOnLeave(nullptr);
-    // A tooltip needs hits to reach the label, so keep hit testing on for it.
-    setHitTestVisible(hasTooltip());
+  if (m_autoScroll && m_autoScrollHoverOnly) {
+    setHitTestVisible(true);
+    setOnEnter([this](const PointerData&) { restartScrollIfNeeded(); });
+    setOnLeave([this]() { restartScrollIfNeeded(); });
+    m_ownsHoverHandlers = true;
     return;
   }
-  setHitTestVisible(true);
-  setOnEnter([this](const PointerData&) { restartScrollIfNeeded(); });
-  setOnLeave([this]() { restartScrollIfNeeded(); });
+  // Leaving hover-only marquee: drop only the handlers we installed. Callers may
+  // own enter/leave for hover styling (e.g. screen-time day labels); wiping them
+  // on setTooltip made hover color stick or lag until the next update pass.
+  if (m_ownsHoverHandlers) {
+    setOnEnter(nullptr);
+    setOnLeave(nullptr);
+    m_ownsHoverHandlers = false;
+  }
+  // A tooltip needs hits to reach the label.
+  setHitTestVisible(hasTooltip());
 }
 
 void Label::setAutoScrollSpeed(float pixelsPerSecond) {

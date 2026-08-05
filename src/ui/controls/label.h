@@ -143,6 +143,8 @@ private:
   int m_userMaxLines = 0;
   bool m_autoScroll = false;
   bool m_autoScrollHoverOnly = false;
+  // True while syncHoverInteraction owns enter/leave for hover-only marquee.
+  bool m_ownsHoverHandlers = false;
   float m_scrollSpeedPxPerSec = 48.0F;
   float m_scrollOffset = 0.0F;
   float m_fullTextWidth = 0.0F;

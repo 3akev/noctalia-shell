@@ -84,6 +84,7 @@ private:
     Flex* plotColumn = nullptr;
     Box* track = nullptr;
     Label* label = nullptr;
+    InputArea* labelHit = nullptr;
     Flex* labelCell = nullptr;
     std::array<InputArea*, kMaxChartSeries> segmentHits{};
     std::array<Box*, kMaxChartSeries> segments{};
