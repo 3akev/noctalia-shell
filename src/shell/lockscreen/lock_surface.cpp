@@ -1504,8 +1504,8 @@ void LockSurface::syncRegularExtras(Renderer& renderer) {
           forecast.emplace_back(
               weekdayAbbrev(day.dateIso), WeatherService::glyphForCode(day.weatherCode, true),
               std::format(
-                  "{}°/{}°", static_cast<int>(std::lround(m_weather->displayTemperature(day.temperatureMaxC))),
-                  static_cast<int>(std::lround(m_weather->displayTemperature(day.temperatureMinC)))
+                  "{}°/{}°", static_cast<int>(std::lround(m_weather->displayTemperature(day.temperatureMinC))),
+                  static_cast<int>(std::lround(m_weather->displayTemperature(day.temperatureMaxC)))
               )
           );
         }

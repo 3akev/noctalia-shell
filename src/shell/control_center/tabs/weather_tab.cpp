@@ -254,8 +254,8 @@ std::unique_ptr<Flex> WeatherTab::create() {
     return rowPtr;
   };
 
-  addDetailRow("temperature-sun", i18n::tr("control-center.weather.details.temp-max"), m_tempMaxLabel);
   addDetailRow("temperature", i18n::tr("control-center.weather.details.temp-min"), m_tempMinLabel);
+  addDetailRow("temperature-sun", i18n::tr("control-center.weather.details.temp-max"), m_tempMaxLabel);
   addDetailRow("wind", i18n::tr("control-center.weather.details.wind"), m_windLabel);
   addDetailRow("weather-sunrise", i18n::tr("control-center.weather.details.sunrise"), m_sunriseLabel);
   addDetailRow("weather-sunset", i18n::tr("control-center.weather.details.sunset"), m_sunsetLabel);
@@ -523,7 +523,7 @@ void WeatherTab::doLayout(Renderer& renderer, float contentWidth, float bodyHeig
     m_statusLabel->setMaxWidth(leftColumnWidth);
   }
   for (auto* label :
-       {m_windLabel, m_sunriseLabel, m_sunsetLabel, m_tempMaxLabel, m_tempMinLabel, m_elevationLabel, m_uvIndexLabel,
+       {m_windLabel, m_sunriseLabel, m_sunsetLabel, m_tempMinLabel, m_tempMaxLabel, m_elevationLabel, m_uvIndexLabel,
         m_timeZoneLabel}) {
     if (label != nullptr) {
       label->setMaxWidth(leftColumnWidth);
@@ -896,10 +896,10 @@ void WeatherTab::sync(Renderer& renderer) {
           std::format(
               "{} / {}{}",
               static_cast<int>(
-                  std::lround(m_weather->displayTemperature(snapshot.forecastDays.front().temperatureMaxC))
+                  std::lround(m_weather->displayTemperature(snapshot.forecastDays.front().temperatureMinC))
               ),
               static_cast<int>(
-                  std::lround(m_weather->displayTemperature(snapshot.forecastDays.front().temperatureMinC))
+                  std::lround(m_weather->displayTemperature(snapshot.forecastDays.front().temperatureMaxC))
               ),
               m_weather->displayTemperatureUnit()
           )
@@ -1044,8 +1044,8 @@ void WeatherTab::syncDailyForecast(Renderer& renderer, const WeatherSnapshot& sn
         day.sunsetIso.empty() ? std::string("--") : formatIsoTime(day.sunsetIso, timeFormat.c_str());
     const std::vector<TooltipRow> tooltipRows{
         {i18n::tr("control-center.weather.daily.tooltip.condition"), condition},
-        {i18n::tr("control-center.weather.daily.tooltip.high"), tempHigh},
         {i18n::tr("control-center.weather.daily.tooltip.low"), tempLow},
+        {i18n::tr("control-center.weather.daily.tooltip.high"), tempHigh},
         {i18n::tr("control-center.weather.daily.tooltip.sunrise"), sunrise},
         {i18n::tr("control-center.weather.daily.tooltip.sunset"), sunset},
     };
@@ -1063,7 +1063,7 @@ void WeatherTab::syncDailyForecast(Renderer& renderer, const WeatherSnapshot& sn
       m_forecastMetas[i]->measure(renderer);
     }
     if (m_forecastTemps[i] != nullptr) {
-      m_forecastTemps[i]->setText(std::format("{} / {}", tempHigh, tempLow));
+      m_forecastTemps[i]->setText(std::format("{} / {}", tempLow, tempHigh));
       m_forecastTemps[i]->clearTooltip();
       m_forecastTemps[i]->measure(renderer);
     }

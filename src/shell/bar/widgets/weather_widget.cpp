@@ -182,8 +182,8 @@ void WeatherWidget::sync(Renderer& renderer) {
     const auto& today = snapshot.forecastDays.front();
     const int high = static_cast<int>(std::lround(m_weather->displayTemperature(today.temperatureMaxC)));
     const int low = static_cast<int>(std::lround(m_weather->displayTemperature(today.temperatureMinC)));
-    rows.push_back({i18n::tr("bar.widgets.weather.tooltip.high"), std::format("{}{}", high, tempUnit)});
     rows.push_back({i18n::tr("bar.widgets.weather.tooltip.low"), std::format("{}{}", low, tempUnit)});
+    rows.push_back({i18n::tr("bar.widgets.weather.tooltip.high"), std::format("{}{}", high, tempUnit)});
   }
 
   rows.push_back(
