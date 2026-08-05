@@ -934,7 +934,7 @@ void NetworkTab::rebuildApList(Renderer& renderer) {
               .toggleSize = ToggleSize::Medium,
               .scale = scale,
               .onChange = [this, vpns](bool checked) {
-                if (!checked) {
+                if (!checked && m_network != nullptr) {
                   for (const auto& vpn : vpns) {
                     if (vpn.active) {
                       m_network->deactivateVpnConnection(vpn);
