@@ -279,21 +279,19 @@ TaskbarWidget::resolveTask(const std::vector<TaskModel>& tasks, TaskRef ref, std
 }
 
 std::string_view TaskbarWidget::workspaceBindingWindowId(const TaskModel& task) {
-  return !task.exactCompositorWindowId.empty() ? std::string_view(task.exactCompositorWindowId)
-                                               : std::string_view(task.workspaceWindowId);
+  return !task.exactWindowId.empty() ? std::string_view(task.exactWindowId) : std::string_view(task.workspaceWindowId);
 }
 
 void TaskbarWidget::activateTaskModel(const TaskModel& task) {
-  const bool hasCompositorWindow =
-      compositors::isNiri() ? !task.exactCompositorWindowId.empty() : !task.workspaceWindowId.empty();
   if (task.firstHandle != nullptr
-      || hasCompositorWindow
+      || !task.workspaceWindowId.empty()
       || (compositors::isKde() && (!task.title.empty() || !task.appId.empty()))) {
     ToplevelInfo window{};
     window.title = task.title;
     window.appId = task.appId;
-    window.identifier = compositors::isNiri() ? task.exactCompositorWindowId : task.workspaceWindowId;
-    window.handle = task.exactCompositorWindowId.empty() ? task.firstHandle : nullptr;
+    window.identifier = !task.exactWindowId.empty() ? task.exactWindowId : task.workspaceWindowId;
+    window.handle = !task.exactWindowId.empty() ? nullptr : task.firstHandle;
+    window.exactIdentity = !task.exactWindowId.empty();
     m_platform.activateToplevelInfo(window);
     return;
   }
@@ -308,11 +306,12 @@ void TaskbarWidget::activateTaskModel(const TaskModel& task) {
 }
 
 void TaskbarWidget::closeTaskModel(const TaskModel& task) {
-  if (task.firstHandle != nullptr || !task.exactCompositorWindowId.empty()) {
+  if (task.firstHandle != nullptr || !task.exactWindowId.empty()) {
     m_platform.closeToplevelInfo(
         ToplevelInfo{
-            .identifier = task.exactCompositorWindowId,
-            .handle = task.exactCompositorWindowId.empty() ? task.firstHandle : nullptr,
+            .identifier = !task.exactWindowId.empty() ? task.exactWindowId : task.workspaceWindowId,
+            .handle = !task.exactWindowId.empty() ? nullptr : task.firstHandle,
+            .exactIdentity = !task.exactWindowId.empty(),
         }
     );
     return;
@@ -823,7 +822,7 @@ void TaskbarWidget::buildTaskButtons(Renderer& renderer) {
         }
         if (data.button == BTN_RIGHT
             && areaPtr != nullptr
-            && (current->firstHandle != nullptr || !current->exactCompositorWindowId.empty() || compositors::isKde())) {
+            && (current->firstHandle != nullptr || !current->exactWindowId.empty() || compositors::isKde())) {
           openTaskContextMenu(*current, *areaPtr);
         }
       });
@@ -1541,10 +1540,10 @@ void TaskbarWidget::updateModels() {
       task.title = window.title;
       task.active = activeHandle != nullptr && activeHandle == window.handle;
       task.firstHandle = window.handle;
-      if (compositors::isNiri() && window.extHandle != nullptr && !window.identifier.empty()) {
+      if (window.exactIdentity && !window.identifier.empty()) {
         task.workspaceWindowId = window.identifier;
-        task.exactCompositorWindowId = window.identifier;
-      } else if (!compositors::isNiri() && !window.identifier.empty()) {
+        task.exactWindowId = window.identifier;
+      } else if (!window.exactIdentity && !window.identifier.empty()) {
         task.workspaceWindowId = window.identifier;
       }
       task.iconPath = resolveIconPath(run.runningAppId, run.entry.icon);
@@ -1570,9 +1569,9 @@ void TaskbarWidget::updateModels() {
     task.title = window.title;
     task.active = activeHandle != nullptr && activeHandle == window.handle;
     task.firstHandle = window.handle;
-    if (compositors::isNiri() && window.extHandle != nullptr && !window.identifier.empty()) {
+    if (window.exactIdentity && !window.identifier.empty()) {
       task.workspaceWindowId = window.identifier;
-      task.exactCompositorWindowId = window.identifier;
+      task.exactWindowId = window.identifier;
     }
     task.iconPath = resolveIconPath({}, {});
     nextTasks.push_back(std::move(task));
@@ -1924,7 +1923,7 @@ void TaskbarWidget::updateModels() {
 
       auto assignMatch = [&](TaskModel& task, bool requireTitle,
                              const std::function<bool(const WorkspaceWindowAssignment&)>& extraPredicate) -> bool {
-        if (!task.exactCompositorWindowId.empty()) {
+        if (!task.exactWindowId.empty()) {
           return false;
         }
         if (const auto existing = assignmentIndexForWindowId(task.workspaceWindowId); existing.has_value()) {
@@ -1972,7 +1971,7 @@ void TaskbarWidget::updateModels() {
       };
 
       for (auto& task : nextTasks) {
-        if (!task.workspaceKey.empty() || !task.exactCompositorWindowId.empty()) {
+        if (!task.workspaceKey.empty() || !task.exactWindowId.empty()) {
           continue;
         }
         const auto previous = previousWorkspaceWindowByHandle.find(task.handleKey);
@@ -1996,7 +1995,7 @@ void TaskbarWidget::updateModels() {
       }
 
       for (auto& task : nextTasks) {
-        if (!task.workspaceKey.empty() || !task.exactCompositorWindowId.empty()) {
+        if (!task.workspaceKey.empty() || !task.exactWindowId.empty()) {
           continue;
         }
         const auto previous = previousWorkspaceByHandle.find(task.handleKey);
@@ -2009,7 +2008,7 @@ void TaskbarWidget::updateModels() {
       }
 
       for (auto& task : nextTasks) {
-        if (!task.workspaceKey.empty() || !task.exactCompositorWindowId.empty()) {
+        if (!task.workspaceKey.empty() || !task.exactWindowId.empty()) {
           continue;
         }
         const auto previous = previousWorkspaceByHandle.find(task.handleKey);
@@ -2029,7 +2028,7 @@ void TaskbarWidget::updateModels() {
       }
 
       for (auto& task : nextTasks) {
-        if (!task.workspaceKey.empty() || !task.exactCompositorWindowId.empty()) {
+        if (!task.workspaceKey.empty() || !task.exactWindowId.empty()) {
           continue;
         }
         // Real compositor window id already present in assignments — leave it alone.
@@ -2068,7 +2067,7 @@ void TaskbarWidget::updateModels() {
       }
 
       for (auto& task : nextTasks) {
-        if (!task.exactCompositorWindowId.empty()
+        if (!task.exactWindowId.empty()
             || task.workspaceKey.empty()
             || task.workspaceOrder != std::numeric_limits<std::uint64_t>::max()) {
           continue;
@@ -2109,8 +2108,8 @@ void TaskbarWidget::updateModels() {
       if (focusedCompositorWindowId.has_value()) {
         TaskModel* focusedTask = nullptr;
         for (auto& task : nextTasks) {
-          const std::string_view activationWindowId = compositors::isNiri()
-              ? std::string_view(task.exactCompositorWindowId)
+          const std::string_view activationWindowId = !task.exactWindowId.empty()
+              ? std::string_view(task.exactWindowId)
               : std::string_view(task.workspaceWindowId);
           if (!activationWindowId.empty() && windowIdsMatch(activationWindowId, *focusedCompositorWindowId)) {
             focusedTask = &task;
@@ -2146,8 +2145,7 @@ void TaskbarWidget::updateModels() {
         }
         for (std::size_t assignmentIndex = 0; assignmentIndex < workspaceAssignments.size(); ++assignmentIndex) {
           const auto& assignment = workspaceAssignments[assignmentIndex];
-          if (assignment.windowId != bindingWindowId
-              || (task.exactCompositorWindowId.empty() && !matchesApp(task, assignment))) {
+          if (assignment.windowId != bindingWindowId || (task.exactWindowId.empty() && !matchesApp(task, assignment))) {
             continue;
           }
           task.workspaceKey = assignment.workspaceKey;
@@ -2184,7 +2182,7 @@ void TaskbarWidget::updateModels() {
         auto tryClaim = [&](bool requireWorkspace, bool requireTitle) -> bool {
           for (std::size_t i = 0; i < nextTasks.size(); ++i) {
             auto& task = nextTasks[i];
-            if (orderClaimed[i] || !task.exactCompositorWindowId.empty() || !appMatches(task)) {
+            if (orderClaimed[i] || !task.exactWindowId.empty() || !appMatches(task)) {
               continue;
             }
             if (!task.workspaceWindowId.empty() && !currentAssignmentWindowIds.contains(task.workspaceWindowId)) {
@@ -2304,8 +2302,8 @@ void TaskbarWidget::updateModels() {
         task.iconPath = resolveIconPath({}, {});
         task.workspaceKey = assignment.workspaceKey;
         task.workspaceWindowId = assignment.windowId;
-        if (compositors::isNiri()) {
-          task.exactCompositorWindowId = assignment.windowId;
+        if (m_platform.hasExactWindowIdentity()) {
+          task.exactWindowId = assignment.windowId;
           task.active = focusedCompositorWindowId.has_value() && assignment.windowId == *focusedCompositorWindowId;
         }
         task.workspaceOrder = i;
@@ -2520,14 +2518,15 @@ void TaskbarWidget::openTaskContextMenu(const TaskModel& task, InputArea& area) 
   m_contextMenuInfoPrimary = {};
 
   const bool kde = compositors::isKde();
-  const bool infoClose = kde || (compositors::isNiri() && !task.exactCompositorWindowId.empty());
+  const bool infoClose = kde || !task.exactWindowId.empty();
   if (infoClose) {
     m_contextMenuInfoWindows = windows;
     m_contextMenuInfoPrimary = ToplevelInfo{
         .title = task.title,
         .appId = task.appId,
-        .identifier = compositors::isNiri() ? task.exactCompositorWindowId : task.workspaceWindowId,
-        .handle = task.exactCompositorWindowId.empty() ? task.firstHandle : nullptr,
+        .identifier = !task.exactWindowId.empty() ? task.exactWindowId : task.workspaceWindowId,
+        .handle = !task.exactWindowId.empty() ? nullptr : task.firstHandle,
+        .exactIdentity = !task.exactWindowId.empty(),
     };
     for (const auto& window : m_contextMenuInfoWindows) {
       if (!m_contextMenuInfoPrimary.identifier.empty() && window.identifier == m_contextMenuInfoPrimary.identifier) {
@@ -2847,7 +2846,7 @@ TaskbarWidget::ModelComparison TaskbarWidget::compareModels(
         || nextTasks[i].firstHandle != previousTasks[i].firstHandle
         || nextTasks[i].workspaceKey != previousTasks[i].workspaceKey
         || nextTasks[i].workspaceWindowId != previousTasks[i].workspaceWindowId
-        || nextTasks[i].exactCompositorWindowId != previousTasks[i].exactCompositorWindowId
+        || nextTasks[i].exactWindowId != previousTasks[i].exactWindowId
         || nextTasks[i].order != previousTasks[i].order
         || nextTasks[i].workspaceOrder != previousTasks[i].workspaceOrder
         || nextTasks[i].handleKey != previousTasks[i].handleKey

@@ -41,6 +41,7 @@ public:
   [[nodiscard]] std::unordered_map<std::string, std::vector<std::string>>
   appIdsByWorkspace(const std::string& outputName = {}) const override;
   [[nodiscard]] std::vector<WorkspaceWindow> workspaceWindows(const std::string& outputName = {}) const override;
+  [[nodiscard]] bool hasExactWindowIdentity() const noexcept override { return true; }
   [[nodiscard]] std::optional<std::string> focusedWindowId() const override;
   bool focusWindowById(const std::string& windowId) override;
   bool closeWindowById(const std::string& windowId) override;

@@ -97,9 +97,10 @@ private:
     std::string iconPath;
     std::string workspaceKey;
     std::string workspaceWindowId;
-    // Authoritative compositor identity used for actions. Unlike workspaceWindowId,
-    // this is never rewritten by workspace-placement reconciliation.
-    std::string exactCompositorWindowId;
+    // Authoritative compositor window identity for focus/close actions.
+    // Unlike workspaceWindowId, never rewritten by workspace-placement
+    // reconciliation. Empty on compositors without exact identity.
+    std::string exactWindowId;
     // Desktop entry id used for pin persistence / launch (empty for unmatched windows).
     std::string desktopEntryId;
     std::uint64_t workspaceOrder = std::numeric_limits<std::uint64_t>::max();

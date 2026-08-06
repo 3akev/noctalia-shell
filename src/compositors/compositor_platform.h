@@ -108,6 +108,8 @@ public:
       const std::string& idLower, const std::string& wmClassLower, wl_output* outputFilter = nullptr
   ) const;
   [[nodiscard]] std::vector<ToplevelInfo> taskbarWindowsWithoutAppId(wl_output* outputFilter = nullptr) const;
+  // True when taskbar windows carry exact compositor-assigned identities.
+  [[nodiscard]] bool hasExactWindowIdentity() const noexcept;
   [[nodiscard]] bool containsWlrToplevelHandle(zwlr_foreign_toplevel_handle_v1* handle) const;
   void activateToplevel(zwlr_foreign_toplevel_handle_v1* handle);
   void activateToplevelInfo(const ToplevelInfo& window);

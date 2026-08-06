@@ -144,6 +144,11 @@ namespace compositors {
     [[nodiscard]] virtual std::vector<WorkspaceWindow> workspaceWindows(const std::string& /*outputName*/ = {}) const {
       return {};
     }
+    // True when ext-foreign-toplevel identifiers produced by this compositor
+    // are exact compositor window IDs suitable for focus/close actions and
+    // stable taskbar identity. Backends return true when they can join those
+    // identifiers with their own IPC window model.
+    [[nodiscard]] virtual bool hasExactWindowIdentity() const noexcept { return false; }
     [[nodiscard]] virtual std::optional<std::string> focusedWindowId() const { return std::nullopt; }
     // Focus a window by its compositor-specific id. Returns true if the backend
     // handled the request (so the caller can skip other focus paths). Named
