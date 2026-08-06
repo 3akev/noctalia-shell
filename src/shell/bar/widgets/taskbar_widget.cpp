@@ -417,9 +417,9 @@ void TaskbarWidget::launchDesktopEntry(const TaskModel& task) {
 }
 
 void TaskbarWidget::activateOrLaunchPinned(const TaskModel& task) {
-  auto windows = m_platform.taskbarWindowsForApp(task.idLower, task.startupWmClassLower, toplevelOutputFilter());
+  auto windows = m_platform.enrichedWindowsForApp(task.idLower, task.startupWmClassLower, toplevelOutputFilter());
   if (windows.empty() && !task.appIdLower.empty() && task.appIdLower != task.idLower) {
-    windows = m_platform.taskbarWindowsForApp(task.appIdLower, task.startupWmClassLower, toplevelOutputFilter());
+    windows = m_platform.enrichedWindowsForApp(task.appIdLower, task.startupWmClassLower, toplevelOutputFilter());
   }
   if (windows.empty()) {
     launchDesktopEntry(task);
@@ -1522,7 +1522,7 @@ void TaskbarWidget::updateModels() {
         !run.entry.startupWmClass.empty() ? toLower(run.entry.startupWmClass) : run.runningLower;
     const std::string nameLower = !run.entry.nameLower.empty() ? run.entry.nameLower : run.runningLower;
 
-    const auto windows = m_platform.taskbarWindowsForApp(idLower, startupLower, topFilter);
+    const auto windows = m_platform.enrichedWindowsForApp(idLower, startupLower, topFilter);
     for (const auto& window : windows) {
       const auto handleKey = taskHandleKey(window);
       if (handleKey == 0 || !processedHandles.insert(handleKey).second) {
@@ -1553,7 +1553,7 @@ void TaskbarWidget::updateModels() {
   }
 
   // Windows with no app id still get a task keyed by toplevel handle / window id.
-  for (const auto& window : m_platform.taskbarWindowsWithoutAppId(topFilter)) {
+  for (const auto& window : m_platform.enrichedWindowsWithoutAppId(topFilter)) {
     // Skip anonymous XWayland menu popups (no app id and no title to show).
     if (window.title.empty()) {
       continue;
@@ -2330,7 +2330,7 @@ void TaskbarWidget::updateModels() {
       for (const auto& appId : *list) {
         const std::string appLower = toLower(appId);
         const std::string startupWmClassLower = toLower(appId);
-        const auto windows = m_platform.taskbarWindowsForApp(appLower, startupWmClassLower, topFilter);
+        const auto windows = m_platform.enrichedWindowsForApp(appLower, startupWmClassLower, topFilter);
         if (windows.empty()) {
           continue;
         }
@@ -2511,7 +2511,7 @@ void TaskbarWidget::openTaskContextMenu(const TaskModel& task, InputArea& area) 
     return;
   }
 
-  const auto windows = m_platform.taskbarWindowsForApp(task.idLower, task.startupWmClassLower, toplevelOutputFilter());
+  const auto windows = m_platform.enrichedWindowsForApp(task.idLower, task.startupWmClassLower, toplevelOutputFilter());
   m_contextMenuHandles.clear();
   m_contextMenuInfoWindows.clear();
   m_contextMenuPrimaryHandle = task.firstHandle;

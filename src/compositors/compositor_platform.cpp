@@ -892,7 +892,7 @@ std::vector<ToplevelInfo> CompositorPlatform::windowsWithoutAppId(wl_output* out
   return windows;
 }
 
-std::vector<ToplevelInfo> CompositorPlatform::taskbarWindowsForApp(
+std::vector<ToplevelInfo> CompositorPlatform::enrichedWindowsForApp(
     const std::string& idLower, const std::string& wmClassLower, wl_output* outputFilter
 ) const {
   if (m_workspaceMetadataBackend != nullptr
@@ -912,7 +912,7 @@ std::vector<ToplevelInfo> CompositorPlatform::taskbarWindowsForApp(
   return windowsForApp(idLower, wmClassLower, outputFilter);
 }
 
-std::vector<ToplevelInfo> CompositorPlatform::taskbarWindowsWithoutAppId(wl_output* outputFilter) const {
+std::vector<ToplevelInfo> CompositorPlatform::enrichedWindowsWithoutAppId(wl_output* outputFilter) const {
   if (m_workspaceMetadataBackend != nullptr
       && m_workspaceMetadataBackend->hasExactWindowIdentity()
       && m_wayland.hasExtForeignToplevelList()) {
