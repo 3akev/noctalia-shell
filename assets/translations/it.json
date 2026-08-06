@@ -686,7 +686,8 @@
     },
     "source": {
       "address": "Indirizzo",
-      "auto": "Automatico"
+      "auto": "Automatico",
+      "manual": "Manuale"
     }
   },
   "lockscreen": {
@@ -1716,7 +1717,7 @@
           "description": "Raggio angolo in alto a destra della barra"
         },
         "dead-zone-action": {
-          "description": "L'azione viene eseguita sulle parti della barra che nessun widget copre; lasciare vuoto per impostazione predefinita"
+          "description": "L'azione viene eseguita sulle parti della barra che nessun widget copre"
         },
         "edge-margin": {
           "description": "Spazio tra la barra e il bordo dello schermo su cui si trova; imposta a 0 px per posizinarlo a filo con quel bordo"
@@ -2142,7 +2143,7 @@
           "label": "Sblocco con impronta"
         },
         "lock-before-suspend": {
-          "description": "Blocca la sessione prima della sospensione (chiusura del coperchio, sospensione systemctl, ibernazione). Spegni per sospendere senza bloccare; Le azioni Blocca e Sospendi bloccano comunque per prime.",
+          "description": "Blocca la sessione prima della sospensione (chiudi il coperchio, sospendi systemctl, iberna); Le azioni Blocca e Sospendi si bloccano comunque per prime",
           "label": "Blocca prima della sospensione"
         },
         "monitors": {
@@ -2203,6 +2204,10 @@
         "layer": {
           "description": "Usa Overlay per mostrare le notifiche toast sopra le app a schermo intero",
           "label": "Layer Wayland"
+        },
+        "max-visible": {
+          "description": "Numero massimo di avvisi di notifica visibili sullo schermo contemporaneamente (0 per riempire tutto lo spazio disponibile)",
+          "label": "Massimo toast visibili"
         },
         "monitors": {
           "description": "Scegli quali monitor mostrano le notifiche toast; lascia vuoto per mostrare su tutti i monitor",
@@ -2967,6 +2972,10 @@
         "screenshot-show-cursor": {
           "description": "Includi il puntatore del mouse negli screenshot",
           "label": "Mostra cursore"
+        },
+        "settings-window-translucent": {
+          "description": "Rendi traslucido lo sfondo delle Impostazioni per gli effetti del compositor",
+          "label": "Impostazioni Sfondo traslucido"
         },
         "show-location": {
           "description": "Mostra il nome della posizione nei widget meteo",
