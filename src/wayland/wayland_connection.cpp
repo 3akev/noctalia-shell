@@ -24,6 +24,7 @@
 #include "wayland/hyprland/focus_grab_service.h"
 #include "wayland/text_input_service.h"
 #include "wayland/virtual_keyboard_service.h"
+#include "wayland/wayland_protocol_policy.h"
 #include "wlr-data-control-unstable-v1-client-protocol.h"
 #include "wlr-foreign-toplevel-management-unstable-v1-client-protocol.h"
 #include "wlr-gamma-control-unstable-v1-client-protocol.h"
@@ -626,10 +627,15 @@ std::vector<ToplevelInfo> WaylandConnection::windowsWithoutAppId(wl_output* outp
 
 std::vector<ToplevelInfo>
 WaylandConnection::extWindowsForApp(const std::string& idLower, const std::string& wmClassLower) const {
-  if ((!compositors::isHyprland() && !compositors::isKde()) || !m_extForeignToplevels.isBound()) {
+  if ((!compositors::isHyprland() && !compositors::isKde() && !compositors::isNiri())
+      || !m_extForeignToplevels.isBound()) {
     return {};
   }
   return m_extForeignToplevels.windowsForApp(idLower, wmClassLower);
+}
+
+std::vector<ToplevelInfo> WaylandConnection::extWindowsWithoutAppId() const {
+  return m_extForeignToplevels.isBound() ? m_extForeignToplevels.windowsWithoutAppId() : std::vector<ToplevelInfo>{};
 }
 
 bool WaylandConnection::containsWlrToplevelHandle(zwlr_foreign_toplevel_handle_v1* handle) const {
@@ -1069,8 +1075,9 @@ void WaylandConnection::bindGlobal(
 
   if (interfaceName == ext_foreign_toplevel_list_v1_interface.name) {
     const auto compositor = compositors::detect();
-    // Niri/Sway also expose this global; binding it duplicates every window on top of wlr foreign-toplevel.
-    if (compositor != compositors::CompositorKind::Hyprland && compositor != compositors::CompositorKind::Kde) {
+    // Niri needs the ext identifier for an exact join with its numeric IPC window id. Keep the
+    // wlr manager bound as well because other shell features still consume its richer state.
+    if (!wayland_protocol_policy::shouldBindExtForeignToplevelList(compositor)) {
       return;
     }
     m_hasExtForeignToplevelListGlobal = true;
