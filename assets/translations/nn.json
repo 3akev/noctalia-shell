@@ -2959,10 +2959,6 @@
           "description": "Leta det sjølvvalde biletet lett med innstillinga \"Merkelet\"",
           "label": "Leta sjølvvalt bilete"
         },
-        "custom-labels": {
-          "description": "Bitt tastaturoppsettsnamn til sjølvvalde merkelappar",
-          "label": "Sjølvvalde merkelappar"
-        },
         "detached-panel": {
           "description": "Opna ilåtet som ei flytande fjøl med eigen bakgrunn heller enn å vera bunde til stonga.",
           "label": "Fri fjøl"

@@ -2965,6 +2965,10 @@
         "hide-when-empty": {
           "label": "Masquer lorsque vide"
         },
+        "hide-when-full": {
+          "description": "Masquer le widget de batterie lorsque la batterie est pleine",
+          "label": "Cacher quand plein"
+        },
         "hide-when-no-unread": {
           "description": "Masquer le widget de notifications lorsqu'il n'y a pas de notifications non lues"
         },
@@ -2973,7 +2977,7 @@
         },
         "hide-when-plugged": {
           "description": "Masquer le widget de batterie lorsqu'il est branché au secteur",
-          "label": "Cacher quand débranché"
+          "label": "Cacher quand branché"
         },
         "highlight-color": {
           "label": "Couleur d'accentuation"

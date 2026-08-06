@@ -59,6 +59,7 @@
       },
       "network": {
         "active": "Ativo",
+        "band": "Banda",
         "connected": "Conectado",
         "connecting": "Conectando",
         "download": "Download",
@@ -326,7 +327,7 @@
         "3-days": "3 dias",
         "today": "Hoje"
       },
-      "view-day": "Ver detalhes do dia"
+      "view-day": "Ver Detalhes do Dia"
     },
     "shortcuts": {
       "audio": "Áudio",
@@ -729,7 +730,7 @@
       "config-migration-title": "Atualiação de configuração necessária",
       "dbus-disabled": "Notificações DBus desabilitadas",
       "desktop-widgets-editor": "Editor de Widget",
-      "desktop-widgets-editor-enabled": "O editor de widgets da área de trabalho está ativo. Alterne para uma área de trabalho vazia para visualizar a sobreposição do editor.",
+      "desktop-widgets-editor-enabled": "O editor de widgets da área de trabalho está ativo. Mude para um espaço de trabalho vazio para que as janelas abertas não cubram o editor.",
       "greeter-sync": "Noctalia Greeter",
       "greeter-sync-pending": "Aguardando aprovação do administrador para gravar no greeter.",
       "greeter-sync-pending-console": "Aguardando aprovação do administrador. Aprove o prompt do polkit no Noctalia, em um TTY ou console, ou execute o pkexec manualmente.",
@@ -746,7 +747,7 @@
       "launcher-usage-reset-success": "Dados de uso limpos.",
       "lockscreen-widgets-editor": "Editor de widgets da tela de bloqueio",
       "lockscreen-widgets-editor-blocked-locked": "Desbloqueie a sessão antes de editar os widgets da tela de bloqueio.",
-      "lockscreen-widgets-editor-enabled": "O editor de widgets da tela de bloqueio está ativo. Organize os widgets na sobreposição de visualização e, em seguida, bloqueie a sessão para verificar o layout.",
+      "lockscreen-widgets-editor-enabled": "O editor de widgets da tela de bloqueio está ativo. Mude para um espaço de trabalho vazio para que as janelas abertas não cubram o editor.",
       "mpris-disabled": "MPRIS desabilitado",
       "polkit-agent": "Agente de Autenticação",
       "polkit-no-session": "Agente Polkit precisa de logind, elogind or XDG_SESSION_ID. Em configurações que utilizam apenas o seatd, ele não consegue se registrar para solicitações gráficas. Use o pkexec no terminal para sincronizar o greeter ou instale o elogind para autenticação durante a sessão.",
@@ -1175,6 +1176,7 @@
         "idle": "Inatividade",
         "interface": "Interface",
         "keybinds": "Atalhos do Teclado",
+        "keyboard-layout": "Layout de Teclado",
         "kinds": "Tipos",
         "launcher": "Launcher",
         "layout": "Layout",
@@ -1433,7 +1435,7 @@
       "browse-store": "Navegar Plugins",
       "panels": {
         "open-near-click": {
-          "description": "Posicionar o painel perto do widget o acionou quanto anexado ou flutuando com posicionamento automático",
+          "description": "Onde o painel é posicionado quando aberto ao clicar no widget da barra",
           "label": "Abrir Próximo ao Clique"
         },
         "placement": {
@@ -2139,6 +2141,10 @@
           "description": "Desbloquear com um leitor de impressão digital por meio do fprintd, junto com uma da senha digitada",
           "label": "Desbloquear com Impressão Digital"
         },
+        "lock-before-suspend": {
+          "description": "Bloquear a sessão antes de dormir (fechando laptops, systemctl suspend, hibernate). Desligar suspensão sem bloqueio; Ações de bloquear e suspender ainda bloquearão primeiro.",
+          "label": "Bloquear Antes de Suspender"
+        },
         "monitors": {
           "description": "Escolha em quais monitores a tela de bloqueio será exibida; deixe em branco para exibir em todos os monitores",
           "label": "Monitores"
@@ -2354,23 +2360,23 @@
           "label": "Fundo dos Itens de Lista"
         },
         "open-near-click-clipboard": {
-          "description": "Posicionar o painel da área de transferência perto do widget da barra que o acionou quanto anexando ou flutuando com posicionamento automático",
+          "description": "Onde a área de tranferência é posicionada quando aberto ao clicar no widget da barra",
           "label": "Ao Longo da Barra"
         },
         "open-near-click-control-center": {
-          "description": "Posicionar a Central de Controle perto do widget da barra que a acionou quanto anexada ou flutuando com posicionamento automático",
+          "description": "Onde a Central de Controle é posicionada quando aberto ao clicar no widget da barra",
           "label": "Abrir Próximo ao Clique"
         },
         "open-near-click-launcher": {
-          "description": "Posicionar o launcher perto do widget da barra que o acionou quanto anexada ou flutuando com posicionamento automático",
+          "description": "Onde o launcher é posicionado quando aberto ao clicar no widget da barra",
           "label": "Abrir Próximo ao Clique"
         },
         "open-near-click-session": {
-          "description": "Posicionar o painel de sessão perto do widget da barra que o acionou quanto anexada ou flutuando com posicionamento automático",
+          "description": "Onde o painel da sessão é posicionado quando aberto ao clicar no widget da barra",
           "label": "Abrir Próximo ao Clique"
         },
         "open-near-click-wallpaper": {
-          "description": "Posicionar o selector de papel de parede perto do widget da barra que o acionou quanto anexada ou flutuando com posicionamento automático",
+          "description": "Onde o seletor de papel de parede é posicionado quando aberto ao clicar no widget da barra",
           "label": "Abrir Próximo ao Clique"
         },
         "panel-anchor-bar": {
@@ -2768,6 +2774,10 @@
         "greeter-sync-privilege-command": {
           "description": "Substituir o pkexec/run0 pelo greeter Sync Now; o caminho do auxiliar de aplicação e o diretório de preparação são acrescentados automaticamente (exemplo: ghostty -e pkexec)",
           "label": "Comando Privilegiado de Sincronização de Greeter"
+        },
+        "keyboard-layout-custom-labels": {
+          "description": "Mapear nomes de layout de teclado usados pelo shell",
+          "label": "Rótulos de Layouts de Teclado"
         },
         "launch-apps-as-systemd-services": {
           "description": "Executa aplicativos em serviços systemd separados para que não compartilhem o cgroup do Noctalia",
@@ -3186,9 +3196,9 @@
         "cpu-temp": "Temperatura da CPU",
         "cpu-usage": "Uso da CPU",
         "disk-free": "Disco Livre",
-        "disk-free-percent": "Porcentagem de Disco Livre",
+        "disk-free-percent": "Disco Livre %",
         "disk-used": "Disco Usado",
-        "disk-used-percent": "Porcentagem de Disco Usado",
+        "disk-used-percent": "Disco Usado %",
         "dots": "Pontos",
         "focus-hint": "Indicação de Foco",
         "full": "Cheio",
@@ -3216,16 +3226,16 @@
         "on-hover": "Ao Passar o Mouse",
         "output": "Saída",
         "percent": "Porcentagem",
-        "ram-percent": "Porcentagem de RAM",
+        "ram-percent": "RAM %",
         "ram-used": "Uso de RAM",
         "rate": "Consumo",
         "regular": "Normal",
         "replace": "Substituir",
-        "scroll-gesture": "Uma vez por gesto",
-        "scroll-steps": "Cada etapa",
+        "scroll-gesture": "Uma Vez por Gesto",
+        "scroll-steps": "Cada Etapa",
         "shared": "Compartilhado",
         "short": "Curto",
-        "swap-percent": "Porcentagem de Swap",
+        "swap-percent": "Swap %",
         "text": "Texto",
         "text-only": "Apenas Texto",
         "time": "Tempo",
@@ -3241,6 +3251,10 @@
         "active-color": {
           "description": "Cor usada para indicadores de privacidade ativos; cores hex fixas também são suportadas",
           "label": "Cor Ativa"
+        },
+        "active-indicator-color": {
+          "description": "Cor do indicador abaixo do ícone da janela ativa",
+          "label": "Cor do Indicador de Ativo"
         },
         "active-opacity": {
           "description": "Opacidade do ícone da janela ativa (com foco)",
@@ -3333,10 +3347,6 @@
         "custom-image-colorize": {
           "description": "Colorir a imagem personalizada com a configuração de Cor do Ícone do widget",
           "label": "Colorir Imagem Personalizada"
-        },
-        "custom-labels": {
-          "description": "Mapeia nomes de layouts de teclado para rótulos personalizados",
-          "label": "Rótulos Personalizados"
         },
         "detached-panel": {
           "description": "Abre o drawer como um painel flutuante ao invés de ancorá-lo à extremidade da barra",

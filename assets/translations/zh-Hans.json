@@ -59,6 +59,7 @@
       },
       "network": {
         "active": "活动",
+        "band": "频段",
         "connected": "已连接",
         "connecting": "正在连接",
         "download": "下载",
@@ -306,7 +307,7 @@
       "design-capacity": "相对于设计容量",
       "health": "电池健康度",
       "performance-inhibited": "性能模式不可用",
-      "peripherals": "已连接设备",
+      "peripherals": "已连接的设备",
       "power-profile": "电源配置",
       "time-to-empty": "剩余续航 {time}",
       "time-to-full": "距离充满 {time}",
@@ -729,7 +730,7 @@
       "config-migration-title": "需要更新配置",
       "dbus-disabled": "DBus 通知已禁用",
       "desktop-widgets-editor": "桌面小组件编辑器",
-      "desktop-widgets-editor-enabled": "桌面小组件编辑器已开启。请切换到空的工作区查看编辑器图层。",
+      "desktop-widgets-editor-enabled": "桌面小组件编辑器已开启。请切换至空工作区，避免打开的窗口遮挡编辑器。",
       "greeter-sync": "Noctalia Greeter",
       "greeter-sync-pending": "正在等待管理员授权以写入 Greeter 配置。",
       "greeter-sync-pending-console": "正在等待管理员授权。请在 Noctalia 的 Polkit 弹窗、TTY 或控制台中确认，或手动执行 pkexec。",
@@ -746,7 +747,7 @@
       "launcher-usage-reset-success": "使用数据已清除。",
       "lockscreen-widgets-editor": "锁屏小组件编辑器",
       "lockscreen-widgets-editor-blocked-locked": "请在编辑锁屏小组件之前解锁会话。",
-      "lockscreen-widgets-editor-enabled": "锁屏小组件编辑器已开启。请在预览层上排列小组件，随后锁定会话以验证布局。",
+      "lockscreen-widgets-editor-enabled": "锁屏小组件编辑器已开启。请切换至空工作区，避免打开的窗口遮挡编辑器。",
       "mpris-disabled": "MPRIS 已禁用",
       "polkit-agent": "Polkit 代理",
       "polkit-no-session": "Polkit 代理需要 logind、elogind 或 XDG_SESSION_ID。在仅使用 seatd 的环境中无法注册图形化认证提示。请使用终端 pkexec 完成 greeter 同步，或安装 elogind 以支持会话内身份验证。",
@@ -967,9 +968,9 @@
         },
         "group": {
           "accordion": "折叠",
-          "accordion-description": "仅显示首个小组件；悬停胶囊时展开其余小组件",
+          "accordion-description": "仅显示组内的首个小组件；悬停胶囊时展开其余小组件",
           "accordion-direction": "展开方向",
-          "accordion-direction-description": "隐藏小组件从首个小组件展开的方向",
+          "accordion-direction-description": "隐藏的小组件相对于首个小组件的展开方向",
           "action": "组合",
           "border": "边框",
           "border-description": "将颜色应用于胶囊轮廓；保持“默认”时不显示轮廓",
@@ -993,7 +994,7 @@
           "foreground-description": "将颜色应用于组内小组件图标和标签",
           "hide": "隐藏组合",
           "hide-widget": "隐藏小组件",
-          "hint": "属于胶囊组",
+          "hint": "已加入胶囊组",
           "members": "{count} 个小组件",
           "opacity": "不透明度",
           "opacity-description": "胶囊背景的不透明度",
@@ -1005,7 +1006,7 @@
           "remove-from-group": "从组合中移除",
           "remove-orphan": "移除未知组合",
           "remove-widget": "从状态栏移除",
-          "select": "选择进行组合",
+          "select": "选择组合",
           "selected": "已选择 {count} 项",
           "settings-widget": "小组件设置",
           "show": "显示组合",
@@ -1175,6 +1176,7 @@
         "idle": "空闲",
         "interface": "界面",
         "keybinds": "快捷键",
+        "keyboard-layout": "键盘布局",
         "kinds": "类别",
         "launcher": "启动器",
         "layout": "布局",
@@ -1270,8 +1272,8 @@
     },
     "options": {
       "accordion-direction": {
-        "end": "首个小组件后",
-        "start": "首个小组件前"
+        "end": "向后展开",
+        "start": "向前展开"
       },
       "bar": {
         "auto-hide": {
@@ -1433,7 +1435,7 @@
       "browse-store": "浏览插件",
       "panels": {
         "open-near-click": {
-          "description": "在吸附或悬浮位置设为“跟随状态栏”时，将面板显示在打开它的状态栏小组件附近",
+          "description": "面板相对于状态栏的显示位置",
           "label": "沿状态栏打开"
         },
         "placement": {
@@ -2139,6 +2141,10 @@
           "description": "通过 fprintd 使用指纹识别器解锁，同时保留密码登录",
           "label": "指纹解锁"
         },
+        "lock-before-suspend": {
+          "description": "系统进入睡眠状态前锁定会话（如合盖、执行 systemctl suspend 或休眠）。关闭后，系统挂起时不再锁定；“锁定并挂起”操作仍会先锁定会话。",
+          "label": "挂起前锁定"
+        },
         "monitors": {
           "description": "选择显示锁屏的屏幕；留空时在所有屏幕上显示",
           "label": "屏幕"
@@ -2354,23 +2360,23 @@
           "label": "列表项背景"
         },
         "open-near-click-clipboard": {
-          "description": "选择剪贴板面板是相对于状态栏居中显示，还是显示在触发位置附近",
+          "description": "剪贴板相对于状态栏的显示位置",
           "label": "相对状态栏"
         },
         "open-near-click-control-center": {
-          "description": "选择控制中心是相对于状态栏居中显示，还是显示在触发位置附近",
+          "description": "控制中心相对于状态栏的显示位置",
           "label": "相对状态栏"
         },
         "open-near-click-launcher": {
-          "description": "选择启动器是相对于状态栏居中显示，还是显示在触发位置附近",
+          "description": "启动器相对于状态栏的显示位置",
           "label": "相对状态栏"
         },
         "open-near-click-session": {
-          "description": "选择会话面板是相对于状态栏居中显示，还是显示在触发位置附近",
+          "description": "会话面板相对于状态栏的显示位置",
           "label": "相对状态栏"
         },
         "open-near-click-wallpaper": {
-          "description": "选择壁纸选择器是相对于状态栏居中显示，还是显示在触发位置附近",
+          "description": "壁纸选择器相对于状态栏的显示位置",
           "label": "相对状态栏"
         },
         "panel-anchor-bar": {
@@ -2587,25 +2593,25 @@
         },
         "system-monitor": {
           "cpu-poll": {
-            "description": "CPU 使用率、CPU 温度和平均负载的采样间隔秒数（设为 0 时禁用）",
+            "description": "CPU 使用率、CPU 温度和平均负载的采样间隔（设为 0 时禁用）",
             "label": "CPU 轮询间隔"
           },
           "description": "采样 CPU、内存、网络、负载、温度和磁盘统计数据",
           "disk-poll": {
-            "description": "磁盘使用率和 Swap 使用率的采样间隔秒数（设为 0 时禁用）",
+            "description": "磁盘使用率和 Swap 使用率的采样间隔（设为 0 时禁用）",
             "label": "磁盘轮询间隔"
           },
           "gpu-poll": {
-            "description": "GPU 温度、使用率和显存的采样间隔秒数；仅当有界面显示 GPU 统计项时才会进行采样，因此不会唤醒空闲设备（设为 0 时完全禁用）",
+            "description": "GPU 温度、使用率和显存的采样间隔；仅当有界面显示 GPU 统计项时才会采样，因此不会唤醒空闲设备（设为 0 时完全禁用）",
             "label": "GPU 轮询间隔"
           },
           "label": "系统监视器",
           "memory-poll": {
-            "description": "内存使用率的采样间隔秒数（设为 0 时禁用）",
+            "description": "内存使用率的采样间隔（设为 0 时禁用）",
             "label": "内存轮询间隔"
           },
           "network-poll": {
-            "description": "网络吞吐量的采样间隔秒数（设为 0 时禁用）",
+            "description": "网络吞吐量的采样间隔（设为 0 时禁用）",
             "label": "网络轮询间隔"
           },
           "stats": {
@@ -2721,7 +2727,7 @@
           "label": "剪贴板自动粘贴"
         },
         "clipboard-confirm-clear-history": {
-          "description": "清除剪贴板历史记录或删除未固定条目时进行确认；如果禁用将不再进行确认（已固定条目除外）",
+          "description": "清除剪贴板历史记录或删除未固定条目时要求确认；如果禁用将不再确认（已固定条目除外）",
           "label": "清除历史记录前确认"
         },
         "clipboard-enabled": {
@@ -2768,6 +2774,10 @@
         "greeter-sync-privilege-command": {
           "description": "用于替换 Greeter 同步提权的 pkexec/run0 命令；同步辅助程序和暂存目录将自动追加（例如：ghostty -e pkexec）",
           "label": "Greeter 同步提权命令"
+        },
+        "keyboard-layout-custom-labels": {
+          "description": "将键盘布局名称映射为 Shell 使用的标签",
+          "label": "键盘布局标签"
         },
         "launch-apps-as-systemd-services": {
           "description": "将应用程序作为独立的 systemd 服务启动，避免与 Noctalia 共享同一 cgroup",
@@ -3216,7 +3226,7 @@
         "on-hover": "悬停时",
         "output": "输出",
         "percent": "百分比",
-        "ram-percent": "内存百分比",
+        "ram-percent": "内存使用率",
         "ram-used": "内存使用量",
         "rate": "功耗",
         "regular": "常规",
@@ -3225,7 +3235,7 @@
         "scroll-steps": "每步滚动",
         "shared": "共享运行",
         "short": "简短",
-        "swap-percent": "Swap 百分比",
+        "swap-percent": "Swap 使用率",
         "text": "文字",
         "text-only": "仅文字",
         "time": "时间",
@@ -3241,6 +3251,10 @@
         "active-color": {
           "description": "隐私指示器活动时的颜色；支持固定的十六进制颜色值",
           "label": "活动颜色"
+        },
+        "active-indicator-color": {
+          "description": "活动窗口图标下方的指示器颜色",
+          "label": "活动指示器颜色"
         },
         "active-opacity": {
           "description": "活动（焦点）窗口图标的不透明度",
@@ -3333,10 +3347,6 @@
         "custom-image-colorize": {
           "description": "使用小组件的“图标颜色”为自定义图片着色",
           "label": "自定义图片着色"
-        },
-        "custom-labels": {
-          "description": "将键盘布局名称映射为自定义标签",
-          "label": "自定义标签"
         },
         "detached-panel": {
           "description": "以悬浮面板打开抽屉，而非吸附状态栏",

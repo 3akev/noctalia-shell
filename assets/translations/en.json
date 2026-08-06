@@ -327,7 +327,7 @@
         "3-days": "3 days",
         "today": "Today"
       },
-      "view-day": "View day details"
+      "view-day": "View Day Details"
     },
     "shortcuts": {
       "audio": "Audio",
@@ -1436,7 +1436,7 @@
       "browse-store": "Browse Plugins",
       "panels": {
         "open-near-click": {
-          "description": "Position the panel near the bar widget that opened it when attached or floating with position auto",
+          "description": "Where the panel is positioned when opened by clicking on the bar widget",
           "label": "Along Bar"
         },
         "placement": {
@@ -2138,13 +2138,13 @@
           "description": "Enable session lock, logind integration, and lock actions",
           "label": "Lock Screen"
         },
-        "lock-before-suspend": {
-          "description": "Lock the session before sleep (lid close, systemctl suspend, hibernate). Turn off to suspend without locking; Lock and Suspend actions still lock first.",
-          "label": "Lock Before Suspend"
-        },
         "fingerprint": {
           "description": "Unlock with a fingerprint reader via fprintd, alongside password entry",
           "label": "Fingerprint Unlock"
+        },
+        "lock-before-suspend": {
+          "description": "Lock the session before sleep (lid close, systemctl suspend, hibernate). Turn off to suspend without locking; Lock and Suspend actions still lock first.",
+          "label": "Lock Before Suspend"
         },
         "monitors": {
           "description": "Choose which monitors show the lock screen; leave empty to show on all monitors",
@@ -2252,11 +2252,11 @@
           "label": "Sidebar When Opening a Tab"
         },
         "control-center-tabs": {
-          "description": "Choose which tabs appear in the control center; unchecked tabs are hidden",
+          "description": "Choose which tabs appear in Control Center; unchecked tabs are hidden",
           "label": "Control Center Tabs"
         },
         "control-center-width": {
-          "description": "Width of the control center panel in pixels (compact and no-sidebar modes scale down from this)",
+          "description": "Width of the Control Center panel in pixels (compact and no-sidebar modes scale down from this)",
           "label": "Control Center Width"
         },
         "floating-layer": {
@@ -2361,23 +2361,23 @@
           "label": "List Item Background"
         },
         "open-near-click-clipboard": {
-          "description": "Position the clipboard panel near the bar widget that opened it when attached or floating with position auto",
+          "description": "Where the clipboard is positioned when opened by clicking on the bar widget",
           "label": "Along Bar"
         },
         "open-near-click-control-center": {
-          "description": "Position Control Center near the bar widget that opened it when attached or floating with position auto",
+          "description": "Where Control Center is positioned when opened by clicking on the bar widget",
           "label": "Along Bar"
         },
         "open-near-click-launcher": {
-          "description": "Position the launcher near the bar widget that opened it when attached or floating with position auto",
+          "description": "Where the launcher is positioned when opened by clicking on the bar widget",
           "label": "Along Bar"
         },
         "open-near-click-session": {
-          "description": "Position the session panel near the bar widget that opened it when attached or floating with position auto",
+          "description": "Where the session panel is positioned when opened by clicking on the bar widget",
           "label": "Along Bar"
         },
         "open-near-click-wallpaper": {
-          "description": "Position the wallpaper picker near the bar widget that opened it when attached or floating with position auto",
+          "description": "Where the wallpaper picker is positioned when opened by clicking on the bar widget",
           "label": "Along Bar"
         },
         "panel-anchor-bar": {
@@ -3186,6 +3186,7 @@
         "effects-profile-name": "Profile name",
         "glyph-name": "Glyph name",
         "key": "Key",
+        "label": "Label",
         "layout-name": "Layout name",
         "value": "Value"
       },
@@ -3200,9 +3201,9 @@
         "cpu-temp": "CPU Temperature",
         "cpu-usage": "CPU Usage",
         "disk-free": "Disk Free",
-        "disk-free-percent": "Disk Free Percent",
+        "disk-free-percent": "Disk Free %",
         "disk-used": "Disk Used",
-        "disk-used-percent": "Disk Used Percent",
+        "disk-used-percent": "Disk Used %",
         "dots": "Dots",
         "focus-hint": "Focus Hint",
         "full": "Full",
@@ -3230,16 +3231,16 @@
         "on-hover": "On Hover",
         "output": "Output",
         "percent": "Percent",
-        "ram-percent": "RAM Percent",
+        "ram-percent": "RAM %",
         "ram-used": "RAM Used",
         "rate": "Rate",
         "regular": "Regular",
         "replace": "Replace",
-        "scroll-gesture": "Once per gesture",
-        "scroll-steps": "Every step",
+        "scroll-gesture": "Once per Gesture",
+        "scroll-steps": "Every Step",
         "shared": "Shared",
         "short": "Short",
-        "swap-percent": "Swap Percent",
+        "swap-percent": "Swap %",
         "text": "Text",
         "text-only": "Text Only",
         "time": "Time",

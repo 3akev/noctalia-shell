@@ -3324,10 +3324,6 @@
           "description": "위젯 아이콘 색상 설정으로 사용자 정의 이미지를 틴팅",
           "label": "사용자 정의 이미지 채색"
         },
-        "custom-labels": {
-          "description": "키보드 레이아웃 이름을 사용자 정의 레이블에 매핑",
-          "label": "사용자 정의 레이블"
-        },
         "detached-panel": {
           "description": "서랍을 바에 합치는 대신 자체 배경을 가진 플로팅 패널로 열기",
           "label": "분리된 패널"

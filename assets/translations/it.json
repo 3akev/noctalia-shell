@@ -59,6 +59,7 @@
       },
       "network": {
         "active": "Attiva",
+        "band": "Banda",
         "connected": "Connesso",
         "connecting": "Connessione in corso",
         "download": "Download",
@@ -729,7 +730,7 @@
       "config-migration-title": "È necessario l'aggiornamento della configurazione",
       "dbus-disabled": "Notifiche DBus disabilitate",
       "desktop-widgets-editor": "Editor widget",
-      "desktop-widgets-editor-enabled": "L'editor dei widget desktop è attivo. Passa a uno spazio di lavoro vuoto per visualizzarlo.",
+      "desktop-widgets-editor-enabled": "L'editor dei widget desktop è attivo. Passa a un'area di lavoro vuota in modo che le finestre aperte non coprano l'editor.",
       "greeter-sync": "Noctalia Greeter",
       "greeter-sync-pending": "Attesa dell'approvazione dell'amministratore per salvare sul greeter.",
       "greeter-sync-pending-console": "Attesa dell'approvazione dell'amministratore. Approva il prompt polkit in Noctalia, su un TTY o una console, oppure esegui pkexec manualmente.",
@@ -746,7 +747,7 @@
       "launcher-usage-reset-success": "Dati di utilizzo cancellati.",
       "lockscreen-widgets-editor": "Editor widget blocco schermo",
       "lockscreen-widgets-editor-blocked-locked": "Sblocca la sessione prima di modificare i widget del blocco schermo.",
-      "lockscreen-widgets-editor-enabled": "L'editor dei widget del blocco schermo è attivo. Disponi i widget nell'anteprima, poi blocca la sessione per verificare il layout.",
+      "lockscreen-widgets-editor-enabled": "L'editor dei widget della schermata di blocco è attivo. Passa a un'area di lavoro vuota in modo che le finestre aperte non coprano l'editor.",
       "mpris-disabled": "MPRIS disabilitato",
       "polkit-agent": "Polkit Agent",
       "polkit-no-session": "L'agente Polkit necessita di logind, elogind o XDG_SESSION_ID. Nelle configurazioni seatd-only non è possibile registrarsi per i prompt grafici. Utilizza il terminale pkexec per la sincronizzazione del greeter o installa elogind per l'autenticazione in sessione.",
@@ -966,6 +967,10 @@
           "title": "Widget barra"
         },
         "group": {
+          "accordion": "Modalità fisarmonica",
+          "accordion-description": "Mostra solo il primo widget; passando sopra la capsula si scopre il resto",
+          "accordion-direction": "Direzione apertura",
+          "accordion-direction-description": "Lato del primo widget in cui si aprono i widget nascosti",
           "action": "Raggruppa",
           "border": "Bordo",
           "border-description": "Ruolo colore del contorno capsula; lascia Predefinito per nessun contorno",
@@ -1008,7 +1013,9 @@
           "show-widget": "Mostra widget",
           "style": "Stile",
           "title": "Gruppo capsula",
-          "ungroup": "Separa gruppo"
+          "ungroup": "Separa gruppo",
+          "widget-spacing": "Spaziatura",
+          "widget-spacing-description": "Spazio tra i widget di questo gruppo, in pixel; Auto eredita la spaziatura dei widget della barra"
         },
         "inspector": {
           "add-instance-title": "Aggiungi nuovo widget {widget} con nome a {lane}",
@@ -1169,6 +1176,7 @@
         "idle": "Inattività",
         "interface": "Interfaccia",
         "keybinds": "Scorciatoie",
+        "keyboard-layout": "Layout tastiera",
         "kinds": "Tipi",
         "launcher": "Launcher",
         "layout": "Layout",
@@ -1263,6 +1271,10 @@
       }
     },
     "options": {
+      "accordion-direction": {
+        "end": "Dopo il primo widget",
+        "start": "Prima del primo widget"
+      },
       "bar": {
         "auto-hide": {
           "off": "Off",
@@ -1423,7 +1435,7 @@
       "browse-store": "Sfoglia plugin",
       "panels": {
         "open-near-click": {
-          "description": "Posiziona il pannello vicino al widget della barra che lo ha aperto quando è collegato o mobile con posizione automatica",
+          "description": "Dove si posiziona il pannello quando viene aperto cliccando sul widget della barra",
           "label": "Lungo la barra"
         },
         "placement": {
@@ -2129,6 +2141,10 @@
           "description": "Sblocco con un lettore di impronte digitali tramite fprintd, insieme alla password",
           "label": "Sblocco con impronta"
         },
+        "lock-before-suspend": {
+          "description": "Blocca la sessione prima della sospensione (chiusura del coperchio, sospensione systemctl, ibernazione). Spegni per sospendere senza bloccare; Le azioni Blocca e Sospendi bloccano comunque per prime.",
+          "label": "Blocca prima della sospensione"
+        },
         "monitors": {
           "description": "Scegli quali monitor mostrano il blocco schermo; lascia vuoto per mostrare su tutti i monitor",
           "label": "Monitor"
@@ -2235,11 +2251,11 @@
           "label": "Barra laterale aprendo una scheda"
         },
         "control-center-tabs": {
-          "description": "Scegli quali schede visualizzare nel centro di controllo; le schede non selezionate vengono nascoste",
+          "description": "Scegli quali schede visualizzare nel Centro di controllo; le schede non selezionate vengono nascoste",
           "label": "Schede del Centro di controllo"
         },
         "control-center-width": {
-          "description": "Larghezza del pannello del centro di controllo in pixel (le modalità compatta e senza barra laterale si riducono rispetto a questo valore)",
+          "description": "Larghezza del pannello del Centro di controllo in pixel (le modalità compatta e senza barra laterale si riducono rispetto a questo valore)",
           "label": "Larghezza Control Center"
         },
         "floating-layer": {
@@ -2344,23 +2360,23 @@
           "label": "Sfondo elenco item"
         },
         "open-near-click-clipboard": {
-          "description": "Posiziona il pannello degli appunti vicino al widget della barra che lo ha aperto quando è collegato o mobile con la posizione automatica",
+          "description": "Dove vengono posizionati gli appunti quando vengono aperti facendo clic sul widget della barra",
           "label": "Lungo la barra"
         },
         "open-near-click-control-center": {
-          "description": "Posiziona il Centro di controllo vicino al widget della barra che lo ha aperto quando è collegato o mobile con posizione automatica",
+          "description": "Dove si posiziona il Centro di Controllo quando viene aperto facendo clic sul widget della barra",
           "label": "Lungo la barra"
         },
         "open-near-click-launcher": {
-          "description": "Posiziona il launcher vicino al widget della barra che lo ha aperto quando è collegato o mobile con la posizione automatica",
+          "description": "Dove viene posizionato il launcher quando viene aperto facendo clic sul widget della barra",
           "label": "Lungo la barra"
         },
         "open-near-click-session": {
-          "description": "Posiziona il pannello della sessione vicino al widget della barra che lo ha aperto quando è collegato o mobile con la posizione automatica",
+          "description": "Dove si posiziona il pannello della sessione quando viene aperto cliccando sul widget della barra",
           "label": "Lungo la barra"
         },
         "open-near-click-wallpaper": {
-          "description": "Posiziona il selettore di sfondi vicino al widget della barra che lo ha aperto quando è collegato o mobile con la posizione automatica",
+          "description": "Dove viene posizionato il selettore dello sfondo quando viene aperto facendo clic sul widget della barra",
           "label": "Lungo la barra"
         },
         "panel-anchor-bar": {
@@ -2758,6 +2774,10 @@
         "greeter-sync-privilege-command": {
           "description": "Sostituisci pkexec/run0 per la sincronizzazione del greeter; il percorso dell'helper e la directory di staging vengono aggiunti automaticamente (esempio: ghostty -e pkexec)",
           "label": "Comando privilegiato per il sync del greeter"
+        },
+        "keyboard-layout-custom-labels": {
+          "description": "Mappa i nomi dei layout di tastiera sulle etichette utilizzate in tutta la shell",
+          "label": "Etichette del layout della tastiera"
         },
         "launch-apps-as-systemd-services": {
           "description": "Avvia le applicazioni in servizi systemd separati così non condividono il cgroup di Noctalia",
@@ -3176,9 +3196,9 @@
         "cpu-temp": "Temperatura CPU",
         "cpu-usage": "Uso CPU",
         "disk-free": "Spazio disco libero",
-        "disk-free-percent": "Percentuale di disco libero",
+        "disk-free-percent": "Disco libero %",
         "disk-used": "Disco utilizzato",
-        "disk-used-percent": "Percentuale disco utilizzato",
+        "disk-used-percent": "Disco utilizzato %",
         "dots": "Punti",
         "focus-hint": "Focalizzato",
         "full": "Completo",
@@ -3206,7 +3226,7 @@
         "on-hover": "Al passaggio",
         "output": "Uscita",
         "percent": "Percentuale",
-        "ram-percent": "Percentuale RAM",
+        "ram-percent": "RAM %",
         "ram-used": "RAM usata",
         "rate": "Livello",
         "regular": "Normale",
@@ -3215,7 +3235,7 @@
         "scroll-steps": "Ogni passo",
         "shared": "Condiviso",
         "short": "Breve",
-        "swap-percent": "Percentuale swap",
+        "swap-percent": "Swap %",
         "text": "Testo",
         "text-only": "Solo testo",
         "time": "Tempo",
@@ -3231,6 +3251,10 @@
         "active-color": {
           "description": "Colore utilizzato per gli indicatori di privacy attiva; sono supportati anche codici colore in formato esadecimale",
           "label": "Colore attivo"
+        },
+        "active-indicator-color": {
+          "description": "Colore dell'indicatore sotto l'icona della finestra attiva",
+          "label": "Colore indicatore attivo"
         },
         "active-opacity": {
           "description": "Opacità dell'icona per la finestra attiva (con focus)",
@@ -3323,10 +3347,6 @@
         "custom-image-colorize": {
           "description": "Tinge l'immagine personalizzata con l'impostazione Colore del widget",
           "label": "Colora immagine personalizzata"
-        },
-        "custom-labels": {
-          "description": "Mappa i nomi dei layout tastiera a etichette personalizzate",
-          "label": "Etichette personalizzate"
         },
         "detached-panel": {
           "description": "Apri il cassetto come un pannello mobile invece di ancorarlo al bordo della barra",

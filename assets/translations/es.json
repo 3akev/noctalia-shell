@@ -549,6 +549,7 @@
         "stat-swap-pct": "Swap %",
         "stat2": "Estadística 2",
         "title": "Título",
+        "track-color": "Color de la pista",
         "variant": "Estilo",
         "variant-default": "Por defecto",
         "variant-destructive": "Destructivo",
@@ -965,6 +966,9 @@
           "title": "Widgets de la barra"
         },
         "group": {
+          "accordion": "Acordeón",
+          "accordion-description": "Mostrar solo el primer widget; al pasar el cursor sobre la cápsula se revela el resto",
+          "accordion-direction": "Dirección de revelado",
           "action": "Grupo",
           "border": "Borde",
           "border-description": "Rol de color del contorno de la cápsula; deja en Predeterminado para no tener contorno",
@@ -3095,10 +3099,6 @@
         "custom-image-colorize": {
           "description": "Teñir la imagen personalizada con la configuración de color de icono del widget",
           "label": "Colorear imagen personalizada"
-        },
-        "custom-labels": {
-          "description": "Asignar nombres de distribución de teclado a etiquetas personalizadas",
-          "label": "Etiquetas personalizadas"
         },
         "detached-panel": {
           "description": "Abrir bandeja desplegable como un panel flotante con fondo propio en lugar de fusionarse con la barra",
