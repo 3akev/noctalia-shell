@@ -2209,7 +2209,9 @@ InputArea* NotificationToast::buildCard(
   *outCardForeground = foreground.get();
 
   const float bgAlpha = m_config != nullptr ? m_config->config().notification.backgroundOpacity : 0.97F;
-  const float borderWidth = (m_config == nullptr || m_config->config().notification.border) ? Style::borderWidth : 0.0F;
+  const bool hasBorder = m_config == nullptr || m_config->config().notification.border;
+  const float borderWidth =
+      hasBorder ? (entry.urgency == Urgency::Critical ? Style::emphasizedBorderWidth : Style::borderWidth) : 0.0F;
   foreground->addChild(
       ui::progressBar({
           .out = outProgress,
