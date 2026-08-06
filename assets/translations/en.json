@@ -2969,6 +2969,10 @@
           "description": "Include the mouse pointer in screenshots",
           "label": "Show Cursor"
         },
+        "settings-window-translucent": {
+          "description": "Make the Settings background translucent for compositor effects",
+          "label": "Settings Translucent Background"
+        },
         "show-location": {
           "description": "Show location name in weather widgets",
           "label": "Show Location"

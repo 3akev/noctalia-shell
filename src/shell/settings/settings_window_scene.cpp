@@ -2060,14 +2060,17 @@ void SettingsWindow::buildScene(std::uint32_t width, std::uint32_t height) {
     m_sceneRoot->setPopupContext(m_selectPopup.get());
   }
 
+  const float bgOpacity = cfg.shell.settingsWindowTranslucent ? 0.65F : 1.0F;
+
   auto bg = ui::box({
       .width = w,
       .height = h,
-      .configure = [](Box& box) {
+      .configure = [bgOpacity](Box& box) {
         box.setPanelStyle();
         box.setRadius(0.0F);
         box.setBorder(clearColor(), 0);
         box.setPosition(0.0F, 0.0F);
+        box.setFill(colorSpecFromRole(ColorRole::Surface, bgOpacity));
       },
   });
   m_panelBackground = static_cast<Box*>(m_sceneRoot->addChild(std::move(bg)));
