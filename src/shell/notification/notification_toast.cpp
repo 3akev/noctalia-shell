@@ -553,6 +553,7 @@ void NotificationToast::onConfigReload() {
     syncEntryVisibility(i);
   }
   revealQueuedEntries();
+  enforceMaxVisible();
   requestLayout();
 }
 
@@ -857,6 +858,7 @@ void NotificationToast::addPopup(const Notification& n) {
   }
   syncEntryVisibility(index);
   revealQueuedEntries();
+  enforceMaxVisible();
 
   kLog.debug("notification toast: showing #{}", n.id);
 }
@@ -1426,6 +1428,37 @@ void NotificationToast::revealQueuedEntries() {
       placed = true;
     }
   } while (placed);
+}
+
+void NotificationToast::enforceMaxVisible() {
+  if (m_config == nullptr) {
+    return;
+  }
+  const int max = m_config->config().notification.maxVisible;
+  if (max <= 0) {
+    return;
+  }
+
+  std::vector<std::size_t> placedIndices;
+  for (std::size_t i = 0; i < m_entries.size(); ++i) {
+    if (hasPlacement(m_entries[i])) {
+      placedIndices.push_back(i);
+    }
+  }
+
+  if (static_cast<int>(placedIndices.size()) <= max) {
+    return;
+  }
+
+  const std::size_t evictCount = placedIndices.size() - static_cast<std::size_t>(max);
+  for (std::size_t j = 0; j < evictCount; ++j) {
+    const std::size_t i = placedIndices[j];
+    m_entries[i].y = kQueuedY;
+    if (m_entries[i].rawTimeoutMs > 0 && m_notifications != nullptr) {
+      m_notifications->pauseExpiry(m_entries[i].notificationId);
+    }
+    syncEntryVisibility(i);
+  }
 }
 
 void NotificationToast::evictOverlappingEntries(std::size_t anchorIndex) {

@@ -742,6 +742,7 @@ struct NotificationConfig {
   std::vector<std::string> monitors;
   bool collapseOnDismiss = true;
   int historyRetentionHours = 0;
+  int maxVisible = 0; // 0 = unlimited (space-based only)
 
   std::vector<NotificationFilterConfig> filters;
 

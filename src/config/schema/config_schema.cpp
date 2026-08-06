@@ -254,6 +254,7 @@ namespace noctalia::config::schema {
         field(&NotificationConfig::monitors, "monitors"),
         field(&NotificationConfig::collapseOnDismiss, "collapse_on_dismiss"),
         field(&NotificationConfig::historyRetentionHours, "history_retention_hours", Range<std::int64_t>{0, 8760}),
+        field(&NotificationConfig::maxVisible, "max_visible", Range<std::int64_t>{0, 20}),
         custom<NotificationConfig>(
             "blacklist",
             [](const toml::table& tbl, NotificationConfig& out, std::string_view, Diagnostics&) {

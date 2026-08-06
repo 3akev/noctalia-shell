@@ -2205,6 +2205,10 @@
           "description": "Use Overlay to show notification toasts above fullscreen apps",
           "label": "Wayland Layer"
         },
+        "max-visible": {
+          "description": "Maximum number of notification toasts visible on screen at once (0 to fill all available space)",
+          "label": "Max Visible Toasts"
+        },
         "monitors": {
           "description": "Choose which monitors show notification toasts; leave empty to show on all monitors",
           "label": "Monitors"

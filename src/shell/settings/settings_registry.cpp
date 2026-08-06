@@ -2905,6 +2905,14 @@ namespace settings {
         "offset margin vertical"
     ));
     entries.push_back(makeEntry(
+        SettingsSection::Notifications, "toasts", tr("settings.schema.notifications.max-visible.label"),
+        tr("settings.schema.notifications.max-visible.description"), {"notification", "max_visible"},
+        StepperSetting{
+            .value = cfg.notification.maxVisible, .minValue = 0, .maxValue = 20, .step = 1, .valueSuffix = ""
+        },
+        "maximum on-screen toasts count limit"
+    ));
+    entries.push_back(makeEntry(
         SettingsSection::Notifications, "toasts", tr("settings.schema.notifications.toast-opacity.label"),
         tr("settings.schema.notifications.toast-opacity.description"), {"notification", "background_opacity"},
         sliderFor(cfg.notification.backgroundOpacity, noctalia::config::schema::kUnitRange, false), "popup"

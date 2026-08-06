@@ -159,6 +159,7 @@ private:
   void pauseCountdowns(uint32_t notificationId);
   void resumeCountdowns(uint32_t notificationId);
   void revealQueuedEntries();
+  void enforceMaxVisible();
   void collapseStack();
   void evictOverlappingEntries(std::size_t anchorIndex);
   [[nodiscard]] bool hasPlacement(const PopupEntry& entry) const;
