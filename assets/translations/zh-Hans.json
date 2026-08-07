@@ -686,7 +686,8 @@
     },
     "source": {
       "address": "地址",
-      "auto": "自动"
+      "auto": "自动",
+      "manual": "手动"
     }
   },
   "lockscreen": {
@@ -1716,7 +1717,7 @@
           "description": "状态栏右上角的圆角半径"
         },
         "dead-zone-action": {
-          "description": "在状态栏未被小组件覆盖的区域触发的操作；留空时使用默认行为"
+          "description": "在状态栏未被小组件覆盖的区域触发的操作"
         },
         "edge-margin": {
           "description": "状态栏与其所在屏幕边缘的间距；设为 0 时紧贴屏幕边缘"
@@ -2142,7 +2143,7 @@
           "label": "指纹解锁"
         },
         "lock-before-suspend": {
-          "description": "系统进入睡眠状态前锁定会话（如合盖、执行 systemctl suspend 或休眠）。关闭后，系统挂起时不再锁定；“锁定并挂起”操作仍会先锁定会话。",
+          "description": "系统进入睡眠状态前锁定会话（如合盖、执行 systemctl suspend 或休眠）；“锁定并挂起”操作仍会先锁定会话",
           "label": "挂起前锁定"
         },
         "monitors": {
@@ -2967,6 +2968,10 @@
         "screenshot-show-cursor": {
           "description": "在截图中包含鼠标指针",
           "label": "显示光标"
+        },
+        "settings-window-translucent": {
+          "description": "将设置窗口背景设为半透明，以增强合成器效果",
+          "label": "设置窗口半透明背景"
         },
         "show-location": {
           "description": "在天气小组件中显示位置",

@@ -1718,7 +1718,7 @@
           "description": "Top right corner radius for the bar"
         },
         "dead-zone-action": {
-          "description": "Action run on the parts of the bar no widget covers; leave empty for the default"
+          "description": "Action run on the parts of the bar no widget covers"
         },
         "edge-margin": {
           "description": "Gap between the bar and the screen edge it sits on; set to 0 px to sit flush against that edge"
@@ -2144,7 +2144,7 @@
           "label": "Fingerprint Unlock"
         },
         "lock-before-suspend": {
-          "description": "Lock the session before sleep (lid close, systemctl suspend, hibernate). Turn off to suspend without locking; Lock and Suspend actions still lock first.",
+          "description": "Lock the session before sleep (lid close, systemctl suspend, hibernate); Lock & Suspend actions still lock first",
           "label": "Lock Before Suspend"
         },
         "monitors": {
@@ -2460,7 +2460,7 @@
         },
         "session-show-shortcuts": {
           "description": "Show or hide the shortcut hints",
-          "label": "Show shortcuts"
+          "label": "Show Shortcuts"
         }
       },
       "services": {

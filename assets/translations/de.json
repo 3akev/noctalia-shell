@@ -686,7 +686,8 @@
     },
     "source": {
       "address": "Adresse",
-      "auto": "Automatisch"
+      "auto": "Automatisch",
+      "manual": "Manuell"
     }
   },
   "lockscreen": {
@@ -846,11 +847,11 @@
     "actions": {
       "custom": "Benutzerdefiniert",
       "lock": "Sperren",
-      "lock-and-suspend": "Sperren & Energie sparen",
+      "lock-and-suspend": "Sperren & Energiesparen",
       "logout": "Abmelden",
       "reboot": "Neu starten",
       "shutdown": "Herunterfahren",
-      "suspend": "Energie sparen"
+      "suspend": "Energiesparen"
     },
     "errors": {
       "lock-body": "Das Sitzungssperrprotokoll ist nicht verfügbar.",
@@ -1122,9 +1123,9 @@
         "kind": {
           "custom": "Benutzerdefiniert",
           "lock": "Sperren",
-          "lock-and-suspend": "Sperren & Energie sparen",
+          "lock-and-suspend": "Sperren & Energiesparen",
           "screen-off": "Bildschirm aus",
-          "suspend": "Energie sparen"
+          "suspend": "Energiesparen"
         },
         "kind-section-label": "Aktion",
         "name-label": "Name",
@@ -1715,6 +1716,9 @@
         "corner-top-right": {
           "description": "Eckenradius oben rechts für die Leiste"
         },
+        "dead-zone-action": {
+          "description": "Aktion, die auf den Teilen der Leiste ausgeführt wird, auf denen sich kein Widget befindet"
+        },
         "edge-margin": {
           "description": "Abstand zwischen der Leiste und dem Bildschirmrand, an dem sie liegt; auf 0 px setzen, um bündig am Rand anzuliegen"
         },
@@ -1939,6 +1943,10 @@
           "description": "Zeige einen Launcher-Button am Anfang oder Ende des Docks",
           "label": "Launcher-Button"
         },
+        "layer": {
+          "description": "Verwende Overlay, um das Dock über Vollbild-Apps anzuzeigen",
+          "label": "Wayland-Ebene"
+        },
         "magnification": {
           "description": "Vergrößere Dock-Icons in der Nähe des Zeigers, im macOS-Stil",
           "label": "Vergrößerung"
@@ -2059,7 +2067,7 @@
       },
       "idle": {
         "behaviors": {
-          "description": "Benannte Inaktivitätsaktionen mit Voreinstellungen (Sperren, Bildschirme aus, Energie sparen) oder benutzerdefinierten Befehlen, Timeouts, verknüpfter Fortsetzen-Aktion und Reihenfolge",
+          "description": "Benannte Inaktivitätsaktionen mit Voreinstellungen (Sperren, Bildschirme aus, Energiesparen) oder benutzerdefinierten Befehlen, Timeouts, verknüpfter Fortsetzen-Aktion und Reihenfolge",
           "label": "Verhalten"
         },
         "pre-action-fade": {
@@ -2072,6 +2080,14 @@
           "description": "Schließe Popups, blende Panels aus oder brich die aktuelle Operation ab",
           "label": "Abbrechen"
         },
+        "copy": {
+          "description": "Kopiere die aktuelle Auswahl oder das Element",
+          "label": "Kopieren"
+        },
+        "delete": {
+          "description": "Lösche das ausgewählte Element",
+          "label": "Löschen"
+        },
         "down": {
           "description": "Verschiebe den Fokus oder die Auswahl um eine Zeile nach unten",
           "label": "Nach unten navigieren"
@@ -2083,6 +2099,10 @@
         "right": {
           "description": "Verschiebe den Fokus oder die Auswahl nach rechts",
           "label": "Nach rechts navigieren"
+        },
+        "save": {
+          "description": "Speichere die aktuelle Auswahl oder das Element",
+          "label": "Speichern"
         },
         "tab-next": {
           "description": "Verschiebe den Fokus zum nächsten Element",
@@ -2121,6 +2141,10 @@
         "fingerprint": {
           "description": "Entsperre mit einem Fingerabdruckleser über fprintd, zusätzlich zur Passworteingabe",
           "label": "Entsperrung per Fingerabdruck"
+        },
+        "lock-before-suspend": {
+          "description": "Sitzung vor dem Energiesparmodus sperren (Deckel schließen, systemctl suspend, Ruhezustand); Sperren & Energiesparen-Aktionen sperren weiterhin zuerst",
+          "label": "Vor Energiesparen sperren"
         },
         "monitors": {
           "description": "Wähle, welche Monitore den Sperrbildschirm anzeigen; leer lassen, um ihn auf allen Monitoren anzuzeigen",
@@ -2305,7 +2329,7 @@
           "label": "Nutzungsdaten zurücksetzen"
         },
         "launcher-session-search": {
-          "description": "Schließe Sitzungsaktionen (Sperren, Energie sparen, Neustart, Herunterfahren, Abmelden) in allgemeine Launcher-Suchen ein, nicht nur über das /session-Präfix",
+          "description": "Schließe Sitzungsaktionen (Sperren, Energiesparen, Neustart, Herunterfahren, Abmelden) in allgemeine Launcher-Suchen ein, nicht nur über das /session-Präfix",
           "label": "Sitzungssuche aktivieren"
         },
         "launcher-show-icons": {

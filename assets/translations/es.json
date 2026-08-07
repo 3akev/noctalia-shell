@@ -2361,7 +2361,8 @@
         },
         "calendar-edit": {
           "button": "Editar",
-          "description": "Actualizar esta cuenta de calendario"
+          "description": "Actualizar esta cuenta de calendario",
+          "description-reconnect": "Se ha perdido la autorizacion de Google. Reconecte esta cuenta."
         },
         "calendar-event-date-format": {
           "description": "El formato de la fecha mostrada en el panel de los eventos para la fecha seleccionada",
@@ -2377,6 +2378,7 @@
         },
         "calendar-storage": {
           "button": "Reintentar",
+          "description-recovery": "La cache de eventos del calendario no se puede autenticar o esta dañada. Reintentar despues de restaurar la key correcta, o reinicie el almacenamiento privado.",
           "description-unavailable": "No hay ningun Almacen de Credenciales disponible. Los eventos del Calendario permaneceran disponibles para esta sesion unicamente."
         },
         "day-temperature": {
@@ -2606,6 +2608,7 @@
         "clipboard-storage": {
           "button": "Reintentar",
           "description-cancelled": "El Almacen de Credenciales se ha cancelado. El historial del portapapeles permanecera disponible en esta sesion unicamente.",
+          "description-recovery": "El historial del portapapeles no se puede autenticar o esta dañado. Reintentar despues de restaurar la key correcta, o reinicie el almacenamiento privado.",
           "description-unavailable": "No hay ningun Almacen de Credenciales disponible. El historial del portapapeles permanecera disponible en esta sesion unicamente."
         },
         "date-format": {

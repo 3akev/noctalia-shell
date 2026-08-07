@@ -245,12 +245,15 @@
         "no-active-player": "Aktif oynatıcı yok",
         "nothing-playing": "Hiçbir şey çalmıyor",
         "paused": "Durdu",
+        "playback-unavailable": "Oynatma kullanılamıyor",
         "playing": "Çalıyor",
+        "unavailable": "Mevcut değil",
         "unknown-artist": "Bilinmeyen sanatçı",
         "unknown-track": "Bilinmeyen parça"
       },
       "select-avatar": "Avatar Seç",
       "unknown": "bilinmiyor",
+      "uptime": "Çalışma süresi – {uptime}",
       "weather": {
         "data-unavailable": "Hava durumu verisi alınamadı.",
         "disabled": "Hava durumu konfigde devre dışı bırakıldı.",
@@ -260,7 +263,8 @@
     "media": {
       "active-player": "Aktif oynatıcı",
       "nothing-playing": "Hiçbir şey çalmıyor",
-      "now-playing": "Şimdi çalıyor"
+      "now-playing": "Şimdi çalıyor",
+      "start-playback": "Bir MPRIS uygulamasında oynatmayı başlat"
     },
     "network": {
       "available": "Kullanılabilir",
@@ -295,11 +299,13 @@
         "yesterday": "Dün"
       },
       "filter-empty-body": "Bu filtreye uyan bildirim yok.",
+      "filter-empty-title": "Burası boş",
       "untitled": "Başlıksız bildirim"
     },
     "power": {
-      "battery": "Batarya",
-      "health": "Batarya Sağlığı",
+      "battery": "Pil",
+      "design-capacity": "Dizayn kapasitesi",
+      "health": "Pil Sağlığı",
       "performance-inhibited": "Performans kullanılamıyor",
       "peripherals": "Bağlı Cihazlar",
       "power-profile": "Güç Profili",
@@ -309,6 +315,8 @@
     },
     "screen-time": {
       "back": "Geri",
+      "disabled": "Ekran zamanı takibi kapalı. Ayarlardan uygulama başına kullanım kaydını aç.",
+      "empty": "Henüz kaydedilmiş bir kullanım kaydı yok. Bir pencereye odaklanarak kaydı başlat.",
       "hour-0": "12 ÖÖ",
       "hour-12": "12 ÖS",
       "hour-18": "6 ÖS",
@@ -363,6 +371,9 @@
         "network": "Ağ",
         "resources": "Kaynaklar",
         "system": "Sistem"
+      },
+      "tooltips": {
+        "load": "1 / 5 / 15 dakikalık ortalama yük"
       },
       "unknown": "bilinmiyor"
     },
@@ -473,6 +484,7 @@
         "format": "Format",
         "gauge-layout": "Gösterge Düzeni",
         "glyph": "Simge",
+        "hide-when-no-media": "Medya Yokken Gizle",
         "horizontal": "Yatay",
         "image-path": "Görsel",
         "input-opacity": "Giriş Opaklığı",
@@ -693,6 +705,8 @@
       "lockscreen-widgets-editor": "Kilit ekranı bileşen düzenleyicisi",
       "lockscreen-widgets-editor-blocked-locked": "Kilit ekranı bileşenlerini düzenlemeden önce oturumu açın.",
       "lockscreen-widgets-editor-enabled": "Kilit ekranı bileşen düzenleyicisi açık. Açık pencerelerin düzenleyici ekranını kaplamaması için boş bir masaüstüne geçin.",
+      "screen-time-reset": "Ekran Süresi",
+      "screen-time-reset-success": "Kullanım geçmişi temizlendi.",
       "wallpaper-palette-export": "Özel Palet",
       "wallpaper-palette-export-success": "\"{name}\" kaydedildi ve palet kaynağı özel olarak değiştirildi."
     }
@@ -752,6 +766,26 @@
       "body-incompatible": "{plugin}, {version} eklenti API'yını hedefliyor; bu Noctalia {oldest}–{current} API'larını destekliyor.",
       "body-timeout": "{plugin} yüklemesi zaman aşımına uğradı.",
       "title": "Eklenti devre dışı"
+    }
+  },
+  "power": {
+    "battery": {
+      "states": {
+        "battery": "Pil",
+        "charging": "Şarj oluyor",
+        "discharging": "Deşarj oluyor",
+        "empty": "Boş",
+        "plugged-in": "Fişe takılı"
+      },
+      "tooltip": {
+        "device": "Pil",
+        "device-numbered": "Pil  {index}",
+        "health": "Sağlık",
+        "rate": "Oran",
+        "status": "Durum",
+        "time-left": "Kalan Süre",
+        "unknown-device": "Tanınmayan Cihaz"
+      }
     }
   },
   "settings": {
@@ -848,9 +882,13 @@
     },
     "navigation": {
       "groups": {
+        "battery": "Pil",
         "launcher": "Başlat",
         "location": "Konum",
+        "media": "Medya",
         "osd": "OSD",
+        "screen-time": "Ekran Süresi",
+        "theme": "Tema",
         "wallpaper": "Duvar Kağıdı"
       },
       "sections": {
@@ -875,9 +913,20 @@
         "auto": "Çubuğu Takip Et"
       },
       "theme": {
+        "mode": {
+          "dark": "Açık",
+          "light": "Koyu"
+        },
         "source": {
+          "built-in": "Dahili",
+          "community": "Topluluk",
+          "custom": "Özel",
           "wallpaper": "Duvar Kağıdı"
         }
+      },
+      "theme-role": {
+        "custom": "Özel",
+        "default": "Varsayılan"
       },
       "wallpaper": {
         "fill": {
@@ -930,6 +979,10 @@
           "button": "Özel Paleti Farklı Kaydet",
           "description": "Şuanki, duvar kağıdına göre oluşturulmuş paleti, tekrar kullanılabilir özel palet dosyası olarak farklı kaydet",
           "label": "Duvar Kağıdı Paletini Dışa Aktar"
+        },
+        "theme-mode": {
+          "description": "Günün saatine göre koyu, açık veya otomatik seçeneğini seçin",
+          "label": "Tema Modu"
         }
       },
       "dock": {
@@ -953,6 +1006,18 @@
       },
       "hooks": {
         "events": {
+          "battery-charging": {
+            "description": "Pil şarj olmaya başladığında çalışacak komut",
+            "label": "Pil Şarj Olurken"
+          },
+          "battery-discharging": {
+            "description": "Pil deşarj olmaya başladığında çalışacak komut",
+            "label": "Pil Deşarj Olurken"
+          },
+          "theme-mode-changed": {
+            "description": "Çözümlenen tema modu açık ve koyu arasında değiştiğinde çalıştırılacak komut",
+            "label": "Tema Modu Değiştiğinde"
+          },
           "wallpaper-changed": {
             "description": "Duvar kağıdı değiştiğinde çalıştırılacak komut; NOCTALIA_WALLPAPER_PATH ve NOCTALIA_WALLPAPER_CONNECTOR isimlerini sağlar",
             "label": "Duvar Kağıdı Değiştiğinde"
@@ -1085,7 +1150,7 @@
         },
         "launcher-reset-usage": {
           "button": "Sıfırla",
-          "description": "Başlat menüsü sıralaması için kullanılan çalıştırma sayısını ve son kullanılanlar tarihçesini temizle",
+          "description": "Başlat menüsü sıralaması için kullanılan çalıştırma sayısını ve son kullanılanlar geçmişini temizle",
           "label": "Kullanım Verisini Sıfırla"
         },
         "launcher-session-search": {
@@ -1170,6 +1235,9 @@
         }
       },
       "shell": {
+        "greeter-sync-auto": {
+          "description": "Duvar kağıdı, renkler, veya tema modu değiştiğinde otomatikman karşılayıcı ekranını senkronize et"
+        },
         "launch-apps-custom-command": {
           "description": "Başlatıcıdan, dock'tan ve görev çubuğundan başlatılan uygulamaları sarar; $CMD'yi orijinal komutla değiştirir.",
           "label": "Özel Uygulama Çalıştırma Komutu"
@@ -1265,15 +1333,44 @@
           "description": "OSD bildirimlerinin yerleşim yönü",
           "label": "Yönelim"
         },
+        "screen-time-enabled": {
+          "description": "Uygulama başına kullanımı takip et ve Kontrol Merkezinde göster",
+          "label": "Ekran Süresi"
+        },
+        "screen-time-reset": {
+          "button": "Sıfırla",
+          "description": "Depolanan uygulama başına odaklı kullanım geçmişini sıfırla",
+          "label": "Ekran Süresi Verisini Sıfırla"
+        },
+        "screenshot-filename-pattern": {
+          "description": "Uzantısız strftime biçim dizgesi (.png otomatik eklenir); Unix zaman damgası için %s kullanın"
+        },
         "screenshot-save-to-file": {
           "label": "Dosyaya Kaydet"
         },
         "show-location": {
           "description": "Konum ismini hava durumu bileşenlerinde göster",
           "label": "Konumu Göster"
+        },
+        "time-format": {
+          "label": "Saat Biçimi"
+        }
+      },
+      "templates": {
+        "builtin-ids": {
+          "description": "Her tema değişikliğinde uygulanan paketlenmiş uygulama şablonlarını aç/kapat"
+        },
+        "community-ids": {
+          "description": "Her tema değişikliğinde uygulanan topluluk şablonlarına göz at ve etkinleştir"
+        },
+        "enable-builtins": {
+          "description": "Uygulamalar için paketlenmiş tema şablonları kataloğunu kullanın"
         }
       },
       "wallpaper": {
+        "automation": {
+          "description": "Duvar kağıtlarını bir zamanlayıcıyla otomatik olarak değiştir"
+        },
         "automation-interval": {
           "description": "Duvar kağıdı değişikleri arasındaki saniye cinsinden süre",
           "label": "Değişim Aralığı"
@@ -1287,9 +1384,11 @@
           "label": "Alt Klasörler Dahil"
         },
         "directory-dark": {
+          "description": "Koyu tema modunda kullanılan duvar kağıdı klasörü",
           "placeholder": "~/Pictures/Wallpapers"
         },
         "directory-light": {
+          "description": "Açık tema modunda kullanılan duvar kağıdı klasörü",
           "placeholder": "~/Pictures/Wallpapers"
         },
         "monitor-directory-dark": {
@@ -1307,7 +1406,20 @@
       "clear-glyph": "Temizle"
     },
     "widgets": {
+      "options": {
+        "time": "Saat"
+      },
       "settings": {
+        "format": {
+          "description": "Saat biçimi dizgesi"
+        },
+        "hide-when-no-media": {
+          "description": "Hiçbir MPRIS oynatıcısı aktif değişken medya bileşenini gizle",
+          "label": "Medya Yokken Gizle"
+        },
+        "timezone": {
+          "label": "Saat Dilimi"
+        },
         "vpn-status": {
           "label": "VPN Durumu"
         },
@@ -1331,7 +1443,7 @@
       "types": {
         "active-window": "Aktif Pencere",
         "audio-visualizer": "Ses  göstergesi",
-        "battery": "Batarya",
+        "battery": "Pil",
         "bluetooth": "Bluetooth",
         "brightness": "Parlaklık",
         "caffeine": "Kafein",

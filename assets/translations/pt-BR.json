@@ -686,7 +686,8 @@
     },
     "source": {
       "address": "Endereço",
-      "auto": "Automático"
+      "auto": "Automático",
+      "manual": "Manual"
     }
   },
   "lockscreen": {
@@ -1208,7 +1209,7 @@
         "shape": "Forma",
         "system": "Sistema",
         "theme": "Tema",
-        "toasts": "Notificações Flutuantes",
+        "toasts": "Lâminas",
         "transition": "Transição",
         "user": "Usuário",
         "wallpaper": "Papel de Parede",
@@ -1253,7 +1254,7 @@
           "history": "histórico",
           "permanent": "permanente",
           "sound": "som",
-          "toast": "notificação flutuante"
+          "toast": "lámina"
         },
         "flags-label": "Quando corresponder",
         "match-content-label": "Regex do Conteúdo",
@@ -1263,7 +1264,7 @@
         "override-duration": "Sobrescrever duração",
         "play-sound": "Tocar som",
         "save-history": "Salvar no histórico",
-        "show-toast": "Mostrar notificação flutuante",
+        "show-toast": "Mostrar lâmina",
         "summary": "{match} · {flags}",
         "summary-blocked": "{match} · bloqueados",
         "summary-disabled": "{match} · desativados",
@@ -1716,7 +1717,7 @@
           "description": "Raio do canto superior direito da barra"
         },
         "dead-zone-action": {
-          "description": "Ação executada nas partes da barra que nenhum widget cobre; deixe vazio para o padrão"
+          "description": "Ação executada nas partes da barra que não são cobertas widgets"
         },
         "edge-margin": {
           "description": "Espaço entre a barra e a borda da tela em que ela está; defina como 0 px para alinhar exatamente com a borda"
@@ -2142,7 +2143,7 @@
           "label": "Desbloquear com Impressão Digital"
         },
         "lock-before-suspend": {
-          "description": "Bloquear a sessão antes de dormir (fechando laptops, systemctl suspend, hibernate). Desligar suspensão sem bloqueio; Ações de bloquear e suspender ainda bloquearão primeiro.",
+          "description": "Bloquear a sessão antes de dormir (fechando tampa, systemctl suspend, hibernate); Ações de bloquear & suspender ainda bloquearão primeiro.",
           "label": "Bloquear Antes de Suspender"
         },
         "monitors": {
@@ -2181,11 +2182,11 @@
           "description": "Ainda exibe notificações críticas de remetentes na lista negra"
         },
         "border": {
-          "description": "Desenha um contorno ao redor das notificações",
+          "description": "Desenha um contorno ao redor das lâminas de notificação",
           "label": "Borda"
         },
         "collapse-on-dismiss": {
-          "description": "Deslizar as notificações flutuantes restantes para preencher as lacunas quando uma delas for descartada",
+          "description": "Deslizar as lâminas restantes para preencher as lacunas quando uma delas for descartada",
           "label": "Recolher ao Dispensar"
         },
         "daemon": {
@@ -2193,7 +2194,7 @@
           "label": "Daemon de Notificação"
         },
         "filters": {
-          "description": "Regras por emissor de notificações, histórico e sons; o primeiro filtro compatível ativado prevalece",
+          "description": "Regras por remetente para lâminas de notificação, histórico e sons; o primeiro filtro compatível ativado prevalece",
           "label": "Filtros de Notificações"
         },
         "history-retention-hours": {
@@ -2201,11 +2202,15 @@
           "label": "Manter histórico apra"
         },
         "layer": {
-          "description": "Use Overlay para mostrar notificações flutuantes acima de apps em tela cheia",
+          "description": "Use Overlay para mostrar lâminas de notificação acima de apps em tela cheia",
           "label": "Camada Wayland"
         },
+        "max-visible": {
+          "description": "Número máximo de lâminas de notificação visíveis na tela de uma só vez (0 para preencher todo espaço disponível)",
+          "label": "Máximo de Lâminas Visíveis"
+        },
         "monitors": {
-          "description": "Escolha em quais monitores as notificações serão exibidas; deixe em branco para exibir em todos os monitores",
+          "description": "Escolha quais monitores mostram lâminas de notificação; deixe em branco para exibir em todos os monitores",
           "label": "Monitores"
         },
         "offset-x": {
@@ -2217,23 +2222,23 @@
           "label": "Margem Vertical"
         },
         "position": {
-          "description": "Posição da tela para notificações flutuantes",
+          "description": "Posição da tela para lâminas de notificação",
           "label": "Posição na Tela"
         },
         "scale": {
-          "description": "Dimensionar as notificações flutuantes em relação à escala da interface do usuário do shell",
+          "description": "Dimensionar as lâminas de notificação em relação à escala da IU do shell",
           "label": "Escala"
         },
         "show-actions": {
-          "description": "Exibir botões de ação nas notificações; quando desativados, clicar na notificação aciona sua ação padrão",
+          "description": "Exibir botões de ação nas lâminas de notificação; quando desativados, clicar na lâmina aciona sua ação padrão",
           "label": "Exibir Botões de Ação"
         },
         "show-app-name": {
-          "description": "Exibir o nome do aplicativo remetente nas notificações flutuantes",
+          "description": "Exibir o nome do aplicativo remetente nas lâminas de notificação",
           "label": "Exibir Nome do App"
         },
         "toast-opacity": {
-          "description": "Opacidade do plano de fundo das notificações flutuantes",
+          "description": "Opacidade do plano de fundo das lâminas de notificação",
           "label": "Opacidade do Plano de Fundo"
         }
       },
@@ -2967,6 +2972,10 @@
         "screenshot-show-cursor": {
           "description": "Incluir o ponteiro do mouse nas capturas de tela",
           "label": "Mostrar Cursor"
+        },
+        "settings-window-translucent": {
+          "description": "Torne o fundo das Configurações transparente para efeitos dos compositores",
+          "label": "Fundo Transparente das Configurações"
         },
         "show-location": {
           "description": "Exibe o nome do local nos widgets de previsão do tempo",
