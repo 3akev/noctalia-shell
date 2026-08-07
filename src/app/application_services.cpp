@@ -587,6 +587,7 @@ void Application::initStyleThemeAndWayland() {
   });
 
   m_themeService.setResolvedCallback([this, lastResolvedThemeMode = std::optional<std::string>{},
+                                      lastGeneratedPalette = std::optional<noctalia::theme::GeneratedPalette>{},
                                       syncScriptApiWallpaperDirectory](
                                          const noctalia::theme::GeneratedPalette& generated, std::string_view mode
                                      ) mutable {
@@ -596,7 +597,11 @@ void Application::initStyleThemeAndWayland() {
     syncScriptApiWallpaperDirectory();
     const std::optional<std::string> previousMode = lastResolvedThemeMode;
     lastResolvedThemeMode = resolvedMode;
-    m_templateApplyService.setAfterApplyCallback([this]() { m_hookManager.fire(HookKind::ColorsChanged); });
+    const bool colorsChanged = !lastGeneratedPalette.has_value() || *lastGeneratedPalette != generated;
+    lastGeneratedPalette = generated;
+    if (colorsChanged) {
+      m_templateApplyService.setAfterApplyCallback([this]() { m_hookManager.fire(HookKind::ColorsChanged); });
+    }
     m_templateApplyService.apply(generated, mode);
     if (previousMode.has_value() && *previousMode != resolvedMode) {
       m_hookManager.fire(
