@@ -88,6 +88,7 @@ namespace settings {
         .setOverride = ctx.setOverride,
         .setOverrides = ctx.setOverrides,
         .clearOverride = ctx.clearOverride,
+        .clearOverrides = ctx.clearOverrides,
         .resetBarLane = ctx.resetBarLane,
         .renameWidgetInstance = ctx.renameWidgetInstance,
         .closeHostedEditor = ctx.closeHostedEditor,
