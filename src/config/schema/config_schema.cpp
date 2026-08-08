@@ -494,6 +494,7 @@ namespace noctalia::config::schema {
         enumField(&ControlCenterConfig::sidebarSectionMode, "sidebar_section", kControlCenterSidebarModes),
         field(&ControlCenterConfig::width, "width", kControlCenterWidthRange),
         field(&ControlCenterConfig::showShortcutLabels, "show_shortcut_labels"),
+        field(&ControlCenterConfig::showSessionButton, "show_session_button"),
         field(&ControlCenterConfig::hiddenTabs, "hidden_tabs"),
         subTable(&ControlCenterConfig::calendarTab, "calendar", calendarTabSchema()),
         arrayOf<ControlCenterConfig, ShortcutConfig>(

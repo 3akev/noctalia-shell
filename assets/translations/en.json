@@ -1191,6 +1191,7 @@
         "monitor-thresholds": "Highlight Thresholds",
         "monitors": "Monitors",
         "motion": "Motion",
+        "navigation": "Navigation",
         "network": "Network",
         "night-light": "Night Light",
         "notifications": "Notifications",
@@ -2275,6 +2276,10 @@
         "home-shortcuts": {
           "description": "Choose up to six shortcut buttons for the home tab",
           "label": "Home Shortcuts"
+        },
+        "home-session-button": {
+          "description": "Show the session-actions button in the Home tab header",
+          "label": "Show Header Session Button"
         },
         "home-shortcuts-show-labels": {
           "description": "Display text labels under shortcut icons in the home tab",
