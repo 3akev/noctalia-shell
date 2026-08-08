@@ -2245,6 +2245,9 @@ void PanelManager::onConfigReloaded() {
     auto* bg = static_cast<Box*>(m_bgNode);
     bg->setPanelStyle(m_config->config().shell.panel.borders);
     bg->setFill(colorSpecFromRole(ColorRole::Surface, panelBackgroundOpacity));
+    if (m_config->config().shell.panel.borders) {
+      bg->setBorder(colorSpecFromRole(ColorRole::Outline, panelBackgroundOpacity), Style::borderWidth);
+    }
   }
   if (m_panelShadowNode != nullptr) {
     const auto& shadowConfig = m_config->config().shell.shadow;
@@ -2356,7 +2359,11 @@ void PanelManager::buildScene(std::uint32_t width, std::uint32_t height) {
         bg->setRadii(Radii{radius, radius, radius, radius});
         // Fill (opacity-dependent) is applied via applyAttachedDecorationStyle() below.
       } else {
-        bg->setFill(colorSpecFromRole(ColorRole::Surface, shell::panel_surface::backgroundOpacity(m_config)));
+        const float backgroundOpacity = shell::panel_surface::backgroundOpacity(m_config);
+        bg->setFill(colorSpecFromRole(ColorRole::Surface, backgroundOpacity));
+        if (panelBorders) {
+          bg->setBorder(colorSpecFromRole(ColorRole::Outline, backgroundOpacity), Style::borderWidth);
+        }
       }
       m_bgNode = sceneParent->addChild(std::move(bg));
     }

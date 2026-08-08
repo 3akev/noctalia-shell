@@ -309,6 +309,9 @@ void PersistentPanelHost::buildScene(Instance& instance, std::uint32_t width, st
     auto bg = ui::box({});
     bg->setPanelStyle(m_config->config().shell.panel.borders);
     bg->setFill(colorSpecFromRole(ColorRole::Surface, backgroundOpacity));
+    if (m_config->config().shell.panel.borders) {
+      bg->setBorder(colorSpecFromRole(ColorRole::Outline, backgroundOpacity), Style::borderWidth);
+    }
     instance.bgNode = static_cast<Box*>(instance.sceneRoot->addChild(std::move(bg)));
   }
 
@@ -584,6 +587,9 @@ void PersistentPanelHost::onConfigReloaded() {
     if (instance->bgNode != nullptr) {
       instance->bgNode->setPanelStyle(m_config->config().shell.panel.borders);
       instance->bgNode->setFill(colorSpecFromRole(ColorRole::Surface, backgroundOpacity));
+      if (m_config->config().shell.panel.borders) {
+        instance->bgNode->setBorder(colorSpecFromRole(ColorRole::Outline, backgroundOpacity), Style::borderWidth);
+      }
     }
     if (instance->surface != nullptr) {
       instance->surface->requestLayout();
