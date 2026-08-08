@@ -463,9 +463,7 @@ void RenderContext::renderNode(
     const auto* corner = static_cast<const ScreenCornerNode*>(node);
     auto style = corner->style();
     style.color.a *= effectiveOpacity;
-    const float pixelScaleX = sw > 0.0F ? bw / sw : 1.0F;
-    const float pixelScaleY = sh > 0.0F ? bh / sh : 1.0F;
-    m_backend->drawScreenCorner(sw, sh, pixelScaleX, pixelScaleY, node->width(), node->height(), style, worldTransform);
+    m_backend->drawScreenCorner(sw, sh, node->width(), node->height(), style, worldTransform);
     break;
   }
   case NodeType::AudioSpectrum: {

@@ -147,8 +147,8 @@ public:
       const Mat3& transform
   ) = 0;
   virtual void drawScreenCorner(
-      float surfaceWidth, float surfaceHeight, float pixelScaleX, float pixelScaleY, float width, float height,
-      const ScreenCornerStyle& style, const Mat3& transform
+      float surfaceWidth, float surfaceHeight, float width, float height, const ScreenCornerStyle& style,
+      const Mat3& transform
   ) = 0;
   virtual void drawAudioSpectrum(
       float surfaceWidth, float surfaceHeight, float pixelScaleX, float pixelScaleY, float width, float height,

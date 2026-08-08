@@ -628,11 +628,11 @@ void GlesRenderBackend::drawCountdownRing(
 }
 
 void GlesRenderBackend::drawScreenCorner(
-    float surfaceWidth, float surfaceHeight, float pixelScaleX, float pixelScaleY, float width, float height,
-    const ScreenCornerStyle& style, const Mat3& transform
+    float surfaceWidth, float surfaceHeight, float width, float height, const ScreenCornerStyle& style,
+    const Mat3& transform
 ) {
   m_screenCornerProgram.ensureInitialized();
-  m_screenCornerProgram.draw(surfaceWidth, surfaceHeight, pixelScaleX, pixelScaleY, width, height, style, transform);
+  m_screenCornerProgram.draw(surfaceWidth, surfaceHeight, width, height, style, transform);
 }
 
 void GlesRenderBackend::drawAudioSpectrum(
