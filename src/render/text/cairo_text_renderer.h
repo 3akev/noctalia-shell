@@ -92,11 +92,11 @@ private:
   struct CacheKey {
     std::string text;
     std::string fontFamily;
-    std::uint32_t sizeQ = 0;     // fontSize * 64 + 0.5
-    std::uint32_t colorRgba = 0; // packed r<<24|g<<16|b<<8|a
-    std::uint32_t maxWidthQ = 0; // maxWidth * 64 + 0.5, 0 = no limit
-    std::uint16_t scaleQ = 0;    // contentScale * 64 + 0.5
-    std::uint16_t maxLines = 0;  // 0 = no explicit limit (use '\n'-count fallback)
+    std::uint32_t sizeBits = 0;     // exact normalized fontSize bits
+    std::uint32_t colorRgba = 0;    // packed r<<24|g<<16|b<<8|a
+    std::uint32_t maxWidthBits = 0; // exact normalized maxWidth bits; 0 = no limit
+    std::uint32_t scaleBits = 0;    // exact normalized contentScale bits
+    std::uint16_t maxLines = 0;     // 0 = no explicit limit (use '\n'-count fallback)
     TextAlign align = TextAlign::Start;
     TextEllipsize ellipsize = TextEllipsize::End;
     FontWeight fontWeight = FontWeight::Normal;
@@ -114,9 +114,9 @@ private:
   struct MetricsKey {
     std::string text;
     std::string fontFamily;
-    std::uint32_t sizeQ = 0;
-    std::uint32_t maxWidthQ = 0;
-    std::uint16_t scaleQ = 0;
+    std::uint32_t sizeBits = 0;
+    std::uint32_t maxWidthBits = 0;
+    std::uint32_t scaleBits = 0;
     std::uint16_t maxLines = 0;
     TextAlign align = TextAlign::Start;
     TextEllipsize ellipsize = TextEllipsize::End;
@@ -136,8 +136,8 @@ private:
   // reclaimed during the run (heaptrack: top leak, ~24MB over a 30m session).
   // Memoizing collapses ~15k calls/run down to the handful of distinct fonts.
   struct FontMetricsKey {
-    std::uint32_t sizeQ = 0;
-    std::uint16_t scaleQ = 0;
+    std::uint32_t sizeBits = 0;
+    std::uint32_t scaleBits = 0;
     FontWeight fontWeight = FontWeight::Normal;
 
     bool operator==(const FontMetricsKey& other) const noexcept;

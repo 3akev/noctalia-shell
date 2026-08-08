@@ -7,6 +7,7 @@
 #include "render/text/font_weight_catalog.h"
 
 #include <algorithm>
+#include <bit>
 #include <cairo.h>
 #include <cmath>
 #include <cstring>
@@ -23,17 +24,11 @@ namespace {
 
   constexpr Logger kLog("text");
 
-  constexpr std::uint32_t kSizeQuant = 64;
-  constexpr std::uint32_t kScaleQuant = 64;
   constexpr float kAxisAlignedEpsilon = 0.0001F;
 
-  inline std::uint32_t quantizeSize(float v) {
-    return static_cast<std::uint32_t>(std::max(0.0F, v) * static_cast<float>(kSizeQuant) + 0.5F);
-  }
+  inline std::uint32_t sizeKey(float value) { return std::bit_cast<std::uint32_t>(std::max(0.0F, value)); }
 
-  inline std::uint16_t quantizeScale(float v) {
-    return static_cast<std::uint16_t>(std::max(0.0F, v) * static_cast<float>(kScaleQuant) + 0.5F);
-  }
+  inline std::uint32_t scaleKey(float value) { return std::bit_cast<std::uint32_t>(std::max(0.0F, value)); }
 
   bool isAxisAligned(const Mat3& transform) {
     return std::abs(transform.m[1]) <= kAxisAlignedEpsilon && std::abs(transform.m[3]) <= kAxisAlignedEpsilon;
@@ -186,9 +181,9 @@ namespace {
 
 bool CairoTextRenderer::CacheKey::operator==(const CacheKey& other) const noexcept {
   return fontWeight == other.fontWeight
-      && sizeQ == other.sizeQ
-      && scaleQ == other.scaleQ
-      && maxWidthQ == other.maxWidthQ
+      && sizeBits == other.sizeBits
+      && scaleBits == other.scaleBits
+      && maxWidthBits == other.maxWidthBits
       && maxLines == other.maxLines
       && align == other.align
       && ellipsize == other.ellipsize
@@ -202,9 +197,9 @@ std::size_t CairoTextRenderer::CacheKeyHash::operator()(const CacheKey& k) const
   std::size_t seed = kTextHashSalt;
   hashCombine(seed, std::hash<std::string>{}(k.text));
   hashCombine(seed, std::hash<std::string>{}(k.fontFamily));
-  hashCombine(seed, std::hash<std::uint32_t>{}(k.sizeQ));
-  hashCombine(seed, std::hash<std::uint32_t>{}(k.maxWidthQ));
-  hashCombine(seed, std::hash<std::uint16_t>{}(k.scaleQ));
+  hashCombine(seed, std::hash<std::uint32_t>{}(k.sizeBits));
+  hashCombine(seed, std::hash<std::uint32_t>{}(k.maxWidthBits));
+  hashCombine(seed, std::hash<std::uint32_t>{}(k.scaleBits));
   hashCombine(seed, std::hash<std::uint16_t>{}(k.maxLines));
   hashCombine(seed, std::hash<std::uint8_t>{}(static_cast<std::uint8_t>(k.align)));
   hashCombine(seed, std::hash<std::uint8_t>{}(static_cast<std::uint8_t>(k.ellipsize)));
@@ -216,9 +211,9 @@ std::size_t CairoTextRenderer::CacheKeyHash::operator()(const CacheKey& k) const
 
 bool CairoTextRenderer::MetricsKey::operator==(const MetricsKey& other) const noexcept {
   return fontWeight == other.fontWeight
-      && sizeQ == other.sizeQ
-      && scaleQ == other.scaleQ
-      && maxWidthQ == other.maxWidthQ
+      && sizeBits == other.sizeBits
+      && scaleBits == other.scaleBits
+      && maxWidthBits == other.maxWidthBits
       && maxLines == other.maxLines
       && align == other.align
       && ellipsize == other.ellipsize
@@ -230,9 +225,9 @@ bool CairoTextRenderer::MetricsKey::operator==(const MetricsKey& other) const no
 std::size_t CairoTextRenderer::MetricsKeyHash::operator()(const MetricsKey& k) const noexcept {
   std::size_t seed = std::hash<std::string>{}(k.text);
   hashCombine(seed, std::hash<std::string>{}(k.fontFamily));
-  hashCombine(seed, std::hash<std::uint32_t>{}(k.sizeQ));
-  hashCombine(seed, std::hash<std::uint32_t>{}(k.maxWidthQ));
-  hashCombine(seed, std::hash<std::uint16_t>{}(k.scaleQ));
+  hashCombine(seed, std::hash<std::uint32_t>{}(k.sizeBits));
+  hashCombine(seed, std::hash<std::uint32_t>{}(k.maxWidthBits));
+  hashCombine(seed, std::hash<std::uint32_t>{}(k.scaleBits));
   hashCombine(seed, std::hash<std::uint16_t>{}(k.maxLines));
   hashCombine(seed, std::hash<std::uint8_t>{}(static_cast<std::uint8_t>(k.align)));
   hashCombine(seed, std::hash<std::uint8_t>{}(static_cast<std::uint8_t>(k.ellipsize)));
@@ -242,12 +237,12 @@ std::size_t CairoTextRenderer::MetricsKeyHash::operator()(const MetricsKey& k) c
 }
 
 bool CairoTextRenderer::FontMetricsKey::operator==(const FontMetricsKey& other) const noexcept {
-  return fontWeight == other.fontWeight && sizeQ == other.sizeQ && scaleQ == other.scaleQ;
+  return fontWeight == other.fontWeight && sizeBits == other.sizeBits && scaleBits == other.scaleBits;
 }
 
 std::size_t CairoTextRenderer::FontMetricsKeyHash::operator()(const FontMetricsKey& k) const noexcept {
-  std::size_t seed = std::hash<std::uint32_t>{}(k.sizeQ);
-  hashCombine(seed, std::hash<std::uint16_t>{}(k.scaleQ));
+  std::size_t seed = std::hash<std::uint32_t>{}(k.sizeBits);
+  hashCombine(seed, std::hash<std::uint32_t>{}(k.scaleBits));
   hashCombine(seed, std::hash<int>{}(static_cast<int>(k.fontWeight)));
   return seed;
 }
@@ -517,9 +512,9 @@ CairoTextRenderer::TextMetrics CairoTextRenderer::measure(
   MetricsKey key;
   key.text.assign(text);
   key.fontFamily.assign(fontFamily);
-  key.sizeQ = quantizeSize(fontSize);
-  key.maxWidthQ = quantizeSize(std::max(0.0F, maxWidth));
-  key.scaleQ = quantizeScale(m_contentScale);
+  key.sizeBits = sizeKey(fontSize);
+  key.maxWidthBits = sizeKey(std::max(0.0F, maxWidth));
+  key.scaleBits = scaleKey(m_contentScale);
   key.maxLines = static_cast<std::uint16_t>(std::max(0, maxLines));
   key.align = align;
   key.ellipsize = ellipsize;
@@ -550,8 +545,8 @@ CairoTextRenderer::TextMetrics CairoTextRenderer::measureFont(float fontSize, Fo
   }
 
   FontMetricsKey cacheKey;
-  cacheKey.sizeQ = quantizeSize(fontSize);
-  cacheKey.scaleQ = quantizeScale(m_contentScale);
+  cacheKey.sizeBits = sizeKey(fontSize);
+  cacheKey.scaleBits = scaleKey(m_contentScale);
   cacheKey.fontWeight = fontWeight;
   if (auto it = m_fontMetricsCache.find(cacheKey); it != m_fontMetricsCache.end()) {
     return it->second;
@@ -951,9 +946,9 @@ CairoTextRenderer::CacheEntry* CairoTextRenderer::lookupOrRasterize(
   CacheKey key;
   key.text.assign(text);
   key.fontFamily.assign(fontFamily);
-  key.sizeQ = quantizeSize(fontSize);
-  key.maxWidthQ = quantizeSize(std::max(0.0F, maxWidth));
-  key.scaleQ = quantizeScale(m_contentScale);
+  key.sizeBits = sizeKey(fontSize);
+  key.maxWidthBits = sizeKey(std::max(0.0F, maxWidth));
+  key.scaleBits = scaleKey(m_contentScale);
   key.maxLines = static_cast<std::uint16_t>(std::max(0, maxLines));
   key.align = align;
   key.ellipsize = ellipsize;
@@ -981,9 +976,9 @@ CairoTextRenderer::CacheEntry* CairoTextRenderer::lookupOrRasterize(
   MetricsKey mkey;
   mkey.text = key.text;
   mkey.fontFamily = key.fontFamily;
-  mkey.sizeQ = key.sizeQ;
-  mkey.maxWidthQ = key.maxWidthQ;
-  mkey.scaleQ = key.scaleQ;
+  mkey.sizeBits = key.sizeBits;
+  mkey.maxWidthBits = key.maxWidthBits;
+  mkey.scaleBits = key.scaleBits;
   mkey.maxLines = key.maxLines;
   mkey.align = key.align;
   mkey.ellipsize = key.ellipsize;

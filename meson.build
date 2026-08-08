@@ -1108,6 +1108,7 @@ if build_tests
     'app_identity',
     'audio_glyphs',
     'battery_hook_state',
+    'cairo_text_renderer',
     'calendar_cache_permissions',
     'caldav_client',
     'calendar_credential_store',
