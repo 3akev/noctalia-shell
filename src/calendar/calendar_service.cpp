@@ -232,14 +232,25 @@ void CalendarService::retryCredentialMigration() {
   });
 }
 
-void CalendarService::addChangeCallback(ChangeCallback callback) {
-  if (callback) {
-    m_callbacks.push_back(std::move(callback));
+CalendarService::ChangeCallbackId CalendarService::addChangeCallback(ChangeCallback callback) {
+  if (!callback) {
+    return 0;
   }
+  const ChangeCallbackId id = m_nextCallbackId++;
+  m_callbacks.emplace_back(id, std::move(callback));
+  return id;
+}
+
+void CalendarService::removeChangeCallback(ChangeCallbackId callbackId) {
+  if (callbackId == 0) {
+    return;
+  }
+  std::erase_if(m_callbacks, [callbackId](const auto& entry) { return entry.first == callbackId; });
 }
 
 void CalendarService::notifyChanged() {
-  for (auto& callback : m_callbacks) {
+  for (auto& [id, callback] : m_callbacks) {
+    (void)id;
     if (callback) {
       callback();
     }

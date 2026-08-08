@@ -526,6 +526,7 @@
         "shadow": "Shadow",
         "show-caps-lock": "Caps Lock Warning",
         "show-device": "Show Device",
+        "show-events": "Show Events",
         "show-forecast": "Show Forecast",
         "show-keyboard-layout": "Keyboard Layout",
         "show-label": "Show Label",
@@ -537,6 +538,7 @@
         "show-vpn-label": "Show VPN Label",
         "show-weather": "Weather",
         "show-when-idle": "Show When Idle",
+        "show-week-numbers": "Show Week Numbers",
         "stat": "Stat",
         "stat-cpu-temp": "CPU Temp",
         "stat-cpu-usage": "CPU Usage",
@@ -576,6 +578,7 @@
       "types": {
         "audio-visualizer": "Audio Visualizer",
         "button": "Button",
+        "calendar": "Calendar",
         "clock": "Clock",
         "fancy-audio-visualizer": "Fancy Audio Visualizer",
         "label": "Label",

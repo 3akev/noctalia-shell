@@ -2,10 +2,9 @@
 
 #include "render/animation/animation_manager.h"
 #include "shell/control_center/tab.h"
+#include "ui/controls/calendar_view.h"
 
 #include <limits>
-#include <string>
-#include <vector>
 
 class Button;
 class CalendarService;
@@ -34,14 +33,7 @@ private:
   void doUpdate(Renderer& renderer) override;
   void rebuild();
   void rebuildEventList(float scale);
-  void addEventLinkOverlay(Flex& row, const std::string& url, float scale);
-  void layoutEventLinkOverlays();
   void toggleEventsCard();
-
-  struct EventLinkOverlay {
-    Flex* row = nullptr;
-    InputArea* area = nullptr;
-  };
 
   ConfigService* m_config = nullptr;
   CalendarService* m_calendar = nullptr;
@@ -64,7 +56,7 @@ private:
   Flex* m_eventsCard = nullptr;
   Label* m_eventsTitle = nullptr;
   ScrollView* m_eventsScroll = nullptr;
-  std::vector<EventLinkOverlay> m_eventLinkOverlays;
+  calendar_view::EventListState m_eventListState;
   int m_selectedYear = std::numeric_limits<int>::min();
   int m_selectedMonth = -1;
   int m_selectedDay = -1;
