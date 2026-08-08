@@ -439,6 +439,7 @@ _noctalia_sources = files(
   'src/config/config_export.cpp',
   'src/config/config_merge.cpp',
   'src/config/config_migrations.cpp',
+  'src/config/config_origins.cpp',
   'src/config/config_overrides.cpp',
   'src/config/config_service.cpp',
   'src/config/config_types.cpp',
