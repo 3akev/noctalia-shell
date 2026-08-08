@@ -640,7 +640,7 @@ void Application::initStyleThemeAndWayland() {
   m_screenTimeService.initialize(&m_wayland);
   syncScreenTimeService();
   m_screenTimeService.setChangeCallback([this]() {
-    if (m_panelManager.isOpenPanel("control-center")) {
+    if (m_panelManager.isOpenPanel("control-center") && m_panelManager.isActivePanelContext("screen-time")) {
       m_panelManager.refresh();
     }
   });
@@ -753,9 +753,6 @@ void Application::initWaylandCallbacks() {
     m_bar.refresh();
     m_dock.refresh();
     m_windowSwitcher.onToplevelChange();
-    if (m_panelManager.isOpenPanel("control-center")) {
-      m_panelManager.refresh();
-    }
   });
   if constexpr (kLockKeysEnabled) {
     if (lockKeysConsumersEnabled(m_configService.config())) {
