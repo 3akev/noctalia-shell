@@ -740,7 +740,7 @@
       "greeter-sync-timeout": "Die Greeter-Synchronisierung wartet weiterhin auf Administratorfreigabe. Prüfe einen TTY oder eine Konsole auf eine Polkit-Anfrage, aktiviere den Polkit-Agenten in den Sicherheitseinstellungen oder führe pkexec manuell aus.",
       "greeter-sync-timeout-manual": "Die Greeter-Synchronisierung benötigt weiterhin Administratorfreigabe. Führe in einem Terminal aus: pkexec noctalia-greeter-apply-appearance \"$XDG_RUNTIME_DIR/noctalia-greeter-sync\"",
       "keybind-app": "Noctalia",
-      "keybind-invalid-modifier": "Diese Verknüpfung akzeptiert eine einzelne Taste ohne Zusatztasten.",
+      "keybind-invalid-modifier": "Dieses Tastenkürzel akzeptiert eine einzelne Taste ohne Zusatztasten.",
       "keybind-invalid-printable": "Druckbare Tasten (Buchstaben, Zahlen, Symbole) benötigen einen Modifikator wie Ctrl oder Alt.",
       "keybind-invalid-super": "Die Super-/Windows-Taste kann nicht für Shell-Tastenkombinationen verwendet werden.",
       "keybind-invalid-title": "Tastenkombination nicht erlaubt",
@@ -1021,7 +1021,8 @@
         "inspector": {
           "add-instance-title": "Neues benanntes {widget}-Widget zu {lane} hinzufügen",
           "add-title": "Widget zu {lane} hinzufügen",
-          "move-to-lane": "Nach {lane} verschieben"
+          "move-to-lane": "Nach {lane} verschieben",
+          "reset-defaults": "Auf Standardwerte zurücksetzen"
         },
         "instance": {
           "create-save": "Erstellen",
@@ -1745,7 +1746,7 @@
           "label": "Hover-Hervorhebung"
         },
         "layer": {
-          "description": "Verwende Overlay, um die Leiste über Vollbild-Apps anzuzeigen; angedockte Panels folgen der Leiste",
+          "description": "Verwende „Overlay“, um die Leiste über Vollbild-Apps anzuzeigen; angedockte Panels folgen der Leiste",
           "label": "Wayland-Ebene"
         },
         "opposite-edge-margin": {
@@ -1944,7 +1945,7 @@
           "label": "Launcher-Button"
         },
         "layer": {
-          "description": "Verwende Overlay, um das Dock über Vollbild-Apps anzuzeigen",
+          "description": "Verwende „Overlay“, um das Dock über Vollbild-Apps anzuzeigen",
           "label": "Wayland-Ebene"
         },
         "magnification": {
@@ -2197,9 +2198,17 @@
           "description": "Regeln pro Absender für Toasts, Verlauf und Töne; der erste passende aktivierte Filter hat Vorrang",
           "label": "Benachrichtigungsfilter"
         },
+        "history-retention-hours": {
+          "description": "Entferne automatisch Benachrichtigungsverlaufseinträge, die älter als die angegebene Stundenanzahl sind (0, um dauerhaft zu behalten)",
+          "label": "Aufbewahrungszeitraum"
+        },
         "layer": {
-          "description": "Verwende Overlay, um Benachrichtigungs-Toasts über Vollbild-Apps anzuzeigen",
+          "description": "Verwende „Overlay“, um Benachrichtigungs-Toasts über Vollbild-Apps anzuzeigen",
           "label": "Wayland-Ebene"
+        },
+        "max-visible": {
+          "description": "Maximale Anzahl gleichzeitig sichtbarer Benachrichtigungs-Toasts auf dem Bildschirm (0, um den gesamten verfügbaren Platz zu nutzen)",
+          "label": "Maximal sichtbare Toasts"
         },
         "monitors": {
           "description": "Wähle, welche Monitore Benachrichtigungs-Toasts anzeigen; leer lassen, um sie auf allen Monitoren anzuzeigen",
@@ -2255,6 +2264,10 @@
           "description": "Breite des Kontrollzentrum-Panels in Pixeln (kompakte Modi und Modi ohne Seitenleiste skalieren davon ausgehend herunter)",
           "label": "Kontrollzentrumsbreite"
         },
+        "floating-layer": {
+          "description": "Verwende „Top“, wenn Eingabemethoden-Kandidatenfenster hinter schwebenden Panels verborgen sind; „Overlay“ hält Panels über Vollbildinhalten",
+          "label": "Schwebende Panel-Ebene"
+        },
         "floating-offset": {
           "description": "Abstand in Pixeln zwischen einem schwebenden oder losgelösten Panel und der Leistenkante",
           "label": "Schwebender Abstand"
@@ -2263,9 +2276,17 @@
           "description": "Wähle bis zu sechs Shortcuts für den Start-Tab",
           "label": "Start-Shortcuts"
         },
+        "home-shortcuts-show-labels": {
+          "description": "Zeige Textbeschriftungen unter Shortcut-Icons im Start-Tab an",
+          "label": "Shortcut-Beschriftungen anzeigen"
+        },
         "launcher-app-grid": {
           "description": "Zeige ein Raster von App-Icons mit Beschriftungen darunter, wenn die Ergebnisse ausschließlich Apps sind",
           "label": "App-Rasteransicht"
+        },
+        "launcher-auto-paste": {
+          "description": "Füge nach Rechner-, Emoji- und anderen Kopier-Aktivierungen automatisch in das fokussierte Fenster ein (gleiche Tastenkürzel wie beim Zwischenablage-Auto-Paste)",
+          "label": "Auto-Paste"
         },
         "launcher-categories": {
           "description": "Zeige einen Kategoriefilter im Launcher; mit F6 einblenden, danach mit F6 und Shift+F6 wechseln",
@@ -2364,6 +2385,10 @@
           "description": "Wo die Hintergrundbild-Auswahl platziert wird, wenn sie durch Klicken auf das Leisten-Widget geöffnet wird",
           "label": "An der Leiste"
         },
+        "panel-anchor-bar": {
+          "description": "Leiste, an der Panels angeheftet werden, wenn sie geöffnet werden; leer lassen, um dem Widget, Tastenkürzel oder Dock zu folgen, das sie geöffnet hat",
+          "label": "Ankerleiste"
+        },
         "placement-clipboard": {
           "description": "Wähle, ob die Zwischenablage an der Leiste angedockt wird oder an einer gewählten Bildschirmposition schwebt",
           "label": "Platzierung"
@@ -2434,8 +2459,8 @@
           "label": "Spalten"
         },
         "session-show-shortcuts": {
-          "description": "Zeige Shortcut-Hinweise an oder blende sie aus",
-          "label": "Shortcuts anzeigen"
+          "description": "Zeige Tastenkürzel-Hinweise an oder blende sie aus",
+          "label": "Tastenkürzel anzeigen"
         }
       },
       "services": {
@@ -2452,13 +2477,49 @@
           "description": "Füge iCloud-, CalDAV- oder Google-Konten hinzu",
           "label": "Kalenderkonten"
         },
+        "calendar-credentials": {
+          "button": "Erneut versuchen",
+          "description-cancelled": "Die Secret-Service-Anfrage wurde abgebrochen; versuche es erneut, wenn du bereit bist",
+          "description-error": "Auf Kalender-Anmeldedaten konnte nicht über den Secret Service zugegriffen werden",
+          "description-locked": "Kalender-Anmeldedaten sind gesperrt oder der Zugriff wurde verweigert; entsperre den Secret Service und versuche es erneut",
+          "description-migration": "Klartext-Kalender-Anmeldedaten warten darauf, in den Secret Service verschoben zu werden; sie werden nicht für die Kalendersynchronisierung verwendet",
+          "description-opening": "Kalender-Anmeldedaten werden über den Secret Service geöffnet",
+          "description-unavailable": "In dieser Sitzung ist kein Secret-Service-Anbieter verfügbar",
+          "label": "Kalender-Anmeldedatenspeicher"
+        },
         "calendar-edit": {
           "button": "Bearbeiten",
-          "description": "Aktualisiere dieses Kalenderkonto"
+          "button-reconnect": "Neu verbinden",
+          "description": "Aktualisiere dieses Kalenderkonto",
+          "description-reconnect": "Google-Autorisierung fehlt; verbinde dieses Konto neu"
+        },
+        "calendar-event-date-format": {
+          "description": "Das Datumsformat, das in der Ereigniskarte für das ausgewählte Datum angezeigt wird",
+          "label": "Ereignisdatumsformat"
+        },
+        "calendar-event-time-format": {
+          "description": "Das Zeitformat, das für Kalenderereignisse angezeigt wird",
+          "label": "Ereigniszeitformat"
         },
         "calendar-refresh-interval": {
           "description": "Wie oft Kalenderereignisse synchronisiert werden (Minuten)",
           "label": "Aktualisierungsintervall"
+        },
+        "calendar-storage": {
+          "button": "Erneut versuchen",
+          "description-cancelled": "Die verschlüsselte Speicheraufforderung wurde abgebrochen; Kalenderereignisse sind nur für diese Sitzung verfügbar",
+          "description-error": "Der verschlüsselte Kalenderereignis-Cache konnte nicht geöffnet oder gespeichert werden",
+          "description-locked": "Der verschlüsselte Speicher ist gesperrt oder der Zugriff wurde verweigert; behebe den Zugriff und versuche es erneut",
+          "description-migration": "Der Klartext-Kalenderereignis-Cache wartet darauf, verschlüsselt zu werden; er wird bis zum erfolgreichen Abschluss der Migration erhalten",
+          "description-missing-key": "Der Schlüssel für den Kalenderereignis-Cache fehlt; Konto-Anmeldedaten verwenden separaten Speicher (vorhandene Cache-Dateien wurden erhalten)",
+          "description-opening": "Der verschlüsselte Kalenderereignis-Cache wird geöffnet",
+          "description-recovery": "Der Kalenderereignis-Cache konnte nicht authentifiziert werden oder ist beschädigt; versuche es erneut nach dem Wiederherstellen des richtigen Schlüssels, oder setze den privaten Speicher zurück",
+          "description-unavailable": "Kein Secret-Service-Anbieter verfügbar; Kalenderereignisse sind nur für diese Sitzung verfügbar",
+          "label": "Kalenderereignis-Speicher"
+        },
+        "calendar-week-numbers": {
+          "description": "Zeige ISO-8601-Wochennummern neben dem Kalenderraster an",
+          "label": "Wochennummern"
         },
         "custom-schedule": {
           "description": "Verwende manuelle Sonnenaufgangs-/Sonnenuntergangszeiten statt der Berechnung aus Koordinaten",
@@ -2688,6 +2749,22 @@
           "label": "Bildaktionsbefehl",
           "placeholder": "gimp {path} oder satty -f -"
         },
+        "clipboard-keep-from-closed-apps": {
+          "description": "Behalte das zuletzt kopierte Element zum Einfügen verfügbar, nachdem die Anwendung, aus der es kopiert wurde, geschlossen wurde",
+          "label": "Zwischenablage von geschlossenen Apps behalten"
+        },
+        "clipboard-storage": {
+          "button": "Erneut versuchen",
+          "description-cancelled": "Die Secret-Service-Anfrage wurde abgebrochen; der Zwischenablageverlauf ist nur für diese Sitzung verfügbar",
+          "description-error": "Der verschlüsselte Zwischenablageverlauf konnte nicht geöffnet oder gespeichert werden",
+          "description-locked": "Der Zwischenablage-Schlüsselspeicher ist gesperrt oder der Zugriff wurde verweigert; behebe den Zugriff und versuche es erneut",
+          "description-migration": "Der Klartext-Zwischenablageverlauf wartet darauf, verschlüsselt zu werden; vorhandene Dateien werden bis zum erfolgreichen Abschluss der Migration erhalten",
+          "description-missing-key": "Der konfigurierte verschlüsselte Speicherschlüssel fehlt; vorhandene Zwischenablageverlauf-Dateien wurden erhalten",
+          "description-opening": "Der verschlüsselte Zwischenablageverlauf wird geöffnet",
+          "description-recovery": "Der Zwischenablageverlauf konnte nicht authentifiziert werden oder ist beschädigt; versuche es erneut nach dem Wiederherstellen des richtigen Schlüssels, oder setze den privaten Speicher zurück",
+          "description-unavailable": "Kein Secret-Service-Anbieter verfügbar; der Zwischenablageverlauf ist nur für diese Sitzung verfügbar",
+          "label": "Zwischenablageverlauf-Speicher"
+        },
         "date-format": {
           "description": "Standarddatumsformat für die Shell-UI ohne eigene Einstellung",
           "label": "Datumsformat"
@@ -2703,6 +2780,10 @@
         "greeter-sync-privilege-command": {
           "description": "Ersetzt pkexec/run0 für die Greeter-Synchronisierung; der Pfad des Apply-Helfers und das Staging-Verzeichnis werden automatisch angehängt (Beispiel: ghostty -e pkexec)",
           "label": "Privilegienbefehl für Greeter-Synchronisierung"
+        },
+        "keyboard-layout-custom-labels": {
+          "description": "Weise Tastaturlayout-Namen Beschriftungen zu, die in der gesamten Shell verwendet werden",
+          "label": "Tastaturlayout-Beschriftungen"
         },
         "launch-apps-as-systemd-services": {
           "description": "Startet Anwendungen in separaten systemd-Diensten, damit sie sich keine cgroup mit Noctalia teilen",
@@ -2881,6 +2962,10 @@
           "description": "Sende das aufgenommene PNG über stdin an einen Shell-Befehl",
           "label": "An Befehl weiterleiten"
         },
+        "screenshot-remember-last-region": {
+          "description": "Verwende den letzten Bereich als Vorauswahl beim nächsten Bereichs-Screenshot (auch nach Abbruch)",
+          "label": "Letzten Bereich merken"
+        },
         "screenshot-save-to-file": {
           "description": "Speichere Screenshots als PNG-Dateien in das Ausgabeverzeichnis",
           "label": "In Datei speichern"
@@ -2888,6 +2973,10 @@
         "screenshot-show-cursor": {
           "description": "Zeige den Mauszeiger in Screenshots an",
           "label": "Cursor anzeigen"
+        },
+        "settings-window-translucent": {
+          "description": "Mache den Einstellungs-Hintergrund transluzent für Compositor-Effekte",
+          "label": "Transluzenter Einstellungs-Hintergrund"
         },
         "show-location": {
           "description": "Zeige den Standortnamen in Wetter-Widgets an",
@@ -3031,7 +3120,7 @@
       "kind-section-label": "Verhalten",
       "label-field": "Beschriftung",
       "label-placeholder": "Optionaler Button-Text",
-      "shortcut-label": "Tastenkombination",
+      "shortcut-label": "Tastenkürzel",
       "variant": {
         "default": "Standard",
         "destructive": "Destruktiv",
@@ -3042,7 +3131,52 @@
       },
       "variant-label": "Button-Stil"
     },
+    "storage-recovery": {
+      "button": "Privaten Speicher zurücksetzen",
+      "button-confirm": "Speicher-Zurücksetzung bestätigen",
+      "description": "Lösche den gespeicherten Zwischenablageverlauf und den Kalenderereignis-Cache dauerhaft, dann öffne den privaten Speicher neu (eine konfigurierte Schlüsseldatei wird nie geändert)",
+      "error-delete": "Einige private Speicherdateien konnten nicht gelöscht werden. Der Speicherschlüssel wurde erhalten.",
+      "error-key": "Private Speicherdateien wurden gelöscht, aber der sichere Speicher konnte nicht neu geöffnet werden. Behebe den Zugriff und versuche es erneut.",
+      "label": "Privaten Speicher wiederherstellen",
+      "success": "Der private Speicher wurde erfolgreich zurückgesetzt."
+    },
+    "templates": {
+      "store": {
+        "browse": "Templates durchsuchen",
+        "categories": "Kategorien",
+        "category-all": "Alle",
+        "empty": "Keine Templates entsprechen deinen Filtern",
+        "enabled-count": "{count} aktiviert",
+        "filter-all": "Alle",
+        "filter-enabled": "Aktiviert",
+        "results-count": "{count} Templates",
+        "search-placeholder": "Templates suchen…",
+        "sort-category-asc": "Nach Kategorie sortieren (A-Z)",
+        "sort-category-desc": "Nach Kategorie sortieren (Z-A)",
+        "sort-name-asc": "Nach Name sortieren (A-Z)",
+        "sort-name-desc": "Nach Name sortieren (Z-A)",
+        "title": "Community-Templates"
+      }
+    },
     "widgets": {
+      "actions": {
+        "command-placeholder": "Shell-Befehl",
+        "default": "Standard",
+        "disabled": "Deaktiviert",
+        "run-command": "Befehl ausführen…",
+        "unset": "Nicht festgelegt"
+      },
+      "gestures": {
+        "back": "Zurück-Taste",
+        "forward": "Vorwärts-Taste",
+        "left": "Linksklick",
+        "middle": "Mittelklick",
+        "right": "Rechtsklick",
+        "scroll-down": "Nach unten scrollen",
+        "scroll-left": "Nach links scrollen",
+        "scroll-right": "Nach rechts scrollen",
+        "scroll-up": "Nach oben scrollen"
+      },
       "instances": {
         "cpu": "CPU",
         "date": "Datum",
@@ -3120,9 +3254,17 @@
         "workspace-label-inside": "Innerhalb der Pill"
       },
       "settings": {
+        "actions": {
+          "description": "Was jede Mausgeste auf diesem Widget bewirkt; wähle eine Aktion, führe einen Shell-Befehl aus oder deaktiviere sie",
+          "label": "Gestenaktionen"
+        },
         "active-color": {
           "description": "Farbe für aktive Privatsphäre-Indikatoren; feste Hex-Farben werden ebenfalls unterstützt",
           "label": "Aktiv-Farbe"
+        },
+        "active-indicator-color": {
+          "description": "Farbe des Indikators unter dem Icon des aktiven Fensters",
+          "label": "Aktiv-Indikator-Farbe"
         },
         "active-opacity": {
           "description": "Deckkraft des Icons für das aktive (fokussierte) Fenster",
@@ -3190,6 +3332,10 @@
         "centered": {
           "description": "Visualizer-Balken zentrieren, statt sie am Rand auszurichten",
           "label": "Zentriert"
+        },
+        "change-color-on-hover": {
+          "description": "Ändere die Füll- und Beschriftungsfarben eines Arbeitsbereichs, während sich der Zeiger darüber befindet",
+          "label": "Farbe beim Hovern ändern"
         },
         "color": {
           "description": "Farbe für Icon und Beschriftung dieses Widgets; feste Hex-Farben werden ebenfalls unterstützt",
@@ -3280,6 +3426,10 @@
           "label": "Symbol",
           "sysmon-description": "Benutzerdefinierte Symbol-Glyphe; leer lassen, um das Icon für die gewählte Statistik zu verwenden",
           "volume-description": "Benutzerdefinierte Symbol-Glyphe; leer lassen, um die integrierten dynamischen Icons zu verwenden"
+        },
+        "glyph-position": {
+          "description": "In welcher Reihenfolge das Symbol im Verhältnis zum Text/Graph/Gauge angezeigt wird",
+          "label": "Symbolposition"
         },
         "group-by-workspace": {
           "description": "Gruppiere Taskleisten-Icons in Arbeitsbereichs-Kapseln, wenn Compositor-Daten verfügbar sind",
@@ -3399,6 +3549,14 @@
           "description": "Minimale Beschriftungsbreite in Pixeln, um Größenänderungen zu vermeiden",
           "label": "Minimale Beschriftungsbreite"
         },
+        "label-show-units": {
+          "description": "Zeige Einheiten wie Prozent / GiB / °C an",
+          "label": "Einheiten anzeigen"
+        },
+        "label-source": {
+          "description": "Was die Arbeitsbereichsbeschriftungen anzeigen",
+          "label": "Beschriftungsquelle"
+        },
         "labels-only-when-occupied": {
           "description": "Blende Arbeitsbereichsbeschriftungen auf leeren, inaktiven Arbeitsbereichen aus",
           "label": "Beschriftungen nur wenn belegt",
@@ -3493,6 +3651,10 @@
           "description": "Pfad zum Lua-Skript",
           "label": "Skript"
         },
+        "scroll-repeat": {
+          "description": "Wähle, ob Scroll-Aktionen der Befehlssemantik folgen, einmal pro Geste ausgeführt werden oder bei jedem Scroll-Schritt wiederholt werden",
+          "label": "Scroll-Wiederholung"
+        },
         "show-active-indicator": {
           "description": "Zeige einen kleinen Punkt unter dem Icon des aktiven Fensters in der Taskleiste",
           "label": "Aktives-Fenster-Indikator"
@@ -3513,9 +3675,17 @@
           "description": "Zeige einen Platzhaltertext, wenn kein Fenster aktiv ist, statt das Widget auszublenden",
           "label": "Leeres Label anzeigen"
         },
+        "show-glyph": {
+          "description": "Zeige das Widget-Symbol oder benutzerdefiniertes Bild an",
+          "label": "Symbol anzeigen"
+        },
         "show-label": {
           "description": "Zeige die Textbeschriftung des Widgets an",
           "label": "Beschriftung anzeigen"
+        },
+        "show-labels": {
+          "description": "Zeige Textbeschriftungen auf Arbeitsbereichen an",
+          "label": "Beschriftungen anzeigen"
         },
         "show-num-lock": {
           "description": "Zeige den Num-Lock-Status an",
@@ -3528,6 +3698,14 @@
         "show-temperature": {
           "description": "Zeige die aktuelle Temperatur als Text an",
           "label": "Temperatur anzeigen"
+        },
+        "show-unlock-hint": {
+          "description": "Zeige die Statuskarte über dem Anmeldefeld für Entsperrhinweise und Authentifizierungsaufforderungen an; Fehler und Caps-Lock-Warnungen werden auch bei deaktivierter Option angezeigt",
+          "label": "Entsperrhinweis"
+        },
+        "show-value": {
+          "description": "Zeige den aktuellen Wert neben der Visualisierung an",
+          "label": "Wert anzeigen"
         },
         "show-vpn-label": {
           "description": "Ersetzt die Netzwerkbeschriftung durch die VPN-Beschriftung im Ersetzungsmodus; fügt die VPN-Beschriftung neben dem VPN-Icon im Beide-Modus hinzu",
@@ -3590,6 +3768,14 @@
           "description": "Optionales Format für vertikale Leisten",
           "label": "Vertikales Format"
         },
+        "visualization": {
+          "description": "Gauge, Diagramm oder keine Datenvisualisierung",
+          "label": "Visualisierung"
+        },
+        "vpn-status": {
+          "description": "Wie der VPN-Status angezeigt wird: „Ersetzen“ tauscht das Netzwerk-Symbol gegen ein VPN-Schild aus, „Beide“ zeigt sie nebeneinander, „Ausgeblendet“ deaktiviert den VPN-Indikator",
+          "label": "VPN-Status"
+        },
         "warning-color": {
           "description": "Farbe, die angewendet wird, wenn der Ladezustand die Akkuwarnschwelle des Systems erreicht oder unterschreitet",
           "label": "Warnfarbe"
@@ -3605,6 +3791,10 @@
         "workspace-group-capsule": {
           "description": "Zeichne den Hintergrund und Rahmen um jeden gruppierten Arbeitsbereich; deaktivieren, um nur die Icon-Gruppierung und die Arbeitsbereichs-Disc-Beschriftungen beizubehalten",
           "label": "Arbeitsbereichsgruppen-Kapsel"
+        },
+        "workspace-group-content": {
+          "description": "Was jede Arbeitsbereichsgruppe anzeigt: App-Icons, eine Fensteranzahl oder Punkte (bis zu fünf, dann +N für den Rest)",
+          "label": "Gruppeninhalt"
         },
         "workspace-label-placement": {
           "description": "Ecke, am Rand zentriert oder innerhalb der Kapsel",
@@ -3651,10 +3841,25 @@
     "window": {
       "export-config": "Konfiguration exportieren…",
       "export-config-saved": "Konfigurationsexport gespeichert.",
+      "filter-overridden": "Überschrieben",
       "legacy-config-warning": "Veraltete Konfiguration wird im Arbeitsspeicher migriert: {issue}. Führe noctalia config validate aus, um alle erforderlichen Änderungen zu sehen.",
       "native-title": "Noctalia-Einstellungen",
       "no-results": "Keine Einstellungen gefunden",
       "no-results-hint": "Versuche einen anderen Einstellungsnamen oder Konfigurationsschlüssel.",
+      "offline-mode-notice": {
+        "appearance": "Community-Paletten-Downloads werden nicht funktionieren.",
+        "calendar-account": "Kalendersuche und -synchronisierung werden nicht funktionieren.",
+        "disable-hint": "Deaktiviere den Offline-Modus im Abschnitt Sicherheit.",
+        "launcher": "Das Abrufen von Währungskursen wird nicht funktionieren.",
+        "location": "Wetter- und Standortabfragen werden nicht funktionieren.",
+        "plugin-store": "Fernzugriff auf den Plugin-Katalog und Download-Anfragen werden nicht funktionieren.",
+        "plugins": "Plugin-HTTP-Anfragen werden nicht funktionieren; Git-Quellen können weiterhin aktualisiert werden.",
+        "security": "Externe IP-Abfrage und Telemetrie werden nicht funktionieren.",
+        "services": "Kalenderkonten-Synchronisierung wird nicht funktionieren.",
+        "template-store": "Community-Template-Downloads werden nicht funktionieren.",
+        "templates": "Community-Template-Downloads und -Aktualisierungen werden nicht funktionieren.",
+        "title": "Offline-Modus"
+      },
       "reset-page": "Seite zurücksetzen",
       "reset-page-confirm": "Zurücksetzen bestätigen",
       "search-placeholder": "Einstellungen suchen…",
@@ -3799,6 +4004,7 @@
       "sort-date-desc": "Nach Datum sortieren (neueste zuerst)",
       "sort-name-asc": "Nach Name sortieren (A-Z)",
       "sort-name-desc": "Nach Name sortieren (Z-A)",
+      "sort-random": "Zufällig sortieren (Shuffle)",
       "title": "Hintergrundbild"
     }
   },

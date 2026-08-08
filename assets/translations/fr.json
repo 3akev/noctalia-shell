@@ -94,10 +94,10 @@
         "cpu": "CPU",
         "cpu-temp": "Temp CPU",
         "disk": "Disque",
-        "disk-free": "Espace Disque Libre",
-        "disk-free-pct": "Espace Disque Libre %",
-        "disk-used": "Espace Disque Utilisé",
-        "disk-used-pct": "Espace Disque Utilisé %",
+        "disk-free": "Espace disque libre",
+        "disk-free-pct": "Espace disque libre %",
+        "disk-used": "Espace disque utilisé",
+        "disk-used-pct": "Espace disque utilisé %",
         "download": "Téléchargement",
         "gpu-temp": "Temp GPU",
         "gpu-usage": "Util GPU",
@@ -529,6 +529,7 @@
         "show-login-button": "Bouton de connexion",
         "show-password-hint": "Indice de mot de passe",
         "show-session-buttons": "Boutons de session",
+        "show-unlock-hint": "Indice de déverrouillage",
         "show-vpn-label": "Afficher le libellé VPN",
         "show-weather": "Météo",
         "show-when-idle": "Afficher si inactif",
@@ -954,6 +955,7 @@
           "clear": "Effacer",
           "deselect": "Désélectionner",
           "drag": "Réorganiser",
+          "drawer-detached": "Panel détaché",
           "drawer-glyph-closed": "Icon fermé",
           "drawer-glyph-opened": "Icon ouvert",
           "edit": "Modifier le style",
@@ -1018,6 +1020,7 @@
           "empty": "Aucun paramètre ne correspond aux filtres actuels.",
           "groups": {
             "actions": "Actions",
+            "behavior": "Comportement",
             "grouping": "Regrouper",
             "presentation": "Présentation",
             "runtime": "Exécution",
@@ -2314,7 +2317,7 @@
         },
         "calendar-storage": {
           "button": "Réessayer",
-          "description-opening": "Le cache d'événement du calendrier chiffré est en cours d'ouverture. "
+          "description-opening": "Le cache d'événement du calendrier chiffré est en cours d'ouverture"
         },
         "calendar-week-numbers": {
           "label": "Numéros de semaine"
@@ -2417,7 +2420,11 @@
           "stats": {
             "cpu-temp": "Température CPU",
             "cpu-usage": "Utilisation CPU",
+            "disk-free": "Espace disque libre",
+            "disk-free-pct": "Espace disque libre %",
             "disk-usage": "Utilisation disque",
+            "disk-used": "Espace disque utilisé",
+            "disk-used-pct": "Espace disque utilisé %",
             "gpu-temp": "Température GPU",
             "gpu-usage": "Utilisation GPU",
             "gpu-vram": "VRAM GPU",
@@ -2726,6 +2733,9 @@
           "description": "Enregistre les captures d’écran au format PNG dans le dossier de destination",
           "label": "Enregistrer en tant que fichier"
         },
+        "screenshot-show-cursor": {
+          "label": "Afficher le curseur"
+        },
         "show-location": {
           "description": "Affiche le nom de la localisation dans les widgets météo",
           "label": "Afficher la localisation"
@@ -2879,6 +2889,15 @@
       "variant-label": "Style du bouton"
     },
     "widgets": {
+      "actions": {
+        "run-command": "Exécuter une commande..."
+      },
+      "gestures": {
+        "back": "Bouton de retour",
+        "left": "Clic gauche",
+        "middle": "Clic du milieu",
+        "right": "Clic droit"
+      },
       "instances": {
         "cpu": "CPU",
         "date": "Date",
@@ -2894,6 +2913,10 @@
         "auto": "Auto",
         "cpu-temp": "Température CPU",
         "cpu-usage": "Utilisation CPU",
+        "disk-free": "Espace disque libre",
+        "disk-free-percent": "Espace disque libre %",
+        "disk-used": "Espace disque utilisé",
+        "disk-used-percent": "Espace disque utilisé %",
         "full": "Complet",
         "gauge": "Jauge",
         "glyph": "Glyphe",
@@ -3073,6 +3096,7 @@
           "description": "Utiliser le suffixe de l’unité, soit 1.2M au lieu de 1.2 MB/s "
         },
         "pinned": {
+          "label": "Items épinglés",
           "taskbar-label": "Applications épinglées"
         },
         "scale": {
@@ -3081,6 +3105,13 @@
         },
         "scope": {
           "description": "Exécutez un script d'exécution par emplacement de widget actif, ou partagez un même script d'exécution entre les barres ayant le même identifiant de widget"
+        },
+        "show-all-outputs": {
+          "label": "Afficher tous les écrans"
+        },
+        "show-caps-lock": {
+          "description": "Afficher l'état du Verr. Maj",
+          "label": "Afficher Verr. Maj"
         },
         "show-condition": {
           "description": "Montrer le texte de la condition météo"
@@ -3143,6 +3174,11 @@
       "export-config": "Exporter la configuration...",
       "native-title": "Paramètres Noctalia",
       "no-results": "Pas de paramètre trouvé",
+      "offline-mode-notice": {
+        "template-store": "Les téléchargements des modèles de la communauté ne vont pas fonctionner. ",
+        "templates": "Les téléchargements des modèles de la communauté et des mises à jour ne vont pas fonctionner. ",
+        "title": "Mode hors connexion"
+      },
       "reset-page": "Réinitialiser la page",
       "reset-page-confirm": "Confirmer la réinitialisation",
       "search-placeholder": "Rechercher un paramètre",

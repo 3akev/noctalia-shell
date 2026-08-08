@@ -1021,7 +1021,8 @@
         "inspector": {
           "add-instance-title": "Adicionar novo widget nomeado {widget} a {lane}",
           "add-title": "Adiciona Widget a {lane}",
-          "move-to-lane": "Mover para {lane}"
+          "move-to-lane": "Mover para {lane}",
+          "reset-defaults": "Redefinir para os Padrões"
         },
         "instance": {
           "create-save": "Criar",
@@ -1614,7 +1615,7 @@
           "label": "Preto Puro"
         },
         "theme-mode": {
-          "description": "Escolha o modo escuro, claro ou automático com base na hora do dia.",
+          "description": "Escolha o modo escuro, claro ou automático com base na hora do dia",
           "label": "Modo do Tema"
         },
         "ui-scale": {
@@ -2199,7 +2200,7 @@
         },
         "history-retention-hours": {
           "description": "Automaticamente remover histórico de notificações se existir por mais que esta quantidade de horas (0 para manter para sempre)",
-          "label": "Manter histórico apra"
+          "label": "Período de Retenção"
         },
         "layer": {
           "description": "Use Overlay para mostrar lâminas de notificação acima de apps em tela cheia",
@@ -2385,7 +2386,7 @@
           "label": "Abrir Próximo ao Clique"
         },
         "panel-anchor-bar": {
-          "description": "Barra à qual os painéis se anexam quando abertos. Deixe vazio para seguir o widget, atalho ou dock que os abriu",
+          "description": "Barra à qual os painéis se anexam quando abertos; Deixe vazio para seguir o widget, atalho ou dock que os abriu",
           "label": "Barra Âncora"
         },
         "placement-clipboard": {
@@ -2478,19 +2479,19 @@
         },
         "calendar-credentials": {
           "button": "Tentar Novamente",
-          "description-cancelled": "A solicitação do Secret Service foi cancelada. Tente novamente quando estiver pronto.",
-          "description-error": "Não foi possível acessar as credenciais do calendário por meio do Secret Service.",
-          "description-locked": "As credenciais do calendário estão bloqueadas ou o acesso foi negado. Desbloqueie o Secret Service e tente novamente.",
-          "description-migration": "As credenciais do calendário em texto simples estão aguardando para serem transferidas para o Secret Service. Elas não são usadas para a sincronização do calendário.",
-          "description-opening": "As credenciais para o calendário estão sendo abertas através do Secret Service.",
-          "description-unavailable": "Nenhum provedor de Secret Service disponível nesta sessão.",
+          "description-cancelled": "A solicitação do Secret Service foi cancelada; tente novamente quando estiver pronto",
+          "description-error": "Não foi possível acessar as credenciais do calendário por meio do Secret Service",
+          "description-locked": "Credenciais do calendário estão bloqueadas ou o acesso foi negado; desbloqueie o Secret Service e tente novamente",
+          "description-migration": "As credenciais do calendário em texto puro estão aguardando para serem movidas para o Secret Service; elas não são usadas para a sincronização",
+          "description-opening": "Credenciais para o calendário estão sendo abertas através do Secret Service",
+          "description-unavailable": "Nenhum provedor de Secret Service disponível nesta sessão",
           "label": "Armazenamento de Credenciais de Calendário"
         },
         "calendar-edit": {
           "button": "Editar",
           "button-reconnect": "Reconectar",
           "description": "Atualizar essa conta de Calendário",
-          "description-reconnect": "A autorização do Google está ausente. Reconecte esta conta."
+          "description-reconnect": "Autorização do Google está ausente; reconecte esta conta."
         },
         "calendar-event-date-format": {
           "description": "O formato de hora mostrado no cartão do evento para a data selecionada",
@@ -2506,14 +2507,14 @@
         },
         "calendar-storage": {
           "button": "Tentar Novamente",
-          "description-cancelled": "O prompt de armazenamento criptografado foi cancelado. Os eventos do calendário permanecerão disponíveis apenas nesta sessão.",
-          "description-error": "Não foi possível abrir ou salvar o cache criptografado de eventos do calendário.",
-          "description-locked": "O armazenamento criptografado está bloqueado ou o acesso foi negado. Corrija o acesso e tente novamente.",
-          "description-migration": "O cache de eventos do calendário em texto simples está aguardando criptografia. Ele será preservado até que a migração seja concluída com sucesso.",
-          "description-missing-key": "Faltando chave do cache de evento do calendário. As credenciais da conta utilizam um armazenamento separado; os arquivos de cache existentes foram preservados.",
-          "description-opening": "O cache criptografado de eventos do calendário está sendo aberto.",
-          "description-recovery": "O evento de calendário não pôde ser autenticado ou está danificado. Tente novamente depois de restaurar a chave correta, ou redefina o armazenamento privado.",
-          "description-unavailable": "Nenhum provedor do Secret Service está disponível. Os eventos do calendário permanecerão disponíveis apenas nesta sessão.",
+          "description-cancelled": "O prompt de armazenamento criptografado foi cancelado; eventos do calendário permanecerão disponíveis apenas nesta sessão",
+          "description-error": "Não foi possível abrir ou salvar o cache criptografado de eventos do calendário",
+          "description-locked": "Armazenamento criptografado está bloqueado ou o acesso foi negado; corrija o acesso e tente novamente",
+          "description-migration": "O cache de eventos do calendário em texto puro está aguardando criptografia; ele será preservado até que a migração seja bem sucedida",
+          "description-missing-key": "Faltando chave do cache de evento do calendário; As credenciais da conta utilizam um armazenamento separado (arquivos de cache existentes foram preservados)",
+          "description-opening": "O cache criptografado de eventos de calendário está sendo aberto",
+          "description-recovery": "O evento de calendário não pôde ser autenticado ou está danificado; tente novamente depois de restaurar a chave correta, ou redefina o armazenamento privado",
+          "description-unavailable": "Nenhum provedor do Secret Service está disponível; eventos de calendário permanecerão disponíveis apenas nesta sessão",
           "label": "Armazenamento de Eventos do Calendário"
         },
         "calendar-week-numbers": {
@@ -2750,18 +2751,18 @@
         },
         "clipboard-keep-from-closed-apps": {
           "description": "Mantém o último item copiado para ser colado após o fechamento do aplicativo de onde foi copiado",
-          "label": "Manter Área de Tranferência de Aplicativos Fechados"
+          "label": "Manter Área de Transferência de Aplicativos Fechados"
         },
         "clipboard-storage": {
           "button": "Tentar Novamente",
-          "description-cancelled": "O prompt do Secret Service foi cancelado. O histórico da área de transferência permanecerá disponível apenas nesta sessão.",
-          "description-error": "Não foi possível abrir ou salvar o histórico criptografado da área de transferência.",
-          "description-locked": "O armazenamento da chave da área de transferência está bloqueado ou o acesso foi negado. Corrija o acesso e tente novamente.",
-          "description-migration": "O histórico da área de transferência em texto simples está aguardando criptografia. Os arquivos existentes serão preservados até que a migração seja concluída com sucesso.",
-          "description-missing-key": "A chave de armazenamento criptografado configurada está ausente. Os arquivos existentes do histórico da área de transferência foram preservados.",
+          "description-cancelled": "O prompt do Secret Service foi cancelado; histórico da área de transferência permanecerá disponível apenas nesta sessão",
+          "description-error": "Não foi possível abrir ou salvar o histórico criptografado da área de transferência",
+          "description-locked": "Armazenamento da chave da área de transferência está bloqueado ou o acesso foi negado; corrija o acesso e tente novamente",
+          "description-migration": "Histórico da área de transferência em texto simples está aguardando criptografia; Os arquivos existentes serão preservados até que a migração seja  bem sucedida",
+          "description-missing-key": "A chave de armazenamento criptografado configurada está ausente; os arquivos existentes do histórico da área de transferência foram preservados.",
           "description-opening": "O histórico criptografado da área de transferência está sendo aberto.",
-          "description-recovery": "O histórico da área de transferência não pôde ser autenticado ou está danificado. Tente novamente depois de restaurar a chave correta, ou redefina o armazenamento privado.",
-          "description-unavailable": "Nenhum provedor do Secret Service está disponível. O histórico da área de transferência permanecerá disponível apenas nesta sessão.",
+          "description-recovery": "Histórico da área de transferência não pôde ser autenticado ou está danificado; tente novamente depois de restaurar a chave correta, ou redefina o armazenamento privado",
+          "description-unavailable": "Nenhum provedor do Secret Service está disponível; histórico da área de transferência permanecerá disponível apenas nesta sessão.",
           "label": "Armazenamento do Histórico da Área de Transferência"
         },
         "date-format": {
@@ -3133,7 +3134,7 @@
     "storage-recovery": {
       "button": "Redefinir Armazenamento Privado",
       "button-confirm": "Confirmar Redefinição de Armazenamento",
-      "description": "Apague permanentemente a área de transferência armazenada e o cache de evento de calendário, então re-abra o armazenamento privado. Um arquivo de chave configurado nunca é modificado.",
+      "description": "Permanentemente apaga histórico de área de transferência armazenado e o cache de evento de calendário, então reabra o armazenamento privado (um arquivo de chave configurado nunca é modificado)",
       "error-delete": "Alguns arquivos do armazenamento privado não puderam ser apagados. A chave de armazenamento foi preservada.",
       "error-key": "Arquivos do armazenamento privado foram apagados, mas o armazenamento seguro não pôde ser reaberto. Corrija o acesso e tente novamente.",
       "label": "Recuperar Armazenamento Privado",
@@ -3254,7 +3255,7 @@
       },
       "settings": {
         "actions": {
-          "description": "O que cada gesto do mouse faz neste widget. Escolha um comando, execute um comando do shell ou desative-o.",
+          "description": "O que cada gesto do mouse faz neste widget; escolha um comando, execute um comando do shell ou desative",
           "label": "Ações de Gesto"
         },
         "active-color": {
@@ -3552,6 +3553,10 @@
           "description": "Mostrar unidades como porcentagem / GiB / °C",
           "label": "Mostrar Unidades"
         },
+        "label-source": {
+          "description": "What workspace labels show*",
+          "label": "Fonte do Rótulo*"
+        },
         "labels-only-when-occupied": {
           "description": "Oculta rótulos de espaços de trabalho vazios e inativos",
           "label": "Rótulos Somente Quando Ocupado",
@@ -3678,6 +3683,10 @@
           "description": "Exibe texto do rótulo do widget",
           "label": "Exibir Rótulo"
         },
+        "show-labels": {
+          "description": "Mostrar rótulos nos espaços de trabalho",
+          "label": "Mostrar Rótulos"
+        },
         "show-num-lock": {
           "description": "Exibe estado do Num Lock",
           "label": "Exibir Num Lock"
@@ -3691,7 +3700,7 @@
           "label": "Exibir Temperatura"
         },
         "show-unlock-hint": {
-          "description": "Exibir o card de status acima da caixa de login para dicas de desbloqueio e prompts de autenticação. Erros e avisos de Caps Lock ainda aparecem quando isso está desligado.",
+          "description": "Exibir o cartão de status acima da caixa de login para dicas de desbloqueio e prompts de autenticação; Erros e avisos de Caps Lock ainda aparecem quando isto está desligado",
           "label": "Dica de Desbloqueio"
         },
         "show-value": {
@@ -3699,7 +3708,7 @@
           "label": "Mostrar Valor"
         },
         "show-vpn-label": {
-          "description": "Substitui rótulo de rede com rótulo da VPN em modo de substituição; adiciona rótulo próximo ao ícone de VPN em ambos modos",
+          "description": "Substitui rótulo de rede com rótulo da VPN em modo Substituir; adiciona rótulo VPN próximo ao ícone de VPN no modo Ambos",
           "label": "Mostrar Rótulo VPN"
         },
         "show-when-idle": {
@@ -3764,7 +3773,7 @@
           "label": "Visualização"
         },
         "vpn-status": {
-          "description": "Como mostrar o status da VPN: troca o ícone de rede para um escudo VPN, ambos mostrar lado a lado, oculto desativa o indicador da VPN",
+          "description": "Como mostrar o status da VPN:  Substituir troca o ícone de rede por um escudo VPN, Ambos mostra-os lado a lado, Oculto desativa o indicador da VPN",
           "label": "Estado da VPN"
         },
         "warning-color": {
