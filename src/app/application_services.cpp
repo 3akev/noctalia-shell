@@ -9,7 +9,6 @@
 #include "core/input/keybind_matcher.h"
 #include "core/log.h"
 #include "core/process/process.h"
-#include "cursor-shape-v1-client-protocol.h"
 #include "dbus/accounts/accounts_service.h"
 #include "dbus/bluetooth/bluetooth_agent.h"
 #include "dbus/bluetooth/bluetooth_service.h"
@@ -756,12 +755,6 @@ void Application::initWaylandCallbacks() {
     m_windowSwitcher.onToplevelChange();
     if (m_panelManager.isOpenPanel("control-center")) {
       m_panelManager.refresh();
-    }
-    if (!m_lockScreen.isActive() && m_wayland.hasPointerPosition() && !m_wayland.activeToplevel().has_value()) {
-      const std::uint32_t serial = m_wayland.lastInputSerial();
-      if (serial != 0) {
-        m_wayland.setCursorShape(serial, WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DEFAULT);
-      }
     }
   });
   if constexpr (kLockKeysEnabled) {
