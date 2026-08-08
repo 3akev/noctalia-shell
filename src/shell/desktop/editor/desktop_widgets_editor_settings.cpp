@@ -995,7 +995,10 @@ void DesktopWidgetsEditor::applySettingChange(const std::string& key, WidgetSett
 
     view.intrinsicWidth = std::max(1.0F, newWidget->intrinsicWidth());
     view.intrinsicHeight = std::max(1.0F, newWidget->intrinsicHeight());
-    view.transformNode->addChild(newWidget->releaseRoot());
+    auto widgetRoot = newWidget->releaseRoot();
+    widgetRoot->setHitTestVisible(false);
+    widgetRoot->setExcludeSubtreeFromTabOrder(true);
+    view.transformNode->addChild(std::move(widgetRoot));
     view.widget = std::move(newWidget);
 
     applyViewState(view, *state, false);

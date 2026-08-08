@@ -866,7 +866,10 @@ void DesktopWidgetsEditor::rebuildScene(OverlaySurface& surface) {
         updateDrag();
       }
     });
-    view.transformNode->addChild(widget->releaseRoot());
+    auto widgetRoot = widget->releaseRoot();
+    widgetRoot->setHitTestVisible(false);
+    widgetRoot->setExcludeSubtreeFromTabOrder(true);
+    view.transformNode->addChild(std::move(widgetRoot));
 
     root->addChild(std::move(bodyArea));
     view.widget = std::move(widget);
