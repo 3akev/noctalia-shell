@@ -1064,7 +1064,11 @@ void TrayWidget::layoutHoverOverlays() {
   }
 }
 
-TrayWidget::~TrayWidget() { clearHoverOverlays(); }
+// The hover overlay boxes live in `m_hoverOverlayParent` (an external node that outlives us or is
+// wiped by `attachWidgetsToSections` before the next widget batch), and the entries' `area`
+// pointers are inside our own scene subtree, which the bar destroys *before* clearing the widget
+// vector. Touching either from the destructor is redundant at best and a use-after-free at worst.
+TrayWidget::~TrayWidget() = default;
 
 void TrayWidget::clearHoverOverlays() {
   if (m_hoverOverlayParent != nullptr) {
