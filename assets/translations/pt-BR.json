@@ -1191,6 +1191,7 @@
         "monitor-thresholds": "Limites de Destaque",
         "monitors": "Monitores",
         "motion": "Movimento",
+        "navigation": "Navegação",
         "network": "Rede",
         "night-light": "Luz Noturna",
         "notifications": "Notificações",
@@ -2271,6 +2272,10 @@
         "floating-offset": {
           "description": "Espaço, em pixels, entre um painel flutuante ou separado e a extremidade da barra",
           "label": "Deslocamento de Flutuação"
+        },
+        "home-session-button": {
+          "description": "Mostrar o botão de ações de sessão no cabeçalho da aba Início",
+          "label": "Mostrar Botão de Sessão no Cabeçalho"
         },
         "home-shortcuts": {
           "description": "Escolha até seis botões de atalho para a guia inicial",

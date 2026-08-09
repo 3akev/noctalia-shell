@@ -93,8 +93,8 @@
       },
       "sysmon": {
         "cpu": "CPU",
-        "cpu-temp": "CPU Temp",
         "cpu-freq": "CPU Freq",
+        "cpu-temp": "CPU Temp",
         "disk": "Disk",
         "disk-free": "Disk Free",
         "disk-free-pct": "Disk Free %",
@@ -538,8 +538,8 @@
         "show-unlock-hint": "Unlock Hint",
         "show-vpn-label": "Show VPN Label",
         "show-weather": "Weather",
-        "show-when-idle": "Show When Idle",
         "show-week-numbers": "Show Week Numbers",
+        "show-when-idle": "Show When Idle",
         "stat": "Stat",
         "stat-cpu-freq": "CPU Freq",
         "stat-cpu-temp": "CPU Temp",
@@ -2631,9 +2631,9 @@
             "label": "Network Poll Interval"
           },
           "stats": {
+            "cpu-freq": "CPU Freq",
             "cpu-temp": "CPU Temp",
             "cpu-usage": "CPU Usage",
-            "cpu-freq": "CPU Freq",
             "disk-free": "Disk Free",
             "disk-free-pct": "Disk Free %",
             "disk-usage": "Disk Usage",
@@ -3214,9 +3214,9 @@
         "both": "Both",
         "compact": "Compact",
         "count": "Count",
+        "cpu-freq": "CPU Freq",
         "cpu-temp": "CPU Temperature",
         "cpu-usage": "CPU Usage",
-        "cpu-freq": "CPU Freq",
         "disk-free": "Disk Free",
         "disk-free-percent": "Disk Free %",
         "disk-used": "Disk Used",
@@ -3562,7 +3562,7 @@
           "label": "Label Min Width"
         },
         "label-show-units": {
-          "description": "Show units like % / GiB / °C / GHz",
+          "description": "Show units like percent / GiB / °C",
           "label": "Show Units"
         },
         "label-source": {
