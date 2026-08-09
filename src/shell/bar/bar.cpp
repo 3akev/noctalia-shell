@@ -1224,25 +1224,35 @@ namespace {
       placeGhostPills(instance.endWidgets);
     }
     if (screenEdgeClick) {
-      if (!instance.startSection->children().empty()) {
-        auto node = instance.startSection->children().front().get();
+      auto extendHitTestOutsetToScreenEdge = [&](Node* node, bool start) {
+        if (node == nullptr) {
+          return;
+        }
         auto hitTestOutset = node->hitTestOutset();
-        if (isVertical) {
-          hitTestOutset.top += paddingInsideSection;
+        if (start) {
+          if (isVertical) {
+            hitTestOutset.top += paddingInsideSection;
+          } else {
+            hitTestOutset.left += paddingInsideSection;
+          }
         } else {
-          hitTestOutset.left += paddingInsideSection;
+          if (isVertical) {
+            hitTestOutset.bottom += paddingInsideSection;
+          } else {
+            hitTestOutset.right += paddingInsideSection;
+          }
         }
         node->setHitTestOutset(hitTestOutset);
+      };
+      if (!instance.startWidgets.empty()) {
+        auto* widget = instance.startWidgets.front().get();
+        extendHitTestOutsetToScreenEdge(widget->outerNode(), true);
+        extendHitTestOutsetToScreenEdge(widget->root(), true);
       }
-      if (!instance.endSection->children().empty()) {
-        auto node = instance.endSection->children().back().get();
-        auto hitTestOutset = node->hitTestOutset();
-        if (isVertical) {
-          hitTestOutset.bottom += paddingInsideSection;
-        } else {
-          hitTestOutset.right += paddingInsideSection;
-        }
-        node->setHitTestOutset(hitTestOutset);
+      if (!instance.endWidgets.empty()) {
+        auto* widget = instance.endWidgets.back().get();
+        extendHitTestOutsetToScreenEdge(widget->outerNode(), false);
+        extendHitTestOutsetToScreenEdge(widget->root(), false);
       }
     }
   }
