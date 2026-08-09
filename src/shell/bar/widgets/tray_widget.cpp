@@ -453,18 +453,7 @@ void TrayWidget::rebuild(Renderer& renderer) {
   m_loadedImages.clear();
   m_colorizedAppIcons.clear();
 
-  if (m_hoverOverlayParent != nullptr) {
-    for (auto& entry : m_hoverOverlays) {
-      if (entry.area != nullptr) {
-        entry.area->setOnEnter(nullptr);
-        entry.area->setOnLeave(nullptr);
-      }
-      if (entry.box != nullptr) {
-        m_hoverOverlayParent->removeChild(entry.box);
-      }
-    }
-  }
-  m_hoverOverlays.clear();
+  clearHoverOverlays();
 
   while (!m_container->children().empty()) {
     m_container->removeChild(m_container->children().back().get());
@@ -1073,4 +1062,21 @@ void TrayWidget::layoutHoverOverlays() {
     Node::absolutePosition(entry.area, areaX, areaY);
     entry.box->setPosition(areaX - underlayX - entry.padding, areaY - underlayY - entry.padding);
   }
+}
+
+TrayWidget::~TrayWidget() { clearHoverOverlays(); }
+
+void TrayWidget::clearHoverOverlays() {
+  if (m_hoverOverlayParent != nullptr) {
+    for (auto& entry : m_hoverOverlays) {
+      if (entry.area != nullptr) {
+        entry.area->setOnEnter(nullptr);
+        entry.area->setOnLeave(nullptr);
+      }
+      if (entry.box != nullptr) {
+        m_hoverOverlayParent->removeChild(entry.box);
+      }
+    }
+  }
+  m_hoverOverlays.clear();
 }

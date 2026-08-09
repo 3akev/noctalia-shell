@@ -40,6 +40,8 @@ public:
   };
 
   TrayWidget(ConfigService& config, TrayService* tray, Options options);
+  ~TrayWidget() override;
+
   void setHoverOverlayParent(Node* node) noexcept { m_hoverOverlayParent = node; }
   void create() override;
   [[nodiscard]] bool wantsBarHoverHighlight() const noexcept override { return false; }
@@ -66,6 +68,8 @@ private:
   // lateral inset that adjacent single-icon capsules would contribute between their icons.
   [[nodiscard]] float resolvedInlineEntryGap() const;
   void refreshAppIconColorization(Renderer& renderer);
+  void layoutHoverOverlays();
+  void clearHoverOverlays();
   [[nodiscard]] std::optional<ColorSpec> currentAppIconColorizeTint() const;
 
   ConfigService& m_config;
@@ -95,7 +99,6 @@ private:
   bool m_matchAdjacentSpacing = false;
   std::optional<float> m_customItemSize;
   bool m_appIconColorizeDirty = false;
-  void layoutHoverOverlays();
   InputArea* m_drawerTrigger = nullptr;
   Glyph* m_drawerChevron = nullptr;
   std::string m_drawerChevronGlyph;
