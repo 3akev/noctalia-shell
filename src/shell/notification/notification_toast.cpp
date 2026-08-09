@@ -681,7 +681,7 @@ void NotificationToast::onNotificationEvent(const Notification& n, NotificationE
 
             cs = {};
             InputArea* rebuilt = buildCard(
-                m_entries[i], &cs.cardContent, &cs.cardForeground, &cs.progressBar, &cs.actionsRowNode,
+                *inst, m_entries[i], &cs.cardContent, &cs.cardForeground, &cs.progressBar, &cs.actionsRowNode,
                 &cs.inlineReplyRowNode, &cs.inlineReplyInput
             );
             cs.cardNode = rebuilt;
@@ -969,7 +969,7 @@ void NotificationToast::addCardToInstance(Instance& inst, std::size_t entryIndex
   auto& cs = inst.cards[entryIndex];
   cs = {};
   InputArea* card = buildCard(
-      entry, &cs.cardContent, &cs.cardForeground, &cs.progressBar, &cs.actionsRowNode, &cs.inlineReplyRowNode,
+      inst, entry, &cs.cardContent, &cs.cardForeground, &cs.progressBar, &cs.actionsRowNode, &cs.inlineReplyRowNode,
       &cs.inlineReplyInput
   );
   cs.cardNode = card;
@@ -2075,7 +2075,14 @@ void NotificationToast::prepareFrame(Instance& inst, bool /*needsUpdate*/, bool 
     return;
   }
 
-  m_renderContext->makeCurrent(inst.surface->renderTarget());
+  if (!m_renderContext->makeCurrent(inst.surface->renderTarget())) {
+    return;
+  }
+  const float renderScale = m_renderContext->renderScale();
+  if (std::abs(inst.sceneRenderScale - renderScale) > 0.0001F) {
+    inst.sceneRenderScale = renderScale;
+    inst.rebuildRequested = true;
+  }
 
   const bool needsSceneBuild = inst.sceneRoot == nullptr
       || static_cast<uint32_t>(std::round(inst.sceneRoot->width())) != width
@@ -2200,9 +2207,10 @@ void NotificationToast::applyCardReveal(Instance::CardState& cs, float reveal, f
 }
 
 InputArea* NotificationToast::buildCard(
-    const PopupEntry& entry, Node** outCardContent, Node** outCardForeground, ProgressBar** outProgress,
-    Node** outActionsRow, Node** outInlineReplyRow, Input** outInlineReplyInput
+    Instance& outputInstance, const PopupEntry& entry, Node** outCardContent, Node** outCardForeground,
+    ProgressBar** outProgress, Node** outActionsRow, Node** outInlineReplyRow, Input** outInlineReplyInput
 ) {
+  m_renderContext->makeCurrent(outputInstance.surface->renderTarget());
   const float scale = notificationUiScale(m_config);
   const bool hasInlineReply = hasInlineReplyAction(entry.actions);
   const bool showActions = shouldShowNotificationActions(m_config);
@@ -2867,7 +2875,6 @@ bool NotificationToast::onPointerEvent(const PointerEvent& event) {
 
   return consumed;
 }
-
 std::string NotificationToast::resolveNotificationIconPath(const PopupEntry& entry) {
   if (!entry.icon.has_value() || entry.icon->empty()) {
     return {};

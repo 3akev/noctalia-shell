@@ -90,6 +90,7 @@ private:
     InputDispatcher inputDispatcher;
     bool pointerInside = false;
     bool rebuildRequested = false;
+    float sceneRenderScale = 0.0F;
 
     // Per-entry visual nodes for this instance
     struct CardState {
@@ -138,8 +139,8 @@ private:
   void prepareFrame(Instance& inst, bool needsUpdate, bool needsLayout);
   void buildScene(Instance& inst, uint32_t width, uint32_t height);
   InputArea* buildCard(
-      const PopupEntry& entry, Node** outCardContent, Node** outCardForeground, ProgressBar** outProgress,
-      Node** outActionsRow, Node** outInlineReplyRow, Input** outInlineReplyInput
+      Instance& outputInstance, const PopupEntry& entry, Node** outCardContent, Node** outCardForeground,
+      ProgressBar** outProgress, Node** outActionsRow, Node** outInlineReplyRow, Input** outInlineReplyInput
   );
   void applyCardReveal(Instance::CardState& cs, float reveal, float y, float cardHeight) const;
   [[nodiscard]] float cardReveal(const Instance::CardState& cs, float cardHeight) const;
