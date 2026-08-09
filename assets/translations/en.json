@@ -94,6 +94,7 @@
       "sysmon": {
         "cpu": "CPU",
         "cpu-temp": "CPU Temp",
+        "cpu-freq": "CPU Freq",
         "disk": "Disk",
         "disk-free": "Disk Free",
         "disk-free-pct": "Disk Free %",
@@ -540,6 +541,7 @@
         "show-when-idle": "Show When Idle",
         "show-week-numbers": "Show Week Numbers",
         "stat": "Stat",
+        "stat-cpu-freq": "CPU Freq",
         "stat-cpu-temp": "CPU Temp",
         "stat-cpu-usage": "CPU Usage",
         "stat-gpu-temp": "GPU Temp",
@@ -2631,6 +2633,7 @@
           "stats": {
             "cpu-temp": "CPU Temp",
             "cpu-usage": "CPU Usage",
+            "cpu-freq": "CPU Freq",
             "disk-free": "Disk Free",
             "disk-free-pct": "Disk Free %",
             "disk-usage": "Disk Usage",
@@ -3213,6 +3216,7 @@
         "count": "Count",
         "cpu-temp": "CPU Temperature",
         "cpu-usage": "CPU Usage",
+        "cpu-freq": "CPU Freq",
         "disk-free": "Disk Free",
         "disk-free-percent": "Disk Free %",
         "disk-used": "Disk Used",
@@ -3558,7 +3562,7 @@
           "label": "Label Min Width"
         },
         "label-show-units": {
-          "description": "Show units like percent / GiB / °C",
+          "description": "Show units like % / GiB / °C / GHz",
           "label": "Show Units"
         },
         "label-source": {
