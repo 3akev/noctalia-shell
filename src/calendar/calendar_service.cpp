@@ -5,14 +5,17 @@
 #include "calendar/calendar_cache.h"
 #include "calendar/calendar_discovery_state.h"
 #include "calendar/event_link.h"
+#include "calendar/ical_parser.h"
 #include "config/config_service.h"
 #include "core/log.h"
 #include "i18n/i18n.h"
+#include "net/http_client.h"
 #include "net/url_open.h"
 #include "notification/notification_manager.h"
 #include "security/secret_store.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cstdlib>
 #include <iterator>
 #include <memory>
@@ -363,6 +366,8 @@ void CalendarService::startRefresh() {
       fetchCalDav(account);
     } else if (account.type == "google") {
       fetchGoogle(account);
+    } else if (account.type == "ics") {
+      fetchIcs(account);
     } else {
       kLog.warn("unknown calendar account type '{}' for id {}", account.type, account.id);
       accountDone(account.id, false, {});
@@ -537,6 +542,76 @@ void CalendarService::lookupCalDavPassword(
     break;
   }
   callback(security::SecretStoreStatus::BackendError, {});
+}
+
+void CalendarService::fetchIcs(const CalendarConfig::Account& account) {
+  std::string url = account.serverUrl;
+  if (url.empty()) {
+    kLog.warn("ics account {} is missing server_url", account.id);
+    accountDone(account.id, false, {});
+    return;
+  }
+
+  const std::string accountId = account.id;
+  const std::string displayName = account.displayName;
+  const std::string colorHex = account.color;
+
+  // Normalize webcal:// (and webcals://) so libcurl accepts it; scheme match is case-insensitive.
+  auto iEqualsPrefix = [](std::string_view s, std::string_view prefix) {
+    if (s.size() < prefix.size()) {
+      return false;
+    }
+    for (std::size_t i = 0; i < prefix.size(); ++i) {
+      if (std::tolower(static_cast<unsigned char>(s[i])) != prefix[i]) {
+        return false;
+      }
+    }
+    return true;
+  };
+  if (iEqualsPrefix(url, "webcal://")) {
+    url.replace(0, std::string_view("webcal").size(), "https");
+  } else if (iEqualsPrefix(url, "webcals://")) {
+    url.replace(0, std::string_view("webcals").size(), "https");
+  }
+
+  HttpRequest req;
+  req.url = url;
+  req.followRedirects = true;
+  req.headers.emplace_back("Accept: text/calendar, */*;q=0.5");
+
+  m_httpClient.request(req, [this, accountId, displayName, colorHex](HttpResponse resp) {
+    if (!resp.transportOk || resp.status != 200) {
+      kLog.warn("failed to fetch ics for account {}: http status {}", accountId, resp.status);
+      accountDone(accountId, false, {});
+      return;
+    }
+
+    calendar::ICalParseControl control{};
+    const auto now = std::chrono::system_clock::now();
+    auto result = calendar::parseICalEvents(resp.body, now - kWindowBefore, now + kWindowAfter, control);
+    for (auto& event : result.events) {
+      event.calendarName = displayName;
+      if (!colorHex.empty()) {
+        event.colorHex = colorHex;
+      }
+    }
+
+    switch (result.status) {
+    case calendar::ICalParseStatus::Complete:
+      accountDone(accountId, true, std::move(result.events));
+      return;
+    case calendar::ICalParseStatus::Cancelled:
+      kLog.warn("iCalendar parsing was cancelled for id {}", accountId);
+      break;
+    case calendar::ICalParseStatus::InvalidCalendar:
+      kLog.warn("The URL for {} returned an invalid ICS calendar", accountId);
+      break;
+    case calendar::ICalParseStatus::WorkBudgetExceeded:
+      kLog.warn("iCalendar recurrence expansion exceeded the work limit for id {}", accountId);
+      break;
+    }
+    accountDone(accountId, false, {});
+  });
 }
 
 void CalendarService::refreshGoogleToken(const std::string& accountId, std::function<void(bool, std::string)> cb) {
