@@ -686,7 +686,7 @@ void MprisService::refreshPlayers() {
 }
 
 void MprisService::registerIpc(IpcService& ipc) {
-  ipc.registerCycleHandler("media", [this](const std::string& args) -> std::string {
+  ipc.bindCycle(noctalia::cli::msg::media, [this](const std::string& args) -> std::string {
     const auto parts = noctalia::ipc::splitWords(args);
     if (parts.size() != 1) {
       return "error: media requires exactly one action "

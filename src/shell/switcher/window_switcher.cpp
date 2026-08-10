@@ -534,7 +534,7 @@ void WindowSwitcher::initialize(
 }
 
 void WindowSwitcher::registerIpc(IpcService& ipc) {
-  ipc.registerHandler("window-switcher", [this](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::windowSwitcher, [this](const std::string& args) -> std::string {
     const std::string token = StringUtils::trim(args);
     if (token == "close" || token == "hide") {
       if (m_active) {

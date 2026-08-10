@@ -1569,7 +1569,7 @@ void BrightnessService::registerIpc(IpcService& ipc, std::function<void()> onBat
     return "ok\n";
   };
 
-  ipc.registerHandler("brightness-set", [this, applyToTargets](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::brightnessSet, [this, applyToTargets](const std::string& args) -> std::string {
     const auto parts = noctalia::ipc::splitWords(args);
     if (parts.empty() || parts.size() > 2) {
       return "error: brightness-set requires <value> or <target> <value>\n";
@@ -1592,11 +1592,12 @@ void BrightnessService::registerIpc(IpcService& ipc, std::function<void()> onBat
     });
   });
 
-  auto registerDeltaHandler = [this, &ipc, applyToTargets](const std::string& command, float direction) {
-    ipc.registerHandler(command, [this, applyToTargets, command, direction](const std::string& args) -> std::string {
+  auto registerDeltaHandler = [this, &ipc, applyToTargets](const noctalia::cli::Command& command, float direction) {
+    const std::string_view commandName = command.name;
+    ipc.bind(command, [this, applyToTargets, commandName, direction](const std::string& args) -> std::string {
       const auto parts = noctalia::ipc::splitWords(args);
       if (parts.size() > 2) {
-        return "error: " + command + " accepts at most [target] [step]\n";
+        return "error: " + std::string(commandName) + " accepts at most [target] [step]\n";
       }
 
       std::string target = "current";
@@ -1623,11 +1624,11 @@ void BrightnessService::registerIpc(IpcService& ipc, std::function<void()> onBat
     });
   };
 
-  registerDeltaHandler("brightness-up", 1.0F);
-  registerDeltaHandler("brightness-down", -1.0F);
+  registerDeltaHandler(noctalia::cli::msg::brightnessUp, 1.0F);
+  registerDeltaHandler(noctalia::cli::msg::brightnessDown, -1.0F);
 
-  ipc.registerHandler(
-      "brightness-list-backlight-devices",
+  ipc.bind(
+      noctalia::cli::msg::brightnessListBacklightDevices,
       [](const std::string& /*args*/) -> std::string {
         const std::string backlightDir = "/sys/class/backlight";
         DIR* dir = ::opendir(backlightDir.c_str());

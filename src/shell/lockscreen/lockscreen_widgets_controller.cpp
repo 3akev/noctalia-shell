@@ -117,7 +117,7 @@ void LockscreenWidgetsController::initialize(const LockscreenWidgetsControllerSe
 }
 
 void LockscreenWidgetsController::registerIpc(IpcService& ipc) {
-  ipc.registerHandler("lockscreen-widgets-edit", [this](const std::string&) -> std::string {
+  ipc.bind(noctalia::cli::msg::lockscreenWidgetsEdit, [this](const std::string&) -> std::string {
     if (m_config != nullptr && !m_config->isLockScreenEnabled()) {
       return "error: lock screen disabled\n";
     }
@@ -125,12 +125,12 @@ void LockscreenWidgetsController::registerIpc(IpcService& ipc) {
     return "ok\n";
   });
 
-  ipc.registerHandler("lockscreen-widgets-exit", [this](const std::string&) -> std::string {
+  ipc.bind(noctalia::cli::msg::lockscreenWidgetsExit, [this](const std::string&) -> std::string {
     exitEdit();
     return "ok\n";
   });
 
-  ipc.registerHandler("lockscreen-widgets-toggle-edit", [this](const std::string&) -> std::string {
+  ipc.bind(noctalia::cli::msg::lockscreenWidgetsToggleEdit, [this](const std::string&) -> std::string {
     if (m_config != nullptr && !m_config->isLockScreenEnabled()) {
       return "error: lock screen disabled\n";
     }

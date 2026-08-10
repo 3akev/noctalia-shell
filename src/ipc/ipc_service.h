@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cli/schema_msg.h"
 #include "ipc/ipc_invocation_context.h"
 
 #include <functional>
@@ -94,17 +95,17 @@ public:
   [[nodiscard]] std::vector<HandlerInfo> handlers() const;
   [[nodiscard]] bool hasHandler(std::string_view command) const noexcept;
 
-  // Register a handler for a command name. The handler receives everything after
-  // the first space as `args` and must return a string ending with '\n'. Help metadata
-  // is derived from src/cli/schema_msg.h.
-  void registerHandler(const std::string& command, Handler handler, HandlerOptions options = {});
+  // Bind a handler to a canonical `msg` schema command. The handler receives everything after
+  // the first space as `args` and must return a string ending with '\n'. Command identity and
+  // help metadata come from the schema.
+  void bind(const noctalia::cli::Command& command, Handler handler, HandlerOptions options = {});
 
   // A command that steps one position along an ordered set (workspaces, tracks, power profiles).
-  // Registered like any other; bound to a scroll gesture it runs once per flick instead of once
-  // per notch, so an eager wheel movement moves one position rather than several.
-  void registerCycleHandler(const std::string& command, Handler handler, HandlerOptions options = {});
+  // Bound like any other; on a scroll gesture it runs once per flick instead of once per notch,
+  // so an eager wheel movement moves one position rather than several.
+  void bindCycle(const noctalia::cli::Command& command, Handler handler, HandlerOptions options = {});
 
-  // True when `command` was registered with registerCycleHandler().
+  // True when `command` was registered with bindCycle().
   [[nodiscard]] bool handlerCycles(std::string_view command) const noexcept;
 
 private:
@@ -126,5 +127,5 @@ private:
   mutable std::optional<std::string> m_callerCwd;
   mutable std::optional<IpcInvocationContext> m_invocationContext;
   // Registration order is retained; --help output is sorted for display.
-  std::vector<std::pair<std::string, HandlerEntry>> m_handlers;
+  std::vector<std::pair<std::string_view, HandlerEntry>> m_handlers;
 };

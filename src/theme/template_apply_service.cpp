@@ -210,7 +210,7 @@ namespace noctalia::theme {
   }
 
   void TemplateApplyService::registerIpc(IpcService& ipc) {
-    ipc.registerHandler("templates-apply", [this](const std::string& args) -> std::string {
+    ipc.bind(noctalia::cli::msg::templatesApply, [this](const std::string& args) -> std::string {
       if (!StringUtils::trim(args).empty()) {
         return "error: usage: templates-apply\n";
       }

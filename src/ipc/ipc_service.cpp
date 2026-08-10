@@ -1,11 +1,9 @@
 #include "ipc/ipc_service.h"
 
 #include "cli/help.h"
-#include "cli/schema_msg.h"
 #include "core/log.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
@@ -106,35 +104,30 @@ bool IpcService::start() {
   return true;
 }
 
-void IpcService::registerHandler(const std::string& command, Handler handler, HandlerOptions options) {
-  const noctalia::cli::Command* spec = noctalia::cli::findMsgCommand(command);
-  std::string argsSpec;
-  std::string_view description;
-  if (spec != nullptr) {
-    argsSpec = noctalia::cli::renderArgsSpec(*spec);
-    description = spec->summary;
-  } else {
-    kLog.error("ipc command '{}' is not declared in the CLI schema (src/cli/schema_msg.h)", command);
-    assert(false && "IPC command is missing from the CLI schema");
+void IpcService::bind(const noctalia::cli::Command& command, Handler handler, HandlerOptions options) {
+  const noctalia::cli::Command* spec = noctalia::cli::findMsgCommand(command.name);
+  if (spec == nullptr) {
+    kLog.error("cannot bind non-msg CLI command '{}'", command.name);
+    return;
   }
 
-  // Remove existing entry for this command if re-registering.
-  std::erase_if(m_handlers, [&command](const auto& entry) { return entry.first == command; });
+  std::erase_if(m_handlers, [spec](const auto& entry) { return entry.first == spec->name; });
   m_handlers.emplace_back(
-      command,
+      spec->name,
       HandlerEntry{
           .fn = std::move(handler),
-          .argsSpec = std::move(argsSpec),
-          .description = description,
+          .argsSpec = noctalia::cli::renderArgsSpec(*spec),
+          .description = spec->summary,
           .actionEditorVisibility = options.actionEditorVisibility,
           .cycles = false,
       }
   );
 }
 
-void IpcService::registerCycleHandler(const std::string& command, Handler handler, HandlerOptions options) {
-  registerHandler(command, std::move(handler), options);
-  const auto it = std::ranges::find_if(m_handlers, [&command](const auto& entry) { return entry.first == command; });
+void IpcService::bindCycle(const noctalia::cli::Command& command, Handler handler, HandlerOptions options) {
+  bind(command, std::move(handler), options);
+  const auto it =
+      std::ranges::find_if(m_handlers, [&command](const auto& entry) { return entry.first == command.name; });
   if (it != m_handlers.end())
     it->second.cycles = true;
 }

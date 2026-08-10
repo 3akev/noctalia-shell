@@ -75,9 +75,13 @@ int main() {
   assert(::setenv("WAYLAND_DISPLAY", kWaylandDisplay, 1) == 0);
 
   IpcService ipc;
-  ipc.registerHandler("panel-toggle", [](const std::string& args) { return "visible:" + args + "\n"; });
-  ipc.registerHandler(
-      "status", [](const std::string& args) { return "status:" + args + "\n"; },
+  constexpr noctalia::cli::Command nonMsgCommand{"not-msg", {}, {}, {}, {}, {}, {}, false};
+  ipc.bind(nonMsgCommand, [](const std::string&) { return "unexpected\n"; });
+  assert(!ipc.hasHandler("not-msg"));
+
+  ipc.bind(noctalia::cli::msg::panelToggle, [](const std::string& args) { return "visible:" + args + "\n"; });
+  ipc.bind(
+      noctalia::cli::msg::status, [](const std::string& args) { return "status:" + args + "\n"; },
       IpcService::HandlerOptions{.actionEditorVisibility = IpcService::ActionEditorVisibility::Hidden}
   );
 
@@ -111,8 +115,8 @@ int main() {
 
   // Action-editor visibility does not affect execution or help output.
   {
-    ipc.registerHandler(
-        "log-level-status", [](const std::string&) { return "state\n"; },
+    ipc.bind(
+        noctalia::cli::msg::logLevelStatus, [](const std::string&) { return "state\n"; },
         IpcService::HandlerOptions{.actionEditorVisibility = IpcService::ActionEditorVisibility::Hidden}
     );
     assert(ipc.execute("log-level-status") == "state\n");
@@ -132,7 +136,7 @@ int main() {
   // A cycling command runs like any other, but declares that a scroll flick should move one
   // position rather than one per notch.
   {
-    ipc.registerCycleHandler("workspace-switch", [](const std::string&) { return "moved\n"; });
+    ipc.bindCycle(noctalia::cli::msg::workspaceSwitch, [](const std::string&) { return "moved\n"; });
     assert(ipc.execute("workspace-switch next") == "moved\n");
     assert(ipc.handlerCycles("workspace-switch"));
     assert(!ipc.handlerCycles("panel-toggle"));
@@ -173,7 +177,7 @@ int main() {
   assert(help.contains("status"));
   assert(help.contains("Print current state as JSON"));
 
-  ipc.registerHandler("panel-toggle", [](const std::string&) { return "replaced\n"; });
+  ipc.bind(noctalia::cli::msg::panelToggle, [](const std::string&) { return "replaced\n"; });
   assert(ipc.execute("panel-toggle") == "replaced\n");
   const std::string updatedHelp = ipc.execute("--help");
   assert(updatedHelp.contains("panel-toggle <id> [context]"));

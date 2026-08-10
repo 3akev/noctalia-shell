@@ -3925,7 +3925,7 @@ void Bar::registerIpc(IpcService& ipc) {
   // Widget gesture actions dispatch through the same registry.
   m_actionDispatcher.setIpcService(&ipc);
 
-  ipc.registerCycleHandler("taskbar-cycle", [this, &ipc](const std::string& args) -> std::string {
+  ipc.bindCycle(noctalia::cli::msg::taskbarCycle, [this, &ipc](const std::string& args) -> std::string {
     const auto parts = noctalia::ipc::splitWords(args);
     if (parts.size() != 1 || (parts[0] != "next" && parts[0] != "prev")) {
       return "error: taskbar-cycle requires <next|prev>\n";
@@ -3944,19 +3944,23 @@ void Bar::registerIpc(IpcService& ipc) {
     return "ok\n";
   });
 
-  ipc.registerHandler("bar-show", [this](const std::string& args) -> std::string { return showBarIpc(args); });
+  ipc.bind(noctalia::cli::msg::barShow, [this](const std::string& args) -> std::string { return showBarIpc(args); });
 
-  ipc.registerHandler("bar-hide", [this](const std::string& args) -> std::string { return hideBarIpc(args); });
+  ipc.bind(noctalia::cli::msg::barHide, [this](const std::string& args) -> std::string { return hideBarIpc(args); });
 
-  ipc.registerHandler("bar-toggle", [this](const std::string& args) -> std::string { return toggleBarIpc(args); });
+  ipc.bind(noctalia::cli::msg::barToggle, [this](const std::string& args) -> std::string {
+    return toggleBarIpc(args);
+  });
 
-  ipc.registerHandler("bar-reserve-toggle", [this](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::barReserveToggle, [this](const std::string& args) -> std::string {
     return toggleBarReserveSpaceIpc(args);
   });
 
-  ipc.registerHandler("bar-auto-hide-set", [this](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::barAutoHideSet, [this](const std::string& args) -> std::string {
     return setBarAutoHideIpc(args);
   });
 
-  ipc.registerHandler("bar-layer-set", [this](const std::string& args) -> std::string { return setBarLayerIpc(args); });
+  ipc.bind(noctalia::cli::msg::barLayerSet, [this](const std::string& args) -> std::string {
+    return setBarLayerIpc(args);
+  });
 }

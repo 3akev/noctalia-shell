@@ -194,7 +194,7 @@ bool KeyboardBacklightService::toggleBrightness() {
 void KeyboardBacklightService::setChangeCallback(ChangeCallback callback) { m_changeCallback = std::move(callback); }
 
 void KeyboardBacklightService::registerIpc(IpcService& ipc) {
-  ipc.registerHandler("keyboard-backlight-set", [this](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::keyboardBacklightSet, [this](const std::string& args) -> std::string {
     const auto parts = noctalia::ipc::splitWords(args);
     if (parts.size() != 1) {
       return "error: keyboard-backlight-set requires <value>\n";
@@ -209,7 +209,7 @@ void KeyboardBacklightService::registerIpc(IpcService& ipc) {
     return setPercent(*parsed) ? "ok\n" : "error: failed to set keyboard backlight\n";
   });
 
-  ipc.registerHandler("keyboard-backlight-up", [this](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::keyboardBacklightUp, [this](const std::string& args) -> std::string {
     if (auto err = rejectArgs("keyboard-backlight-up", args); err.has_value()) {
       return *err;
     }
@@ -219,7 +219,7 @@ void KeyboardBacklightService::registerIpc(IpcService& ipc) {
     return adjustBrightness(1) ? "ok\n" : "error: failed to set keyboard backlight\n";
   });
 
-  ipc.registerHandler("keyboard-backlight-down", [this](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::keyboardBacklightDown, [this](const std::string& args) -> std::string {
     if (auto err = rejectArgs("keyboard-backlight-down", args); err.has_value()) {
       return *err;
     }
@@ -229,7 +229,7 @@ void KeyboardBacklightService::registerIpc(IpcService& ipc) {
     return adjustBrightness(-1) ? "ok\n" : "error: failed to set keyboard backlight\n";
   });
 
-  ipc.registerHandler("keyboard-backlight-toggle", [this](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::keyboardBacklightToggle, [this](const std::string& args) -> std::string {
     if (auto err = rejectArgs("keyboard-backlight-toggle", args); err.has_value()) {
       return *err;
     }

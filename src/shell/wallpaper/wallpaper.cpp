@@ -779,20 +779,20 @@ void Wallpaper::registerIpc(IpcService& ipc) {
     return switchResponse(switchWallpaperTo(action, connector));
   };
 
-  ipc.registerHandler("wallpaper-random", [switchWallpaperHandler](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::wallpaperRandom, [switchWallpaperHandler](const std::string& args) -> std::string {
     return switchWallpaperHandler(PickWallpaper::Random, args);
   });
 
-  ipc.registerHandler("wallpaper-next", [switchWallpaperHandler](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::wallpaperNext, [switchWallpaperHandler](const std::string& args) -> std::string {
     return switchWallpaperHandler(PickWallpaper::Next, args);
   });
 
-  ipc.registerHandler("wallpaper-previous", [switchWallpaperHandler](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::wallpaperPrevious, [switchWallpaperHandler](const std::string& args) -> std::string {
     return switchWallpaperHandler(PickWallpaper::Previous, args);
   });
 
-  ipc.registerHandler(
-      "wallpaper-get",
+  ipc.bind(
+      noctalia::cli::msg::wallpaperGet,
       [this, validateOutputConnector](const std::string& args) -> std::string {
         if (m_config == nullptr) {
           return "error: wallpaper service not initialized\n";
@@ -815,40 +815,44 @@ void Wallpaper::registerIpc(IpcService& ipc) {
       },
       IpcService::HandlerOptions{.actionEditorVisibility = IpcService::ActionEditorVisibility::Hidden}
   );
-  ipc.registerHandler("wallpaper-set", [this, &ipc, validateOutputConnector](const std::string& args) -> std::string {
-    if (m_config == nullptr) {
-      return "error: wallpaper service not initialized\n";
-    }
-    const auto tokens = StringUtils::splitWhitespace(StringUtils::trim(args));
-    if (tokens.empty()) {
-      return "error: path required (wallpaper-set [<connector>] <path>)\n";
-    }
+  ipc.bind(
+      noctalia::cli::msg::wallpaperSet, [this, &ipc, validateOutputConnector](const std::string& args) -> std::string {
+        if (m_config == nullptr) {
+          return "error: wallpaper service not initialized\n";
+        }
+        const auto tokens = StringUtils::splitWhitespace(StringUtils::trim(args));
+        if (tokens.empty()) {
+          return "error: path required (wallpaper-set [<connector>] <path>)\n";
+        }
 
-    const std::optional<std::string_view> callerCwd =
-        ipc.callerCwd().has_value() ? std::optional<std::string_view>{*ipc.callerCwd()} : std::nullopt;
+        const std::optional<std::string_view> callerCwd =
+            ipc.callerCwd().has_value() ? std::optional<std::string_view>{*ipc.callerCwd()} : std::nullopt;
 
-    const auto isConnector = [&](const std::string& connector) { return validateOutputConnector(connector).empty(); };
-    const auto parsed = parseWallpaperSetTokens(tokens, isConnector, callerCwd);
-    if (parsed.path.empty()) {
-      return "error: path required (wallpaper-set [<connector>] <path>)\n";
-    }
+        const auto isConnector = [&](const std::string& connector) {
+          return validateOutputConnector(connector).empty();
+        };
+        const auto parsed = parseWallpaperSetTokens(tokens, isConnector, callerCwd);
+        if (parsed.path.empty()) {
+          return "error: path required (wallpaper-set [<connector>] <path>)\n";
+        }
 
-    std::optional<std::string> outputConnector = parsed.connector;
-    std::string resolved;
-    if (const auto path = resolveWallpaperPath(parsed.path, callerCwd); path.has_value()) {
-      resolved = *path;
-    } else {
-      return "error: path does not exist or is not a regular file\n";
-    }
+        std::optional<std::string> outputConnector = parsed.connector;
+        std::string resolved;
+        if (const auto path = resolveWallpaperPath(parsed.path, callerCwd); path.has_value()) {
+          resolved = *path;
+        } else {
+          return "error: path does not exist or is not a regular file\n";
+        }
 
-    if (outputConnector.has_value()) {
-      if (const std::string error = validateOutputConnector(*outputConnector); !error.empty()) {
-        return error;
+        if (outputConnector.has_value()) {
+          if (const std::string error = validateOutputConnector(*outputConnector); !error.empty()) {
+            return error;
+          }
+        }
+        applyResolvedWallpaper(outputConnector, resolved);
+        return "ok\n";
       }
-    }
-    applyResolvedWallpaper(outputConnector, resolved);
-    return "ok\n";
-  });
+  );
 }
 
 void Wallpaper::syncInstances() {

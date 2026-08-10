@@ -621,7 +621,7 @@ ScreenshotService::OutputOptions ScreenshotService::outputOptionsFromConfig(cons
 }
 
 void ScreenshotService::registerIpc(IpcService& ipc, const ConfigService& configService) {
-  ipc.registerHandler("screenshot-region", [this, &configService](const std::string& /*args*/) -> std::string {
+  ipc.bind(noctalia::cli::msg::screenshotRegion, [this, &configService](const std::string& /*args*/) -> std::string {
     if (!available()) {
       return "error: screen capture is not available on this compositor\n";
     }
@@ -633,7 +633,7 @@ void ScreenshotService::registerIpc(IpcService& ipc, const ConfigService& config
     return "ok\n";
   });
 
-  ipc.registerHandler("screenshot-fullscreen", [this, &configService](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::screenshotFullscreen, [this, &configService](const std::string& args) -> std::string {
     if (!available()) {
       return "error: screen capture is not available on this compositor\n";
     }

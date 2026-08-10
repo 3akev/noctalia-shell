@@ -250,515 +250,677 @@ namespace noctalia::cli {
       Positional{"direction", {}, kMsgWorkspaceSwitchDirectionChoices, true, false, false},
   };
 
+  namespace msg {
+    inline constexpr Command barAutoHideSet{
+        "bar-auto-hide-set", "Set auto-hide state for a bar", {}, {}, {}, kMsgBarAutoHideSetPositionals, {}, false
+    };
+    inline constexpr Command barHide{"bar-hide", "Hide one or all bars and release their layout gaps",
+                                     {},         {},
+                                     {},         kMsgBarHidePositionals,
+                                     {},         false};
+    inline constexpr Command barLayerSet{
+        "bar-layer-set", "Set one or all bar layers", {}, {}, {}, kMsgBarLayerSetPositionals, {}, false
+    };
+    inline constexpr Command barReserveToggle{
+        "bar-reserve-toggle",
+        "Toggle reserve space for one or all bars",
+        {},
+        {},
+        {},
+        kMsgBarReserveTogglePositionals,
+        {},
+        false
+    };
+    inline constexpr Command barShow{"bar-show", "Show one or all bars", {}, {}, {}, kMsgBarShowPositionals, {}, false};
+    inline constexpr Command barToggle{
+        "bar-toggle", "Toggle visibility for one or all bars", {}, {}, {}, kMsgBarTogglePositionals, {}, false
+    };
+    inline constexpr Command bluetoothDisable{"bluetooth-disable", "Disable Bluetooth", {}, {}, {}, {}, {}, false};
+    inline constexpr Command bluetoothEnable{"bluetooth-enable", "Enable Bluetooth", {}, {}, {}, {}, {}, false};
+    inline constexpr Command bluetoothStatus{"bluetooth-status", "Print Bluetooth state", {}, {}, {}, {}, {}, false};
+    inline constexpr Command bluetoothToggle{"bluetooth-toggle", "Toggle Bluetooth", {}, {}, {}, {}, {}, false};
+    inline constexpr Command brightnessDown{
+        "brightness-down",
+        "Decrease brightness (defaults to current monitor)",
+        {},
+        {},
+        {},
+        kMsgBrightnessDownPositionals,
+        {},
+        false
+    };
+    inline constexpr Command brightnessListBacklightDevices{
+        "brightness-list-backlight-devices", "List available sysfs backlight device names", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command brightnessOsd{
+        "brightness-osd",
+        "Show brightness OSD without changing brightness",
+        {},
+        {},
+        {},
+        kMsgBrightnessOsdPositionals,
+        {},
+        false
+    };
+    inline constexpr Command brightnessSet{"brightness-set",
+                                           "Set brightness (defaults to current monitor)",
+                                           {},
+                                           {},
+                                           {},
+                                           kMsgBrightnessSetPositionals,
+                                           {},
+                                           false};
+    inline constexpr Command brightnessUp{
+        "brightness-up",
+        "Increase brightness (defaults to current monitor)",
+        {},
+        {},
+        {},
+        kMsgBrightnessUpPositionals,
+        {},
+        false
+    };
+    inline constexpr Command caffeineDisable{
+        "caffeine-disable", "Disable caffeine (idle inhibitor)", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command caffeineEnable{
+        "caffeine-enable", "Enable caffeine (idle inhibitor)", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command caffeineToggle{
+        "caffeine-toggle", "Toggle caffeine (idle inhibitor)", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command clipboardClear{"clipboard-clear", "Clear clipboard history", {}, {}, {}, {}, {}, false};
+    inline constexpr Command clipboardCopy{
+        "clipboard-copy", "Copy text to the clipboard", {}, {}, {}, kMsgClipboardCopyPositionals, {}, false
+    };
+    inline constexpr Command clipboardText{
+        "clipboard-text",
+        "Print the most recent clipboard text (empty when the selection holds no text)",
+        {},
+        {},
+        {},
+        {},
+        {},
+        false
+    };
+    inline constexpr Command colorSchemeGet{
+        "color-scheme-get",
+        "Print active color scheme: <source> <name> (source is builtin, wallpaper, community, or custom)",
+        {},
+        {},
+        {},
+        {},
+        {},
+        false
+    };
+    inline constexpr Command colorSchemeSet{
+        "color-scheme-set",
+        "Set palette source and selection in settings.toml (builtin name, wallpaper generator scheme, community id, "
+        "or custom scheme folder name)",
+        {},
+        {},
+        {},
+        {},
+        kMsgColorSchemeSetSubcommands,
+        false
+    };
+    inline constexpr Command configReload{"config-reload", "Reload the config file", {}, {}, {}, {}, {}, false};
+    inline constexpr Command desktopWidgetsEdit{
+        "desktop-widgets-edit", "Open the desktop widgets editor", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command desktopWidgetsExit{
+        "desktop-widgets-exit", "Close the desktop widgets editor", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command desktopWidgetsHide{
+        "desktop-widgets-hide",
+        "Hide desktop widgets now (runtime only; does not change the saved setting)",
+        {},
+        {},
+        {},
+        {},
+        {},
+        false
+    };
+    inline constexpr Command desktopWidgetsShow{
+        "desktop-widgets-show",
+        "Show desktop widgets now (runtime only; does not change the saved setting)",
+        {},
+        {},
+        {},
+        {},
+        {},
+        false
+    };
+    inline constexpr Command desktopWidgetsToggle{
+        "desktop-widgets-toggle",
+        "Toggle desktop widgets visibility (runtime only; does not change the saved setting)",
+        {},
+        {},
+        {},
+        {},
+        {},
+        false
+    };
+    inline constexpr Command desktopWidgetsToggleEdit{
+        "desktop-widgets-toggle-edit", "Toggle desktop widgets edit mode", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command dockHide{"dock-hide", "Hide the dock (persists override)", {}, {}, {}, {}, {}, false};
+    inline constexpr Command dockReload{"dock-reload", "Reload dock configuration", {}, {}, {}, {}, {}, false};
+    inline constexpr Command dockShow{"dock-show", "Show the dock (persists override)", {}, {}, {}, {}, {}, false};
+    inline constexpr Command dockToggle{"dock-toggle", "Toggle dock visibility (persists override)", {}, {}, {}, {}, {},
+                                        false};
+    inline constexpr Command dpmsOff{"dpms-off", "Turn monitors off", {}, {}, {}, {}, {}, false};
+    inline constexpr Command dpmsOn{"dpms-on", "Turn monitors on", {}, {}, {}, {}, {}, false};
+    inline constexpr Command effectsProfileSet{
+        "effects-profile-set",
+        "Set the EasyEffects output or input profile",
+        {},
+        {},
+        {},
+        kMsgEffectsProfileSetPositionals,
+        {},
+        false
+    };
+    inline constexpr Command greeterSync{
+        "greeter-sync", "Sync wallpaper, colors, and monitor layout to Noctalia Greeter", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command keyboardBacklightDown{
+        "keyboard-backlight-down", "Decrease all keyboard backlights by one level", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command keyboardBacklightOsd{
+        "keyboard-backlight-osd",
+        "Show keyboard backlight OSD without changing brightness",
+        {},
+        {},
+        {},
+        kMsgKeyboardBacklightOsdPositionals,
+        {},
+        false
+    };
+    inline constexpr Command keyboardBacklightSet{
+        "keyboard-backlight-set",
+        "Set all keyboard backlights (0-100 percentage)",
+        {},
+        {},
+        {},
+        kMsgKeyboardBacklightSetPositionals,
+        {},
+        false
+    };
+    inline constexpr Command keyboardBacklightToggle{
+        "keyboard-backlight-toggle", "Toggle all keyboard backlights on/off", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command keyboardBacklightUp{
+        "keyboard-backlight-up", "Increase all keyboard backlights by one level", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command keyboardLayoutCycle{
+        "keyboard-layout-cycle", "Switch to the next keyboard layout", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command lockscreenWidgetsEdit{
+        "lockscreen-widgets-edit", "Open the lockscreen widgets editor", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command lockscreenWidgetsExit{
+        "lockscreen-widgets-exit", "Close the lockscreen widgets editor", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command lockscreenWidgetsToggleEdit{
+        "lockscreen-widgets-toggle-edit", "Toggle lockscreen widgets edit mode", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command logLevelSet{
+        "log-level-set", "Set the console log level", {}, {}, {}, kMsgLogLevelSetPositionals, {}, false
+    };
+    inline constexpr Command logLevelStatus{
+        "log-level-status", "Print the current console log level", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command media{"media", "Control active media playback", {}, {}, {}, kMsgMediaPositionals, {},
+                                   false};
+    inline constexpr Command micMute{"mic-mute", "Toggle microphone mute", {}, {}, {}, {}, {}, false};
+    inline constexpr Command micVolumeDown{
+        "mic-volume-down", "Decrease microphone volume", {}, {}, {}, kMsgMicVolumeDownPositionals, {}, false
+    };
+    inline constexpr Command micVolumeOsd{
+        "mic-volume-osd",
+        "Show the microphone volume OSD without changing volume (defaults to the current volume)",
+        {},
+        {},
+        {},
+        kMsgMicVolumeOsdPositionals,
+        {},
+        false
+    };
+    inline constexpr Command micVolumeSet{
+        "mic-volume-set", "Set microphone volume", {}, {}, {}, kMsgMicVolumeSetPositionals, {}, false
+    };
+    inline constexpr Command micVolumeUp{
+        "mic-volume-up", "Increase microphone volume", {}, {}, {}, kMsgMicVolumeUpPositionals, {}, false
+    };
+    inline constexpr Command networkToggle{"network-toggle",
+                                           "Disconnect the active network, or reconnect when nothing is connected",
+                                           {},
+                                           {},
+                                           {},
+                                           {},
+                                           {},
+                                           false};
+    inline constexpr Command nightlightDisable{
+        "nightlight-disable", "Disable night light schedule", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command nightlightEnable{
+        "nightlight-enable", "Enable night light schedule", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command nightlightForceToggle{
+        "nightlight-force-toggle", "Toggle forced night light mode", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command nightlightToggle{
+        "nightlight-toggle", "Toggle night light schedule", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command notificationClearActive{
+        "notification-clear-active", "Dismiss all currently active notifications", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command notificationClearHistory{
+        "notification-clear-history", "Clear notification history", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command notificationDndSet{
+        "notification-dnd-set",
+        "Set notification Do Not Disturb state",
+        {},
+        {},
+        {},
+        kMsgNotificationDndSetPositionals,
+        {},
+        false
+    };
+    inline constexpr Command notificationDndStatus{
+        "notification-dnd-status", "Print notification Do Not Disturb state", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command notificationDndToggle{
+        "notification-dnd-toggle", "Toggle notification Do Not Disturb state", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command notificationInvokeLatest{
+        "notification-invoke-latest",
+        "Invoke the default action of the most recent active notification",
+        {},
+        {},
+        {},
+        {},
+        {},
+        false
+    };
+    inline constexpr Command notificationShow{"notification-show",
+                                              "Show an internal Noctalia notification",
+                                              {},
+                                              {},
+                                              {},
+                                              kMsgNotificationShowPositionals,
+                                              {},
+                                              false};
+    inline constexpr Command osdDisable{"osd-disable", "Disable OSD popups", {}, {}, {}, {}, {}, false};
+    inline constexpr Command osdEnable{"osd-enable", "Enable OSD popups", {}, {}, {}, {}, {}, false};
+    inline constexpr Command osdToggle{"osd-toggle", "Toggle OSD popups", {}, {}, {}, {}, {}, false};
+    inline constexpr Command panelClose{
+        "panel-close",
+        "Close the active panel, or close the named panel if it is active",
+        {},
+        {},
+        {},
+        kMsgPanelClosePositionals,
+        {},
+        false
+    };
+    inline constexpr Command panelOpen{
+        "panel-open", "Open a panel by id, optionally with context (e.g. launcher /emo, control-center audio)",
+        {},           {},
+        {},           kMsgPanelOpenPositionals,
+        {},           false
+    };
+    inline constexpr Command panelToggle{
+        "panel-toggle",
+        "Toggle a panel by id, optionally with context (e.g. launcher /emo, control-center audio)",
+        {},
+        {},
+        {},
+        kMsgPanelTogglePositionals,
+        {},
+        false
+    };
+    inline constexpr Command plugin{
+        "plugin", "Dispatch an event to a plugin entry", {}, {}, {}, kMsgPluginPositionals, {}, false
+    };
+    inline constexpr Command plugins{
+        "plugins",
+        "Manage plugins and sources (list/enable/disable/update, source list/add/remove)",
+        {},
+        {},
+        {},
+        {},
+        kMsgPluginsSubcommands,
+        false
+    };
+    inline constexpr Command powerCycle{
+        "power-cycle",
+        "Step through UPower's ordered profile list, forward by default (wraps)",
+        {},
+        {},
+        {},
+        kMsgPowerCyclePositionals,
+        {},
+        false
+    };
+    inline constexpr Command powerSet{
+        "power-set", "Set the UPower power profile (e.g. performance, balanced, power-saver)",
+        {},          {},
+        {},          kMsgPowerSetPositionals,
+        {},          false
+    };
+    inline constexpr Command screenshotFullscreen{
+        "screenshot-fullscreen",
+        "Capture the focused monitor by default, pick interactively with pick, or all outputs with all",
+        {},
+        {},
+        {},
+        kMsgScreenshotFullscreenPositionals,
+        {},
+        false
+    };
+    inline constexpr Command screenshotRegion{
+        "screenshot-region", "Start an interactive region screenshot", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command session{"session", "Run a built-in session action", {}, {},
+                                     {},        kMsgSessionPositionals,          {}, false};
+    inline constexpr Command settingsClose{"settings-close", "Close the settings window", {}, {}, {}, {}, {}, false};
+    inline constexpr Command settingsOpen{
+        "settings-open",
+        "Open the settings window, or focus it if already open, optionally at a specific section",
+        {},
+        {},
+        {},
+        kMsgSettingsOpenPositionals,
+        {},
+        false
+    };
+    inline constexpr Command settingsOpenPlugin{
+        "settings-open-plugin",
+        "Open the settings window at a plugin's settings (e.g. noctalia/notes)",
+        {},
+        {},
+        {},
+        kMsgSettingsOpenPluginPositionals,
+        {},
+        false
+    };
+    inline constexpr Command settingsOpenWidget{
+        "settings-open-widget",
+        "Open the settings window at a bar widget; from a widget gesture, targets that widget",
+        {},
+        {},
+        {},
+        kMsgSettingsOpenWidgetPositionals,
+        {},
+        false
+    };
+    inline constexpr Command settingsToggle{
+        "settings-toggle",
+        "Toggle the settings window, optionally at a specific section",
+        {},
+        {},
+        {},
+        kMsgSettingsTogglePositionals,
+        {},
+        false
+    };
+    inline constexpr Command status{"status", "Print current state as JSON", {}, {}, {}, {}, {}, false};
+    inline constexpr Command taskbarCycle{
+        "taskbar-cycle",
+        "Step to the adjacent task or workspace group in the invoking taskbar",
+        {},
+        {},
+        {},
+        kMsgTaskbarCyclePositionals,
+        {},
+        false
+    };
+    inline constexpr Command templatesApply{
+        "templates-apply", "Apply configured theme templates for the current palette", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command themeModeGet{
+        "theme-mode-get", "Print the current resolved theme mode", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command themeModeSet{"theme-mode-set",
+                                          "Set theme mode and persist to settings.toml",
+                                          {},
+                                          {},
+                                          {},
+                                          kMsgThemeModeSetPositionals,
+                                          {},
+                                          false};
+    inline constexpr Command themeModeToggle{
+        "theme-mode-toggle", "Toggle theme mode between dark and light", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command volumeDown{
+        "volume-down", "Decrease speaker volume", {}, {}, {}, kMsgVolumeDownPositionals, {}, false
+    };
+    inline constexpr Command volumeMute{"volume-mute", "Toggle speaker mute", {}, {}, {}, {}, {}, false};
+    inline constexpr Command volumeOsd{
+        "volume-osd", "Show the volume OSD without changing volume (defaults to the current volume)",
+        {},           {},
+        {},           kMsgVolumeOsdPositionals,
+        {},           false
+    };
+    inline constexpr Command volumeSet{"volume-set", "Set speaker volume",     {}, {},
+                                       {},           kMsgVolumeSetPositionals, {}, false};
+    inline constexpr Command volumeUp{"volume-up", "Increase speaker volume", {}, {},
+                                      {},          kMsgVolumeUpPositionals,   {}, false};
+    inline constexpr Command wallpaperGet{
+        "wallpaper-get",
+        "Print default wallpaper path, or effective path for an output",
+        {},
+        {},
+        {},
+        kMsgWallpaperGetPositionals,
+        {},
+        false
+    };
+    inline constexpr Command wallpaperNext{"wallpaper-next",
+                                           "Switch to the next wallpaper immediately",
+                                           {},
+                                           {},
+                                           {},
+                                           kMsgWallpaperNextPositionals,
+                                           {},
+                                           false};
+    inline constexpr Command wallpaperPrevious{
+        "wallpaper-previous",
+        "Switch to the previous wallpaper immediately",
+        {},
+        {},
+        {},
+        kMsgWallpaperPreviousPositionals,
+        {},
+        false
+    };
+    inline constexpr Command wallpaperRandom{"wallpaper-random",
+                                             "Switch to a random wallpaper immediately",
+                                             {},
+                                             {},
+                                             {},
+                                             kMsgWallpaperRandomPositionals,
+                                             {},
+                                             false};
+    inline constexpr Command wallpaperSet{
+        "wallpaper-set",
+        "Set wallpaper for all or a specific output (persisted)",
+        {},
+        {},
+        {},
+        kMsgWallpaperSetPositionals,
+        {},
+        false
+    };
+    inline constexpr Command wifiDisable{"wifi-disable", "Disable Wi-Fi", {}, {}, {}, {}, {}, false};
+    inline constexpr Command wifiEnable{"wifi-enable", "Enable Wi-Fi", {}, {}, {}, {}, {}, false};
+    inline constexpr Command wifiStatus{"wifi-status", "Print Wi-Fi state", {}, {}, {}, {}, {}, false};
+    inline constexpr Command wifiToggle{"wifi-toggle", "Toggle Wi-Fi", {}, {}, {}, {}, {}, false};
+    inline constexpr Command windowSwitcher{"window-switcher",
+                                            "Open or close the window switcher overlay",
+                                            {},
+                                            {},
+                                            {},
+                                            kMsgWindowSwitcherPositionals,
+                                            {},
+                                            false};
+    inline constexpr Command workspaceAlertAdd{
+        "workspace-alert-add",
+        "Add a workspace alert (by number, name, or id)",
+        {},
+        {},
+        {},
+        kMsgWorkspaceAlertAddPositionals,
+        {},
+        false
+    };
+    inline constexpr Command workspaceAlertAddWindow{
+        "workspace-alert-add-window",
+        "Add a workspace alert for a window",
+        {},
+        {},
+        {},
+        kMsgWorkspaceAlertAddWindowPositionals,
+        {},
+        false
+    };
+    inline constexpr Command workspaceAlertClear{
+        "workspace-alert-clear", "Clear a workspace alert", {}, {}, {}, kMsgWorkspaceAlertClearPositionals, {}, false
+    };
+    inline constexpr Command workspaceAlertClearAll{
+        "workspace-alert-clear-all", "Clear all workspace alerts", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command workspaceAlertStatus{
+        "workspace-alert-status", "Print workspace alerts", {}, {}, {}, {}, {}, false
+    };
+    inline constexpr Command workspaceSwitch{
+        "workspace-switch",
+        "Switch to the adjacent workspace on the target monitor (stops at both ends)",
+        {},
+        {},
+        {},
+        kMsgWorkspaceSwitchPositionals,
+        {},
+        false
+    };
+  } // namespace msg
+
   inline constexpr std::array kMsgSubcommands{
-      Command{
-          "bar-auto-hide-set", "Set auto-hide state for a bar", {}, {}, {}, kMsgBarAutoHideSetPositionals, {}, false
-      },
-      Command{
-          "bar-hide",
-          "Hide one or all bars and release their layout gaps",
-          {},
-          {},
-          {},
-          kMsgBarHidePositionals,
-          {},
-          false
-      },
-      Command{"bar-layer-set", "Set one or all bar layers", {}, {}, {}, kMsgBarLayerSetPositionals, {}, false},
-      Command{
-          "bar-reserve-toggle",
-          "Toggle reserve space for one or all bars",
-          {},
-          {},
-          {},
-          kMsgBarReserveTogglePositionals,
-          {},
-          false
-      },
-      Command{"bar-show", "Show one or all bars", {}, {}, {}, kMsgBarShowPositionals, {}, false},
-      Command{"bar-toggle", "Toggle visibility for one or all bars", {}, {}, {}, kMsgBarTogglePositionals, {}, false},
-      Command{"bluetooth-disable", "Disable Bluetooth", {}, {}, {}, {}, {}, false},
-      Command{"bluetooth-enable", "Enable Bluetooth", {}, {}, {}, {}, {}, false},
-      Command{"bluetooth-status", "Print Bluetooth state", {}, {}, {}, {}, {}, false},
-      Command{"bluetooth-toggle", "Toggle Bluetooth", {}, {}, {}, {}, {}, false},
-      Command{
-          "brightness-down",
-          "Decrease brightness (defaults to current monitor)",
-          {},
-          {},
-          {},
-          kMsgBrightnessDownPositionals,
-          {},
-          false
-      },
-      Command{
-          "brightness-list-backlight-devices", "List available sysfs backlight device names", {}, {}, {}, {}, {}, false
-      },
-      Command{
-          "brightness-osd",
-          "Show brightness OSD without changing brightness",
-          {},
-          {},
-          {},
-          kMsgBrightnessOsdPositionals,
-          {},
-          false
-      },
-      Command{
-          "brightness-set",
-          "Set brightness (defaults to current monitor)",
-          {},
-          {},
-          {},
-          kMsgBrightnessSetPositionals,
-          {},
-          false
-      },
-      Command{
-          "brightness-up",
-          "Increase brightness (defaults to current monitor)",
-          {},
-          {},
-          {},
-          kMsgBrightnessUpPositionals,
-          {},
-          false
-      },
-      Command{"caffeine-disable", "Disable caffeine (idle inhibitor)", {}, {}, {}, {}, {}, false},
-      Command{"caffeine-enable", "Enable caffeine (idle inhibitor)", {}, {}, {}, {}, {}, false},
-      Command{"caffeine-toggle", "Toggle caffeine (idle inhibitor)", {}, {}, {}, {}, {}, false},
-      Command{"clipboard-clear", "Clear clipboard history", {}, {}, {}, {}, {}, false},
-      Command{"clipboard-copy", "Copy text to the clipboard", {}, {}, {}, kMsgClipboardCopyPositionals, {}, false},
-      Command{
-          "clipboard-text",
-          "Print the most recent clipboard text (empty when the selection holds no text)",
-          {},
-          {},
-          {},
-          {},
-          {},
-          false
-      },
-      Command{
-          "color-scheme-get",
-          "Print active color scheme: <source> <name> (source is builtin, wallpaper, community, or custom)",
-          {},
-          {},
-          {},
-          {},
-          {},
-          false
-      },
-      Command{
-          "color-scheme-set",
-          "Set palette source and selection in settings.toml (builtin name, wallpaper generator scheme, community id, "
-          "or custom scheme folder name)",
-          {},
-          {},
-          {},
-          {},
-          kMsgColorSchemeSetSubcommands,
-          false
-      },
-      Command{"config-reload", "Reload the config file", {}, {}, {}, {}, {}, false},
-      Command{"desktop-widgets-edit", "Open the desktop widgets editor", {}, {}, {}, {}, {}, false},
-      Command{"desktop-widgets-exit", "Close the desktop widgets editor", {}, {}, {}, {}, {}, false},
-      Command{
-          "desktop-widgets-hide",
-          "Hide desktop widgets now (runtime only; does not change the saved setting)",
-          {},
-          {},
-          {},
-          {},
-          {},
-          false
-      },
-      Command{
-          "desktop-widgets-show",
-          "Show desktop widgets now (runtime only; does not change the saved setting)",
-          {},
-          {},
-          {},
-          {},
-          {},
-          false
-      },
-      Command{
-          "desktop-widgets-toggle",
-          "Toggle desktop widgets visibility (runtime only; does not change the saved setting)",
-          {},
-          {},
-          {},
-          {},
-          {},
-          false
-      },
-      Command{"desktop-widgets-toggle-edit", "Toggle desktop widgets edit mode", {}, {}, {}, {}, {}, false},
-      Command{"dock-hide", "Hide the dock (persists override)", {}, {}, {}, {}, {}, false},
-      Command{"dock-reload", "Reload dock configuration", {}, {}, {}, {}, {}, false},
-      Command{"dock-show", "Show the dock (persists override)", {}, {}, {}, {}, {}, false},
-      Command{"dock-toggle", "Toggle dock visibility (persists override)", {}, {}, {}, {}, {}, false},
-      Command{"dpms-off", "Turn monitors off", {}, {}, {}, {}, {}, false},
-      Command{"dpms-on", "Turn monitors on", {}, {}, {}, {}, {}, false},
-      Command{
-          "effects-profile-set",
-          "Set the EasyEffects output or input profile",
-          {},
-          {},
-          {},
-          kMsgEffectsProfileSetPositionals,
-          {},
-          false
-      },
-      Command{
-          "greeter-sync", "Sync wallpaper, colors, and monitor layout to Noctalia Greeter", {}, {}, {}, {}, {}, false
-      },
-      Command{"keyboard-backlight-down", "Decrease all keyboard backlights by one level", {}, {}, {}, {}, {}, false},
-      Command{
-          "keyboard-backlight-osd",
-          "Show keyboard backlight OSD without changing brightness",
-          {},
-          {},
-          {},
-          kMsgKeyboardBacklightOsdPositionals,
-          {},
-          false
-      },
-      Command{
-          "keyboard-backlight-set",
-          "Set all keyboard backlights (0-100 percentage)",
-          {},
-          {},
-          {},
-          kMsgKeyboardBacklightSetPositionals,
-          {},
-          false
-      },
-      Command{"keyboard-backlight-toggle", "Toggle all keyboard backlights on/off", {}, {}, {}, {}, {}, false},
-      Command{"keyboard-backlight-up", "Increase all keyboard backlights by one level", {}, {}, {}, {}, {}, false},
-      Command{"keyboard-layout-cycle", "Switch to the next keyboard layout", {}, {}, {}, {}, {}, false},
-      Command{"lockscreen-widgets-edit", "Open the lockscreen widgets editor", {}, {}, {}, {}, {}, false},
-      Command{"lockscreen-widgets-exit", "Close the lockscreen widgets editor", {}, {}, {}, {}, {}, false},
-      Command{"lockscreen-widgets-toggle-edit", "Toggle lockscreen widgets edit mode", {}, {}, {}, {}, {}, false},
-      Command{"log-level-set", "Set the console log level", {}, {}, {}, kMsgLogLevelSetPositionals, {}, false},
-      Command{"log-level-status", "Print the current console log level", {}, {}, {}, {}, {}, false},
-      Command{"media", "Control active media playback", {}, {}, {}, kMsgMediaPositionals, {}, false},
-      Command{"mic-mute", "Toggle microphone mute", {}, {}, {}, {}, {}, false},
-      Command{"mic-volume-down", "Decrease microphone volume", {}, {}, {}, kMsgMicVolumeDownPositionals, {}, false},
-      Command{
-          "mic-volume-osd",
-          "Show the microphone volume OSD without changing volume (defaults to the current volume)",
-          {},
-          {},
-          {},
-          kMsgMicVolumeOsdPositionals,
-          {},
-          false
-      },
-      Command{"mic-volume-set", "Set microphone volume", {}, {}, {}, kMsgMicVolumeSetPositionals, {}, false},
-      Command{"mic-volume-up", "Increase microphone volume", {}, {}, {}, kMsgMicVolumeUpPositionals, {}, false},
-      Command{
-          "network-toggle",
-          "Disconnect the active network, or reconnect when nothing is connected",
-          {},
-          {},
-          {},
-          {},
-          {},
-          false
-      },
-      Command{"nightlight-disable", "Disable night light schedule", {}, {}, {}, {}, {}, false},
-      Command{"nightlight-enable", "Enable night light schedule", {}, {}, {}, {}, {}, false},
-      Command{"nightlight-force-toggle", "Toggle forced night light mode", {}, {}, {}, {}, {}, false},
-      Command{"nightlight-toggle", "Toggle night light schedule", {}, {}, {}, {}, {}, false},
-      Command{"notification-clear-active", "Dismiss all currently active notifications", {}, {}, {}, {}, {}, false},
-      Command{"notification-clear-history", "Clear notification history", {}, {}, {}, {}, {}, false},
-      Command{
-          "notification-dnd-set",
-          "Set notification Do Not Disturb state",
-          {},
-          {},
-          {},
-          kMsgNotificationDndSetPositionals,
-          {},
-          false
-      },
-      Command{"notification-dnd-status", "Print notification Do Not Disturb state", {}, {}, {}, {}, {}, false},
-      Command{"notification-dnd-toggle", "Toggle notification Do Not Disturb state", {}, {}, {}, {}, {}, false},
-      Command{
-          "notification-invoke-latest",
-          "Invoke the default action of the most recent active notification",
-          {},
-          {},
-          {},
-          {},
-          {},
-          false
-      },
-      Command{
-          "notification-show",
-          "Show an internal Noctalia notification",
-          {},
-          {},
-          {},
-          kMsgNotificationShowPositionals,
-          {},
-          false
-      },
-      Command{"osd-disable", "Disable OSD popups", {}, {}, {}, {}, {}, false},
-      Command{"osd-enable", "Enable OSD popups", {}, {}, {}, {}, {}, false},
-      Command{"osd-toggle", "Toggle OSD popups", {}, {}, {}, {}, {}, false},
-      Command{
-          "panel-close",
-          "Close the active panel, or close the named panel if it is active",
-          {},
-          {},
-          {},
-          kMsgPanelClosePositionals,
-          {},
-          false
-      },
-      Command{
-          "panel-open",
-          "Open a panel by id, optionally with context (e.g. launcher /emo, control-center audio)",
-          {},
-          {},
-          {},
-          kMsgPanelOpenPositionals,
-          {},
-          false
-      },
-      Command{
-          "panel-toggle",
-          "Toggle a panel by id, optionally with context (e.g. launcher /emo, control-center audio)",
-          {},
-          {},
-          {},
-          kMsgPanelTogglePositionals,
-          {},
-          false
-      },
-      Command{"plugin", "Dispatch an event to a plugin entry", {}, {}, {}, kMsgPluginPositionals, {}, false},
-      Command{
-          "plugins",
-          "Manage plugins and sources (list/enable/disable/update, source list/add/remove)",
-          {},
-          {},
-          {},
-          {},
-          kMsgPluginsSubcommands,
-          false
-      },
-      Command{
-          "power-cycle",
-          "Step through UPower's ordered profile list, forward by default (wraps)",
-          {},
-          {},
-          {},
-          kMsgPowerCyclePositionals,
-          {},
-          false
-      },
-      Command{
-          "power-set",
-          "Set the UPower power profile (e.g. performance, balanced, power-saver)",
-          {},
-          {},
-          {},
-          kMsgPowerSetPositionals,
-          {},
-          false
-      },
-      Command{
-          "screenshot-fullscreen",
-          "Capture the focused monitor by default, pick interactively with pick, or all outputs with all",
-          {},
-          {},
-          {},
-          kMsgScreenshotFullscreenPositionals,
-          {},
-          false
-      },
-      Command{"screenshot-region", "Start an interactive region screenshot", {}, {}, {}, {}, {}, false},
-      Command{"session", "Run a built-in session action", {}, {}, {}, kMsgSessionPositionals, {}, false},
-      Command{"settings-close", "Close the settings window", {}, {}, {}, {}, {}, false},
-      Command{
-          "settings-open",
-          "Open the settings window, or focus it if already open, optionally at a specific section",
-          {},
-          {},
-          {},
-          kMsgSettingsOpenPositionals,
-          {},
-          false
-      },
-      Command{
-          "settings-open-plugin",
-          "Open the settings window at a plugin's settings (e.g. noctalia/notes)",
-          {},
-          {},
-          {},
-          kMsgSettingsOpenPluginPositionals,
-          {},
-          false
-      },
-      Command{
-          "settings-open-widget",
-          "Open the settings window at a bar widget; from a widget gesture, targets that widget",
-          {},
-          {},
-          {},
-          kMsgSettingsOpenWidgetPositionals,
-          {},
-          false
-      },
-      Command{
-          "settings-toggle",
-          "Toggle the settings window, optionally at a specific section",
-          {},
-          {},
-          {},
-          kMsgSettingsTogglePositionals,
-          {},
-          false
-      },
-      Command{"status", "Print current state as JSON", {}, {}, {}, {}, {}, false},
-      Command{
-          "taskbar-cycle",
-          "Step to the adjacent task or workspace group in the invoking taskbar",
-          {},
-          {},
-          {},
-          kMsgTaskbarCyclePositionals,
-          {},
-          false
-      },
-      Command{"templates-apply", "Apply configured theme templates for the current palette", {}, {}, {}, {}, {}, false},
-      Command{"theme-mode-get", "Print the current resolved theme mode", {}, {}, {}, {}, {}, false},
-      Command{
-          "theme-mode-set",
-          "Set theme mode and persist to settings.toml",
-          {},
-          {},
-          {},
-          kMsgThemeModeSetPositionals,
-          {},
-          false
-      },
-      Command{"theme-mode-toggle", "Toggle theme mode between dark and light", {}, {}, {}, {}, {}, false},
-      Command{"volume-down", "Decrease speaker volume", {}, {}, {}, kMsgVolumeDownPositionals, {}, false},
-      Command{"volume-mute", "Toggle speaker mute", {}, {}, {}, {}, {}, false},
-      Command{
-          "volume-osd",
-          "Show the volume OSD without changing volume (defaults to the current volume)",
-          {},
-          {},
-          {},
-          kMsgVolumeOsdPositionals,
-          {},
-          false
-      },
-      Command{"volume-set", "Set speaker volume", {}, {}, {}, kMsgVolumeSetPositionals, {}, false},
-      Command{"volume-up", "Increase speaker volume", {}, {}, {}, kMsgVolumeUpPositionals, {}, false},
-      Command{
-          "wallpaper-get",
-          "Print default wallpaper path, or effective path for an output",
-          {},
-          {},
-          {},
-          kMsgWallpaperGetPositionals,
-          {},
-          false
-      },
-      Command{
-          "wallpaper-next",
-          "Switch to the next wallpaper immediately",
-          {},
-          {},
-          {},
-          kMsgWallpaperNextPositionals,
-          {},
-          false
-      },
-      Command{
-          "wallpaper-previous",
-          "Switch to the previous wallpaper immediately",
-          {},
-          {},
-          {},
-          kMsgWallpaperPreviousPositionals,
-          {},
-          false
-      },
-      Command{
-          "wallpaper-random",
-          "Switch to a random wallpaper immediately",
-          {},
-          {},
-          {},
-          kMsgWallpaperRandomPositionals,
-          {},
-          false
-      },
-      Command{
-          "wallpaper-set",
-          "Set wallpaper for all or a specific output (persisted)",
-          {},
-          {},
-          {},
-          kMsgWallpaperSetPositionals,
-          {},
-          false
-      },
-      Command{"wifi-disable", "Disable Wi-Fi", {}, {}, {}, {}, {}, false},
-      Command{"wifi-enable", "Enable Wi-Fi", {}, {}, {}, {}, {}, false},
-      Command{"wifi-status", "Print Wi-Fi state", {}, {}, {}, {}, {}, false},
-      Command{"wifi-toggle", "Toggle Wi-Fi", {}, {}, {}, {}, {}, false},
-      Command{
-          "window-switcher",
-          "Open or close the window switcher overlay",
-          {},
-          {},
-          {},
-          kMsgWindowSwitcherPositionals,
-          {},
-          false
-      },
-      Command{
-          "workspace-alert-add",
-          "Add a workspace alert (by number, name, or id)",
-          {},
-          {},
-          {},
-          kMsgWorkspaceAlertAddPositionals,
-          {},
-          false
-      },
-      Command{
-          "workspace-alert-add-window",
-          "Add a workspace alert for a window",
-          {},
-          {},
-          {},
-          kMsgWorkspaceAlertAddWindowPositionals,
-          {},
-          false
-      },
-      Command{
-          "workspace-alert-clear", "Clear a workspace alert", {}, {}, {}, kMsgWorkspaceAlertClearPositionals, {}, false
-      },
-      Command{"workspace-alert-clear-all", "Clear all workspace alerts", {}, {}, {}, {}, {}, false},
-      Command{"workspace-alert-status", "Print workspace alerts", {}, {}, {}, {}, {}, false},
-      Command{
-          "workspace-switch",
-          "Switch to the adjacent workspace on the target monitor (stops at both ends)",
-          {},
-          {},
-          {},
-          kMsgWorkspaceSwitchPositionals,
-          {},
-          false
-      },
+      msg::barAutoHideSet,
+      msg::barHide,
+      msg::barLayerSet,
+      msg::barReserveToggle,
+      msg::barShow,
+      msg::barToggle,
+      msg::bluetoothDisable,
+      msg::bluetoothEnable,
+      msg::bluetoothStatus,
+      msg::bluetoothToggle,
+      msg::brightnessDown,
+      msg::brightnessListBacklightDevices,
+      msg::brightnessOsd,
+      msg::brightnessSet,
+      msg::brightnessUp,
+      msg::caffeineDisable,
+      msg::caffeineEnable,
+      msg::caffeineToggle,
+      msg::clipboardClear,
+      msg::clipboardCopy,
+      msg::clipboardText,
+      msg::colorSchemeGet,
+      msg::colorSchemeSet,
+      msg::configReload,
+      msg::desktopWidgetsEdit,
+      msg::desktopWidgetsExit,
+      msg::desktopWidgetsHide,
+      msg::desktopWidgetsShow,
+      msg::desktopWidgetsToggle,
+      msg::desktopWidgetsToggleEdit,
+      msg::dockHide,
+      msg::dockReload,
+      msg::dockShow,
+      msg::dockToggle,
+      msg::dpmsOff,
+      msg::dpmsOn,
+      msg::effectsProfileSet,
+      msg::greeterSync,
+      msg::keyboardBacklightDown,
+      msg::keyboardBacklightOsd,
+      msg::keyboardBacklightSet,
+      msg::keyboardBacklightToggle,
+      msg::keyboardBacklightUp,
+      msg::keyboardLayoutCycle,
+      msg::lockscreenWidgetsEdit,
+      msg::lockscreenWidgetsExit,
+      msg::lockscreenWidgetsToggleEdit,
+      msg::logLevelSet,
+      msg::logLevelStatus,
+      msg::media,
+      msg::micMute,
+      msg::micVolumeDown,
+      msg::micVolumeOsd,
+      msg::micVolumeSet,
+      msg::micVolumeUp,
+      msg::networkToggle,
+      msg::nightlightDisable,
+      msg::nightlightEnable,
+      msg::nightlightForceToggle,
+      msg::nightlightToggle,
+      msg::notificationClearActive,
+      msg::notificationClearHistory,
+      msg::notificationDndSet,
+      msg::notificationDndStatus,
+      msg::notificationDndToggle,
+      msg::notificationInvokeLatest,
+      msg::notificationShow,
+      msg::osdDisable,
+      msg::osdEnable,
+      msg::osdToggle,
+      msg::panelClose,
+      msg::panelOpen,
+      msg::panelToggle,
+      msg::plugin,
+      msg::plugins,
+      msg::powerCycle,
+      msg::powerSet,
+      msg::screenshotFullscreen,
+      msg::screenshotRegion,
+      msg::session,
+      msg::settingsClose,
+      msg::settingsOpen,
+      msg::settingsOpenPlugin,
+      msg::settingsOpenWidget,
+      msg::settingsToggle,
+      msg::status,
+      msg::taskbarCycle,
+      msg::templatesApply,
+      msg::themeModeGet,
+      msg::themeModeSet,
+      msg::themeModeToggle,
+      msg::volumeDown,
+      msg::volumeMute,
+      msg::volumeOsd,
+      msg::volumeSet,
+      msg::volumeUp,
+      msg::wallpaperGet,
+      msg::wallpaperNext,
+      msg::wallpaperPrevious,
+      msg::wallpaperRandom,
+      msg::wallpaperSet,
+      msg::wifiDisable,
+      msg::wifiEnable,
+      msg::wifiStatus,
+      msg::wifiToggle,
+      msg::windowSwitcher,
+      msg::workspaceAlertAdd,
+      msg::workspaceAlertAddWindow,
+      msg::workspaceAlertClear,
+      msg::workspaceAlertClearAll,
+      msg::workspaceAlertStatus,
+      msg::workspaceSwitch,
   };
 
   inline constexpr Command kMsgCmd{

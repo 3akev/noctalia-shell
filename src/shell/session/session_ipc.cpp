@@ -76,5 +76,5 @@ void registerSessionIpc(IpcService& ipc, SessionActionRunner& runner, LockScreen
     return "ok\n";
   };
 
-  ipc.registerHandler("session", dispatch);
+  ipc.bind(noctalia::cli::msg::session, dispatch);
 }

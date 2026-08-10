@@ -2639,48 +2639,53 @@ void PanelManager::registerIpc(IpcService& ipc) {
     return error;
   };
 
-  ipc.registerHandler("panel-toggle", [this, parseOpenArgs, unknownPanelError](const std::string& args) -> std::string {
-    std::string panelId;
-    std::string context;
-    if (auto error = parseOpenArgs(args, "panel-toggle", panelId, context)) {
-      return *error;
-    }
-    if (!m_panels.contains(panelId) && !m_persistentHost.hasPanel(panelId)) {
-      return unknownPanelError(panelId);
-    }
-    // Output left unset: openPanel resolves it (focus source, else compositor probe).
-    if (context.empty()) {
-      togglePanel(panelId);
-    } else {
-      togglePanel(panelId, PanelOpenRequest{.context = context});
-    }
-    return "ok\n";
-  });
-
-  ipc.registerHandler("panel-open", [this, parseOpenArgs, unknownPanelError](const std::string& args) -> std::string {
-    std::string panelId;
-    std::string context;
-    if (auto error = parseOpenArgs(args, "panel-open", panelId, context)) {
-      return *error;
-    }
-    if (!m_panels.contains(panelId) && !m_persistentHost.hasPanel(panelId)) {
-      return unknownPanelError(panelId);
-    }
-
-    if (isOpen() && !m_closing && m_activePanelId == panelId) {
-      if (!context.empty() && m_activePanel != nullptr) {
-        m_activePanel->onOpen(context);
-        refresh();
+  ipc.bind(
+      noctalia::cli::msg::panelToggle,
+      [this, parseOpenArgs, unknownPanelError](const std::string& args) -> std::string {
+        std::string panelId;
+        std::string context;
+        if (auto error = parseOpenArgs(args, "panel-toggle", panelId, context)) {
+          return *error;
+        }
+        if (!m_panels.contains(panelId) && !m_persistentHost.hasPanel(panelId)) {
+          return unknownPanelError(panelId);
+        }
+        // Output left unset: openPanel resolves it (focus source, else compositor probe).
+        if (context.empty()) {
+          togglePanel(panelId);
+        } else {
+          togglePanel(panelId, PanelOpenRequest{.context = context});
+        }
+        return "ok\n";
       }
-      return "ok\n";
-    }
+  );
 
-    // Output left unset: openPanel resolves it (focus source, else compositor probe).
-    openPanel(panelId, PanelOpenRequest{.context = context});
-    return "ok\n";
-  });
+  ipc.bind(
+      noctalia::cli::msg::panelOpen, [this, parseOpenArgs, unknownPanelError](const std::string& args) -> std::string {
+        std::string panelId;
+        std::string context;
+        if (auto error = parseOpenArgs(args, "panel-open", panelId, context)) {
+          return *error;
+        }
+        if (!m_panels.contains(panelId) && !m_persistentHost.hasPanel(panelId)) {
+          return unknownPanelError(panelId);
+        }
 
-  ipc.registerHandler("panel-close", [this, unknownPanelError](const std::string& args) -> std::string {
+        if (isOpen() && !m_closing && m_activePanelId == panelId) {
+          if (!context.empty() && m_activePanel != nullptr) {
+            m_activePanel->onOpen(context);
+            refresh();
+          }
+          return "ok\n";
+        }
+
+        // Output left unset: openPanel resolves it (focus source, else compositor probe).
+        openPanel(panelId, PanelOpenRequest{.context = context});
+        return "ok\n";
+      }
+  );
+
+  ipc.bind(noctalia::cli::msg::panelClose, [this, unknownPanelError](const std::string& args) -> std::string {
     const std::string panelId = StringUtils::trim(args);
     if (!panelId.empty() && StringUtils::splitWhitespace(panelId).size() != 1) {
       return "error: panel-close accepts at most one panel id\n";
@@ -2706,12 +2711,12 @@ void PanelManager::registerIpc(IpcService& ipc) {
     return std::format("error: {} accepts no arguments\n", command);
   };
 
-  ipc.registerHandler("settings-open", [this](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::settingsOpen, [this](const std::string& args) -> std::string {
     openSettingsWindow(std::string(StringUtils::trimLeftView(args)));
     return "ok\n";
   });
 
-  ipc.registerHandler("settings-open-widget", [this, &ipc](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::settingsOpenWidget, [this, &ipc](const std::string& args) -> std::string {
     const auto parts = noctalia::ipc::splitWords(args);
     std::string barName;
     std::string widgetName;
@@ -2740,7 +2745,7 @@ void PanelManager::registerIpc(IpcService& ipc) {
     return "ok\n";
   });
 
-  ipc.registerHandler("settings-open-plugin", [this](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::settingsOpenPlugin, [this](const std::string& args) -> std::string {
     const auto parts = noctalia::ipc::splitWords(args);
     if (parts.size() != 1) {
       return "error: settings-open-plugin takes <plugin-id> (e.g. noctalia/notes)\n";
@@ -2759,7 +2764,7 @@ void PanelManager::registerIpc(IpcService& ipc) {
     return "ok\n";
   });
 
-  ipc.registerHandler("settings-close", [this, rejectSettingsArgs](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::settingsClose, [this, rejectSettingsArgs](const std::string& args) -> std::string {
     if (auto error = rejectSettingsArgs(args, "settings-close")) {
       return *error;
     }
@@ -2767,7 +2772,7 @@ void PanelManager::registerIpc(IpcService& ipc) {
     return "ok\n";
   });
 
-  ipc.registerHandler("settings-toggle", [this](const std::string& args) -> std::string {
+  ipc.bind(noctalia::cli::msg::settingsToggle, [this](const std::string& args) -> std::string {
     toggleSettingsWindow(std::string(StringUtils::trimLeftView(args)));
     return "ok\n";
   });

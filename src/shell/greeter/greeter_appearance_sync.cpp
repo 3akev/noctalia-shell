@@ -799,8 +799,8 @@ namespace greeter {
     if (!appearanceSyncAvailable(config.config().shell.greeterSync)) {
       return;
     }
-    ipc.registerHandler(
-        "greeter-sync",
+    ipc.bind(
+        noctalia::cli::msg::greeterSync,
         [&config, resolvedThemeMode = std::move(resolvedThemeMode), platform,
          logindOnSystemBus = std::move(logindOnSystemBus)](const std::string& args) -> std::string {
           if (!StringUtils::trim(args).empty()) {

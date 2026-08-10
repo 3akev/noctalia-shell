@@ -658,12 +658,12 @@ namespace noctalia::theme {
   }
 
   void ThemeService::registerIpc(IpcService& ipc) {
-    ipc.registerHandler("theme-mode-toggle", [this](const std::string&) -> std::string {
+    ipc.bind(noctalia::cli::msg::themeModeToggle, [this](const std::string&) -> std::string {
       toggleLightDark();
       return "ok\n";
     });
-    ipc.registerHandler(
-        "theme-mode-get",
+    ipc.bind(
+        noctalia::cli::msg::themeModeGet,
         [this](const std::string&) -> std::string {
           std::string out(resolvedMode());
           out.push_back('\n');
@@ -671,7 +671,7 @@ namespace noctalia::theme {
         },
         IpcService::HandlerOptions{.actionEditorVisibility = IpcService::ActionEditorVisibility::Hidden}
     );
-    ipc.registerHandler("theme-mode-set", [this](const std::string& args) -> std::string {
+    ipc.bind(noctalia::cli::msg::themeModeSet, [this](const std::string& args) -> std::string {
       const std::string token = StringUtils::trim(args);
       const auto mode = enumFromKey(kThemeModes, token);
       if (!mode.has_value()) {
@@ -680,12 +680,12 @@ namespace noctalia::theme {
       m_config.setThemeMode(*mode);
       return "ok\n";
     });
-    ipc.registerHandler(
-        "color-scheme-get",
+    ipc.bind(
+        noctalia::cli::msg::colorSchemeGet,
         [this](const std::string&) -> std::string { return formatColorSchemeLine(m_config.config().theme); },
         IpcService::HandlerOptions{.actionEditorVisibility = IpcService::ActionEditorVisibility::Hidden}
     );
-    ipc.registerHandler("color-scheme-set", [this](const std::string& args) -> std::string {
+    ipc.bind(noctalia::cli::msg::colorSchemeSet, [this](const std::string& args) -> std::string {
       PaletteSource source = PaletteSource::Builtin;
       std::string value;
       std::string error;
