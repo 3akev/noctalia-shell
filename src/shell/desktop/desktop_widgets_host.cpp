@@ -293,6 +293,13 @@ void DesktopWidgetsHost::createInstance(const DesktopWidgetState& state, const W
     return;
   }
 
+  // The pre-surface measurement above bound retained render state (owned Image
+  // textures, the sticker's frame renderer) to the stack-local ScaledRenderer.
+  // initialize() wired the surface's RenderTarget (renderer context + content
+  // scale seeded from this output), so rebind the whole widget tree to that
+  // stable view before the temporary dies.
+  instance->widget->rebindRenderer(instance->surface->renderTarget().renderer());
+
   m_instances.push_back(std::move(instance));
 }
 
