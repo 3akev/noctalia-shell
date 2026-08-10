@@ -27,9 +27,11 @@ namespace {
   constexpr float kTableMinPeerColumnWidth = 80.0F;
   constexpr float kPadH = Style::spaceMd;
   constexpr float kPadV = Style::spaceSm;
-  constexpr float kTableGap = Style::spaceXs;
   constexpr float kTableColumnGap = Style::spaceMd;
   constexpr float kBorder = Style::borderWidth;
+  // Monospace so grid-mode value columns don't reflow on tiny per-tick content changes
+  // (e.g. rising bitrate). Resolved via fontconfig — respects the user's `monospace` alias.
+  constexpr std::string_view kValueFontFamily = "monospace";
 
   std::unique_ptr<Label> makeTooltipTextLabel(std::string_view text, float fontSize, float maxWidth) {
     return ui::label({
@@ -594,7 +596,6 @@ TooltipManager::Size TooltipManager::measureContent(const TooltipContent& conten
   const float fontSize = Style::fontSizeCaption * scale;
   const float padH = kPadH * scale;
   const float padV = kPadV * scale;
-  const float tableGap = kTableGap * scale;
   const float tableColumnGap = kTableColumnGap * scale;
 
   if (const auto* text = std::get_if<std::string>(&content)) {
@@ -614,14 +615,16 @@ TooltipManager::Size TooltipManager::measureContent(const TooltipContent& conten
     float rowH = 0.0F;
     for (const auto& row : *rows) {
       auto km = m_renderContext->measureText(row.key, fontSize);
-      const auto vm = m_renderContext->measureText(row.value, fontSize);
+      const auto vm = m_renderContext->measureText(
+          row.value, fontSize, FontWeight::Normal, 0.0F, 0, TextAlign::Start, kValueFontFamily
+      );
       maxKeyW = std::max(maxKeyW, km.width);
       maxValW = std::max(maxValW, vm.width);
       rowH = std::max({rowH, km.bottom - km.top, vm.bottom - vm.top});
     }
     const TableColumnWidths columns = fitTableColumns(maxKeyW, maxValW);
     float contentW = columns.key + tableColumnGap + columns.value;
-    float contentH = static_cast<float>(rows->size()) * rowH + static_cast<float>(rows->size() - 1) * tableGap;
+    float contentH = static_cast<float>(rows->size()) * rowH;
     auto w = static_cast<std::uint32_t>(std::ceil(contentW + padH * 2.0F + kBorder * 2.0F));
     auto h = static_cast<std::uint32_t>(std::ceil(contentH + padV * 2.0F + kBorder * 2.0F));
     return {std::max(w, 1U), std::max(h, 1U)};
@@ -657,7 +660,6 @@ void TooltipManager::buildScene(const TooltipContent& content, float w, float h,
   const float fontSize = Style::fontSizeCaption * scale;
   const float padH = kPadH * scale;
   const float padV = kPadV * scale;
-  const float tableGap = kTableGap * scale;
   const float tableColumnGap = kTableColumnGap * scale;
 
   if (const auto* text = std::get_if<std::string>(&content)) {
@@ -675,14 +677,15 @@ void TooltipManager::buildScene(const TooltipContent& content, float w, float h,
     float maxValW = 0.0F;
     for (const auto& row : *rows) {
       auto km = m_renderContext->measureText(row.key, fontSize);
-      const auto vm = m_renderContext->measureText(row.value, fontSize);
+      const auto vm = m_renderContext->measureText(
+          row.value, fontSize, FontWeight::Normal, 0.0F, 0, TextAlign::Start, kValueFontFamily
+      );
       maxKeyW = std::max(maxKeyW, km.width);
       maxValW = std::max(maxValW, vm.width);
     }
     const TableColumnWidths columns = fitTableColumns(maxKeyW, maxValW);
 
     auto container = ui::column({
-        .gap = tableGap,
         .width = containerW,
         .height = h - (padV + kBorder) * 2.0F,
         .configure = [padH, padV](Flex& flex) { flex.setPosition(padH + kBorder, padV + kBorder); },
@@ -704,12 +707,15 @@ void TooltipManager::buildScene(const TooltipContent& content, float w, float h,
       auto valLabel = ui::label({
           .text = row.value,
           .fontSize = fontSize,
+          .fontFamily = std::string(kValueFontFamily),
           .color = colorSpecFromRole(ColorRole::OnSurface),
           .maxLines = 1,
           .textAlign = TextAlign::End,
           .ellipsize = row.valueEllipsize,
       });
-      const auto vm = m_renderContext->measureText(row.value, fontSize);
+      const auto vm = m_renderContext->measureText(
+          row.value, fontSize, FontWeight::Normal, 0.0F, 0, TextAlign::Start, kValueFontFamily
+      );
       if (vm.width > columns.value + 0.5F) {
         valLabel->setMaxWidth(columns.value);
       }
