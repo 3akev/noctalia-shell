@@ -5,12 +5,14 @@
 #include "core/log.h"
 #include "core/ui_phase.h"
 #include "render/render_context.h"
+#include "render/render_target.h"
 #include "render/scene/input_area.h"
 #include "render/scene/node.h"
 #include "ui/builders.h"
 #include "ui/palette.h"
 #include "ui/style.h"
 #include "wayland/popup_surface.h"
+#include "wayland/wayland_connection.h"
 #include "xdg-shell-client-protocol.h"
 
 #include <algorithm>
@@ -364,7 +366,8 @@ void TooltipManager::showPopup() {
   }
 
   m_pendingContent = m_pendingArea->tooltipContent();
-  const auto [contentW, contentH] = measureContent(m_pendingContent);
+  ScaledRenderer measureRenderer(*m_renderContext, pendingOutputScale());
+  const auto [contentW, contentH] = measureContent(measureRenderer, m_pendingContent);
   if (contentW == 0 || contentH == 0) {
     m_state = State::Idle;
     return;
@@ -389,8 +392,7 @@ void TooltipManager::showPopup() {
     return;
   }
 
-  m_renderContext->syncContentScale(m_surface->renderTarget());
-  const auto [scaledContentW, scaledContentH] = measureContent(m_pendingContent);
+  const auto [scaledContentW, scaledContentH] = measureContent(m_surface->renderTarget().renderer(), m_pendingContent);
   if (scaledContentW == 0 || scaledContentH == 0) {
     destroyPopup();
     return;
@@ -404,9 +406,7 @@ void TooltipManager::showPopup() {
   m_surface->setConfigureCallback([this](std::uint32_t, std::uint32_t) { m_surface->requestLayout(); });
   m_surface->setPrepareFrameCallback([this](bool u, bool l) { prepareFrame(u, l); });
   m_surface->setScaleChangedCallback([this](float) {
-    // The tooltip surface's fractional scale can arrive after the initial roundtrip,
-    // so the first buildScene may have measured at the wrong scale (typically 1.0×).
-    // Re-run the full measure/resize/rebuild dance at the freshly-synced scale.
+    // Genuine compositor scale change for this popup: remeasure/resize/rebuild.
     if (m_state == State::Showing && m_pendingArea != nullptr) {
       refreshPopupContent();
     }
@@ -531,11 +531,13 @@ void TooltipManager::refreshFromArea(InputArea* area) {
     refreshPopupContent();
     scheduleProviderRefresh();
     break;
-  case State::Idle:
-    if (measureContent(m_pendingContent).w > 0) {
+  case State::Idle: {
+    ScaledRenderer measureRenderer(*m_renderContext, pendingOutputScale());
+    if (measureContent(measureRenderer, m_pendingContent).w > 0) {
       showPopup();
     }
     break;
+  }
   case State::FadingOut:
     break;
   }
@@ -546,7 +548,7 @@ void TooltipManager::refreshPopupContent() {
     return;
   }
 
-  const auto [contentW, contentH] = measureContent(m_pendingContent);
+  const auto [contentW, contentH] = measureContent(m_surface->renderTarget().renderer(), m_pendingContent);
   if (contentW == 0 || contentH == 0) {
     dismissPopup();
     return;
@@ -586,7 +588,16 @@ void TooltipManager::scheduleProviderRefresh() {
   m_refreshTimer.start(interval, [this, area]() { refreshFromArea(area); });
 }
 
-TooltipManager::Size TooltipManager::measureContent(const TooltipContent& content) {
+float TooltipManager::pendingOutputScale() const {
+  if (m_wayland != nullptr && m_pendingOutput != nullptr) {
+    if (const WaylandOutput* output = m_wayland->findOutputByWl(m_pendingOutput); output != nullptr) {
+      return output->configuredScale();
+    }
+  }
+  return 1.0F;
+}
+
+TooltipManager::Size TooltipManager::measureContent(Renderer& renderer, const TooltipContent& content) {
   if (m_renderContext == nullptr) {
     return {};
   }
@@ -600,7 +611,7 @@ TooltipManager::Size TooltipManager::measureContent(const TooltipContent& conten
 
   if (const auto* text = std::get_if<std::string>(&content)) {
     auto label = makeTooltipTextLabel(*text, fontSize, maxContentWidth);
-    label->measure(*m_renderContext);
+    label->measure(renderer);
     auto w = static_cast<std::uint32_t>(std::ceil(label->width() + padH * 2.0F + kBorder * 2.0F));
     auto h = static_cast<std::uint32_t>(std::ceil(label->height() + padV * 2.0F + kBorder * 2.0F));
     return {std::max(w, 1U), std::max(h, 1U)};
@@ -614,10 +625,9 @@ TooltipManager::Size TooltipManager::measureContent(const TooltipContent& conten
     float maxValW = 0.0F;
     float rowH = 0.0F;
     for (const auto& row : *rows) {
-      auto km = m_renderContext->measureText(row.key, fontSize);
-      const auto vm = m_renderContext->measureText(
-          row.value, fontSize, FontWeight::Normal, 0.0F, 0, TextAlign::Start, kValueFontFamily
-      );
+      auto km = renderer.measureText(row.key, fontSize);
+      const auto vm =
+          renderer.measureText(row.value, fontSize, FontWeight::Normal, 0.0F, 0, TextAlign::Start, kValueFontFamily);
       maxKeyW = std::max(maxKeyW, km.width);
       maxValW = std::max(maxValW, vm.width);
       rowH = std::max({rowH, km.bottom - km.top, vm.bottom - vm.top});
@@ -635,9 +645,10 @@ TooltipManager::Size TooltipManager::measureContent(const TooltipContent& conten
 
 void TooltipManager::buildScene(const TooltipContent& content, float w, float h, float opacity) {
   uiAssertNotRendering("TooltipManager::buildScene");
-  if (m_renderContext == nullptr) {
+  if (m_renderContext == nullptr || m_surface == nullptr) {
     return;
   }
+  Renderer& renderer = m_surface->renderTarget().renderer();
 
   m_sceneRoot = ui::node({});
   m_sceneRoot->setSize(w, h);
@@ -664,7 +675,7 @@ void TooltipManager::buildScene(const TooltipContent& content, float w, float h,
 
   if (const auto* text = std::get_if<std::string>(&content)) {
     auto label = makeTooltipTextLabel(*text, fontSize, maxContentWidth);
-    label->measure(*m_renderContext);
+    label->measure(renderer);
     label->setPosition(padH + kBorder, padV + kBorder);
     m_sceneRoot->addChild(std::move(label));
     return;
@@ -676,10 +687,9 @@ void TooltipManager::buildScene(const TooltipContent& content, float w, float h,
     float maxKeyW = 0.0F;
     float maxValW = 0.0F;
     for (const auto& row : *rows) {
-      auto km = m_renderContext->measureText(row.key, fontSize);
-      const auto vm = m_renderContext->measureText(
-          row.value, fontSize, FontWeight::Normal, 0.0F, 0, TextAlign::Start, kValueFontFamily
-      );
+      auto km = renderer.measureText(row.key, fontSize);
+      const auto vm =
+          renderer.measureText(row.value, fontSize, FontWeight::Normal, 0.0F, 0, TextAlign::Start, kValueFontFamily);
       maxKeyW = std::max(maxKeyW, km.width);
       maxValW = std::max(maxValW, vm.width);
     }
@@ -698,11 +708,11 @@ void TooltipManager::buildScene(const TooltipContent& content, float w, float h,
           .color = colorSpecFromRole(ColorRole::Secondary),
           .maxLines = 1,
       });
-      const auto km = m_renderContext->measureText(row.key, fontSize);
+      const auto km = renderer.measureText(row.key, fontSize);
       if (km.width > columns.key + 0.5F) {
         keyLabel->setMaxWidth(columns.key);
       }
-      keyLabel->measure(*m_renderContext);
+      keyLabel->measure(renderer);
 
       auto valLabel = ui::label({
           .text = row.value,
@@ -713,13 +723,12 @@ void TooltipManager::buildScene(const TooltipContent& content, float w, float h,
           .textAlign = TextAlign::End,
           .ellipsize = row.valueEllipsize,
       });
-      const auto vm = m_renderContext->measureText(
-          row.value, fontSize, FontWeight::Normal, 0.0F, 0, TextAlign::Start, kValueFontFamily
-      );
+      const auto vm =
+          renderer.measureText(row.value, fontSize, FontWeight::Normal, 0.0F, 0, TextAlign::Start, kValueFontFamily);
       if (vm.width > columns.value + 0.5F) {
         valLabel->setMaxWidth(columns.value);
       }
-      valLabel->measure(*m_renderContext);
+      valLabel->measure(renderer);
 
       container->addChild(
           ui::row(
@@ -733,7 +742,7 @@ void TooltipManager::buildScene(const TooltipContent& content, float w, float h,
       );
     }
 
-    container->layout(*m_renderContext);
+    container->layout(renderer);
     m_sceneRoot->addChild(std::move(container));
   }
 }

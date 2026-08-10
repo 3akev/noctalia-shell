@@ -3,6 +3,7 @@
 #include "config/config_service.h"
 #include "core/log.h"
 #include "render/render_context.h"
+#include "render/render_target.h"
 #include "render/scene/node.h"
 #include "scripting/plugin_registry.h"
 #include "shell/desktop/desktop_widget_layout.h"
@@ -202,8 +203,9 @@ void DesktopWidgetsHost::createInstance(const DesktopWidgetState& state, const W
 
   widget->create();
   widget->setBox(state.boxWidth, state.boxHeight);
-  widget->update(*m_renderContext);
-  widget->layout(*m_renderContext);
+  ScaledRenderer renderer(*m_renderContext, output.configuredScale());
+  widget->update(renderer);
+  widget->layout(renderer);
 
   const float intrinsicWidth = std::max(1.0F, widget->intrinsicWidth());
   const float intrinsicHeight = std::max(1.0F, widget->intrinsicHeight());
@@ -282,7 +284,8 @@ void DesktopWidgetsHost::createInstance(const DesktopWidgetState& state, const W
       return;
     }
     m_renderContext->makeCurrent(rawInstance->surface->renderTarget());
-    rawInstance->widget->onFrameTick(deltaMs, *m_renderContext);
+    Renderer& renderer = rawInstance->surface->renderTarget().renderer();
+    rawInstance->widget->onFrameTick(deltaMs, renderer);
   });
 
   if (!instance->surface->initialize(output.output)) {
@@ -323,6 +326,7 @@ void DesktopWidgetsHost::prepareFrame(DesktopWidgetInstance& instance, bool need
   }
 
   m_renderContext->makeCurrent(instance.surface->renderTarget());
+  Renderer& renderer = instance.surface->renderTarget().renderer();
 
   buildScene(instance);
 
@@ -331,10 +335,10 @@ void DesktopWidgetsHost::prepareFrame(DesktopWidgetInstance& instance, bool need
   instance.widget->setBox(instance.state.boxWidth, instance.state.boxHeight);
 
   if (needsUpdate) {
-    instance.widget->update(*m_renderContext);
+    instance.widget->update(renderer);
   }
   if (needsLayout) {
-    instance.widget->layout(*m_renderContext);
+    instance.widget->layout(renderer);
     instance.intrinsicWidth = std::max(1.0F, instance.widget->intrinsicWidth());
     instance.intrinsicHeight = std::max(1.0F, instance.widget->intrinsicHeight());
   }
