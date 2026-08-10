@@ -42,7 +42,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <string_view>
-#include <sys/inotify.h>
 #include <tuple>
 #include <unistd.h>
 #include <unordered_map>
@@ -51,6 +50,8 @@
 namespace schema = noctalia::config::schema;
 
 namespace {
+
+  constexpr std::uint32_t inotifyMask = IN_MODIFY | IN_CLOSE_WRITE | IN_MOVED_TO | IN_CREATE;
 
   constexpr Logger kLog("config");
 
@@ -558,26 +559,6 @@ ConfigService::ConfigService() {
   setupWatch();
 }
 
-ConfigService::~ConfigService() {
-  if (m_inotifyFd >= 0) {
-    if (m_configWatchWd >= 0) {
-      inotify_rm_watch(m_inotifyFd, m_configWatchWd);
-    }
-    if (m_overridesWatchWd >= 0) {
-      inotify_rm_watch(m_inotifyFd, m_overridesWatchWd);
-    }
-    for (const auto& [wd, _] : m_symlinkDirWds) {
-      if (wd != m_configWatchWd && wd != m_overridesWatchWd) {
-        inotify_rm_watch(m_inotifyFd, wd);
-      }
-    }
-    for (const int wd : m_includeDirWds) {
-      inotify_rm_watch(m_inotifyFd, wd);
-    }
-    ::close(m_inotifyFd);
-  }
-}
-
 // ── Public interface ─────────────────────────────────────────────────────────
 
 void ConfigService::addReloadCallback(ReloadCallback callback, std::string_view label) {
@@ -855,61 +836,49 @@ Config ConfigService::makeDefaultConfig() {
 }
 
 void ConfigService::checkReload() {
-  if (m_inotifyFd < 0) {
+  if (m_inotify.fd() < 0) {
     return;
   }
 
-  // Drain inotify events and bucket them per watch descriptor.
-  alignas(inotify_event) char buf[4096];
   bool configChanged = false;
   bool overridesChanged = false;
 
-  while (true) {
-    const auto n = ::read(m_inotifyFd, buf, sizeof(buf));
-    if (n <= 0) {
-      break;
-    }
-
-    std::size_t offset = 0;
-    while (offset < static_cast<std::size_t>(n)) {
-      auto* event = reinterpret_cast<inotify_event*>(buf + offset);
-      if (event->len > 0) {
-        const std::string_view name{event->name};
-        if (event->wd == m_configWatchWd) {
-          if (name.size() >= 5 && name.substr(name.size() - 5) == ".toml") {
-            configChanged = true;
-          }
-        }
-        if (event->wd == m_overridesWatchWd) {
-          const auto overridesFilename = std::filesystem::path(m_overridesPath).filename().string();
-          if (name == overridesFilename) {
-            overridesChanged = true;
-          }
-        }
-
-        // Check whether this event comes from a symlink-target directory.
-        const auto symIt = m_symlinkDirWds.find(event->wd);
-        if (symIt != m_symlinkDirWds.end()) {
-          for (const auto& watched : symIt->second) {
-            if (name != watched.filename) {
-              continue;
-            }
-            if (watched.overrides) {
-              overridesChanged = true;
-            } else {
-              configChanged = true;
-            }
-          }
-        }
-
-        // Any *.toml change in a watched [include] directory is a config change.
-        if (m_includeDirWds.contains(event->wd) && name.size() >= 5 && name.substr(name.size() - 5) == ".toml") {
+  m_inotify.drain([this, &configChanged, &overridesChanged](const inotify_event* event) {
+    if (event->len > 0) {
+      const std::string_view name{event->name};
+      if (event->wd == m_configWatchWd) {
+        if (name.size() >= 5 && name.substr(name.size() - 5) == ".toml") {
           configChanged = true;
         }
       }
-      offset += sizeof(inotify_event) + event->len;
+      if (event->wd == m_overridesWatchWd) {
+        const auto overridesFilename = std::filesystem::path(m_overridesPath).filename().string();
+        if (name == overridesFilename) {
+          overridesChanged = true;
+        }
+      }
+
+      // Check whether this event comes from a symlink-target directory.
+      const auto symIt = m_symlinkDirWds.find(event->wd);
+      if (symIt != m_symlinkDirWds.end()) {
+        for (const auto& watched : symIt->second) {
+          if (name != watched.filename) {
+            continue;
+          }
+          if (watched.overrides) {
+            overridesChanged = true;
+          } else {
+            configChanged = true;
+          }
+        }
+      }
+
+      // Any *.toml change in a watched [include] directory is a config change.
+      if (m_includeDirWds.contains(event->wd) && name.size() >= 5 && name.substr(name.size() - 5) == ".toml") {
+        configChanged = true;
+      }
     }
-  }
+  });
 
   // Skip the echo of our own write.
   if (overridesChanged && m_ownOverridesWritePending) {
@@ -1072,73 +1041,61 @@ void ConfigService::setupWatch() {
   std::error_code ec;
   std::filesystem::create_directories(m_configDir, ec);
 
-  m_inotifyFd = inotify_init1(IN_NONBLOCK | IN_CLOEXEC);
-  if (m_inotifyFd < 0) {
-    kLog.warn("inotify_init1 failed, hot reload disabled");
-    return;
-  }
-
-  m_configWatchWd =
-      inotify_add_watch(m_inotifyFd, m_configDir.c_str(), IN_MODIFY | IN_CLOSE_WRITE | IN_CREATE | IN_MOVED_TO);
-  if (m_configWatchWd < 0) {
+  const auto watchId = m_inotify.watch(m_configDir.c_str(), inotifyMask);
+  if (!watchId.has_value()) {
     kLog.warn("inotify_add_watch failed, hot reload disabled");
-    ::close(m_inotifyFd);
-    m_inotifyFd = -1;
     return;
   }
+  m_configWatchWd = watchId.value();
 
   kLog.debug("watching {} for changes", m_configDir);
 
   // For any *.toml entries that are symlinks, also watch the real target's parent
   // directory so that edits to the target file (e.g. via dotfile management) trigger
   // a reload even though the modification event fires in a different directory.
-  {
-    std::error_code scanEc;
-    for (const auto& entry : std::filesystem::directory_iterator(m_configDir, scanEc)) {
-      if (entry.path().extension() != ".toml") {
-        continue;
-      }
-      std::error_code symlinkEc;
-      if (!entry.is_symlink(symlinkEc) || symlinkEc) {
-        continue;
-      }
-      std::error_code canonEc;
-      const auto real = std::filesystem::canonical(entry.path(), canonEc);
-      if (canonEc) {
-        continue;
-      }
-      const auto realDir = real.parent_path().string();
-      const auto realName = real.filename().string();
-      // inotify_add_watch is idempotent per inode — if realDir == m_configDir the
-      // existing watch descriptor is returned and we simply record the extra name.
-      const int wd =
-          inotify_add_watch(m_inotifyFd, realDir.c_str(), IN_MODIFY | IN_CLOSE_WRITE | IN_MOVED_TO | IN_CREATE);
-      if (wd >= 0) {
-        m_symlinkDirWds[wd].push_back(SymlinkTargetWatch{.filename = realName, .overrides = false});
-        kLog.debug("watching symlink target {} in {}", realName, realDir);
-      }
+  std::error_code scanEc;
+  for (const auto& entry : std::filesystem::directory_iterator(m_configDir, scanEc)) {
+    if (entry.path().extension() != ".toml") {
+      continue;
+    }
+    std::error_code symlinkEc;
+    if (!entry.is_symlink(symlinkEc) || symlinkEc) {
+      continue;
+    }
+    std::error_code canonEc;
+    const auto real = std::filesystem::canonical(entry.path(), canonEc);
+    if (canonEc) {
+      continue;
+    }
+    const auto realDir = real.parent_path().string();
+    const auto realName = real.filename().string();
+    // inotify.watch is idempotent per inode — if realDir == m_configDir the
+    // existing watch descriptor is returned and we simply record the extra name.
+    const auto wd = m_inotify.watch(realDir.c_str(), inotifyMask);
+    if (wd.has_value()) {
+      m_symlinkDirWds[wd.value()].push_back(SymlinkTargetWatch{.filename = realName, .overrides = false});
+      kLog.debug("watching symlink target {} in {}", realName, realDir);
     }
   }
 
   // Also watch the state dir for settings.toml edits (external writes).
   if (!m_overridesPath.empty()) {
     const auto overridesDir = std::filesystem::path(m_overridesPath).parent_path().string();
-    m_overridesWatchWd =
-        inotify_add_watch(m_inotifyFd, overridesDir.c_str(), IN_MODIFY | IN_CLOSE_WRITE | IN_CREATE | IN_MOVED_TO);
-    if (m_overridesWatchWd < 0) {
+    const auto wd = m_inotify.watch(overridesDir.c_str(), inotifyMask);
+    if (!wd.has_value()) {
       kLog.warn("inotify_add_watch failed for {}, overrides reload disabled", overridesDir);
     } else {
       kLog.debug("watching {} for changes", overridesDir);
+      m_overridesWatchWd = wd.value();
     }
 
     const auto target = resolveAtomicWriteTarget(m_overridesPath);
     if (target.has_value() && target->throughSymlink) {
       const auto realDir = target->path.parent_path().string();
       const auto realName = target->path.filename().string();
-      const int wd =
-          inotify_add_watch(m_inotifyFd, realDir.c_str(), IN_MODIFY | IN_CLOSE_WRITE | IN_MOVED_TO | IN_CREATE);
-      if (wd >= 0) {
-        m_symlinkDirWds[wd].push_back(SymlinkTargetWatch{.filename = realName, .overrides = true});
+      const auto targetWd = m_inotify.watch(realDir.c_str(), inotifyMask);
+      if (targetWd.has_value()) {
+        m_symlinkDirWds[targetWd.value()].push_back(SymlinkTargetWatch{.filename = realName, .overrides = true});
         kLog.debug("watching settings symlink target {} in {}", realName, realDir);
       }
     }
@@ -1150,7 +1107,7 @@ void ConfigService::setupWatch() {
 }
 
 void ConfigService::refreshIncludeWatches() {
-  if (m_inotifyFd < 0) {
+  if (m_inotify.fd() < 0) {
     return;
   }
 
@@ -1185,7 +1142,7 @@ void ConfigService::refreshIncludeWatches() {
   // Drop watches no longer wanted.
   for (auto it = m_includeDirWatches.begin(); it != m_includeDirWatches.end();) {
     if (!desired.contains(it->first)) {
-      inotify_rm_watch(m_inotifyFd, it->second);
+      m_inotify.unwatch(it->second);
       m_includeDirWds.erase(it->second);
       it = m_includeDirWatches.erase(it);
     } else {
@@ -1198,18 +1155,18 @@ void ConfigService::refreshIncludeWatches() {
     if (m_includeDirWatches.contains(dir)) {
       continue;
     }
-    const int wd = inotify_add_watch(m_inotifyFd, dir.c_str(), IN_MODIFY | IN_CLOSE_WRITE | IN_CREATE | IN_MOVED_TO);
-    if (wd < 0) {
+    const auto wd = m_inotify.watch(dir.c_str(), inotifyMask);
+    if (!wd.has_value()) {
       continue;
     }
     // inotify_add_watch is idempotent per inode: if this dir is already watched by
     // the config/overrides/symlink-target watches, the existing wd comes back. Do
     // not record it (and never remove it) — its original owner manages its lifetime.
-    if (wd == m_configWatchWd || wd == m_overridesWatchWd || m_symlinkDirWds.contains(wd)) {
+    if (wd == m_configWatchWd || wd == m_overridesWatchWd || m_symlinkDirWds.contains(*wd)) {
       continue;
     }
-    m_includeDirWatches.emplace(dir, wd);
-    m_includeDirWds.insert(wd);
+    m_includeDirWatches.emplace(dir, *wd);
+    m_includeDirWds.insert(*wd);
     kLog.debug("watching include directory {}", dir);
   }
 }
@@ -1573,7 +1530,7 @@ void ConfigService::loadAll() {
       toml::table previousOverrides = m_overridesTable;
       m_overridesTable = std::move(effectiveOverrides);
       if (writeOverridesToFile()) {
-        m_ownOverridesWritePending = m_inotifyFd >= 0 && m_overridesWatchWd >= 0;
+        m_ownOverridesWritePending = m_inotify.fd() >= 0 && m_overridesWatchWd >= 0;
         extractWallpaperFromOverrides();
       } else {
         kLog.warn("failed to persist migrated config overrides to {}", m_overridesPath);
