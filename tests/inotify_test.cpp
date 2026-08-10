@@ -6,7 +6,6 @@
 #include <fstream>
 #include <print>
 #include <string>
-#include <sys/inotify.h>
 #include <unistd.h>
 
 namespace {
