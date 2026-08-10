@@ -203,9 +203,9 @@ void DesktopWidgetsHost::createInstance(const DesktopWidgetState& state, const W
 
   widget->create();
   widget->setBox(state.boxWidth, state.boxHeight);
-  ScaledRenderer renderer(*m_renderContext, output.configuredScale());
-  widget->update(renderer);
-  widget->layout(renderer);
+  ScaledRenderer measureRenderer(*m_renderContext, output.configuredScale());
+  widget->update(measureRenderer);
+  widget->layout(measureRenderer);
 
   const float intrinsicWidth = std::max(1.0F, widget->intrinsicWidth());
   const float intrinsicHeight = std::max(1.0F, widget->intrinsicHeight());
