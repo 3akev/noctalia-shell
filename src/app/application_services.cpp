@@ -118,6 +118,24 @@ namespace {
       Application::s_shutdownRequested = true;
     }
   }
+
+  void syncGSettingsColorScheme(std::string_view mode) {
+    if (mode.empty()) {
+      return;
+    }
+    const std::string pref = mode == "light" ? "prefer-light" : "prefer-dark";
+    if (process::commandExists("gsettings")) {
+      std::string cmd = "gsettings set org.gnome.desktop.interface color-scheme \"";
+      cmd += pref;
+      cmd += "\"";
+      (void)process::runAsync(cmd);
+    } else if (process::commandExists("dconf")) {
+      std::string cmd = "dconf write /org/gnome/desktop/interface/color-scheme \"'";
+      cmd += pref;
+      cmd += "'\"";
+      (void)process::runAsync(cmd);
+    }
+  }
 } // namespace
 
 void Application::scheduleNotificationShellRefresh() {
@@ -610,8 +628,10 @@ void Application::initStyleThemeAndWayland() {
            {"NOCTALIA_THEME_MODE_CONFIGURED", configuredMode}}
       );
     }
+    syncGSettingsColorScheme(resolvedMode);
   });
   m_themeService.apply();
+  syncGSettingsColorScheme(m_themeService.resolvedMode());
   syncScriptApiWallpaperDirectory();
   syncScriptApiShellTimeFormats();
   m_configService.addReloadCallback([this]() { m_themeService.onConfigReload(); }, "theme");
