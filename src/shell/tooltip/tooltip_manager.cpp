@@ -401,6 +401,14 @@ void TooltipManager::showPopup() {
   m_surface->setAnimationManager(&m_animations);
   m_surface->setConfigureCallback([this](std::uint32_t, std::uint32_t) { m_surface->requestLayout(); });
   m_surface->setPrepareFrameCallback([this](bool u, bool l) { prepareFrame(u, l); });
+  m_surface->setScaleChangedCallback([this](float) {
+    // The tooltip surface's fractional scale can arrive after the initial roundtrip,
+    // so the first buildScene may have measured at the wrong scale (typically 1.0×).
+    // Re-run the full measure/resize/rebuild dance at the freshly-synced scale.
+    if (m_state == State::Showing && m_pendingArea != nullptr) {
+      refreshPopupContent();
+    }
+  });
 
   m_paletteConn = paletteChanged().connect([this] {
     if (m_surface != nullptr) {

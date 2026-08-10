@@ -63,6 +63,7 @@ public:
   using PrepareFrameCallback = std::function<void(bool needsUpdate, bool needsLayout)>;
   using UpdateCallback = std::function<void()>;
   using FrameTickCallback = std::function<void(float deltaMs)>;
+  using ScaleChangedCallback = std::function<void(float scale)>;
 
   explicit Surface(WaylandConnection& connection);
   virtual ~Surface();
@@ -78,6 +79,7 @@ public:
   void setPrepareFrameCallback(PrepareFrameCallback callback);
   void setUpdateCallback(UpdateCallback callback);
   void setFrameTickCallback(FrameTickCallback callback);
+  void setScaleChangedCallback(ScaleChangedCallback callback);
   void setInputRegion(const std::vector<InputRect>& rects);
   void setBlurRegion(const std::vector<InputRect>& rects);
   void clearBlurRegion();
@@ -181,6 +183,7 @@ private:
   PrepareFrameCallback m_prepareFrameCallback;
   UpdateCallback m_updateCallback;
   FrameTickCallback m_frameTickCallback;
+  ScaleChangedCallback m_scaleChangedCallback;
   wl_callback* m_frameCallback = nullptr;
   ext_background_effect_surface_v1* m_backgroundEffect = nullptr;
   wp_viewport* m_viewport = nullptr;

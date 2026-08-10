@@ -452,6 +452,8 @@ void Surface::setUpdateCallback(UpdateCallback callback) { m_updateCallback = st
 
 void Surface::setFrameTickCallback(FrameTickCallback callback) { m_frameTickCallback = std::move(callback); }
 
+void Surface::setScaleChangedCallback(ScaleChangedCallback callback) { m_scaleChangedCallback = std::move(callback); }
+
 void Surface::setSceneRoot(Node* root) {
   if (m_sceneRoot == root) {
     return;
@@ -586,6 +588,9 @@ void Surface::onScaleChanged() {
   }
   requestLayout();
   requestRedraw();
+  if (m_scaleChangedCallback) {
+    m_scaleChangedCallback(effectiveBufferScale());
+  }
 }
 
 void Surface::setInputRegion(const std::vector<InputRect>& rects) {
