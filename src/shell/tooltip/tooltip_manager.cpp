@@ -536,9 +536,6 @@ void TooltipManager::refreshPopupContent() {
     return;
   }
 
-  m_renderContext->makeCurrent(m_surface->renderTarget());
-  m_renderContext->syncContentScale(m_surface->renderTarget());
-
   const auto [contentW, contentH] = measureContent(m_pendingContent);
   if (contentW == 0 || contentH == 0) {
     dismissPopup();
@@ -555,6 +552,7 @@ void TooltipManager::refreshPopupContent() {
   m_surface->resize(contentW, contentH, false);
   m_surface->repositionAnchor(anchorConfig, false);
 
+  m_renderContext->makeCurrent(m_surface->renderTarget());
   m_sceneRoot.reset();
   {
     UiPhaseScope layoutPhase(UiPhase::Layout);
@@ -738,7 +736,6 @@ void TooltipManager::prepareFrame(bool /*needsUpdate*/, bool /*needsLayout*/) {
   }
 
   m_renderContext->makeCurrent(m_surface->renderTarget());
-  m_renderContext->syncContentScale(m_surface->renderTarget());
 
   const auto w = static_cast<float>(width);
   const auto h = static_cast<float>(height);
