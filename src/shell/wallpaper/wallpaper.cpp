@@ -779,32 +779,20 @@ void Wallpaper::registerIpc(IpcService& ipc) {
     return switchResponse(switchWallpaperTo(action, connector));
   };
 
-  ipc.registerHandler(
-      "wallpaper-random",
-      [switchWallpaperHandler](const std::string& args) -> std::string {
-        return switchWallpaperHandler(PickWallpaper::Random, args);
-      },
-      "[connector]", "Switch to a random wallpaper immediately"
-  );
+  ipc.bind(noctalia::cli::msg::wallpaperRandom, [switchWallpaperHandler](const std::string& args) -> std::string {
+    return switchWallpaperHandler(PickWallpaper::Random, args);
+  });
 
-  ipc.registerHandler(
-      "wallpaper-next",
-      [switchWallpaperHandler](const std::string& args) -> std::string {
-        return switchWallpaperHandler(PickWallpaper::Next, args);
-      },
-      "[connector]", "Switch to the next wallpaper immediately"
-  );
+  ipc.bind(noctalia::cli::msg::wallpaperNext, [switchWallpaperHandler](const std::string& args) -> std::string {
+    return switchWallpaperHandler(PickWallpaper::Next, args);
+  });
 
-  ipc.registerHandler(
-      "wallpaper-previous",
-      [switchWallpaperHandler](const std::string& args) -> std::string {
-        return switchWallpaperHandler(PickWallpaper::Previous, args);
-      },
-      "[connector]", "Switch to the previous wallpaper immediately"
-  );
+  ipc.bind(noctalia::cli::msg::wallpaperPrevious, [switchWallpaperHandler](const std::string& args) -> std::string {
+    return switchWallpaperHandler(PickWallpaper::Previous, args);
+  });
 
-  ipc.registerHandler(
-      "wallpaper-get",
+  ipc.bind(
+      noctalia::cli::msg::wallpaperGet,
       [this, validateOutputConnector](const std::string& args) -> std::string {
         if (m_config == nullptr) {
           return "error: wallpaper service not initialized\n";
@@ -825,12 +813,10 @@ void Wallpaper::registerIpc(IpcService& ipc) {
         out.push_back('\n');
         return out;
       },
-      "[connector]", "Print default wallpaper path, or effective path for an output",
       IpcService::HandlerOptions{.actionEditorVisibility = IpcService::ActionEditorVisibility::Hidden}
   );
-  ipc.registerHandler(
-      "wallpaper-set",
-      [this, &ipc, validateOutputConnector](const std::string& args) -> std::string {
+  ipc.bind(
+      noctalia::cli::msg::wallpaperSet, [this, &ipc, validateOutputConnector](const std::string& args) -> std::string {
         if (m_config == nullptr) {
           return "error: wallpaper service not initialized\n";
         }
@@ -865,8 +851,7 @@ void Wallpaper::registerIpc(IpcService& ipc) {
         }
         applyResolvedWallpaper(outputConnector, resolved);
         return "ok\n";
-      },
-      "[connector] <path>", "Set wallpaper for all or a specific output (persisted)"
+      }
   );
 }
 

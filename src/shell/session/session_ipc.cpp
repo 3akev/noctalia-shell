@@ -76,7 +76,5 @@ void registerSessionIpc(IpcService& ipc, SessionActionRunner& runner, LockScreen
     return "ok\n";
   };
 
-  ipc.registerHandler(
-      "session", dispatch, "<lock|suspend|lock-and-suspend|logout|reboot|shutdown>", "Run a built-in session action"
-  );
+  ipc.bind(noctalia::cli::msg::session, dispatch);
 }

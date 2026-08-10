@@ -111,32 +111,20 @@ void DesktopWidgetsController::initialize(const DesktopWidgetsControllerServices
 }
 
 void DesktopWidgetsController::registerIpc(IpcService& ipc) {
-  ipc.registerHandler(
-      "desktop-widgets-edit",
-      [this](const std::string&) -> std::string {
-        enterEdit();
-        return "ok\n";
-      },
-      "", "Open the desktop widgets editor"
-  );
+  ipc.bind(noctalia::cli::msg::desktopWidgetsEdit, [this](const std::string&) -> std::string {
+    enterEdit();
+    return "ok\n";
+  });
 
-  ipc.registerHandler(
-      "desktop-widgets-exit",
-      [this](const std::string&) -> std::string {
-        exitEdit();
-        return "ok\n";
-      },
-      "", "Close the desktop widgets editor"
-  );
+  ipc.bind(noctalia::cli::msg::desktopWidgetsExit, [this](const std::string&) -> std::string {
+    exitEdit();
+    return "ok\n";
+  });
 
-  ipc.registerHandler(
-      "desktop-widgets-toggle-edit",
-      [this](const std::string&) -> std::string {
-        toggleEdit();
-        return "ok\n";
-      },
-      "", "Toggle desktop widgets edit mode"
-  );
+  ipc.bind(noctalia::cli::msg::desktopWidgetsToggleEdit, [this](const std::string&) -> std::string {
+    toggleEdit();
+    return "ok\n";
+  });
 
   // Ephemeral runtime show/hide override layered on top of the saved `desktop_widgets.enabled`
   // setting (bidirectional version of bar-show/bar-hide/bar-toggle). These never touch settings.toml
@@ -144,32 +132,20 @@ void DesktopWidgetsController::registerIpc(IpcService& ipc) {
   // widgets on demand without rewriting the user's saved preference on every keypress. `show` is a
   // force-show: it reveals widgets even when the saved setting is disabled, so an opt-in workflow
   // (saved default off, revealed only on demand) works without persisting transient state.
-  ipc.registerHandler(
-      "desktop-widgets-show",
-      [this](const std::string&) -> std::string {
-        setRuntimeVisibility(RuntimeVisibility::ForceShown);
-        return "ok\n";
-      },
-      "", "Show desktop widgets now (runtime only; does not change the saved setting)"
-  );
+  ipc.bind(noctalia::cli::msg::desktopWidgetsShow, [this](const std::string&) -> std::string {
+    setRuntimeVisibility(RuntimeVisibility::ForceShown);
+    return "ok\n";
+  });
 
-  ipc.registerHandler(
-      "desktop-widgets-hide",
-      [this](const std::string&) -> std::string {
-        setRuntimeVisibility(RuntimeVisibility::ForceHidden);
-        return "ok\n";
-      },
-      "", "Hide desktop widgets now (runtime only; does not change the saved setting)"
-  );
+  ipc.bind(noctalia::cli::msg::desktopWidgetsHide, [this](const std::string&) -> std::string {
+    setRuntimeVisibility(RuntimeVisibility::ForceHidden);
+    return "ok\n";
+  });
 
-  ipc.registerHandler(
-      "desktop-widgets-toggle",
-      [this](const std::string&) -> std::string {
-        toggleRuntimeVisibility();
-        return isEffectivelyVisible() ? "shown\n" : "hidden\n";
-      },
-      "", "Toggle desktop widgets visibility (runtime only; does not change the saved setting)"
-  );
+  ipc.bind(noctalia::cli::msg::desktopWidgetsToggle, [this](const std::string&) -> std::string {
+    toggleRuntimeVisibility();
+    return isEffectivelyVisible() ? "shown\n" : "hidden\n";
+  });
 }
 
 bool DesktopWidgetsController::runtimeWantsVisible() const noexcept {

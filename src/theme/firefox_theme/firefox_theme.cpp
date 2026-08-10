@@ -1,5 +1,8 @@
 #include "theme/firefox_theme/firefox_theme.h"
 
+#include "cli/help.h"
+#include "cli/parse.h"
+#include "cli/schema_firefox_theme.h"
 #include "theme/firefox_theme/css.h"
 #include "theme/firefox_theme/native_messaging.h"
 #include "theme/firefox_theme/settings.h"
@@ -629,27 +632,6 @@ namespace noctalia::theme {
       return matched;
     }
 
-    void printCliHelp() {
-      std::println(
-          "noctalia firefox-theme — Firefox theme host helpers (Pywalfox-compatible)\n"
-          "\n"
-          "Usage: noctalia firefox-theme <ACTION>\n"
-          "\n"
-          "Actions:\n"
-          "  host           Run as Firefox native messaging host\n"
-          "  install        Install user-local native messaging manifest\n"
-          "  uninstall      Remove user-local native messaging manifest\n"
-          "  update         Ask all running hosts to push colors to their extensions\n"
-          "  dark|light|auto  Persist and push theme mode to all running hosts\n"
-          "  -h, --help     Show this help\n"
-          "\n"
-          "Templates use post_action = \"firefox-theme\" after writing colors.json.\n"
-          "Firefox still requires the Pywalfox browser extension.\n"
-          "Multiple Firefox profiles are supported: each profile runs a host process,\n"
-          "and theme pushes fan out to all of them.\n"
-      );
-    }
-
   } // namespace
 
   FirefoxThemeApplyResult applyFirefoxTheme(const std::filesystem::path& colorsJsonPath, std::string_view mode) {
@@ -811,14 +793,18 @@ namespace noctalia::theme {
   }
 
   int runFirefoxThemeCli(int argc, char* argv[]) {
-    std::string_view action;
-    if (argc >= 3 && argv[2] != nullptr) {
-      action = argv[2];
-    }
-
-    if (action.empty() || action == "-h" || action == "--help" || action == "help") {
-      printCliHelp();
-      return action.empty() ? 1 : 0;
+    auto parsed = cli::parseOrReport(
+        cli::kFirefoxThemeCmd, "noctalia firefox-theme",
+        std::span<char* const>{argv + 2, static_cast<std::size_t>(argc - 2)}
+    );
+    if (!parsed)
+      return 1;
+    if (parsed->helpRequested)
+      return 0;
+    const std::string_view action = parsed->positionals.front();
+    if (action == "help") {
+      std::print("{}", cli::renderHelp(cli::kFirefoxThemeCmd, "noctalia firefox-theme"));
+      return 0;
     }
     if (action == "host" || action == "start") {
       return runFirefoxNativeMessagingHost();
@@ -861,8 +847,6 @@ namespace noctalia::theme {
       return sendHostCommand(kCmdAuto);
     }
 
-    std::println(stderr, "error: unknown firefox-theme action '{}'", action);
-    printCliHelp();
     return 1;
   }
 
