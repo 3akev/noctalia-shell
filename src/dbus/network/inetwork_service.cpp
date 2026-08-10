@@ -33,41 +33,29 @@ void INetworkService::registerIpc(IpcService& ipc, WirelessFeedbackCallback wire
     return "ok\n";
   };
 
-  ipc.registerHandler(
-      "wifi-enable",
-      [setWifi](const std::string& args) -> std::string {
-        if (auto err = rejectArgs("wifi-enable", args); err.has_value()) {
-          return *err;
-        }
-        return setWifi(true);
-      },
-      "", "Enable Wi-Fi"
-  );
+  ipc.registerHandler("wifi-enable", [setWifi](const std::string& args) -> std::string {
+    if (auto err = rejectArgs("wifi-enable", args); err.has_value()) {
+      return *err;
+    }
+    return setWifi(true);
+  });
 
-  ipc.registerHandler(
-      "wifi-disable",
-      [setWifi](const std::string& args) -> std::string {
-        if (auto err = rejectArgs("wifi-disable", args); err.has_value()) {
-          return *err;
-        }
-        return setWifi(false);
-      },
-      "", "Disable Wi-Fi"
-  );
+  ipc.registerHandler("wifi-disable", [setWifi](const std::string& args) -> std::string {
+    if (auto err = rejectArgs("wifi-disable", args); err.has_value()) {
+      return *err;
+    }
+    return setWifi(false);
+  });
 
-  ipc.registerHandler(
-      "wifi-toggle",
-      [this, setWifi](const std::string& args) -> std::string {
-        if (auto err = rejectArgs("wifi-toggle", args); err.has_value()) {
-          return *err;
-        }
-        if (!hasStateSnapshot()) {
-          return "error: network state unavailable\n";
-        }
-        return setWifi(!state().wirelessEnabled);
-      },
-      "", "Toggle Wi-Fi"
-  );
+  ipc.registerHandler("wifi-toggle", [this, setWifi](const std::string& args) -> std::string {
+    if (auto err = rejectArgs("wifi-toggle", args); err.has_value()) {
+      return *err;
+    }
+    if (!hasStateSnapshot()) {
+      return "error: network state unavailable\n";
+    }
+    return setWifi(!state().wirelessEnabled);
+  });
 
   ipc.registerHandler(
       "wifi-status",
@@ -80,39 +68,34 @@ void INetworkService::registerIpc(IpcService& ipc, WirelessFeedbackCallback wire
         }
         return state().wirelessEnabled ? "on\n" : "off\n";
       },
-      "", "Print Wi-Fi state",
       IpcService::HandlerOptions{.actionEditorVisibility = IpcService::ActionEditorVisibility::Hidden}
   );
 
-  ipc.registerHandler(
-      "network-toggle",
-      [this, setWifi](const std::string& args) -> std::string {
-        if (auto err = rejectArgs("network-toggle", args); err.has_value()) {
-          return *err;
-        }
-        if (!hasStateSnapshot()) {
-          return "error: network state unavailable\n";
-        }
-        const NetworkState& s = state();
-        // Drop whatever is up, otherwise bring back whichever transport can come up.
-        if (s.kind == NetworkConnectivity::Wireless && (s.connected || s.resolving)) {
-          return setWifi(false);
-        }
-        if (s.kind == NetworkConnectivity::Wired && (s.connected || s.resolving)) {
-          disconnect();
-          return "ok\n";
-        }
-        if (!s.wirelessEnabled) {
-          return setWifi(true);
-        }
-        if (canActivateWiredConnection()) {
-          if (!activateWiredConnection()) {
-            return "error: failed to activate the wired connection\n";
-          }
-          return "ok\n";
-        }
-        return "error: nothing to toggle (Wi-Fi is on and no wired connection is available)\n";
-      },
-      "", "Disconnect the active network, or reconnect when nothing is connected"
-  );
+  ipc.registerHandler("network-toggle", [this, setWifi](const std::string& args) -> std::string {
+    if (auto err = rejectArgs("network-toggle", args); err.has_value()) {
+      return *err;
+    }
+    if (!hasStateSnapshot()) {
+      return "error: network state unavailable\n";
+    }
+    const NetworkState& s = state();
+    // Drop whatever is up, otherwise bring back whichever transport can come up.
+    if (s.kind == NetworkConnectivity::Wireless && (s.connected || s.resolving)) {
+      return setWifi(false);
+    }
+    if (s.kind == NetworkConnectivity::Wired && (s.connected || s.resolving)) {
+      disconnect();
+      return "ok\n";
+    }
+    if (!s.wirelessEnabled) {
+      return setWifi(true);
+    }
+    if (canActivateWiredConnection()) {
+      if (!activateWiredConnection()) {
+        return "error: failed to activate the wired connection\n";
+      }
+      return "ok\n";
+    }
+    return "error: nothing to toggle (Wi-Fi is on and no wired connection is available)\n";
+  });
 }

@@ -1,8 +1,11 @@
 #include "ipc/ipc_service.h"
 
+#include "cli/help.h"
+#include "cli/schema_msg.h"
 #include "core/log.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
@@ -103,32 +106,37 @@ bool IpcService::start() {
   return true;
 }
 
-void IpcService::registerHandler(
-    const std::string& command, Handler handler, std::string argsSpec, std::string description, HandlerOptions options
-) {
-  // Remove existing entry for this command if re-registering
-  std::erase_if(m_handlers, [&command](const auto& e) { return e.first == command; });
-  m_handlers.push_back({
+void IpcService::registerHandler(const std::string& command, Handler handler, HandlerOptions options) {
+  const noctalia::cli::Command* spec = noctalia::cli::findMsgCommand(command);
+  std::string argsSpec;
+  std::string_view description;
+  if (spec != nullptr) {
+    argsSpec = noctalia::cli::renderArgsSpec(*spec);
+    description = spec->summary;
+  } else {
+    kLog.error("ipc command '{}' is not declared in the CLI schema (src/cli/schema_msg.h)", command);
+    assert(false && "IPC command is missing from the CLI schema");
+  }
+
+  // Remove existing entry for this command if re-registering.
+  std::erase_if(m_handlers, [&command](const auto& entry) { return entry.first == command; });
+  m_handlers.emplace_back(
       command,
-      {
-          std::move(handler),
-          std::move(argsSpec),
-          std::move(description),
-          options.helpVisibility,
-          options.actionEditorVisibility,
-          false,
-      },
-  });
+      HandlerEntry{
+          .fn = std::move(handler),
+          .argsSpec = std::move(argsSpec),
+          .description = description,
+          .actionEditorVisibility = options.actionEditorVisibility,
+          .cycles = false,
+      }
+  );
 }
 
-void IpcService::registerCycleHandler(
-    const std::string& command, Handler handler, std::string argsSpec, std::string description, HandlerOptions options
-) {
-  registerHandler(command, std::move(handler), std::move(argsSpec), std::move(description), options);
-  const auto it = std::ranges::find_if(m_handlers, [&command](const auto& e) { return e.first == command; });
-  if (it != m_handlers.end()) {
+void IpcService::registerCycleHandler(const std::string& command, Handler handler, HandlerOptions options) {
+  registerHandler(command, std::move(handler), options);
+  const auto it = std::ranges::find_if(m_handlers, [&command](const auto& entry) { return entry.first == command; });
+  if (it != m_handlers.end())
     it->second.cycles = true;
-  }
 }
 
 bool IpcService::handlerCycles(std::string_view command) const noexcept {
@@ -145,7 +153,6 @@ std::vector<IpcService::HandlerInfo> IpcService::handlers() const {
             .command = command,
             .args = entry.argsSpec,
             .description = entry.description,
-            .helpVisibility = entry.helpVisibility,
             .actionEditorVisibility = entry.actionEditorVisibility,
             .cycles = entry.cycles,
         }
@@ -283,7 +290,6 @@ std::string IpcService::HandlerInfo::signature() const {
 
 std::string IpcService::buildHelp() const {
   auto infos = handlers();
-  std::erase_if(infos, [](const HandlerInfo& info) { return info.helpVisibility == HelpVisibility::Hidden; });
 
   std::vector<std::string> signatures;
   signatures.reserve(infos.size());

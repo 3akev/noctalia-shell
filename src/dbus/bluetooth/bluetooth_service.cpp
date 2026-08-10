@@ -502,41 +502,29 @@ void BluetoothService::registerIpc(IpcService& ipc, StateFeedbackCallback stateF
     return "ok\n";
   };
 
-  ipc.registerHandler(
-      "bluetooth-enable",
-      [setBluetooth](const std::string& args) -> std::string {
-        if (auto err = rejectArgs("bluetooth-enable", args); err.has_value()) {
-          return *err;
-        }
-        return setBluetooth(true);
-      },
-      "", "Enable Bluetooth"
-  );
+  ipc.registerHandler("bluetooth-enable", [setBluetooth](const std::string& args) -> std::string {
+    if (auto err = rejectArgs("bluetooth-enable", args); err.has_value()) {
+      return *err;
+    }
+    return setBluetooth(true);
+  });
 
-  ipc.registerHandler(
-      "bluetooth-disable",
-      [setBluetooth](const std::string& args) -> std::string {
-        if (auto err = rejectArgs("bluetooth-disable", args); err.has_value()) {
-          return *err;
-        }
-        return setBluetooth(false);
-      },
-      "", "Disable Bluetooth"
-  );
+  ipc.registerHandler("bluetooth-disable", [setBluetooth](const std::string& args) -> std::string {
+    if (auto err = rejectArgs("bluetooth-disable", args); err.has_value()) {
+      return *err;
+    }
+    return setBluetooth(false);
+  });
 
-  ipc.registerHandler(
-      "bluetooth-toggle",
-      [this, setBluetooth](const std::string& args) -> std::string {
-        if (auto err = rejectArgs("bluetooth-toggle", args); err.has_value()) {
-          return *err;
-        }
-        if (!hasStateSnapshot()) {
-          return "error: bluetooth state unavailable\n";
-        }
-        return setBluetooth(!state().powered);
-      },
-      "", "Toggle Bluetooth"
-  );
+  ipc.registerHandler("bluetooth-toggle", [this, setBluetooth](const std::string& args) -> std::string {
+    if (auto err = rejectArgs("bluetooth-toggle", args); err.has_value()) {
+      return *err;
+    }
+    if (!hasStateSnapshot()) {
+      return "error: bluetooth state unavailable\n";
+    }
+    return setBluetooth(!state().powered);
+  });
 
   ipc.registerHandler(
       "bluetooth-status",
@@ -549,7 +537,6 @@ void BluetoothService::registerIpc(IpcService& ipc, StateFeedbackCallback stateF
         }
         return state().powered ? "on\n" : "off\n";
       },
-      "", "Print Bluetooth state",
       IpcService::HandlerOptions{.actionEditorVisibility = IpcService::ActionEditorVisibility::Hidden}
   );
 }

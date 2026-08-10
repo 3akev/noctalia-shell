@@ -75,59 +75,56 @@ int main() {
   assert(::setenv("WAYLAND_DISPLAY", kWaylandDisplay, 1) == 0);
 
   IpcService ipc;
+  ipc.registerHandler("panel-toggle", [](const std::string& args) { return "visible:" + args + "\n"; });
   ipc.registerHandler(
-      "visible-command", [](const std::string& args) { return "visible:" + args + "\n"; }, "<value>", "Visible command"
-  );
-  ipc.registerHandler(
-      "hidden-command", [](const std::string& args) { return "hidden:" + args + "\n"; }, "<value>", "Hidden command",
-      IpcService::HandlerOptions{
-          .helpVisibility = IpcService::HelpVisibility::Hidden,
-          .actionEditorVisibility = IpcService::ActionEditorVisibility::Hidden,
-      }
+      "status", [](const std::string& args) { return "status:" + args + "\n"; },
+      IpcService::HandlerOptions{.actionEditorVisibility = IpcService::ActionEditorVisibility::Hidden}
   );
 
-  assert(ipc.execute("visible-command ok") == "visible:ok\n");
-  assert(ipc.execute("hidden-command ok") == "hidden:ok\n");
-  assert(ipc.execute("visible-command line1\nline2\nline3") == "visible:line1\nline2\nline3\n");
+  assert(ipc.execute("panel-toggle ok") == "visible:ok\n");
+  assert(ipc.execute("status ok") == "status:ok\n");
+  assert(ipc.execute("panel-toggle line1\nline2\nline3") == "visible:line1\nline2\nline3\n");
 
-  // Metadata includes every handler, while hasHandler() agrees with execute() dispatch.
+  // Metadata is sourced from the CLI schema, while hasHandler() agrees with execute() dispatch.
   {
     const auto infos = ipc.handlers();
     assert(infos.size() == 2);
-    const auto visible = std::ranges::find(infos, "visible-command", &IpcService::HandlerInfo::command);
+    const auto visible = std::ranges::find(infos, "panel-toggle", &IpcService::HandlerInfo::command);
     assert(visible != infos.end());
-    // The registry stores arguments only; the verb is composed back in for display.
-    assert(visible->args == "<value>");
-    assert(visible->signature() == "visible-command <value>");
-    assert(visible->helpVisibility == IpcService::HelpVisibility::Public);
+    assert(visible->args == "<id> [context]");
+    assert(visible->signature() == "panel-toggle <id> [context]");
     assert(visible->actionEditorVisibility == IpcService::ActionEditorVisibility::Shown);
-    assert(visible->description == "Visible command");
+    assert(
+        visible->description
+        == "Toggle a panel by id, optionally with context (e.g. launcher /emo, control-center audio)"
+    );
 
-    const auto hidden = std::ranges::find(infos, "hidden-command", &IpcService::HandlerInfo::command);
-    assert(hidden != infos.end());
-    assert(hidden->helpVisibility == IpcService::HelpVisibility::Hidden);
-    assert(hidden->actionEditorVisibility == IpcService::ActionEditorVisibility::Hidden);
-    assert(ipc.hasHandler("visible-command"));
-    assert(ipc.hasHandler("hidden-command"));
+    const auto status = std::ranges::find(infos, "status", &IpcService::HandlerInfo::command);
+    assert(status != infos.end());
+    assert(status->args.empty());
+    assert(status->actionEditorVisibility == IpcService::ActionEditorVisibility::Hidden);
+    assert(status->description == "Print current state as JSON");
+    assert(ipc.hasHandler("panel-toggle"));
+    assert(ipc.hasHandler("status"));
     assert(!ipc.hasHandler("no-such-command"));
   }
 
   // Action-editor visibility does not affect execution or help output.
   {
     ipc.registerHandler(
-        "query-command", [](const std::string&) { return "state\n"; }, "", "Print some state",
+        "log-level-status", [](const std::string&) { return "state\n"; },
         IpcService::HandlerOptions{.actionEditorVisibility = IpcService::ActionEditorVisibility::Hidden}
     );
-    assert(ipc.execute("query-command") == "state\n");
-    assert(ipc.hasHandler("query-command"));
+    assert(ipc.execute("log-level-status") == "state\n");
+    assert(ipc.hasHandler("log-level-status"));
 
     const auto infos = ipc.handlers();
-    const auto query = std::ranges::find(infos, "query-command", &IpcService::HandlerInfo::command);
+    const auto query = std::ranges::find(infos, "log-level-status", &IpcService::HandlerInfo::command);
     assert(query != infos.end());
     assert(query->actionEditorVisibility == IpcService::ActionEditorVisibility::Hidden);
-    assert(ipc.execute("--help").contains("query-command"));
+    assert(ipc.execute("--help").contains("log-level-status"));
 
-    const auto visible = std::ranges::find(infos, "visible-command", &IpcService::HandlerInfo::command);
+    const auto visible = std::ranges::find(infos, "panel-toggle", &IpcService::HandlerInfo::command);
     assert(visible != infos.end());
     assert(visible->actionEditorVisibility == IpcService::ActionEditorVisibility::Shown);
   }
@@ -135,17 +132,16 @@ int main() {
   // A cycling command runs like any other, but declares that a scroll flick should move one
   // position rather than one per notch.
   {
-    ipc.registerCycleHandler("cycle-command", [](const std::string&) { return "moved\n"; }, "<next|prev>", "Step");
-    assert(ipc.execute("cycle-command next") == "moved\n");
-    assert(ipc.handlerCycles("cycle-command"));
-    assert(!ipc.handlerCycles("visible-command"));
+    ipc.registerCycleHandler("workspace-switch", [](const std::string&) { return "moved\n"; });
+    assert(ipc.execute("workspace-switch next") == "moved\n");
+    assert(ipc.handlerCycles("workspace-switch"));
+    assert(!ipc.handlerCycles("panel-toggle"));
     assert(!ipc.handlerCycles("no-such-command"));
 
     const auto infos = ipc.handlers();
-    const auto cycle = std::ranges::find(infos, "cycle-command", &IpcService::HandlerInfo::command);
+    const auto cycle = std::ranges::find(infos, "workspace-switch", &IpcService::HandlerInfo::command);
     assert(cycle != infos.end());
     assert(cycle->cycles);
-    // Cycling says nothing about whether an action picker should offer it.
     assert(cycle->actionEditorVisibility == IpcService::ActionEditorVisibility::Shown);
   }
 
@@ -172,24 +168,19 @@ int main() {
   assert(!ipc.invocationContext().has_value());
 
   const std::string help = ipc.execute("--help");
-  assert(help.contains("visible-command <value>"));
-  assert(help.contains("Visible command"));
-  assert(!help.contains("hidden-command"));
-  assert(!help.contains("Hidden command"));
+  assert(help.contains("panel-toggle <id> [context]"));
+  assert(help.contains("Toggle a panel by id"));
+  assert(help.contains("status"));
+  assert(help.contains("Print current state as JSON"));
 
-  ipc.registerHandler(
-      "visible-command", [](const std::string&) { return "hidden-now\n"; }, "", "Now hidden",
-      IpcService::HandlerOptions{.helpVisibility = IpcService::HelpVisibility::Hidden}
-  );
-
-  assert(ipc.execute("visible-command") == "hidden-now\n");
+  ipc.registerHandler("panel-toggle", [](const std::string&) { return "replaced\n"; });
+  assert(ipc.execute("panel-toggle") == "replaced\n");
   const std::string updatedHelp = ipc.execute("--help");
-  assert(!updatedHelp.contains("visible-command"));
-  assert(!updatedHelp.contains("Now hidden"));
+  assert(updatedHelp.contains("panel-toggle <id> [context]"));
+  assert(updatedHelp.contains("Toggle a panel by id"));
 
   assert(ipc.start());
   const auto socketPath = runtimeDir / ("noctalia-" + std::string(kWaylandDisplay) + ".sock");
-  assert(sendRaw(ipc, socketPath, "hidden-command line1\nline2\nline3") == "hidden:line1\nline2\nline3\n");
-
+  assert(sendRaw(ipc, socketPath, "status line1\nline2\nline3") == "status:line1\nline2\nline3\n");
   return 0;
 }

@@ -820,7 +820,6 @@ namespace greeter {
           }
           return "ok\n";
         },
-        "", "Sync wallpaper, colors, and monitor layout to Noctalia Greeter",
         IpcService::HandlerOptions{.actionEditorVisibility = IpcService::ActionEditorVisibility::Hidden}
     );
   }

@@ -8,36 +8,28 @@
 #include <string_view>
 #include <vector>
 
-enum class IpcHelpVisibility {
-  Public,
-  Hidden,
-};
-
 enum class IpcActionEditorVisibility {
   Shown,
   Hidden,
 };
 
 struct IpcHandlerOptions {
-  IpcHelpVisibility helpVisibility = IpcHelpVisibility::Public;
   IpcActionEditorVisibility actionEditorVisibility = IpcActionEditorVisibility::Shown;
 };
 
 class IpcService {
 public:
   using Handler = std::function<std::string(const std::string& args)>;
-  using HelpVisibility = IpcHelpVisibility;
   using ActionEditorVisibility = IpcActionEditorVisibility;
   using HandlerOptions = IpcHandlerOptions;
 
-  // A registered command, for callers that need to present or validate the command set. The views
-  // borrow from the registry, so they are invalidated by the next registerHandler() call.
+  // A registered command, for callers that need to present or validate the command set.
+  // Description views borrow static CLI schema storage.
   struct HandlerInfo {
     std::string_view command;
     // Argument spec without the verb, e.g. "<id> [context]". Empty when the command takes none.
     std::string_view args;
     std::string_view description;
-    HelpVisibility helpVisibility = HelpVisibility::Public;
     // Whether to offer this command in the action editor. Hidden commands remain available to IPC
     // and hand-written config.
     ActionEditorVisibility actionEditorVisibility = ActionEditorVisibility::Shown;
@@ -103,22 +95,14 @@ public:
   [[nodiscard]] bool hasHandler(std::string_view command) const noexcept;
 
   // Register a handler for a command name. The handler receives everything after
-  // the first space as `args`. Must return a string ending with '\n'.
-  // `argsSpec` describes the arguments only, without repeating the verb, e.g. "<id> [context]".
-  // `description` is a short human-readable explanation shown in --help.
-  // Handler options independently control help and action-editor visibility.
-  void registerHandler(
-      const std::string& command, Handler handler, std::string argsSpec = {}, std::string description = {},
-      HandlerOptions options = {}
-  );
+  // the first space as `args` and must return a string ending with '\n'. Help metadata
+  // is derived from src/cli/schema_msg.h.
+  void registerHandler(const std::string& command, Handler handler, HandlerOptions options = {});
 
   // A command that steps one position along an ordered set (workspaces, tracks, power profiles).
   // Registered like any other; bound to a scroll gesture it runs once per flick instead of once
   // per notch, so an eager wheel movement moves one position rather than several.
-  void registerCycleHandler(
-      const std::string& command, Handler handler, std::string argsSpec = {}, std::string description = {},
-      HandlerOptions options = {}
-  );
+  void registerCycleHandler(const std::string& command, Handler handler, HandlerOptions options = {});
 
   // True when `command` was registered with registerCycleHandler().
   [[nodiscard]] bool handlerCycles(std::string_view command) const noexcept;
@@ -127,8 +111,7 @@ private:
   struct HandlerEntry {
     Handler fn;
     std::string argsSpec;
-    std::string description;
-    HelpVisibility helpVisibility = HelpVisibility::Public;
+    std::string_view description;
     ActionEditorVisibility actionEditorVisibility = ActionEditorVisibility::Shown;
     bool cycles = false;
   };

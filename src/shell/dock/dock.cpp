@@ -1266,42 +1266,26 @@ void Dock::openItemMenu(shell::dock::DockInstance& instance, const shell::dock::
 }
 
 void Dock::registerIpc(IpcService& ipc) {
-  ipc.registerHandler(
-      "dock-show",
-      [this](const std::string&) -> std::string {
-        if (m_config)
-          m_config->setDockEnabled(true);
-        return "ok\n";
-      },
-      "", "Show the dock (persists override)"
-  );
+  ipc.registerHandler("dock-show", [this](const std::string&) -> std::string {
+    if (m_config)
+      m_config->setDockEnabled(true);
+    return "ok\n";
+  });
 
-  ipc.registerHandler(
-      "dock-hide",
-      [this](const std::string&) -> std::string {
-        if (m_config)
-          m_config->setDockEnabled(false);
-        return "ok\n";
-      },
-      "", "Hide the dock (persists override)"
-  );
+  ipc.registerHandler("dock-hide", [this](const std::string&) -> std::string {
+    if (m_config)
+      m_config->setDockEnabled(false);
+    return "ok\n";
+  });
 
-  ipc.registerHandler(
-      "dock-toggle",
-      [this](const std::string&) -> std::string {
-        if (m_config)
-          m_config->setDockEnabled(!m_config->config().dock.enabled);
-        return "ok\n";
-      },
-      "", "Toggle dock visibility (persists override)"
-  );
+  ipc.registerHandler("dock-toggle", [this](const std::string&) -> std::string {
+    if (m_config)
+      m_config->setDockEnabled(!m_config->config().dock.enabled);
+    return "ok\n";
+  });
 
-  ipc.registerHandler(
-      "dock-reload",
-      [this](const std::string&) -> std::string {
-        reload();
-        return "ok\n";
-      },
-      "", "Reload dock configuration"
-  );
+  ipc.registerHandler("dock-reload", [this](const std::string&) -> std::string {
+    reload();
+    return "ok\n";
+  });
 }

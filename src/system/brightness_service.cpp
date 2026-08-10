@@ -1569,78 +1569,62 @@ void BrightnessService::registerIpc(IpcService& ipc, std::function<void()> onBat
     return "ok\n";
   };
 
-  ipc.registerHandler(
-      "brightness-set",
-      [this, applyToTargets](const std::string& args) -> std::string {
-        const auto parts = noctalia::ipc::splitWords(args);
-        if (parts.empty() || parts.size() > 2) {
-          return "error: brightness-set requires <value> or <target> <value>\n";
-        }
+  ipc.registerHandler("brightness-set", [this, applyToTargets](const std::string& args) -> std::string {
+    const auto parts = noctalia::ipc::splitWords(args);
+    if (parts.empty() || parts.size() > 2) {
+      return "error: brightness-set requires <value> or <target> <value>\n";
+    }
 
-        std::string target = "current";
-        std::string valueToken = parts[0];
-        if (parts.size() == 2) {
+    std::string target = "current";
+    std::string valueToken = parts[0];
+    if (parts.size() == 2) {
+      target = parts[0];
+      valueToken = parts[1];
+    }
+
+    const auto amount = noctalia::ipc::parseNormalizedOrPercent(valueToken);
+    if (!amount.has_value()) {
+      return "error: invalid brightness value (use percent like 65 or 65%, or normalized like 0.65)\n";
+    }
+
+    return applyToTargets(target, [this, amount](const BrightnessDisplay& display) {
+      setBrightness(display.id, *amount);
+    });
+  });
+
+  auto registerDeltaHandler = [this, &ipc, applyToTargets](const std::string& command, float direction) {
+    ipc.registerHandler(command, [this, applyToTargets, command, direction](const std::string& args) -> std::string {
+      const auto parts = noctalia::ipc::splitWords(args);
+      if (parts.size() > 2) {
+        return "error: " + command + " accepts at most [target] [step]\n";
+      }
+
+      std::string target = "current";
+      std::optional<float> step = kDefaultBrightnessStep;
+      if (parts.size() == 1) {
+        const auto maybeStep = noctalia::ipc::parseNormalizedOrPercent(parts[0]);
+        if (maybeStep.has_value()) {
+          step = maybeStep;
+        } else {
           target = parts[0];
-          valueToken = parts[1];
         }
+      } else if (parts.size() == 2) {
+        target = parts[0];
+        step = noctalia::ipc::parseNormalizedOrPercent(parts[1]);
+      }
 
-        const auto amount = noctalia::ipc::parseNormalizedOrPercent(valueToken);
-        if (!amount.has_value()) {
-          return "error: invalid brightness value (use percent like 65 or 65%, or normalized like 0.65)\n";
-        }
+      if (!step.has_value()) {
+        return "error: invalid brightness step (use percent like 5 or 5%, or normalized like 0.05)\n";
+      }
 
-        return applyToTargets(target, [this, amount](const BrightnessDisplay& display) {
-          setBrightness(display.id, *amount);
-        });
-      },
-      "[current|*|all|monitor-selector] <value>", "Set brightness (defaults to current monitor)"
-  );
+      return applyToTargets(target, [this, step, direction](const BrightnessDisplay& display) {
+        setBrightness(display.id, display.brightness + direction * *step);
+      });
+    });
+  };
 
-  auto registerDeltaHandler =
-      [this, &ipc,
-       applyToTargets](const std::string& command, float direction, std::string argsSpec, std::string description) {
-        ipc.registerHandler(
-            command,
-            [this, applyToTargets, command, direction](const std::string& args) -> std::string {
-              const auto parts = noctalia::ipc::splitWords(args);
-              if (parts.size() > 2) {
-                return "error: " + command + " accepts at most [target] [step]\n";
-              }
-
-              std::string target = "current";
-              std::optional<float> step = kDefaultBrightnessStep;
-              if (parts.size() == 1) {
-                const auto maybeStep = noctalia::ipc::parseNormalizedOrPercent(parts[0]);
-                if (maybeStep.has_value()) {
-                  step = maybeStep;
-                } else {
-                  target = parts[0];
-                }
-              } else if (parts.size() == 2) {
-                target = parts[0];
-                step = noctalia::ipc::parseNormalizedOrPercent(parts[1]);
-              }
-
-              if (!step.has_value()) {
-                return "error: invalid brightness step (use percent like 5 or 5%, or normalized like 0.05)\n";
-              }
-
-              return applyToTargets(target, [this, step, direction](const BrightnessDisplay& display) {
-                setBrightness(display.id, display.brightness + direction * *step);
-              });
-            },
-            std::move(argsSpec), std::move(description)
-        );
-      };
-
-  registerDeltaHandler(
-      "brightness-up", 1.0F, "[current|*|all|monitor-selector] [step]",
-      "Increase brightness (defaults to current monitor)"
-  );
-  registerDeltaHandler(
-      "brightness-down", -1.0F, "[current|*|all|monitor-selector] [step]",
-      "Decrease brightness (defaults to current monitor)"
-  );
+  registerDeltaHandler("brightness-up", 1.0F);
+  registerDeltaHandler("brightness-down", -1.0F);
 
   ipc.registerHandler(
       "brightness-list-backlight-devices",
@@ -1661,7 +1645,6 @@ void BrightnessService::registerIpc(IpcService& ipc, std::function<void()> onBat
         ::closedir(dir);
         return result.empty() ? "error: no backlight devices available\n" : result;
       },
-      "", "List available sysfs backlight device names",
       IpcService::HandlerOptions{.actionEditorVisibility = IpcService::ActionEditorVisibility::Hidden}
   );
 }

@@ -2639,77 +2639,65 @@ void PanelManager::registerIpc(IpcService& ipc) {
     return error;
   };
 
-  ipc.registerHandler(
-      "panel-toggle",
-      [this, parseOpenArgs, unknownPanelError](const std::string& args) -> std::string {
-        std::string panelId;
-        std::string context;
-        if (auto error = parseOpenArgs(args, "panel-toggle", panelId, context)) {
-          return *error;
-        }
-        if (!m_panels.contains(panelId) && !m_persistentHost.hasPanel(panelId)) {
-          return unknownPanelError(panelId);
-        }
-        // Output left unset: openPanel resolves it (focus source, else compositor probe).
-        if (context.empty()) {
-          togglePanel(panelId);
-        } else {
-          togglePanel(panelId, PanelOpenRequest{.context = context});
-        }
-        return "ok\n";
-      },
-      "<id> [context]", "Toggle a panel by id, optionally with context (e.g. launcher /emo, control-center audio)"
-  );
+  ipc.registerHandler("panel-toggle", [this, parseOpenArgs, unknownPanelError](const std::string& args) -> std::string {
+    std::string panelId;
+    std::string context;
+    if (auto error = parseOpenArgs(args, "panel-toggle", panelId, context)) {
+      return *error;
+    }
+    if (!m_panels.contains(panelId) && !m_persistentHost.hasPanel(panelId)) {
+      return unknownPanelError(panelId);
+    }
+    // Output left unset: openPanel resolves it (focus source, else compositor probe).
+    if (context.empty()) {
+      togglePanel(panelId);
+    } else {
+      togglePanel(panelId, PanelOpenRequest{.context = context});
+    }
+    return "ok\n";
+  });
 
-  ipc.registerHandler(
-      "panel-open",
-      [this, parseOpenArgs, unknownPanelError](const std::string& args) -> std::string {
-        std::string panelId;
-        std::string context;
-        if (auto error = parseOpenArgs(args, "panel-open", panelId, context)) {
-          return *error;
-        }
-        if (!m_panels.contains(panelId) && !m_persistentHost.hasPanel(panelId)) {
-          return unknownPanelError(panelId);
-        }
+  ipc.registerHandler("panel-open", [this, parseOpenArgs, unknownPanelError](const std::string& args) -> std::string {
+    std::string panelId;
+    std::string context;
+    if (auto error = parseOpenArgs(args, "panel-open", panelId, context)) {
+      return *error;
+    }
+    if (!m_panels.contains(panelId) && !m_persistentHost.hasPanel(panelId)) {
+      return unknownPanelError(panelId);
+    }
 
-        if (isOpen() && !m_closing && m_activePanelId == panelId) {
-          if (!context.empty() && m_activePanel != nullptr) {
-            m_activePanel->onOpen(context);
-            refresh();
-          }
-          return "ok\n";
-        }
+    if (isOpen() && !m_closing && m_activePanelId == panelId) {
+      if (!context.empty() && m_activePanel != nullptr) {
+        m_activePanel->onOpen(context);
+        refresh();
+      }
+      return "ok\n";
+    }
 
-        // Output left unset: openPanel resolves it (focus source, else compositor probe).
-        openPanel(panelId, PanelOpenRequest{.context = context});
-        return "ok\n";
-      },
-      "<id> [context]", "Open a panel by id, optionally with context (e.g. launcher /emo, control-center audio)"
-  );
+    // Output left unset: openPanel resolves it (focus source, else compositor probe).
+    openPanel(panelId, PanelOpenRequest{.context = context});
+    return "ok\n";
+  });
 
-  ipc.registerHandler(
-      "panel-close",
-      [this, unknownPanelError](const std::string& args) -> std::string {
-        const std::string panelId = StringUtils::trim(args);
-        if (!panelId.empty() && StringUtils::splitWhitespace(panelId).size() != 1) {
-          return "error: panel-close accepts at most one panel id\n";
-        }
-        if (!panelId.empty() && !m_panels.contains(panelId) && !m_persistentHost.hasPanel(panelId)) {
-          return unknownPanelError(panelId);
-        }
+  ipc.registerHandler("panel-close", [this, unknownPanelError](const std::string& args) -> std::string {
+    const std::string panelId = StringUtils::trim(args);
+    if (!panelId.empty() && StringUtils::splitWhitespace(panelId).size() != 1) {
+      return "error: panel-close accepts at most one panel id\n";
+    }
+    if (!panelId.empty() && !m_panels.contains(panelId) && !m_persistentHost.hasPanel(panelId)) {
+      return unknownPanelError(panelId);
+    }
 
-        if (!panelId.empty() && m_persistentHost.hasPanel(panelId)) {
-          m_persistentHost.close(panelId);
-          return "ok\n";
-        }
-        if (panelId.empty() || isOpenPanel(panelId)) {
-          closePanel();
-        }
-        return "ok\n";
-      },
-      "[id]", "Close the active panel, or close the named panel if it is active"
-  );
+    if (!panelId.empty() && m_persistentHost.hasPanel(panelId)) {
+      m_persistentHost.close(panelId);
+      return "ok\n";
+    }
+    if (panelId.empty() || isOpenPanel(panelId)) {
+      closePanel();
+    }
+    return "ok\n";
+  });
 
   const auto rejectSettingsArgs = [](const std::string& args, std::string_view command) -> std::optional<std::string> {
     if (StringUtils::trim(args).empty()) {
@@ -2718,89 +2706,69 @@ void PanelManager::registerIpc(IpcService& ipc) {
     return std::format("error: {} accepts no arguments\n", command);
   };
 
-  ipc.registerHandler(
-      "settings-open",
-      [this](const std::string& args) -> std::string {
-        openSettingsWindow(std::string(StringUtils::trimLeftView(args)));
-        return "ok\n";
-      },
-      "[context]", "Open the settings window, or focus it if already open, optionally at a specific section"
-  );
+  ipc.registerHandler("settings-open", [this](const std::string& args) -> std::string {
+    openSettingsWindow(std::string(StringUtils::trimLeftView(args)));
+    return "ok\n";
+  });
 
-  ipc.registerHandler(
-      "settings-open-widget",
-      [this, &ipc](const std::string& args) -> std::string {
-        const auto parts = noctalia::ipc::splitWords(args);
-        std::string barName;
-        std::string widgetName;
-        if (parts.size() == 2) {
-          barName = parts[0];
-          widgetName = parts[1];
-        } else if (parts.empty()) {
-          // Invoked from a bar widget gesture: the widget is the implicit target.
-          const auto& context = ipc.invocationContext();
-          if (!context.has_value() || context->widgetName.empty()) {
-            return "error: settings-open-widget needs <bar-name> <widget-name> unless invoked from a bar widget\n";
-          }
-          barName = context->barName;
-          widgetName = context->widgetName;
-        } else {
-          return "error: settings-open-widget takes either no arguments or <bar-name> <widget-name>\n";
-        }
+  ipc.registerHandler("settings-open-widget", [this, &ipc](const std::string& args) -> std::string {
+    const auto parts = noctalia::ipc::splitWords(args);
+    std::string barName;
+    std::string widgetName;
+    if (parts.size() == 2) {
+      barName = parts[0];
+      widgetName = parts[1];
+    } else if (parts.empty()) {
+      // Invoked from a bar widget gesture: the widget is the implicit target.
+      const auto& context = ipc.invocationContext();
+      if (!context.has_value() || context->widgetName.empty()) {
+        return "error: settings-open-widget needs <bar-name> <widget-name> unless invoked from a bar widget\n";
+      }
+      barName = context->barName;
+      widgetName = context->widgetName;
+    } else {
+      return "error: settings-open-widget takes either no arguments or <bar-name> <widget-name>\n";
+    }
 
-        if (!m_openWidgetSettings) {
-          return "error: settings window unavailable\n";
-        }
-        if (isOpen()) {
-          closePanel();
-        }
-        m_openWidgetSettings(std::move(barName), std::move(widgetName));
-        return "ok\n";
-      },
-      "[bar-name widget-name]", "Open the settings window at a bar widget; from a widget gesture, targets that widget"
-  );
+    if (!m_openWidgetSettings) {
+      return "error: settings window unavailable\n";
+    }
+    if (isOpen()) {
+      closePanel();
+    }
+    m_openWidgetSettings(std::move(barName), std::move(widgetName));
+    return "ok\n";
+  });
 
-  ipc.registerHandler(
-      "settings-open-plugin",
-      [this](const std::string& args) -> std::string {
-        const auto parts = noctalia::ipc::splitWords(args);
-        if (parts.size() != 1) {
-          return "error: settings-open-plugin takes <plugin-id> (e.g. noctalia/notes)\n";
-        }
-        const std::string& pluginId = parts[0];
-        if (!scripting::isValidPluginId(pluginId)) {
-          return std::format("error: \"{}\" is not a plugin id (expected author/plugin)\n", pluginId);
-        }
+  ipc.registerHandler("settings-open-plugin", [this](const std::string& args) -> std::string {
+    const auto parts = noctalia::ipc::splitWords(args);
+    if (parts.size() != 1) {
+      return "error: settings-open-plugin takes <plugin-id> (e.g. noctalia/notes)\n";
+    }
+    const std::string& pluginId = parts[0];
+    if (!scripting::isValidPluginId(pluginId)) {
+      return std::format("error: \"{}\" is not a plugin id (expected author/plugin)\n", pluginId);
+    }
 
-        if (!m_openPluginSettings) {
-          return "error: settings window unavailable\n";
-        }
-        if (!openPluginSettings(pluginId)) {
-          return std::format("error: plugin \"{}\" is not enabled or has no settings\n", pluginId);
-        }
-        return "ok\n";
-      },
-      "<plugin-id>", "Open the settings window at a plugin's settings (e.g. noctalia/notes)"
-  );
+    if (!m_openPluginSettings) {
+      return "error: settings window unavailable\n";
+    }
+    if (!openPluginSettings(pluginId)) {
+      return std::format("error: plugin \"{}\" is not enabled or has no settings\n", pluginId);
+    }
+    return "ok\n";
+  });
 
-  ipc.registerHandler(
-      "settings-close",
-      [this, rejectSettingsArgs](const std::string& args) -> std::string {
-        if (auto error = rejectSettingsArgs(args, "settings-close")) {
-          return *error;
-        }
-        closeSettingsWindow();
-        return "ok\n";
-      },
-      "", "Close the settings window"
-  );
+  ipc.registerHandler("settings-close", [this, rejectSettingsArgs](const std::string& args) -> std::string {
+    if (auto error = rejectSettingsArgs(args, "settings-close")) {
+      return *error;
+    }
+    closeSettingsWindow();
+    return "ok\n";
+  });
 
-  ipc.registerHandler(
-      "settings-toggle",
-      [this](const std::string& args) -> std::string {
-        toggleSettingsWindow(std::string(StringUtils::trimLeftView(args)));
-        return "ok\n";
-      },
-      "[context]", "Toggle the settings window, optionally at a specific section"
-  );
+  ipc.registerHandler("settings-toggle", [this](const std::string& args) -> std::string {
+    toggleSettingsWindow(std::string(StringUtils::trimLeftView(args)));
+    return "ok\n";
+  });
 }

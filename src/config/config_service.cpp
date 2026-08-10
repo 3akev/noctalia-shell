@@ -1818,12 +1818,8 @@ bool ConfigService::matchesKeybind(KeybindAction action, std::uint32_t sym, std:
 }
 
 void ConfigService::registerIpc(IpcService& ipc) {
-  ipc.registerHandler(
-      "config-reload",
-      [this](const std::string&) -> std::string {
-        forceReload();
-        return "ok\n";
-      },
-      "", "Reload the config file"
-  );
+  ipc.registerHandler("config-reload", [this](const std::string&) -> std::string {
+    forceReload();
+    return "ok\n";
+  });
 }

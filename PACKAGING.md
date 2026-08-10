@@ -117,6 +117,20 @@ breaks fonts, translations, templates, glyphs, and sounds. See
 Not shipped (don’t look for them in the install): AppStream / metainfo XML, man
 pages, systemd units.
 
+### Shell completions
+
+Static completion files are not shipped. Generate them from the freshly built
+binary and install them in the distribution's completion directories:
+
+```text
+./build-<mode>/noctalia completions bash  → share/bash-completion/completions/noctalia
+./build-<mode>/noctalia completions zsh   → share/zsh/site-functions/_noctalia
+./build-<mode>/noctalia completions fish  → share/fish/vendor_completions.d/noctalia.fish
+```
+
+This is intentionally a packaging step rather than a Meson install rule:
+executing the target binary during installation would break cross-compilation.
+
 ## Dependencies
 
 No Qt or GTK. UI is Wayland + OpenGL ES (EGL/GLES, or `libepoxy` as a fallback
