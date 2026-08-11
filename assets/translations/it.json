@@ -93,6 +93,7 @@
       },
       "sysmon": {
         "cpu": "CPU",
+        "cpu-freq": "Freq CPU",
         "cpu-temp": "Temperatura CPU",
         "disk": "Disco",
         "disk-free": "Spazio libero",
@@ -185,7 +186,7 @@
       "choose-effects-profile": "Scegli un profilo",
       "effects-profile": "Effetti",
       "input-device-prefix": "Input",
-      "no-application-audio": "Nessun audio applicazione",
+      "no-application-audio": "Nessuna applicazione audio",
       "no-application-audio-body": "Nessun flusso di riproduzione applicazione disponibile al momento.",
       "no-input-devices": "Nessun dispositivo di ingresso",
       "no-input-devices-body": "Nessuna sorgente di registrazione disponibile al momento.",
@@ -526,6 +527,7 @@
         "shadow": "Ombra",
         "show-caps-lock": "Avviso Caps Lock",
         "show-device": "Mostra dispositivo",
+        "show-events": "Mostra eventi",
         "show-forecast": "Più giorni",
         "show-keyboard-layout": "Layout tastiera",
         "show-label": "Mostra etichette",
@@ -536,8 +538,10 @@
         "show-unlock-hint": "Sblocca avvisi",
         "show-vpn-label": "Mostra etichetta VPN",
         "show-weather": "Meteo",
+        "show-week-numbers": "Mostra i numeri delle settimane",
         "show-when-idle": "Mostra quando inattivo",
         "stat": "Statistica",
+        "stat-cpu-freq": "Freq CPU",
         "stat-cpu-temp": "Temp CPU",
         "stat-cpu-usage": "Uso CPU",
         "stat-gpu-temp": "Temp GPU",
@@ -576,6 +580,7 @@
       "types": {
         "audio-visualizer": "Visualizzatore audio",
         "button": "Pulsante",
+        "calendar": "Calendario",
         "clock": "Orologio",
         "fancy-audio-visualizer": "Visualizzatore audio avanzato",
         "label": "Etichetta",
@@ -1191,6 +1196,7 @@
         "monitor-thresholds": "Soglie evidenziazione",
         "monitors": "Monitor",
         "motion": "Movimento",
+        "navigation": "Navigazione",
         "network": "Rete",
         "night-light": "Luce notturna",
         "notifications": "Notifiche",
@@ -1474,7 +1480,7 @@
       "sources": {
         "add": "Aggiungi sorgente",
         "add-title": "Aggiungi sorgente plugin",
-        "auto-update": "Aggiorna plugin in automatico",
+        "auto-update": "Aggiorna plugin automaticamente",
         "auto-update-desc": "Controlla in background nuove versioni per le sorgenti abilitate e mantieni aggiornati i plugin installati",
         "edit": "Configura sorgente",
         "edit-title": "Configura sorgente plugin",
@@ -1615,7 +1621,7 @@
           "label": "Nero puro"
         },
         "theme-mode": {
-          "description": "Scegli scuro, chiaro o automatico in base all'ora del giorno",
+          "description": "Scegli Scuro, Chiaro o Automatico in base all'ora del giorno",
           "label": "Modalità tema"
         },
         "ui-scale": {
@@ -2272,6 +2278,10 @@
           "description": "Spazio in pixel tra un pannello mobile o staccato e il bordo della barra",
           "label": "Offset mobile"
         },
+        "home-session-button": {
+          "description": "Mostra il pulsante delle azioni di sessione nell'intestazione della scheda Home",
+          "label": "Mostra pulsante header sessione"
+        },
         "home-shortcuts": {
           "description": "Scegli fino a sei pulsanti scorciatoia per la scheda home",
           "label": "Scorciatoie home"
@@ -2621,6 +2631,7 @@
             "label": "Intervallo rete"
           },
           "stats": {
+            "cpu-freq": "Freq CPU",
             "cpu-temp": "Temp CPU",
             "cpu-usage": "Uso CPU",
             "disk-free": "Spazio disco libero",
@@ -3203,6 +3214,7 @@
         "both": "Entrambi",
         "compact": "Compatto",
         "count": "Conteggio",
+        "cpu-freq": "Freq CPU",
         "cpu-temp": "Temperatura CPU",
         "cpu-usage": "Uso CPU",
         "disk-free": "Spazio disco libero",
@@ -3700,7 +3712,7 @@
           "label": "Mostra temperatura"
         },
         "show-unlock-hint": {
-          "description": "Mostra la scheda di stato sopra la casella di accesso per avvisi di sblocco e prompt di autenticazione. Errori e avviso di capslock attivo verranno comunque visualizzati quando questo è disattivato.",
+          "description": "Mostra la scheda di stato sopra la casella di accesso per avvisi di sblocco e prompt di autenticazione; errori e avviso di capslock attivo verranno comunque visualizzati quando questo è disattivato",
           "label": "Sblocca avvisi"
         },
         "show-value": {
@@ -3708,7 +3720,7 @@
           "label": "Mostra valore"
         },
         "show-vpn-label": {
-          "description": "Sostituisce l'etichetta di rete con l'etichetta VPN in modalità di sostituzione; aggiunge l'etichetta VPN accanto all'icona VPN in entrambe le modalità",
+          "description": "Sostituisce l'etichetta di rete con l'etichetta VPN in modalità di Sostituisci; aggiunge l'etichetta VPN accanto all'icona VPN in modalità Entrambi",
           "label": "Mostra etichetta VPN"
         },
         "show-when-idle": {
@@ -3773,7 +3785,7 @@
           "label": "Visualizzazione"
         },
         "vpn-status": {
-          "description": "Come visualizzare lo stato della VPN: sostituisci scambia l'icona della rete con uno scudo VPN, entrambi vengono mostrati fianco a fianco, nascosto disabilita l'indicatore VPN",
+          "description": "Come visualizzare lo stato della VPN: Sostituisci scambia l'icona della rete con uno scudo VPN, Entrambi li mostra fianco a fianco, Nascosto disabilita l'indicatore VPN",
           "label": "Stato VPN"
         },
         "warning-color": {

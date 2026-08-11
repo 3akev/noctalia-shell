@@ -93,6 +93,7 @@
       },
       "sysmon": {
         "cpu": "CPU",
+        "cpu-freq": "CPU-Frequenz",
         "cpu-temp": "CPU-Temperatur",
         "disk": "Festplatte",
         "disk-free": "Freier Speicher",
@@ -526,6 +527,7 @@
         "shadow": "Schatten",
         "show-caps-lock": "Caps-Lock-Warnung",
         "show-device": "Gerät anzeigen",
+        "show-events": "Ereignisse anzeigen",
         "show-forecast": "Vorhersage anzeigen",
         "show-keyboard-layout": "Tastaturlayout",
         "show-label": "Beschriftung anzeigen",
@@ -536,8 +538,10 @@
         "show-unlock-hint": "Entsperrhinweis",
         "show-vpn-label": "VPN-Beschriftung anzeigen",
         "show-weather": "Wetter",
+        "show-week-numbers": "Wochennummern anzeigen",
         "show-when-idle": "Bei Inaktivität anzeigen",
         "stat": "Statistik",
+        "stat-cpu-freq": "CPU-Frequenz",
         "stat-cpu-temp": "CPU-Temperatur",
         "stat-cpu-usage": "CPU-Auslastung",
         "stat-gpu-temp": "GPU-Temperatur",
@@ -576,6 +580,7 @@
       "types": {
         "audio-visualizer": "Audio-Visualizer",
         "button": "Button",
+        "calendar": "Kalendar",
         "clock": "Uhr",
         "fancy-audio-visualizer": "Schicker Audio-Visualizer",
         "label": "Beschriftung",
@@ -1191,6 +1196,7 @@
         "monitor-thresholds": "Hervorhebungsschwellenwerte",
         "monitors": "Monitore",
         "motion": "Bewegung",
+        "navigation": "Navigation",
         "network": "Netzwerk",
         "night-light": "Nachtlicht",
         "notifications": "Benachrichtigungen",
@@ -2272,6 +2278,10 @@
           "description": "Abstand in Pixeln zwischen einem schwebenden oder losgelösten Panel und der Leistenkante",
           "label": "Schwebender Abstand"
         },
+        "home-session-button": {
+          "description": "Zeige den Sitzungsaktionen-Button im Start-Tab-Header an",
+          "label": "Header-Sitzungsbutton anzeigen"
+        },
         "home-shortcuts": {
           "description": "Wähle bis zu sechs Shortcuts für den Start-Tab",
           "label": "Start-Shortcuts"
@@ -2621,6 +2631,7 @@
             "label": "Netzwerk-Abfrageintervall"
           },
           "stats": {
+            "cpu-freq": "CPU-Frequenz",
             "cpu-temp": "CPU-Temperatur",
             "cpu-usage": "CPU-Auslastung",
             "disk-free": "Freier Speicher",
@@ -3203,6 +3214,7 @@
         "both": "Beide",
         "compact": "Kompakt",
         "count": "Zähler",
+        "cpu-freq": "CPU-Frequenz",
         "cpu-temp": "CPU-Temperatur",
         "cpu-usage": "CPU-Auslastung",
         "disk-free": "Freier Speicher",

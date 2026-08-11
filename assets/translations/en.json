@@ -54,7 +54,7 @@
         "scroll-short": "S"
       },
       "media": {
-        "nothing-playing": "Nothing playing",
+        "nothing-playing": "Nothing Playing",
         "playing": "Playing"
       },
       "network": {
@@ -186,7 +186,7 @@
       "choose-effects-profile": "Choose a profile",
       "effects-profile": "Effects",
       "input-device-prefix": "Input",
-      "no-application-audio": "No application audio",
+      "no-application-audio": "No Application Audio",
       "no-application-audio-body": "No application playback streams are currently available.",
       "no-input-devices": "No input devices",
       "no-input-devices-body": "No recording sources are currently available.",
@@ -244,7 +244,7 @@
       "media": {
         "idle": "Idle",
         "no-active-player": "No active player",
-        "nothing-playing": "Nothing playing",
+        "nothing-playing": "Nothing Playing",
         "paused": "Paused",
         "playback-unavailable": "Playback unavailable",
         "playing": "Playing",
@@ -263,7 +263,7 @@
     },
     "media": {
       "active-player": "Active player",
-      "nothing-playing": "Nothing playing",
+      "nothing-playing": "Nothing Playing",
       "now-playing": "Now Playing",
       "start-playback": "Start playback in an MPRIS app"
     },
@@ -292,7 +292,7 @@
       "dnd-off": "Turn Do Not Disturb Off",
       "dnd-on": "Turn Do Not Disturb On",
       "empty-body": "Recent notifications will show here.",
-      "empty-title": "No notifications",
+      "empty-title": "No Notifications",
       "filter": {
         "all": "All",
         "older": "Older",
@@ -593,7 +593,7 @@
       }
     },
     "media": {
-      "nothing-playing": "Nothing playing"
+      "nothing-playing": "Nothing Playing"
     },
     "volume": {
       "mic": "Mic",
@@ -845,7 +845,7 @@
     "profiles": {
       "balanced": "Balanced",
       "performance": "Performance",
-      "power-saver": "Power saver"
+      "power-saver": "Power Saver"
     }
   },
   "session": {
@@ -886,6 +886,7 @@
       "credential-source-label": "Credential Storage",
       "delete-error": "Could not delete calendar account.",
       "edit-title": "Edit Calendar Account",
+      "ics-url-label": "ICS URL",
       "id-label": "Account ID",
       "invalid": "Check the highlighted calendar account fields.",
       "name-label": "Display Name",
@@ -912,7 +913,6 @@
       "secret-service-locked": "Calendar credentials are locked or access was denied. Unlock Secret Service and retry.",
       "secret-service-unavailable": "No Secret Service provider is available. Start a compatible provider and retry.",
       "server-url-label": "Server URL",
-      "ics-url-label": "ICS URL",
       "username-label": "Username",
       "username-placeholder": "name@example.com"
     },
@@ -1482,7 +1482,7 @@
       "sources": {
         "add": "Add Source",
         "add-title": "Add Plugin Source",
-        "auto-update": "Auto-update plugins",
+        "auto-update": "Auto-Update Plugins",
         "auto-update-desc": "Check enabled sources for new versions in the background and keep installed plugins current",
         "edit": "Edit source",
         "edit-title": "Edit plugin source",
@@ -3365,12 +3365,12 @@
         },
         "custom-image": {
           "description": "Path to a custom image; leave empty to use the icon glyph",
-          "dialog-title": "Select custom image",
-          "label": "Custom image"
+          "dialog-title": "Select Custom Image",
+          "label": "Custom Image"
         },
         "custom-image-colorize": {
           "description": "Tint the custom image with the widget Icon Color setting",
-          "label": "Colorize custom image"
+          "label": "Colorize Custom Image"
         },
         "detached-panel": {
           "description": "Open the drawer as a floating panel instead of anchoring it to the bar edge",

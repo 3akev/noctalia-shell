@@ -54,7 +54,7 @@
         "scroll-short": "S"
       },
       "media": {
-        "nothing-playing": "Nada reproduzindo",
+        "nothing-playing": "Nada Reproduzindo",
         "playing": "Reproduzindo"
       },
       "network": {
@@ -93,6 +93,7 @@
       },
       "sysmon": {
         "cpu": "CPU",
+        "cpu-freq": "Frequência da CPU",
         "cpu-temp": "Temperatura da CPU",
         "disk": "Disco",
         "disk-free": "Disco Livre",
@@ -185,7 +186,7 @@
       "choose-effects-profile": "Escolha um perfil",
       "effects-profile": "Efeitos",
       "input-device-prefix": "Entrada",
-      "no-application-audio": "Sem áudio de aplicativos",
+      "no-application-audio": "Sem Áudio de Aplicativos",
       "no-application-audio-body": "Não há fluxos de reprodução de aplicativos disponíveis no momento.",
       "no-input-devices": "Nenhuma entrada de dispositivos",
       "no-input-devices-body": "Nenhuma fonte de gravação disponível no momento.",
@@ -243,7 +244,7 @@
       "media": {
         "idle": "Ocioso",
         "no-active-player": "nenhum reprodutor ativo",
-        "nothing-playing": "Nada reproduzindo",
+        "nothing-playing": "Nada Reproduzindo",
         "paused": "Pausado",
         "playback-unavailable": "Reprodução indisponível",
         "playing": "Reproduzindo",
@@ -262,7 +263,7 @@
     },
     "media": {
       "active-player": "Player ativo",
-      "nothing-playing": "Nada reproduzindo",
+      "nothing-playing": "Nada Reproduzindo",
       "now-playing": "Reproduzindo agora",
       "start-playback": "Iniciar reprodução em um aplicativo MPRIS"
     },
@@ -291,7 +292,7 @@
       "dnd-off": "Desativar Não Perturbe",
       "dnd-on": "Ativar Não Perturbe",
       "empty-body": "Notificações recentes aparecerão aqui",
-      "empty-title": "Sem notificações",
+      "empty-title": "Sem Notificações",
       "filter": {
         "all": "Todas",
         "older": "Antigas",
@@ -526,6 +527,7 @@
         "shadow": "Sombra",
         "show-caps-lock": "Aviso de Caps Lock",
         "show-device": "Mostrar Dispositivo",
+        "show-events": "Exibir Eventos",
         "show-forecast": "Mostrar Previsão do Tempo",
         "show-keyboard-layout": "Layout do Teclado",
         "show-label": "Exibir Rótulo",
@@ -536,8 +538,10 @@
         "show-unlock-hint": "Dica de Desbloqueio",
         "show-vpn-label": "Mostra Rótulo VPN",
         "show-weather": "Clima",
+        "show-week-numbers": "Exibir Números da Semana",
         "show-when-idle": "Mostrar Quando Ocioso",
         "stat": "Estatísticas",
+        "stat-cpu-freq": "Frequência da CPU",
         "stat-cpu-temp": "Temperatura da CPU",
         "stat-cpu-usage": "Uso da CPU",
         "stat-gpu-temp": "Temperatura da GPU",
@@ -576,6 +580,7 @@
       "types": {
         "audio-visualizer": "Visualizador de Áudio",
         "button": "Botão",
+        "calendar": "Calendário",
         "clock": "Relógio",
         "fancy-audio-visualizer": "Vizualizador de Áudio Sofisticado",
         "label": "Texto",
@@ -588,7 +593,7 @@
       }
     },
     "media": {
-      "nothing-playing": "Nada reproduzindo"
+      "nothing-playing": "Nada Reproduzindo"
     },
     "volume": {
       "mic": "Mic",
@@ -840,7 +845,7 @@
     "profiles": {
       "balanced": "Balanceado",
       "performance": "Performance",
-      "power-saver": "Economia de Energia"
+      "power-saver": "Economizador de Energia"
     }
   },
   "session": {
@@ -1475,7 +1480,7 @@
       "sources": {
         "add": "Adicionar Fonte",
         "add-title": "Adicionar Fonte de Plugin",
-        "auto-update": "Auto-atualizar plugins",
+        "auto-update": "Auto-Atualizar Plugins",
         "auto-update-desc": "Verificar em fontes ativas por novas versões em segundo plano e manter plugins instalados atualizados",
         "edit": "Editar fonte",
         "edit-title": "Editar fonte de plugin",
@@ -1624,7 +1629,7 @@
           "label": "Escala da Interface"
         },
         "wallpaper-generation-scheme": {
-          "description": "Escolha como as cores do papel de parede serão convertidas em uma paleta",
+          "description": "Escolher como as cores do papel de parede são convertidas em uma paleta",
           "label": "Esquema de Geração de Papel de Parede"
         }
       },
@@ -2626,6 +2631,7 @@
             "label": "Intervalo de Polling da Rede"
           },
           "stats": {
+            "cpu-freq": "Frequência da CPU",
             "cpu-temp": "Temp da CPU",
             "cpu-usage": "Uso da CPU",
             "disk-free": "Disco Livre",
@@ -3208,6 +3214,7 @@
         "both": "Ambos",
         "compact": "Compacto",
         "count": "Contar",
+        "cpu-freq": "Frequência da CPU",
         "cpu-temp": "Temperatura da CPU",
         "cpu-usage": "Uso da CPU",
         "disk-free": "Disco Livre",
@@ -3356,7 +3363,7 @@
         },
         "custom-image": {
           "description": "Caminho para uma imagem personalizada; deixe em branco para usar o símbolo padrão",
-          "dialog-title": "Selecionar imagem personalizada",
+          "dialog-title": "Selecionar Imagem Personalizada",
           "label": "Imagem Personalizada"
         },
         "custom-image-colorize": {
@@ -3886,7 +3893,7 @@
     "subtitle": "Algumas escolhas rápidas para os primeiros passos",
     "title": "Seja Bem-Vindo ao Noctalia",
     "wallpaper": "Papel de parede",
-    "wallpaper-scheme": "Esquema do papel de parede"
+    "wallpaper-scheme": "Esquema do Papel de Parede"
   },
   "system": {
     "hardware": {
@@ -3898,15 +3905,15 @@
   },
   "theme": {
     "scheme": {
-      "dysfunctional": "Dysfunctional",
-      "faithful": "Faithful",
+      "dysfunctional": "Disfuncional",
+      "faithful": "Fiel",
       "m3-content": "M3 Content",
       "m3-fruit-salad": "M3 Fruit Salad",
-      "m3-monochrome": "M3 Monochrome",
+      "m3-monochrome": "M3 Monocromático",
       "m3-rainbow": "M3 Rainbow",
       "m3-tonal-spot": "M3 Tonal Spot",
       "muted": "Muted",
-      "soft": "Leve",
+      "soft": "Macio",
       "vibrant": "Vibrante"
     }
   },
