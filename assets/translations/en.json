@@ -648,8 +648,8 @@
     },
     "context-menu": {
       "open": "Open",
-      "pin-to-dock": "Pin to dock",
-      "unpin-from-dock": "Unpin from dock"
+      "pin": "Pin to launcher",
+      "unpin": "Unpin from launcher"
     },
     "empty": {
       "no-results": "No results found",
@@ -2308,6 +2308,10 @@
         "launcher-compact": {
           "description": "Use smaller icons and tighter result rows",
           "label": "Compact Rows"
+        },
+        "launcher-pinned-apps": {
+          "description": "Desktop entry IDs of apps pinned to the launcher; they appear first when the launcher opens",
+          "label": "Pinned Apps"
         },
         "launcher-currency-exchange": {
           "description": "Fetch rates from third party online sources",

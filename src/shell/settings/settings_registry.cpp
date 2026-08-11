@@ -1083,7 +1083,7 @@ namespace settings {
     entries.push_back(makeEntry(
         SettingsSection::Dock, "pinned-apps", tr("settings.schema.dock.pinned-apps.label"),
         tr("settings.schema.dock.pinned-apps.description"), {"dock", "pinned"}, ListSetting{.items = cfg.dock.pinned},
-        "favorites"
+        "pinned apps dock"
     ));
 
     // Panels
@@ -1232,6 +1232,11 @@ namespace settings {
         SettingsSection::Launcher, "launcher", tr("settings.schema.panels.launcher-sort-by-usage.label"),
         tr("settings.schema.panels.launcher-sort-by-usage.description"), {"shell", "launcher", "sort_by_usage"},
         ToggleSetting{cfg.shell.launcher.sortByUsage}, "launcher sort usage recently used frequency"
+    ));
+    entries.push_back(makeEntry(
+        SettingsSection::Launcher, "launcher", tr("settings.schema.panels.launcher-pinned-apps.label"),
+        tr("settings.schema.panels.launcher-pinned-apps.description"), {"shell", "launcher", "pinned"},
+        ListSetting{.items = cfg.shell.launcher.pinned}, "launcher pinned apps"
     ));
     entries.push_back(makeEntry(
         SettingsSection::Launcher, "launcher", tr("settings.schema.panels.launcher-currency-exchange.label"),
