@@ -1282,7 +1282,9 @@ void ConfigService::updateLegacyConfigIssues(noctalia::config::LegacyConfigIssue
   const std::string fingerprint = noctalia::config::legacyConfigIssueFingerprint(issues);
   if (fingerprint != m_loggedLegacyIssueFingerprint) {
     for (const auto& issue : issues) {
-      kLog.warn("{}: {} (migrated in memory)", issue.path, issue.message);
+      kLog.warn(
+          "{}", issue.origin.prefixed(issue.path + ": " + issue.message + " (source configuration needs updating)")
+      );
     }
     m_loggedLegacyIssueFingerprint = fingerprint;
   }
@@ -1323,11 +1325,14 @@ void ConfigService::notifyLegacyConfigIssues() {
     return;
   }
 
+  const auto& issue = m_legacyConfigIssues.front();
   const std::string fingerprint = noctalia::config::legacyConfigIssueFingerprint(m_legacyConfigIssues);
   const std::int64_t now = currentEpochSeconds();
+  std::string title = issue.origin.valid() ? issue.origin.shortFormat(m_configDir)
+                                           : i18n::tr("notifications.internal.config-migration-title");
   (void)m_notificationManager->addInternal(
-      "Noctalia", i18n::tr("notifications.internal.config-migration-title"),
-      i18n::tr("notifications.internal.config-migration-body", "path", m_legacyConfigIssues.front().path),
+      "Noctalia", std::move(title),
+      i18n::tr("notifications.internal.config-migration-body", "path", issue.path + ": " + issue.message),
       Urgency::Normal
   );
   (void)m_stateStore.setString(kMigrationReminderOwner, kMigrationReminderKey, std::format("{}\n{}", now, fingerprint));
@@ -1446,6 +1451,11 @@ void ConfigService::loadAll() {
   merged.erase(noctalia::config::kConfigVersionKey);
   noctalia::config::LegacyConfigIssues legacyIssues;
   noctalia::config::normalizeLegacyConfig(merged, legacyIssues);
+  for (auto& issue : legacyIssues) {
+    if (const auto* origin = origins.find(issue.path)) {
+      issue.origin = *origin;
+    }
+  }
 
   if (m_includeLoadedFiles.empty() && m_overridesTable.empty()) {
     kLog.info("no config files found, using defaults");

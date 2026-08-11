@@ -1328,9 +1328,11 @@ std::unique_ptr<Flex> SettingsWindow::buildStatusRow(float scale) {
 
   const bool transientStatus = !m_statusMessage.empty();
   const bool statusIsError = transientStatus ? m_statusIsError : true;
-  const std::string messageText = transientStatus
-      ? m_statusMessage
-      : i18n::tr("settings.window.legacy-config-warning", "issue", legacyIssue->path + ": " + legacyIssue->message);
+  const std::string issueDescription = legacyIssue != nullptr
+      ? legacyIssue->origin.prefixed(legacyIssue->path + ": " + legacyIssue->message)
+      : std::string{};
+  const std::string messageText =
+      transientStatus ? m_statusMessage : i18n::tr("settings.window.legacy-config-warning", "issue", issueDescription);
 
   return settings::makeSettingsStatusBanner({
       .message = messageText,
