@@ -1,7 +1,7 @@
 # Packaging Noctalia
 
 Notes for distribution packagers. End-user install docs live in the
-[README](README.md) and at [docs.noctalia.dev](https://docs.noctalia.dev/v5/getting-started/installation).
+[README](README.md) and at [docs.noctalia.dev](https://docs.noctalia.dev/noctalia/getting-started/installation/).
 
 ## Package description
 
@@ -206,8 +206,13 @@ Override bases with `NOCTALIA_CONFIG_HOME`, `NOCTALIA_STATE_HOME`,
 - Not a compositor, display manager, or greeter. Greeter support is
   [noctalia-greeter](https://github.com/noctalia-dev/noctalia-greeter).
 - Not a replacement for file managers, screen casting, or drive mounting.
-- Compositor support varies (protocols / IPC). See
-  [compositor docs](https://docs.noctalia.dev/v5/compositor-settings/).
+- Compositor support varies (protocols / IPC). See the compositor docs for
+  [Niri](https://docs.noctalia.dev/noctalia/compositor-settings/niri/),
+  [Hyprland](https://docs.noctalia.dev/noctalia/compositor-settings/hyprland/),
+  [Sway / Scroll](https://docs.noctalia.dev/noctalia/compositor-settings/sway-scroll/),
+  [Mango](https://docs.noctalia.dev/noctalia/compositor-settings/mango/),
+  [Labwc](https://docs.noctalia.dev/noctalia/compositor-settings/labwc/), and
+  [KDE Plasma](https://docs.noctalia.dev/noctalia/compositor-settings/kde/).
 
 ## Versioning and beta
 
