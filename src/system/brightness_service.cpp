@@ -2,6 +2,7 @@
 
 #include "compositors/compositor_platform.h"
 #include "config/config_types.h"
+#include "core/inotify/inotify.h"
 #include "core/log.h"
 #include "core/process/process.h"
 #include "dbus/system_bus.h"
@@ -32,7 +33,6 @@
 #include <string_view>
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
-#include <sys/inotify.h>
 #include <thread>
 #include <unistd.h>
 #include <unordered_map>
@@ -637,7 +637,8 @@ struct BrightnessService::Impl {
   std::unique_ptr<sdbus::IProxy> sessionProxy;
   sdbus::ObjectPath sessionPath;
 
-  int inotifyFd = -1;
+  Inotify m_inotify;
+
   int eventFd = -1;
   int epollFd = -1;
   std::uint64_t generation = 0;
@@ -673,9 +674,6 @@ struct BrightnessService::Impl {
     if (eventFd >= 0) {
       ::close(eventFd);
     }
-    if (inotifyFd >= 0) {
-      ::close(inotifyFd);
-    }
   }
 
   void requestStop() {
@@ -691,13 +689,6 @@ struct BrightnessService::Impl {
   }
 
   void setupPollFds() {
-    if (inotifyFd < 0) {
-      inotifyFd = inotify_init1(IN_NONBLOCK | IN_CLOEXEC);
-      if (inotifyFd < 0) {
-        kLog.warn("inotify_init1 failed, external backlight changes won't be tracked");
-      }
-    }
-
     if (eventFd < 0) {
       eventFd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
       if (eventFd < 0) {
@@ -705,7 +696,7 @@ struct BrightnessService::Impl {
       }
     }
 
-    if (epollFd < 0 && (inotifyFd >= 0 || eventFd >= 0)) {
+    if (epollFd < 0 && (m_inotify.fd() >= 0 || eventFd >= 0)) {
       epollFd = epoll_create1(EPOLL_CLOEXEC);
       if (epollFd < 0) {
         kLog.warn("epoll_create1 failed, brightness watcher integration degraded");
@@ -724,7 +715,7 @@ struct BrightnessService::Impl {
         }
       };
 
-      addFd(inotifyFd);
+      addFd(m_inotify.fd());
       addFd(eventFd);
     }
   }
@@ -763,10 +754,10 @@ struct BrightnessService::Impl {
   }
 
   void clearBacklightWatches() {
-    if (inotifyFd >= 0) {
+    if (m_inotify.fd() >= 0) {
       for (auto& display : internals) {
         if (display.inotifyWd >= 0) {
-          inotify_rm_watch(inotifyFd, display.inotifyWd);
+          m_inotify.unwatch(display.inotifyWd);
           display.inotifyWd = -1;
         }
       }
@@ -879,11 +870,13 @@ struct BrightnessService::Impl {
     ::closedir(dir);
 
     for (auto& [connector, candidate] : bestByConnector) {
-      if (inotifyFd >= 0) {
+      if (m_inotify.fd() >= 0) {
         const std::string watchPath = candidate.display.sysfsPath + "/brightness";
-        candidate.display.inotifyWd = inotify_add_watch(inotifyFd, watchPath.c_str(), IN_MODIFY);
-        if (candidate.display.inotifyWd < 0) {
+        const auto wd = m_inotify.watch(watchPath.c_str(), IN_MODIFY);
+        if (!wd.has_value()) {
           kLog.debug("inotify_add_watch failed for {}", watchPath);
+        } else {
+          candidate.display.inotifyWd = wd.value();
         }
       }
       kLog.info(
@@ -1204,7 +1197,7 @@ struct BrightnessService::Impl {
       epoll_event events[8];
       const int count = epoll_wait(epollFd, events, 8, 0);
       for (int i = 0; i < count; ++i) {
-        if (events[i].data.fd == inotifyFd) {
+        if (events[i].data.fd == m_inotify.fd()) {
           handleInotify();
         } else if (events[i].data.fd == eventFd) {
           drainWorkerEvent();
@@ -1214,7 +1207,7 @@ struct BrightnessService::Impl {
       return;
     }
 
-    if (inotifyFd >= 0) {
+    if (m_inotify.fd() >= 0) {
       handleInotify();
     }
   }
@@ -1357,39 +1350,27 @@ struct BrightnessService::Impl {
   }
 
   void handleInotify() {
-    if (inotifyFd < 0) {
+    if (m_inotify.fd() < 0) {
       return;
     }
 
-    alignas(inotify_event) char buffer[4096];
     bool changed = false;
 
-    while (true) {
-      const ssize_t n = ::read(inotifyFd, buffer, sizeof(buffer));
-      if (n <= 0) {
+    m_inotify.drain([this, &changed](const inotify_event* event) {
+      for (auto& display : internals) {
+        if (display.backend != RuntimeBackend::Backlight || display.inotifyWd != event->wd) {
+          continue;
+        }
+
+        const float newBrightness = readBacklightBrightness(display.sysfsPath, display.maxRaw);
+        if (std::abs(newBrightness - display.pub.brightness) > 0.001F) {
+          display.pub.brightness = newBrightness;
+          syncPublicDisplay(display);
+          changed = true;
+        }
         break;
       }
-
-      std::size_t offset = 0;
-      while (offset < static_cast<std::size_t>(n)) {
-        auto* event = reinterpret_cast<inotify_event*>(buffer + offset);
-        offset += sizeof(inotify_event) + event->len;
-
-        for (auto& display : internals) {
-          if (display.backend != RuntimeBackend::Backlight || display.inotifyWd != event->wd) {
-            continue;
-          }
-
-          const float newBrightness = readBacklightBrightness(display.sysfsPath, display.maxRaw);
-          if (std::abs(newBrightness - display.pub.brightness) > 0.001F) {
-            display.pub.brightness = newBrightness;
-            syncPublicDisplay(display);
-            changed = true;
-          }
-          break;
-        }
-      }
-    }
+    });
 
     if (changed && changeCallback) {
       changeCallback();
@@ -1652,6 +1633,8 @@ void BrightnessService::registerIpc(IpcService& ipc, std::function<void()> onBat
 
 void BrightnessService::setChangeCallback(ChangeCallback callback) { m_impl->changeCallback = std::move(callback); }
 
-int BrightnessService::watchFd() const noexcept { return m_impl->epollFd >= 0 ? m_impl->epollFd : m_impl->inotifyFd; }
+int BrightnessService::watchFd() const noexcept {
+  return m_impl->epollFd >= 0 ? m_impl->epollFd : m_impl->m_inotify.fd();
+}
 
 void BrightnessService::dispatchWatch() { m_impl->handlePollEvents(); }
