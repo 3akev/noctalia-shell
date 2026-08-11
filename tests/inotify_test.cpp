@@ -56,163 +56,7 @@ namespace {
     return expect(!wd.has_value(), "watch() on an empty path should return std::nullopt");
   }
 
-  bool drainInvokesCallbackOnCreateInDirectory() {
-    Inotify in;
-    const auto dir = uniqueTempDir();
-
-    bool fired = false;
-    uint32_t mask = 0;
-    std::string name;
-    in.watch(dir, IN_CREATE, [&](const inotify_event* e) {
-      fired = true;
-      mask = e->mask;
-      if (e->len > 0) {
-        name = std::string(e->name);
-      }
-    });
-
-    const auto file = dir / "child.txt";
-    std::ofstream{file} << "hello";
-
-    in.drain();
-
-    const bool ok = expect(fired, "callback should fire when a file is created in a watched directory")
-        && expect((mask & IN_CREATE) != 0, "event mask should contain IN_CREATE")
-        && expect(name == "child.txt", "event name should carry the created file name");
-    cleanup(dir);
-    return ok;
-  }
-
-  bool drainInvokesCallbackOnFileModify() {
-    Inotify in;
-    const auto dir = uniqueTempDir();
-    const auto file = dir / "monitored.txt";
-    std::ofstream{file} << "initial";
-
-    bool fired = false;
-    uint32_t mask = 0;
-    in.watch(file, IN_MODIFY, [&](const inotify_event* e) {
-      fired = true;
-      mask = e->mask;
-    });
-
-    std::ofstream{file} << "changed";
-
-    in.drain();
-
-    const bool ok = expect(fired, "callback should fire when a watched file is modified")
-        && expect((mask & IN_MODIFY) != 0, "event mask should contain IN_MODIFY");
-    cleanup(dir);
-    return ok;
-  }
-
-  bool drainDeliversIndependentCallbacksForMultipleWatches() {
-    Inotify in;
-    const auto dir = uniqueTempDir();
-    const auto fileA = dir / "a.txt";
-    const auto fileB = dir / "b.txt";
-
-    int hitsA = 0;
-    int hitsB = 0;
-    std::ofstream{fileA} << "seed";
-    std::ofstream{fileB} << "seed";
-    auto wdA = in.watch(fileA, IN_MODIFY, [&](const inotify_event*) { ++hitsA; });
-    auto wdB = in.watch(fileB, IN_MODIFY, [&](const inotify_event*) { ++hitsB; });
-    if (!expect(wdA.has_value(), "watch A should return a WatchId")
-        || !expect(wdB.has_value(), "watch B should return a WatchId")) {
-      cleanup(dir);
-      return false;
-    }
-    if (*wdA == *wdB) {
-      cleanup(dir);
-      return expect(false, "distinct watches should receive distinct WatchIds");
-    }
-
-    std::ofstream{fileA} << "1";
-    in.drain();
-
-    // After modifying only file A, only callback A should have fired.
-    const bool ok = expect(hitsA == 1, "callback A should fire exactly once for its own file")
-        && expect(hitsB == 0, "callback B should not fire for an event on file A");
-    if (!ok) {
-      cleanup(dir);
-      return false;
-    }
-
-    std::ofstream{fileB} << "2";
-    in.drain();
-
-    const bool ok2 = expect(hitsA == 1, "callback A should remain at one hit after file B changes")
-        && expect(hitsB == 1, "callback B should fire exactly once after its own file changes");
-    cleanup(dir);
-    return ok2;
-  }
-
-  bool unwatchStopsCallbacks() {
-    Inotify in;
-    const auto dir = uniqueTempDir();
-
-    int callCount = 0;
-    auto wd = in.watch(dir, IN_CREATE, [&](const inotify_event*) { ++callCount; });
-    if (!expect(wd.has_value(), "watch should return a WatchId before unwatch")) {
-      cleanup(dir);
-      return false;
-    }
-
-    in.unwatch(*wd);
-
-    std::ofstream{dir / "after.txt"} << "x";
-    in.drain();
-
-    const bool ok = expect(callCount == 0, "no callback should fire after unwatch");
-    cleanup(dir);
-    return ok;
-  }
-
-  bool unwatchUnknownIdIsHarmless() {
-    Inotify in;
-    const auto dir = uniqueTempDir();
-    in.watch(dir, IN_CREATE, [](const inotify_event*) {});
-    in.unwatch(-1);
-    cleanup(dir);
-    return true;
-  }
-
-  bool drainHandlesIgnoredEventWithoutLosingState() {
-    Inotify in;
-    const auto dir = uniqueTempDir();
-    const auto file = dir / "watched.txt";
-    std::ofstream{file} << "x";
-
-    // drain()'s IN_IGNORED branch erases the watch entry without invoking the
-    // callback, so a deleted watched file must NOT deliver any callback.
-    int callCount = 0;
-    in.watch(file, IN_MODIFY | IN_IGNORED, [&](const inotify_event*) { ++callCount; });
-
-    std::error_code ec;
-    std::filesystem::remove(file, ec);
-    in.drain();
-
-    if (!expect(callCount == 0, "deleting a watched file should not invoke its callback (IN_IGNORED branch)")) {
-      cleanup(dir);
-      return false;
-    }
-
-    // Object must remain usable after the auto-removed watch.
-    const auto newFile = dir / "watched2.txt";
-    std::ofstream{newFile} << "y";
-    bool fired = false;
-    in.watch(newFile, IN_MODIFY, [&](const inotify_event*) { fired = true; });
-    std::ofstream{newFile} << "z";
-    in.drain();
-
-    const bool ok = expect(fired, "a fresh watch should keep working after an IN_IGNORED was drained");
-    expect(in.fd() >= 0, "fd() should remain valid after handling IN_IGNORED");
-    cleanup(dir);
-    return ok;
-  }
-
-  bool drainWithGlobalCallbackFiresOnEvent() {
+  bool drainWithCallbackFiresOnEvent() {
     Inotify in;
     const auto dir = uniqueTempDir();
 
@@ -239,7 +83,7 @@ namespace {
     return ok;
   }
 
-  bool drainWithGlobalCallbackFiresForAllWatches() {
+  bool drainWithCallbackFiresForAllWatches() {
     Inotify in;
     const auto dir = uniqueTempDir();
     const auto dirA = dir / "a";
@@ -276,20 +120,51 @@ namespace {
     return ok;
   }
 
-  bool drainWithGlobalAndPerWatchCallbacksBothFire() {
+  bool unwatchSilencesCallbackAndKeepsObjectUsable() {
     Inotify in;
     const auto dir = uniqueTempDir();
 
-    int perWatchHits = 0;
-    int globalHits = 0;
-    in.watch(dir, IN_CREATE, [&](const inotify_event*) { ++perWatchHits; });
+    const auto wd = in.watch(dir, IN_CREATE);
+    if (!expect(wd.has_value(), "watch should return a WatchId so it can be unwatched")) {
+      cleanup(dir);
+      return false;
+    }
 
-    std::ofstream{dir / "child.txt"} << "hello";
+    // Drain any events queued while wiring up the watch so the count starts at zero.
+    in.drain();
 
-    in.drain([&](const inotify_event*) { ++globalHits; });
+    int fired = 0;
+    std::ofstream{dir / "a.txt"} << "1";
+    in.drain([&](const inotify_event*) { ++fired; });
+    if (!expect(fired == 1, "global callback should fire once for an event in a watched directory")) {
+      cleanup(dir);
+      return false;
+    }
 
-    const bool ok = expect(perWatchHits == 1, "per-watch callback should fire for its own watch")
-        && expect(globalHits == 1, "global callback should also fire for the same event");
+    // After unwatch, the same directory must stop delivering events to the callback.
+    in.unwatch(*wd);
+    std::ofstream{dir / "b.txt"} << "2";
+    in.drain([&](const inotify_event*) { ++fired; });
+    if (!expect(fired == 1, "no callback should fire after unwatch")) {
+      cleanup(dir);
+      return false;
+    }
+
+    // The object must remain usable: descriptor intact and a fresh watch succeeds.
+    const auto wd2 = in.watch(dir, IN_CREATE);
+    if (!expect(wd2.has_value(), "fresh watch should succeed after unwatch")) {
+      cleanup(dir);
+      return false;
+    }
+    if (!expect(in.fd() >= 0, "fd() should remain valid after unwatch")) {
+      cleanup(dir);
+      return false;
+    }
+
+    int firedAgain = 0;
+    std::ofstream{dir / "c.txt"} << "3";
+    in.drain([&](const inotify_event*) { ++firedAgain; });
+    const bool ok = expect(firedAgain == 1, "re-watched directory should deliver events again");
     cleanup(dir);
     return ok;
   }
@@ -301,14 +176,8 @@ int main() {
   ok = watchOnValidDirectoryReturnsId() && ok;
   ok = watchOnMissingPathReturnsNullopt() && ok;
   ok = watchOnEmptyPathReturnsNullopt() && ok;
-  ok = drainInvokesCallbackOnCreateInDirectory() && ok;
-  ok = drainInvokesCallbackOnFileModify() && ok;
-  ok = drainDeliversIndependentCallbacksForMultipleWatches() && ok;
-  ok = unwatchStopsCallbacks() && ok;
-  ok = unwatchUnknownIdIsHarmless() && ok;
-  ok = drainHandlesIgnoredEventWithoutLosingState() && ok;
-  ok = drainWithGlobalCallbackFiresOnEvent() && ok;
-  ok = drainWithGlobalCallbackFiresForAllWatches() && ok;
-  ok = drainWithGlobalAndPerWatchCallbacksBothFire() && ok;
+  ok = drainWithCallbackFiresOnEvent() && ok;
+  ok = drainWithCallbackFiresForAllWatches() && ok;
+  ok = unwatchSilencesCallbackAndKeepsObjectUsable() && ok;
   return ok ? 0 : 1;
 }

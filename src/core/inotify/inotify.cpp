@@ -19,13 +19,12 @@ Inotify::Inotify() {
 Inotify::~Inotify() {
   if (m_inotifyFd < 0)
     return;
-  for (auto& [wd, _] : m_wdToCallback)
+  for (auto& wd : m_watchDescriptors)
     inotify_rm_watch(m_inotifyFd, wd);
   ::close(m_inotifyFd);
 }
 
-std::optional<int>
-Inotify::watch(const std::filesystem::path& path, Inotify::WatchMask mask, std::optional<Callback> callback) noexcept {
+std::optional<int> Inotify::watch(const std::filesystem::path& path, Inotify::WatchMask mask) noexcept {
   if (m_inotifyFd < 0)
     return std::nullopt;
 
@@ -36,7 +35,7 @@ Inotify::watch(const std::filesystem::path& path, Inotify::WatchMask mask, std::
     kLog.warn("failed to watch directory '{}'", dir);
     return std::nullopt;
   }
-  m_wdToCallback[wd] = std::move(callback);
+  m_watchDescriptors.insert(wd);
 
   return wd;
 }
@@ -44,7 +43,7 @@ Inotify::watch(const std::filesystem::path& path, Inotify::WatchMask mask, std::
 void Inotify::unwatch(int wd) {
   if (m_inotifyFd >= 0)
     inotify_rm_watch(m_inotifyFd, wd);
-  m_wdToCallback.erase(wd);
+  m_watchDescriptors.erase(wd);
 }
 
 void Inotify::drain(std::optional<Callback> global_callback) noexcept {
@@ -64,16 +63,10 @@ void Inotify::drain(std::optional<Callback> global_callback) noexcept {
 
       if ((event->mask & IN_IGNORED) != 0) {
         // watch was removed somehow => remove watch id
-        m_wdToCallback.erase(event->wd);
-      } else if (auto it = m_wdToCallback.find(event->wd); it != m_wdToCallback.end()) {
-        if (it->second.has_value()) {
-          auto callback = it->second.value();
-          callback(event);
-        }
-        if (global_callback.has_value()) {
-          auto callback = global_callback.value();
-          callback(event);
-        }
+        m_watchDescriptors.erase(event->wd);
+      } else if (m_watchDescriptors.contains(event->wd) && global_callback.has_value()) {
+        auto callback = global_callback.value();
+        callback(event);
       }
 
       offset += sizeof(inotify_event) + event->len;

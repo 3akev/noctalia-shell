@@ -2,10 +2,10 @@
 
 #include <cstdint>
 #include <filesystem>
+#include <flat_set>
 #include <functional>
 #include <optional>
 #include <sys/inotify.h>
-#include <unordered_map>
 
 class Inotify {
 public:
@@ -24,8 +24,7 @@ public:
     WatchMask mask;
   };
 
-  std::optional<int>
-  watch(const std::filesystem::path& path, WatchMask mask, std::optional<Callback> callback = std::nullopt) noexcept;
+  std::optional<int> watch(const std::filesystem::path& path, WatchMask mask) noexcept;
 
   [[nodiscard]] int fd() const noexcept { return m_inotifyFd; }
 
@@ -35,5 +34,5 @@ public:
 
 private:
   int m_inotifyFd = -1;
-  std::unordered_map<int, std::optional<Callback>> m_wdToCallback;
+  std::flat_set<int> m_watchDescriptors;
 };
