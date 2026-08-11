@@ -988,6 +988,8 @@ struct ShellConfig {
     bool compact = false;
     bool appGrid = false;
     bool sortByUsage = true;
+    // Desktop entry IDs shown first in the launcher when it opens without a query.
+    std::vector<std::string> pinned;
     /// When true, refresh currency exchange rates from libqalculate's online sources.
     bool fetchExchangeRates = true;
     std::string providerPrefix = "/";
