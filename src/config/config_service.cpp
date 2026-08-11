@@ -1345,11 +1345,55 @@ void ConfigService::notifyLegacyConfigIssues() {
   );
 }
 
+namespace {
+
+  void mergeSessionActions(toml::table& base, const toml::array& overlay) {
+    const auto* baseActions = base["actions"].as_array();
+    if (baseActions == nullptr) {
+      base.insert_or_assign("actions", overlay);
+      return;
+    }
+
+    toml::array merged;
+    for (std::size_t index = 0; index < overlay.size(); ++index) {
+      const toml::node& overlayNode = overlay[index];
+      const toml::table* overlayAction = overlayNode.as_table();
+      const toml::table* baseAction = index < baseActions->size() ? (*baseActions)[index].as_table() : nullptr;
+      if (overlayAction == nullptr || baseAction == nullptr) {
+        merged.push_back(overlayNode);
+        continue;
+      }
+
+      const auto baseName = (*baseAction)["action"].value<std::string>();
+      const auto overlayName = (*overlayAction)["action"].value<std::string>();
+      if (baseName != overlayName) {
+        merged.push_back(overlayNode);
+        continue;
+      }
+
+      toml::table mergedAction = *baseAction;
+      ConfigService::deepMerge(mergedAction, *overlayAction);
+      merged.push_back(std::move(mergedAction));
+    }
+    base.insert_or_assign("actions", std::move(merged));
+  }
+
+} // namespace
+
 void ConfigService::deepMerge(toml::table& base, const toml::table& overlay) {
   for (const auto& [k, v] : overlay) {
     if (const auto* overlayTbl = v.as_table()) {
       if (auto* baseNode = base.get(k)) {
         if (auto* baseTbl = baseNode->as_table()) {
+          if (k == "session") {
+            if (const auto* overlayActions = (*overlayTbl)["actions"].as_array()) {
+              mergeSessionActions(*baseTbl, *overlayActions);
+            }
+            toml::table sessionOverlay = *overlayTbl;
+            sessionOverlay.erase("actions");
+            deepMerge(*baseTbl, sessionOverlay);
+            continue;
+          }
           deepMerge(*baseTbl, *overlayTbl);
           continue;
         }
