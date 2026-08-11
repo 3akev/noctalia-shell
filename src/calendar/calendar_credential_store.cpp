@@ -230,13 +230,8 @@ namespace calendar {
 
   void CalendarCredentialStore::lookup(CredentialKind kind, const std::string& accountId, LookupCallback callback) {
     auto& cache = kind == CredentialKind::Password ? m_passwords : m_refreshTokens;
-    auto& missing = kind == CredentialKind::Password ? m_missingPasswords : m_missingRefreshTokens;
     if (const auto it = cache.find(accountId); it != cache.end()) {
       callback(security::SecretStoreStatus::Success, it->second);
-      return;
-    }
-    if (missing.contains(accountId)) {
-      callback(security::SecretStoreStatus::NotFound, {});
       return;
     }
 
@@ -247,8 +242,10 @@ namespace calendar {
           if (status == security::SecretStoreStatus::Success) {
             auto secret = std::make_shared<security::SecureBuffer>(std::move(value));
             auto& target = kind == CredentialKind::Password ? m_passwords : m_refreshTokens;
+            auto& missing = kind == CredentialKind::Password ? m_missingPasswords : m_missingRefreshTokens;
             target.insert_or_assign(accountId, secret);
-            setState(CredentialState::Ready, m_migrationPending);
+            const bool missingChanged = missing.erase(accountId) > 0;
+            setState(CredentialState::Ready, m_migrationPending, missingChanged);
             callback(status, std::move(secret));
             return;
           }

@@ -136,6 +136,17 @@ namespace {
       m_failStoreCall = call;
     }
 
+    void seed(std::string_view key, std::string_view value) {
+      std::scoped_lock lock(m_mutex);
+      m_values.insert_or_assign(
+          std::string(key),
+          std::vector<std::uint8_t>(
+              reinterpret_cast<const std::uint8_t*>(value.data()),
+              reinterpret_cast<const std::uint8_t*>(value.data() + value.size())
+          )
+      );
+    }
+
     [[nodiscard]] std::optional<std::string> value(std::string_view key) const {
       std::scoped_lock lock(m_mutex);
       const auto it = m_values.find(std::string(key));
@@ -303,6 +314,52 @@ namespace {
     return ok;
   }
 
+  bool missingRefreshTokenIsRetried() {
+    auto backend = std::make_unique<FakeBackend>();
+    auto* fake = backend.get();
+    security::SecretStore secretStore(std::move(backend));
+    calendar::CalendarCredentialStore credentials(secretStore);
+    calendar::CredentialMigration complete;
+    complete.complete = true;
+    credentials.initialize(std::move(complete));
+
+    std::optional<SecretStoreStatus> status;
+    credentials.lookupRefreshToken(
+        "personal", [&status](SecretStoreStatus value, calendar::CalendarCredentialStore::Secret) { status = value; }
+    );
+    bool ok = dispatchOne(secretStore);
+    ok = expect(status == SecretStoreStatus::NotFound, "initial missing refresh token status was lost") && ok;
+    ok = expect(credentials.refreshTokenMissing("personal"), "initial missing refresh token was not exposed") && ok;
+
+    fake->seed("calendar/personal/refresh-token", "late-token");
+    status.reset();
+    std::string loaded;
+    credentials.lookupRefreshToken(
+        "personal", [&status, &loaded](SecretStoreStatus value, calendar::CalendarCredentialStore::Secret secretValue) {
+          status = value;
+          loaded = stringValue(secretValue);
+        }
+    );
+    ok = expect(!status.has_value(), "missing refresh token lookup reused stale negative cache") && ok;
+    if (!status.has_value()) {
+      ok = dispatchOne(secretStore) && ok;
+    }
+    ok = expect(status == SecretStoreStatus::Success, "refresh token retry did not recover") && ok;
+    ok = expect(loaded == "late-token", "refresh token retry returned the wrong value") && ok;
+    ok = expect(!credentials.refreshTokenMissing("personal"), "successful retry did not clear missing state") && ok;
+
+    const std::size_t callsBeforeCachedLookup = fake->calls();
+    credentials.lookupRefreshToken(
+        "personal", [&status, &loaded](SecretStoreStatus value, calendar::CalendarCredentialStore::Secret secretValue) {
+          status = value;
+          loaded = stringValue(secretValue);
+        }
+    );
+    ok = expect(status == SecretStoreStatus::Success && loaded == "late-token", "recovered token was not cached") && ok;
+    ok = expect(fake->calls() == callsBeforeCachedLookup, "positive refresh token cache hit the backend") && ok;
+    return ok;
+  }
+
   bool completedMigrationDoesNotReadLegacyInput() {
     auto backend = std::make_unique<FakeBackend>();
     auto* fake = backend.get();
@@ -379,6 +436,7 @@ int main() {
   ok = interruptedMigrationRetriesIdempotently() && ok;
   ok = accountEraseTreatsMissingAsSuccess() && ok;
   ok = missingRefreshTokenSignalsReconnectState() && ok;
+  ok = missingRefreshTokenIsRetried() && ok;
   ok = completedMigrationDoesNotReadLegacyInput() && ok;
   ok = credentialFileReadIsStrict() && ok;
   return ok ? 0 : 1;
