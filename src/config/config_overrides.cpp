@@ -566,6 +566,9 @@ namespace {
               toml::table row;
               row.insert_or_assign("enabled", item.enabled);
               row.insert_or_assign("timeout", item.timeoutSeconds);
+              if (item.lockedTimeoutSeconds > 0.0) {
+                row.insert_or_assign("locked_timeout", item.lockedTimeoutSeconds);
+              }
               if (!item.action.empty()) {
                 row.insert_or_assign("action", item.action);
               }

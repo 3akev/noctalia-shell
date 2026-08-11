@@ -863,6 +863,7 @@ namespace noctalia::config::schema {
       static const Schema<IdleBehaviorConfig> s = {
           field(&IdleBehaviorConfig::enabled, "enabled"),
           field(&IdleBehaviorConfig::timeoutSeconds, "timeout"),
+          field(&IdleBehaviorConfig::lockedTimeoutSeconds, "locked_timeout"),
           // action is trimmed on read.
           custom<IdleBehaviorConfig>(
               "action",

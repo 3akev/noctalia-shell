@@ -1136,6 +1136,7 @@
           "suspend": "Suspend"
         },
         "kind-section-label": "Action",
+        "locked-timeout-label": "Timeout while locked (seconds, 0 = off)",
         "name-label": "Name",
         "name-placeholder": "idle-behavior",
         "resume-command-label": "Resume command",
