@@ -163,7 +163,8 @@ public:
   void setColorPickerResultHandler(ColorPickerResultHandler handler) {
     m_colorPickerResultHandler = std::move(handler);
   }
-  [[nodiscard]] bool startAsyncCommand(std::string command, int callbackRef, std::chrono::milliseconds timeout);
+  [[nodiscard]] bool
+  startAsyncProcess(std::vector<std::string> args, int callbackRef, std::chrono::milliseconds timeout);
   [[nodiscard]] bool startAsyncProcessMatch(std::vector<std::string> needles, int callbackRef);
   // `path` is already resolved by resolveHostPath(). The result is delivered as cb(data, error).
   [[nodiscard]] bool startAsyncFileRead(std::filesystem::path path, int callbackRef);

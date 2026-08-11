@@ -128,30 +128,6 @@ namespace {
 
   void releaseDetachedCommandSlot() { inFlightDetachedCommands().fetch_sub(1, std::memory_order_relaxed); }
 
-  bool startDetachedCommandAsync(std::string command) {
-    if (command.empty()) {
-      return false;
-    }
-    if (!acquireDetachedCommandSlot()) {
-      return false;
-    }
-
-    try {
-      std::thread([command = std::move(command)]() mutable {
-        try {
-          (void)process::runAsync(std::vector<std::string>{"/bin/sh", "-c", std::move(command)});
-        } catch (...) {
-        }
-        releaseDetachedCommandSlot();
-      }).detach();
-    } catch (...) {
-      releaseDetachedCommandSlot();
-      return false;
-    }
-
-    return true;
-  }
-
   bool startDetachedProcessAsync(std::vector<std::string> args) {
     if (args.empty() || args.front().empty()) {
       return false;
@@ -179,6 +155,34 @@ namespace {
   bool startDetachedCommandInTerminalAsync(std::string command) {
     auto prepared = terminal_launch::prepareCommand(command);
     return prepared.has_value() && startDetachedProcessAsync(std::move(*prepared));
+  }
+  std::vector<std::string> processArgsFromLua(lua_State* L, int index) {
+    luaL_checktype(L, index, LUA_TTABLE);
+    const int count = lua_objlen(L, index);
+    if (count == 0) {
+      luaL_argerror(L, index, "argv must contain an executable");
+    }
+
+    std::vector<std::string> args;
+    args.reserve(static_cast<std::size_t>(count));
+    for (int i = 1; i <= count; ++i) {
+      lua_rawgeti(L, index, i);
+      if (lua_type(L, -1) != LUA_TSTRING) {
+        luaL_error(L, "argv[%d] must be a string", i);
+      }
+      size_t len = 0;
+      const char* value = lua_tolstring(L, -1, &len);
+      std::string arg(value, len);
+      lua_pop(L, 1);
+      if (arg.contains('\0')) {
+        luaL_error(L, "argv[%d] must not contain NUL bytes", i);
+      }
+      args.push_back(std::move(arg));
+    }
+    if (args.front().empty()) {
+      luaL_argerror(L, index, "argv executable must not be empty");
+    }
+    return args;
   }
 
   std::chrono::milliseconds commandTimeoutFromLua(lua_State* L) {
@@ -259,12 +263,21 @@ namespace {
   }
 
   int luau_runAsync(lua_State* L) {
-    size_t len = 0;
-    const char* cmd = luaL_checklstring(L, 1, &len);
-    std::string command(cmd, len);
+    std::vector<std::string> args;
+    if (lua_type(L, 1) == LUA_TSTRING) {
+      size_t len = 0;
+      const char* cmd = lua_tolstring(L, 1, &len);
+      if (len != 0) {
+        args = {"/bin/sh", "-c", std::string(cmd, len)};
+      }
+    } else if (lua_type(L, 1) == LUA_TTABLE) {
+      args = processArgsFromLua(L, 1);
+    } else {
+      luaL_argerror(L, 1, "expected a shell command string or argv table");
+    }
 
     if (lua_isnoneornil(L, 2)) {
-      bool ok = startDetachedCommandAsync(std::move(command));
+      const bool ok = startDetachedProcessAsync(std::move(args));
       lua_pushboolean(L, ok ? 1 : 0);
       return 1;
     }
@@ -279,7 +292,7 @@ namespace {
 
     const auto timeout = commandTimeoutFromLua(L);
     const int callbackRef = lua_ref(L, 2);
-    bool ok = host->startAsyncCommand(std::move(command), callbackRef, timeout);
+    const bool ok = host->startAsyncProcess(std::move(args), callbackRef, timeout);
     if (!ok) {
       lua_unref(L, callbackRef);
     }
@@ -1913,8 +1926,11 @@ LuauHost::~LuauHost() {
   }
 }
 
-bool LuauHost::startAsyncCommand(std::string command, int callbackRef, std::chrono::milliseconds timeout) {
-  if (command.empty() || callbackRef <= LUA_REFNIL || m_asyncCommandCallbackRefs.size() >= kMaxAsyncCommandsPerHost) {
+bool LuauHost::startAsyncProcess(std::vector<std::string> args, int callbackRef, std::chrono::milliseconds timeout) {
+  if (args.empty()
+      || args.front().empty()
+      || callbackRef <= LUA_REFNIL
+      || m_asyncCommandCallbackRefs.size() >= kMaxAsyncCommandsPerHost) {
     return false;
   }
 
@@ -1937,10 +1953,9 @@ bool LuauHost::startAsyncCommand(std::string command, int callbackRef, std::chro
     return false;
   }
   try {
-    std::thread([hostId = m_hostId, callbackRef, command = std::move(command), timeout,
+    std::thread([hostId = m_hostId, callbackRef, args = std::move(args), timeout,
                  handler = std::move(handler)]() mutable {
-      auto result =
-          process::runSyncWithTimeoutAndOutputLimit({"/bin/sh", "-c", command}, timeout, kMaxAsyncCommandOutputBytes);
+      auto result = process::runSyncWithTimeoutAndOutputLimit(args, timeout, kMaxAsyncCommandOutputBytes);
       inFlightAsyncCommands().fetch_sub(1, std::memory_order_relaxed);
       handler(hostId, callbackRef, std::move(result));
     }).detach();

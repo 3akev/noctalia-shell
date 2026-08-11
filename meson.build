@@ -1165,6 +1165,7 @@ if build_tests
     'plugin_git_export',
     'plugin_i18n',
     'plugin_lifecycle',
+    'plugin_process',
     'plugin_manifest',
     'plugin_source_locks',
     'plugin_source_paths',
