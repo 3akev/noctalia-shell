@@ -257,7 +257,7 @@ namespace desktop_settings {
       auto format = stringSpec("format", "{:%H:%M}");
       format.visibleWhen = digitalOnly;
       add(std::move(format));
-      auto centerText = boolSpec("center_text", false);
+      auto centerText = boolSpec("center_text", true);
       centerText.visibleWhen = digitalOnly;
       add(std::move(centerText));
       auto timezone = stringSpec("timezone", "");
