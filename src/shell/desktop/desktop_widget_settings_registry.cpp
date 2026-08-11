@@ -211,7 +211,7 @@ namespace desktop_settings {
   std::vector<WidgetSettingSpec> desktopWidgetSettingSpecs(std::string_view type) {
     if (auto pluginEntry = resolvePluginDesktopWidget(type)) {
       scripting::PluginTranslationCatalog translations;
-      translations.load(pluginEntry->sourcePath.parent_path());
+      translations.load(pluginEntry->pluginDir);
       return settings::manifestSettingSpecs(pluginEntry->entry->settings, &translations);
     }
 

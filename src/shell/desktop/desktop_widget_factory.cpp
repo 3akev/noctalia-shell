@@ -464,6 +464,7 @@ std::unique_ptr<DesktopWidget> DesktopWidgetFactory::create(
         scripting::PluginRuntimeContext{
             .entryId = pluginEntry->fullId(),
             .sourcePath = pluginEntry->sourcePath,
+            .pluginDir = pluginEntry->pluginDir,
             .settings = std::move(seeded),
             .scriptApi = *m_scriptDeps.scriptApi,
             .fileWatcher = m_scriptDeps.fileWatcher,
