@@ -169,6 +169,55 @@ namespace {
     return ok;
   }
 
+  bool queueOverflowIsForwarded() {
+    Inotify in;
+    const auto dir = uniqueTempDir();
+    const auto fileA = dir / "a";
+    const auto fileB = dir / "b";
+    std::ofstream{fileA};
+    std::ofstream{fileB};
+
+    const auto wdA = in.watch(fileA, IN_OPEN);
+    const auto wdB = in.watch(fileB, IN_OPEN);
+    if (!expect(wdA.has_value() && wdB.has_value(), "overflow test files should be watchable")) {
+      cleanup(dir);
+      return false;
+    }
+
+    std::ifstream limitFile("/proc/sys/fs/inotify/max_queued_events");
+    std::size_t maxQueuedEvents = 0;
+    if (!expect(
+            static_cast<bool>(limitFile >> maxQueuedEvents) && maxQueuedEvents > 0,
+            "kernel inotify queue limit should be readable"
+        )) {
+      cleanup(dir);
+      return false;
+    }
+
+    // Alternate watch descriptors so adjacent IN_OPEN events are not coalesced.
+    for (std::size_t i = 0; i <= maxQueuedEvents; ++i) {
+      std::ifstream opened{i % 2 == 0 ? fileA : fileB};
+      if (!expect(opened.is_open(), "overflow test file should remain readable")) {
+        cleanup(dir);
+        return false;
+      }
+    }
+
+    bool overflowForwarded = false;
+    int overflowWd = 0;
+    in.drain([&](const inotify_event* event) {
+      if ((event->mask & IN_Q_OVERFLOW) != 0) {
+        overflowForwarded = true;
+        overflowWd = event->wd;
+      }
+    });
+
+    const bool ok = expect(overflowForwarded, "global callback should receive IN_Q_OVERFLOW")
+        && expect(overflowWd == -1, "IN_Q_OVERFLOW should carry the global watch descriptor");
+    cleanup(dir);
+    return ok;
+  }
+
 } // namespace
 
 int main() {
@@ -179,5 +228,6 @@ int main() {
   ok = drainWithCallbackFiresOnEvent() && ok;
   ok = drainWithCallbackFiresForAllWatches() && ok;
   ok = unwatchSilencesCallbackAndKeepsObjectUsable() && ok;
+  ok = queueOverflowIsForwarded() && ok;
   return ok ? 0 : 1;
 }
