@@ -1196,6 +1196,7 @@ if build_tests
     test_exe = executable(test_name + '_test',
       sources: files('tests' / (test_name + '_test.cpp')),
       dependencies: noctalia_core_dep,
+      override_options: ['b_ndebug=false'],
     )
     test(test_name, test_exe)
   endforeach

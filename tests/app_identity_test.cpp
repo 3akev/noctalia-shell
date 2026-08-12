@@ -1,8 +1,8 @@
 #include "system/app_identity.h"
 #include "system/internal_app_metadata.h"
+#include "tests/test_check.h"
 #include "util/string_utils.h"
 
-#include <cassert>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -55,11 +55,11 @@ namespace {
   }
 
   void expectMatch(const DesktopEntry& entry, std::string_view token) {
-    assert(app_identity::desktopEntryMatchesLower(entry, token));
+    TEST_CHECK(app_identity::desktopEntryMatchesLower(entry, token));
   }
 
   void expectNoMatch(const DesktopEntry& entry, std::string_view token) {
-    assert(!app_identity::desktopEntryMatchesLower(entry, token));
+    TEST_CHECK(!app_identity::desktopEntryMatchesLower(entry, token));
   }
 
   DesktopEntry easyEffectsEntry() {
@@ -108,51 +108,51 @@ int main() {
   const std::vector<DesktopEntry> entries = {chat};
   const DesktopEntry resolved = app_identity::resolveRunningDesktopEntry("Sample.ChatDesktop", entries);
 
-  assert(resolved.id == "sample-chat-desktop");
-  assert(resolved.exec == "sample-chat-desktop");
-  assert(resolved.icon == "sample-chat-desktop");
+  TEST_CHECK(resolved.id == "sample-chat-desktop");
+  TEST_CHECK(resolved.exec == "sample-chat-desktop");
+  TEST_CHECK(resolved.icon == "sample-chat-desktop");
 
   const DesktopEntry fallback = app_identity::resolveRunningDesktopEntry("Unknown.App", entries);
-  assert(fallback.id == "Unknown.App");
-  assert(fallback.name == "Unknown.App");
-  assert(fallback.nameLower == "unknown.app");
-  assert(fallback.exec.empty());
-  assert(fallback.icon.empty());
+  TEST_CHECK(fallback.id == "Unknown.App");
+  TEST_CHECK(fallback.name == "Unknown.App");
+  TEST_CHECK(fallback.nameLower == "unknown.app");
+  TEST_CHECK(fallback.exec.empty());
+  TEST_CHECK(fallback.icon.empty());
 
   // Hidden/NoDisplay entries are excluded at parse time, so the resolver never receives one in
   // production and does not re-filter them. If one is present it resolves like any other entry.
   DesktopEntry hidden = sampleChatEntry();
   hidden.hidden = true;
-  assert(app_identity::resolveRunningDesktopEntry("Sample.ChatDesktop", {hidden}).id == "sample-chat-desktop");
+  TEST_CHECK(app_identity::resolveRunningDesktopEntry("Sample.ChatDesktop", {hidden}).id == "sample-chat-desktop");
 
   DesktopEntry noDisplay = sampleChatEntry();
   noDisplay.noDisplay = true;
-  assert(app_identity::resolveRunningDesktopEntry("Sample.ChatDesktop", {noDisplay}).id == "sample-chat-desktop");
+  TEST_CHECK(app_identity::resolveRunningDesktopEntry("Sample.ChatDesktop", {noDisplay}).id == "sample-chat-desktop");
 
   const std::vector<DesktopEntry> multipleEntries = {sampleChatEntry(), sampleMailEntry()};
   const auto resolvedApps =
       app_identity::resolveRunningApps({"Sample.ChatDesktop", "sample-chat-desktop", "SampleMail"}, multipleEntries);
-  assert(resolvedApps.size() == 2);
-  assert(resolvedApps[0].entry.id == "sample-chat-desktop");
-  assert(resolvedApps[1].entry.id == "sample-mail");
+  TEST_CHECK(resolvedApps.size() == 2);
+  TEST_CHECK(resolvedApps[0].entry.id == "sample-chat-desktop");
+  TEST_CHECK(resolvedApps[1].entry.id == "sample-mail");
 
   const auto unknownApps = app_identity::resolveRunningApps({"Unknown.App", "unknown-app"}, multipleEntries);
-  assert(unknownApps.size() == 2);
-  assert(unknownApps[0].entry.id == "Unknown.App");
-  assert(unknownApps[1].entry.id == "unknown-app");
+  TEST_CHECK(unknownApps.size() == 2);
+  TEST_CHECK(unknownApps[0].entry.id == "Unknown.App");
+  TEST_CHECK(unknownApps[1].entry.id == "unknown-app");
 
   const DesktopEntry easyEffects = easyEffectsEntry();
   const DesktopEntry kdeResolved = app_identity::resolveRunningDesktopEntry("org.kde.easyeffects", {easyEffects});
-  assert(kdeResolved.id == "com.github.wwmm.easyeffects");
-  assert(kdeResolved.name == "Easy Effects");
-  assert(kdeResolved.icon == "easyeffects");
+  TEST_CHECK(kdeResolved.id == "com.github.wwmm.easyeffects");
+  TEST_CHECK(kdeResolved.name == "Easy Effects");
+  TEST_CHECK(kdeResolved.icon == "easyeffects");
 
   const std::vector<DesktopEntry> ambiguousTail = {
       duplicateTailEntry("com.foo.easyeffects", "foo-easyeffects"),
       duplicateTailEntry("com.bar.easyeffects", "bar-easyeffects"),
   };
   const DesktopEntry ambiguousResolved = app_identity::resolveRunningDesktopEntry("org.kde.easyeffects", ambiguousTail);
-  assert(ambiguousResolved.id == "org.kde.easyeffects");
+  TEST_CHECK(ambiguousResolved.id == "org.kde.easyeffects");
 
   return 0;
 }
