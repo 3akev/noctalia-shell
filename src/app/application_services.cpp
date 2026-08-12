@@ -295,8 +295,11 @@ void Application::retrySecretServiceConsumers() {
     kLog.info("secret service is running; reopening encrypted storage");
     DeferredCall::callLater([this]() { m_storageKeyProvider.retry(); });
   }
-  if (!m_calendarCredentialAutoRetried
-      && m_calendarService.credentialState() == calendar::CredentialState::Unavailable) {
+  const calendar::CredentialState calendarCredentialState = m_calendarService.credentialState();
+  const bool calendarRetryNeeded = calendarCredentialState == calendar::CredentialState::Unavailable
+      || calendarCredentialState == calendar::CredentialState::DeniedOrLocked
+      || m_calendarService.hasMissingRefreshTokens();
+  if (!m_calendarCredentialAutoRetried && calendarRetryNeeded) {
     m_calendarCredentialAutoRetried = true;
     kLog.info("secret service is running; reopening calendar credentials");
     DeferredCall::callLater([this]() { m_calendarService.retryCredentialMigration(); });

@@ -722,6 +722,8 @@
       "battery-low-body": "{device}: {percent}% remaining",
       "battery-low-title": "Battery low",
       "calendar": "Calendar",
+      "calendar-credential-locked-body": "Unlock the keyring used by Secret Service, then retry in Settings. With GNOME Keyring, make an automatically unlocked keyring such as Login the default.",
+      "calendar-credential-locked-title": "Calendar keyring is locked",
       "calendar-google-connect-browser-failed": "No browser opener could be launched for Google authorization. Check your default browser or xdg-open setup.",
       "calendar-google-connect-credential-store-failed": "Authorization completed, but the refresh token could not be saved. Unlock or start Secret Service, then connect again.",
       "calendar-google-connect-expired": "Google authorization expired before sign-in finished. Start the connection again.",
@@ -2506,8 +2508,10 @@
         },
         "calendar-edit": {
           "button": "Edit",
+          "button-retry": "Retry",
           "button-reconnect": "Reconnect",
           "description": "Update this calendar account",
+          "description-locked": "The refresh token is in a locked keyring; unlock the keyring and retry",
           "description-reconnect": "Google authorization is missing; reconnect this account"
         },
         "calendar-event-date-format": {
