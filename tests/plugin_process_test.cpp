@@ -23,6 +23,8 @@ namespace {
 
 int main() {
   scripting::ScriptApiContext api;
+  api.setOfflineMode(true);
+  api.setWallpaperPaths({{"DP-1", "/tmp/wallpaper.png"}});
   LuauHost host(api, "test/plugin:service");
 
   std::mutex mutex;
@@ -45,6 +47,14 @@ assert(noctalia.runAsync(
   function(_) end,
   5000
 ))
+assert(noctalia.offlineMode())
+assert(noctalia.wallpaperPath("DP-1") == "/tmp/wallpaper.png")
+assert(noctalia.wallpaperPath("missing") == nil)
+noctalia.setWallpaperMask("DP-1", {
+  path = "/tmp/mask.png",
+  wallpaperPath = "/tmp/wallpaper.png",
+})
+noctalia.setWallpaperMask("DP-1", nil)
 )";
   if (!expect(host.exec("=direct-argv", source), "argv call should be accepted")) {
     return 1;

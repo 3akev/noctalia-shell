@@ -967,6 +967,7 @@ void Application::initWidgetControllersAndCallbacks() {
       .config = &m_configService,
       .renderContext = &m_renderContext,
       .runtime = desktopWidgetRuntime,
+      .textureCache = &m_sharedTextureCache,
   };
   m_lockscreenWidgetsController.initialize({
       .widgets = lockscreenWidgetServices,

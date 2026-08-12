@@ -105,6 +105,7 @@
 #include <optional>
 #include <stdexcept>
 #include <string_view>
+#include <unordered_map>
 #include <utility>
 
 namespace {
@@ -501,11 +502,13 @@ void Application::initStyleThemeAndWayland() {
   applyStyleConfig();
   applyPasswordMaskStyle();
   m_httpClient.setOfflineMode(m_configService.config().shell.offlineMode);
+  m_scriptApi.setOfflineMode(m_configService.config().shell.offlineMode);
   m_configService.addReloadCallback(applyMotionConfig);
   m_configService.addReloadCallback(applyStyleConfig);
   m_configService.addReloadCallback(applyPasswordMaskStyle);
   m_configService.addReloadCallback([this]() {
     m_httpClient.setOfflineMode(m_configService.config().shell.offlineMode);
+    m_scriptApi.setOfflineMode(m_configService.config().shell.offlineMode);
   });
   m_configService.addReloadCallback([this]() { syncClipboardService(); });
   m_configService.addReloadCallback([this]() { syncScreenTimeService(); });
@@ -564,6 +567,7 @@ void Application::initStyleThemeAndWayland() {
   // output change so the worker-thread binding reads a race-free copy.
   m_syncScriptApiOutputs = [this]() {
     std::vector<scripting::ScriptOutputInfo> infos;
+    std::unordered_map<std::string, std::string> wallpaperPaths;
     wl_output* const focused = m_compositorPlatform.preferredInteractiveOutput();
     for (const auto& out : m_wayland.outputs()) {
       if (!out.done || out.connectorName.empty()) {
@@ -579,8 +583,10 @@ void Application::initStyleThemeAndWayland() {
           .scale = out.scale,
           .focused = out.output == focused,
       });
+      wallpaperPaths.insert_or_assign(out.connectorName, m_configService.getWallpaperPath(out.connectorName));
     }
     m_scriptApi.setOutputs(std::move(infos));
+    m_scriptApi.setWallpaperPaths(std::move(wallpaperPaths));
   };
   m_syncScriptApiOutputs();
 
@@ -595,6 +601,22 @@ void Application::initStyleThemeAndWayland() {
     if (!m_wallpaper.applyWallpaperImage(target, path)) {
       kLog.warn("plugin setWallpaper failed for \"{}\"", path);
     }
+  });
+
+  m_scriptApi.setWallpaperMaskHook([this](
+                                       std::uint64_t ownerId, const std::string& outputName, const std::string& path,
+                                       const std::string& wallpaperPath
+                                   ) {
+    if (path.empty()) {
+      m_desktopWidgetsController.setWallpaperMask(ownerId, outputName, std::nullopt);
+      return;
+    }
+    m_desktopWidgetsController.setWallpaperMask(
+        ownerId, outputName, OutputWallpaperMask{.ownerId = ownerId, .path = path, .wallpaperPath = wallpaperPath}
+    );
+  });
+  m_scriptApi.setClearWallpaperMasksHook([this](std::uint64_t ownerId) {
+    m_desktopWidgetsController.clearWallpaperMasks(ownerId);
   });
 
   // Let a plugin toggle one of its own panels.
@@ -841,6 +863,9 @@ void Application::initAuxServicesAndHooks() {
   // Register all wallpaper consumers in the single-callback slot.
   m_configService.setWallpaperChangeCallback([this]() {
     const auto wallpaperChanges = m_wallpaper.onStateChange();
+    if (m_syncScriptApiOutputs) {
+      m_syncScriptApiOutputs();
+    }
     m_backdrop.onStateChange();
     m_lockScreen.onWallpaperChanged();
     m_themeService.onWallpaperChange();
