@@ -648,8 +648,10 @@
     },
     "context-menu": {
       "open": "Open",
-      "pin": "Pin to launcher",
-      "unpin": "Unpin from launcher"
+      "pin": "Pin to Launcher",
+      "pin-to-dock": "Pin to Dock",
+      "unpin": "Unpin from Launcher",
+      "unpin-from-dock": "Unpin from Dock"
     },
     "empty": {
       "no-results": "No results found",
@@ -2311,10 +2313,6 @@
           "description": "Use smaller icons and tighter result rows",
           "label": "Compact Rows"
         },
-        "launcher-pinned-apps": {
-          "description": "Desktop entry IDs of apps pinned to the launcher; they appear first when the launcher opens",
-          "label": "Pinned Apps"
-        },
         "launcher-currency-exchange": {
           "description": "Fetch rates from third party online sources",
           "label": "Currency Exchange Conversion"
@@ -2338,6 +2336,10 @@
         "launcher-global-windows": {
           "description": "Also show open windows in unprefixed search",
           "label": "Windows in Global Search"
+        },
+        "launcher-pinned-apps": {
+          "description": "Desktop entry IDs of apps pinned to the launcher; they appear first when the launcher opens",
+          "label": "Pinned Apps"
         },
         "launcher-prefix-calculator": {
           "description": "Trigger prefix for calculator calculations",
@@ -2508,8 +2510,8 @@
         },
         "calendar-edit": {
           "button": "Edit",
-          "button-retry": "Retry",
           "button-reconnect": "Reconnect",
+          "button-retry": "Retry",
           "description": "Update this calendar account",
           "description-locked": "The refresh token is in a locked keyring; unlock the keyring and retry",
           "description-reconnect": "Google authorization is missing; reconnect this account"

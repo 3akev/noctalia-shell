@@ -648,8 +648,10 @@
     },
     "context-menu": {
       "open": "Abrir",
-      "pin-to-dock": "Fixar no dock",
-      "unpin-from-dock": "Desfixar do dock"
+      "pin": "Fixar no Launcher",
+      "pin-to-dock": "Fixar no Dock",
+      "unpin": "Desfixar do Launcher",
+      "unpin-from-dock": "Desfixar do Dock"
     },
     "empty": {
       "no-results": "Nenhum resultado encontrado",
@@ -732,7 +734,7 @@
       "calendar-google-connect-start-failed": "Não foi possível iniciar a autorização do Google. Verifique sua conexão de rede e tente novamente.",
       "calendar-google-connect-start-http": "Não foi possível iniciar a autorização do Google. O agente OAuth retornou HTTP {status}.",
       "calendar-google-connect-timeout": "A autorização do Google expirou. Reinicie a conexão quando estiver pronto para fazer login.",
-      "config-migration-body": "A configuração antiga está sendo migrada na memória, incluindo {path}. Atualize a configuração de origem; as opções “Configurações” e “Validar configuração do noctalia” mostram a substituição necessária.",
+      "config-migration-body": "Atualize {path} no arquivo fonte. Noctalia está aplicando está substituição só temporariamente. Execute nocatlia config validade para listar cada mudança necessária.",
       "config-migration-title": "Atualiação de configuração necessária",
       "dbus-disabled": "Notificações DBus desabilitadas",
       "desktop-widgets-editor": "Editor de Widget",
@@ -886,6 +888,7 @@
       "credential-source-label": "Armazenamento de Credenciais",
       "delete-error": "Não foi possível deletar conta de calendário",
       "edit-title": "Editar Conta de Calendário",
+      "ics-url-label": "URL ICS",
       "id-label": "ID da Conta",
       "invalid": "Verifique os campos de conta de calendário destacados.",
       "name-label": "Nome de Exibição",
@@ -899,7 +902,8 @@
       "provider": {
         "custom": "CalDAV",
         "google": "Google",
-        "icloud": "ICloud"
+        "icloud": "ICloud",
+        "ics": "URL ICS"
       },
       "provider-label": "Provedor",
       "save": "Salvar",
@@ -1134,6 +1138,7 @@
           "suspend": "Suspender"
         },
         "kind-section-label": "Ação",
+        "locked-timeout-label": "Tempo de espera enquanto bloqueado (segundos, 0 = desativado)",
         "name-label": "Nome",
         "name-placeholder": "idle-behavior",
         "resume-command-label": "Comando ao retomar",
@@ -2330,6 +2335,10 @@
           "description": "Também mostrar janelas abertas na busca sem prefixo",
           "label": "Janelas na Busca Global"
         },
+        "launcher-pinned-apps": {
+          "description": "IDs de entradas na área de trabalho dos aplicativos fixados no iniciador; eles aparecem em primeiro lugar quando o iniciador é aberto",
+          "label": "Apps Fixados"
+        },
         "launcher-prefix-calculator": {
           "description": "Acionar prefixo cálculos",
           "label": "Prefixo para Calculadora"
@@ -2484,7 +2493,7 @@
         },
         "calendar-add": {
           "button": "Adicionar Conta",
-          "description": "Adicionar contas iCloud, CalDAV ou Google",
+          "description": "Adicionar contas iCloud, CalDAV, Google ou uma URL ICS",
           "label": "Contas de Calendário"
         },
         "calendar-credentials": {
@@ -3854,7 +3863,7 @@
       "export-config": "Exportar Config...",
       "export-config-saved": "Exportação de Config salvo.",
       "filter-overridden": "Sobrescrito",
-      "legacy-config-warning": "Configuração legada sendo migrada em memória: {issue}. Execute a noctalia config validate para todas as mudanças requeridas.",
+      "legacy-config-warning": "Configurações Legadas: {issue}. Edite esta entrada na fonte; Noctalia está aplicando está substituição só temporariamente. Execute nocatlia config validade para listar cada mudança necessária.",
       "native-title": "Configurações do Noctalia",
       "no-results": "Nenhuma configuração encontrada",
       "no-results-hint": "Tente um nome diferente de configuração ou uma tecla de config.",

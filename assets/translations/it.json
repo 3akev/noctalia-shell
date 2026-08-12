@@ -648,7 +648,9 @@
     },
     "context-menu": {
       "open": "Apri",
+      "pin": "Fissa sul launcher",
       "pin-to-dock": "Fissa alla dock",
+      "unpin": "Sblocca dal launcher",
       "unpin-from-dock": "Rimuovi dalla dock"
     },
     "empty": {
@@ -732,7 +734,7 @@
       "calendar-google-connect-start-failed": "Impossibile avviare l'autorizzazione Google. Controlla la connessione di rete e riprova.",
       "calendar-google-connect-start-http": "Impossibile avviare l'autorizzazione Google. Il broker OAuth ha restituito HTTP {status}.",
       "calendar-google-connect-timeout": "Autorizzazione Google scaduta. Avvia di nuovo la connessione quando sei pronto ad accedere.",
-      "config-migration-body": "È in corso la migrazione della configurazione legacy in memoria, incluso {path}. Aggiorna la configurazione di origine; Le impostazioni e la convalida della configurazione di noctalia mostrano la sostituzione richiesta.",
+      "config-migration-body": "Aggiorna {path} nel source file. Noctalia applica questa sostituzione solo temporaneamente. Esegui noctalia config validate per elencare tutte le modifiche richieste.",
       "config-migration-title": "È necessario l'aggiornamento della configurazione",
       "dbus-disabled": "Notifiche DBus disabilitate",
       "desktop-widgets-editor": "Editor widget",
@@ -886,6 +888,7 @@
       "credential-source-label": "Archivio credenziali",
       "delete-error": "Impossibile eliminare l'account calendario.",
       "edit-title": "Modifica account calendario",
+      "ics-url-label": "ICS URL",
       "id-label": "ID account",
       "invalid": "Controlla i campi dell'account calendario evidenziati.",
       "name-label": "Nome visualizzato",
@@ -899,7 +902,8 @@
       "provider": {
         "custom": "CalDAV",
         "google": "Google",
-        "icloud": "iCloud"
+        "icloud": "iCloud",
+        "ics": "ICS URL"
       },
       "provider-label": "Provider",
       "save": "Salva",
@@ -1134,6 +1138,7 @@
           "suspend": "Sospendi"
         },
         "kind-section-label": "Azione",
+        "locked-timeout-label": "Timeout durante il blocco (secondi, 0 = off)",
         "name-label": "Nome",
         "name-placeholder": "comportamento-inattività",
         "resume-command-label": "Comando resume",
@@ -2330,6 +2335,10 @@
           "description": "Mostra anche le finestre aperte nei risultati senza prefisso",
           "label": "Finestre nella ricerca globale"
         },
+        "launcher-pinned-apps": {
+          "description": "ID desktop delle app fissate sul launcher; appaiono per primi quando si apre il launcher",
+          "label": "App fissate"
+        },
         "launcher-prefix-calculator": {
           "description": "Prefisso di attivazione calcoli con la calcolatrice",
           "label": "Prefisso calcolatrice"
@@ -2484,7 +2493,7 @@
         },
         "calendar-add": {
           "button": "Aggiungi account",
-          "description": "Aggiungi account iCloud, CalDAV o Google",
+          "description": "Aggiungi iCloud, CalDAV, account Google o un URL ICS",
           "label": "Account calendario"
         },
         "calendar-credentials": {
@@ -3854,7 +3863,7 @@
       "export-config": "Esporta configurazione...",
       "export-config-saved": "Esportazione configurazione salvata.",
       "filter-overridden": "Sovrascritto",
-      "legacy-config-warning": "È in corso la migrazione della configurazione legacy in memoria: {issue}. Esegui la convalida della configurazione di noctalia per tutte le modifiche richieste.",
+      "legacy-config-warning": "Impostazione legacy: {issue}. Modifica questa voce; Noctalia applica la sostituzione solo temporaneamente. Esegui noctalia config validate per elencare tutte le modifiche richieste.",
       "native-title": "Impostazioni Noctalia",
       "no-results": "Nessuna impostazione trovata",
       "no-results-hint": "Prova un nome impostazione o una chiave configurazione diversa.",

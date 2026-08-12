@@ -54,7 +54,7 @@
         "scroll-short": "S"
       },
       "media": {
-        "nothing-playing": "Nichts wird wiedergegeben",
+        "nothing-playing": "Nichts wird abgespielt",
         "playing": "Wird wiedergegeben"
       },
       "network": {
@@ -185,7 +185,7 @@
       "application-volumes": "Anwendungslautstärken",
       "choose-effects-profile": "Wähle ein Profil",
       "effects-profile": "Effekte",
-      "input-device-prefix": "Input",
+      "input-device-prefix": "Eingabe",
       "no-application-audio": "Kein Anwendungsaudio",
       "no-application-audio-body": "Derzeit sind keine Wiedergabestreams von Anwendungen verfügbar.",
       "no-input-devices": "Keine Eingabegeräte",
@@ -194,7 +194,7 @@
       "no-output-devices": "Keine Ausgabegeräte",
       "no-output-devices-body": "Derzeit sind keine Wiedergabegeräte verfügbar.",
       "no-output-selected": "Kein Ausgabegerät ausgewählt",
-      "output-device-prefix": "Output",
+      "output-device-prefix": "Ausgabe",
       "unavailable-body": "PipeWire ist nicht aktiv.",
       "unavailable-title": "Audio nicht verfügbar"
     },
@@ -244,7 +244,7 @@
       "media": {
         "idle": "Inaktiv",
         "no-active-player": "Kein aktiver Player",
-        "nothing-playing": "Nichts wird wiedergegeben",
+        "nothing-playing": "Nichts wird abgespielt",
         "paused": "Pausiert",
         "playback-unavailable": "Wiedergabe nicht verfügbar",
         "playing": "Wiedergabe läuft",
@@ -263,7 +263,7 @@
     },
     "media": {
       "active-player": "Aktiver Player",
-      "nothing-playing": "Nichts wird wiedergegeben",
+      "nothing-playing": "Nichts wird abgespielt",
       "now-playing": "Aktuelle Wiedergabe",
       "start-playback": "Wiedergabe in einer MPRIS-App starten"
     },
@@ -593,7 +593,7 @@
       }
     },
     "media": {
-      "nothing-playing": "Nichts wird wiedergegeben"
+      "nothing-playing": "Nichts wird abgespielt"
     },
     "volume": {
       "mic": "Mikrofon",
@@ -648,7 +648,9 @@
     },
     "context-menu": {
       "open": "Öffnen",
+      "pin": "An Launcher anheften",
       "pin-to-dock": "An Dock anheften",
+      "unpin": "Von Launcher lösen",
       "unpin-from-dock": "Von Dock lösen"
     },
     "empty": {
@@ -732,7 +734,7 @@
       "calendar-google-connect-start-failed": "Die Google-Autorisierung konnte nicht gestartet werden. Überprüfe deine Netzwerkverbindung und versuche es erneut.",
       "calendar-google-connect-start-http": "Die Google-Autorisierung konnte nicht gestartet werden. Der OAuth-Broker gab HTTP {status} zurück.",
       "calendar-google-connect-timeout": "Bei der Google-Autorisierung ist eine Zeitüberschreitung aufgetreten. Starte die Verbindung erneut, wenn du bereit bist, dich anzumelden.",
-      "config-migration-body": "Veraltete Konfiguration wird im Arbeitsspeicher migriert, einschließlich {path}. Aktualisiere die Quellkonfiguration; die Einstellungen und noctalia config validate zeigen den erforderlichen Ersatz.",
+      "config-migration-body": "Aktualisiere {path} in der Quelldatei. Noctalia wendet diesen Ersatz nur vorübergehend an. Führe noctalia config validate aus, um alle erforderlichen Änderungen aufzulisten.",
       "config-migration-title": "Konfigurationsupdate erforderlich",
       "dbus-disabled": "DBus-Benachrichtigungen deaktiviert",
       "desktop-widgets-editor": "Widget-Editor",
@@ -886,6 +888,7 @@
       "credential-source-label": "Anmeldedatenspeicher",
       "delete-error": "Kalenderkonto konnte nicht gelöscht werden.",
       "edit-title": "Kalenderkonto bearbeiten",
+      "ics-url-label": "ICS-URL",
       "id-label": "Konto-ID",
       "invalid": "Überprüfe die hervorgehobenen Kalenderkontofelder.",
       "name-label": "Anzeigename",
@@ -899,7 +902,8 @@
       "provider": {
         "custom": "CalDAV",
         "google": "Google",
-        "icloud": "iCloud"
+        "icloud": "iCloud",
+        "ics": "ICS-URL"
       },
       "provider-label": "Anbieter",
       "save": "Speichern",
@@ -1134,6 +1138,7 @@
           "suspend": "Energiesparen"
         },
         "kind-section-label": "Aktion",
+        "locked-timeout-label": "Timeout bei Sperrung (Sekunden, 0 = deaktiviert)",
         "name-label": "Name",
         "name-placeholder": "idle-behavior",
         "resume-command-label": "Fortsetzen-Befehl",
@@ -1594,7 +1599,7 @@
           "description": "Deckkraft des globalen Oberflächenschattens"
         },
         "global-shadow-direction": {
-          "description": "Richtung, aus der der Schatten von Oberflächen geworfen wird"
+          "description": "Richtung, in die der Schatten von Oberflächen fällt"
         },
         "input-borders": {
           "description": "Zeichne Umrisse um Textfelder und andere Eingabeelemente in der gesamten Shell",
@@ -1769,7 +1774,7 @@
           "description": "Schiebe Fenster vom Leistenrand weg"
         },
         "shadow": {
-          "description": "Werfe den globalen Oberflächenschatten von der Leiste"
+          "description": "Aktiviere den globalen Oberflächenschatten für die Leiste"
         },
         "show-on-workspace-switch": {
           "description": "Zeige die Leiste kurz, wenn sich der aktive Arbeitsbereich ändert",
@@ -1980,7 +1985,7 @@
           "description": "Schiebe Fenster vom Dock-Rand weg"
         },
         "shadow": {
-          "description": "Werfe den globalen Oberflächenschatten vom Dock"
+          "description": "Aktiviere den globalen Oberflächenschatten für das Dock"
         },
         "show-dots": {
           "description": "Zeige Punkte für laufende Fenster unter Dock-Icons an",
@@ -2330,6 +2335,10 @@
           "description": "Zeige offene Fenster auch in der unpräfixierten Suche",
           "label": "Fenster in globaler Suche"
         },
+        "launcher-pinned-apps": {
+          "description": "Desktop-Entry-IDs von Apps, die im Launcher angeheftet sind; sie erscheinen zuerst, wenn der Launcher geöffnet wird",
+          "label": "Angeheftete Apps"
+        },
         "launcher-prefix-calculator": {
           "description": "Trigger-Präfix für Rechnerberechnungen",
           "label": "Rechnerpräfix"
@@ -2448,7 +2457,7 @@
           "label": "Position"
         },
         "shadow": {
-          "description": "Werfe den globalen Oberflächenschatten von Panel-Oberflächen"
+          "description": "Aktiviere den globalen Oberflächenschatten für Panel-Oberflächen"
         },
         "transparency-mode": {
           "description": "Panel-Glasstil, einschließlich Deckkraft schwebender Panels und Kartentransluzenz",
@@ -2484,7 +2493,7 @@
         },
         "calendar-add": {
           "button": "Konto hinzufügen",
-          "description": "Füge iCloud-, CalDAV- oder Google-Konten hinzu",
+          "description": "Füge iCloud-, CalDAV-, Google-Konten oder eine ICS-URL hinzu",
           "label": "Kalenderkonten"
         },
         "calendar-credentials": {
@@ -3854,7 +3863,7 @@
       "export-config": "Konfiguration exportieren…",
       "export-config-saved": "Konfigurationsexport gespeichert.",
       "filter-overridden": "Überschrieben",
-      "legacy-config-warning": "Veraltete Konfiguration wird im Arbeitsspeicher migriert: {issue}. Führe noctalia config validate aus, um alle erforderlichen Änderungen zu sehen.",
+      "legacy-config-warning": "Veraltete Einstellung: {issue}. Bearbeite diesen Quelleintrag; Noctalia wendet den Ersatz nur vorübergehend an. Führe noctalia config validate aus, um alle erforderlichen Änderungen aufzulisten.",
       "native-title": "Noctalia-Einstellungen",
       "no-results": "Keine Einstellungen gefunden",
       "no-results-hint": "Versuche einen anderen Einstellungsnamen oder Konfigurationsschlüssel.",
