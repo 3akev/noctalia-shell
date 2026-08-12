@@ -1,5 +1,6 @@
 #include "system/desktop_entry.h"
 
+#include "core/inotify/inotify.h"
 #include "core/log.h"
 #include "util/string_utils.h"
 
@@ -9,9 +10,7 @@
 #include <fstream>
 #include <memory>
 #include <mutex>
-#include <ranges>
 #include <string_view>
-#include <sys/inotify.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <unordered_map>
@@ -133,6 +132,7 @@ namespace {
   void parseDesktopFile(const fs::path& filepath, std::vector<DesktopEntry>& entries) {
     std::ifstream file(filepath);
     if (!file.is_open()) {
+      kLog.debug("failed to open desktop entry file '{}'", filepath.string());
       return;
     }
 
@@ -382,14 +382,9 @@ namespace {
 
   class DesktopEntryCache {
   public:
-    DesktopEntryCache() { setupWatchFd(); }
+    DesktopEntryCache() = default;
 
-    ~DesktopEntryCache() {
-      clearWatches();
-      if (m_inotifyFd >= 0) {
-        ::close(m_inotifyFd);
-      }
-    }
+    ~DesktopEntryCache() { clearWatches(); }
 
     const std::vector<DesktopEntry>& entries() {
       refreshIfNeeded();
@@ -409,52 +404,36 @@ namespace {
       return m_version;
     }
 
-    int watchFd() const noexcept { return m_inotifyFd; }
+    int watchFd() const noexcept { return m_inotify.fd(); }
 
     void checkSourcesChanged() {
       if (computeSourceSignature() != m_sourceSignature) {
+        kLog.debug("desktop entry source signature changed; marking cache dirty");
         m_dirty = true;
       }
     }
 
     void checkReload() {
-      if (m_inotifyFd < 0) {
+      if (m_inotify.fd() < 0) {
         return;
       }
 
-      alignas(inotify_event) char buf[4096];
       bool changed = false;
-      while (true) {
-        const auto n = ::read(m_inotifyFd, buf, sizeof(buf));
-        if (n <= 0) {
-          break;
+      m_inotify.drain([this, &changed](const inotify_event* event) {
+        if ((event->mask & IN_IGNORED) != 0) {
+          m_watches.erase(event->wd);
+        } else {
+          changed = true;
         }
-
-        std::size_t offset = 0;
-        while (offset < static_cast<std::size_t>(n)) {
-          auto* event = reinterpret_cast<inotify_event*>(buf + offset);
-          if ((event->mask & IN_IGNORED) != 0) {
-            m_watches.erase(event->wd);
-          } else {
-            changed = true;
-          }
-          offset += sizeof(inotify_event) + event->len;
-        }
-      }
+      });
 
       if (changed) {
+        kLog.debug("desktop entry inotify detected filesystem changes; marking cache dirty");
         m_dirty = true;
       }
     }
 
   private:
-    void setupWatchFd() {
-      m_inotifyFd = inotify_init1(IN_NONBLOCK | IN_CLOEXEC);
-      if (m_inotifyFd < 0) {
-        kLog.warn("inotify_init1 failed, desktop entry hot reload disabled");
-      }
-    }
-
     void refreshIfNeeded() {
       if (!m_dirty) {
         return;
@@ -469,6 +448,7 @@ namespace {
       m_sourceSignature = computeSourceSignature();
       m_dirty = false;
       ++m_version;
+      kLog.debug("refreshed desktop entries: {} apps (version {})", m_entries->size(), m_version);
     }
 
     // Signature of the resolved application source directories: canonical path
@@ -508,15 +488,9 @@ namespace {
     }
 
     void clearWatches() {
-      if (m_inotifyFd < 0) {
-        m_watches.clear();
-        m_watchedPaths.clear();
-        return;
-      }
-
-      for (const auto& [wd, path] : m_watches) {
-        (void)path;
-        inotify_rm_watch(m_inotifyFd, wd);
+      if (m_inotify.fd() >= 0) {
+        for (const auto& [wd, _] : m_watches)
+          m_inotify.unwatch(wd);
       }
       m_watches.clear();
       m_watchedPaths.clear();
@@ -525,7 +499,7 @@ namespace {
     void rebuildWatches() {
       clearWatches();
 
-      if (m_inotifyFd < 0) {
+      if (m_inotify.fd() < 0) {
         return;
       }
 
@@ -563,17 +537,18 @@ namespace {
           | IN_DELETE_SELF
           | IN_MOVE_SELF
           | IN_ATTRIB;
-      const int wd = inotify_add_watch(m_inotifyFd, key.c_str(), kMask);
-      if (wd < 0) {
-        return;
+      const auto wd = m_inotify.watch(key.c_str(), kMask);
+      if (wd.has_value()) {
+        m_watches[wd.value()] = key;
+      } else {
+        kLog.warn("failed to watch desktop entry directory '{}'", key);
       }
-      m_watches[wd] = key;
     }
 
     std::shared_ptr<const std::vector<DesktopEntry>> m_entries = std::make_shared<std::vector<DesktopEntry>>();
     mutable std::mutex m_entriesMutex; // guards the m_entries swap against entriesSnapshot() readers
     std::uint64_t m_version = 0;
-    int m_inotifyFd = -1;
+    Inotify m_inotify;
     bool m_dirty = true;
     std::unordered_map<int, std::string> m_watches;
     std::unordered_set<std::string> m_watchedPaths;
