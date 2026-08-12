@@ -2,6 +2,7 @@
 #include "application.h"
 #include "application_internal.h"
 #include "compositors/compositor_detect.h"
+#include "config/config_export.h"
 #include "config/config_types.h"
 #include "core/build_info.h"
 #include "core/deferred_call.h"
@@ -502,13 +503,17 @@ void Application::initStyleThemeAndWayland() {
   applyStyleConfig();
   applyPasswordMaskStyle();
   m_httpClient.setOfflineMode(m_configService.config().shell.offlineMode);
-  m_scriptApi.setOfflineMode(m_configService.config().shell.offlineMode);
+  m_scriptApi.setConfigSnapshot(
+      std::make_shared<const toml::table>(config_export::serialize(m_configService.config()))
+  );
   m_configService.addReloadCallback(applyMotionConfig);
   m_configService.addReloadCallback(applyStyleConfig);
   m_configService.addReloadCallback(applyPasswordMaskStyle);
   m_configService.addReloadCallback([this]() {
     m_httpClient.setOfflineMode(m_configService.config().shell.offlineMode);
-    m_scriptApi.setOfflineMode(m_configService.config().shell.offlineMode);
+    m_scriptApi.setConfigSnapshot(
+        std::make_shared<const toml::table>(config_export::serialize(m_configService.config()))
+    );
   });
   m_configService.addReloadCallback([this]() { syncClipboardService(); });
   m_configService.addReloadCallback([this]() { syncScreenTimeService(); });

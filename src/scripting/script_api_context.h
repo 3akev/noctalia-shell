@@ -1,8 +1,11 @@
 #pragma once
 
+#include "core/toml.h"
+
 #include <atomic>
 #include <cstdint>
 #include <functional>
+#include <memory>
 #include <mutex>
 #include <optional>
 #include <string>
@@ -60,9 +63,6 @@ namespace scripting {
       return it != m_wallpaperPaths.end() ? std::optional<std::string>{it->second} : std::nullopt;
     }
 
-    void setOfflineMode(bool offline) noexcept { m_offlineMode.store(offline, std::memory_order_relaxed); }
-    [[nodiscard]] bool offlineMode() const noexcept { return m_offlineMode.load(std::memory_order_relaxed); }
-
     // Output snapshot — refreshed on the main thread, copied out under lock so that
     // script bindings (which run on a worker thread) read it race-free.
     void setOutputs(std::vector<ScriptOutputInfo> outputs) {
@@ -73,6 +73,19 @@ namespace scripting {
     [[nodiscard]] std::vector<ScriptOutputInfo> outputs() const {
       std::scoped_lock lock(m_mutex);
       return m_outputs;
+    }
+
+    // Effective shell config, serialized via config_export::serialize — published on the
+    // main thread on every config (re)load, read from script worker threads. The pointed-to
+    // table is immutable; bindings hold the shared_ptr for the duration of one lookup.
+    void setConfigSnapshot(std::shared_ptr<const toml::table> snapshot) {
+      std::scoped_lock lock(m_mutex);
+      m_configSnapshot = std::move(snapshot);
+    }
+
+    [[nodiscard]] std::shared_ptr<const toml::table> configSnapshot() const {
+      std::scoped_lock lock(m_mutex);
+      return m_configSnapshot;
     }
 
     // Latest text clipboard content — mirrored from ClipboardService on the
@@ -204,8 +217,8 @@ namespace scripting {
   private:
     std::atomic<SystemMonitorService*> m_systemMonitor{nullptr};
     std::atomic<bool> m_darkMode{true};
-    std::atomic<bool> m_offlineMode{false};
     mutable std::mutex m_mutex;
+    std::shared_ptr<const toml::table> m_configSnapshot;
     std::string m_wallpaperDirectory;
     std::string m_timeFormat;
     std::string m_dateFormat;

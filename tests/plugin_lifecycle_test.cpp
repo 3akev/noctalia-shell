@@ -1,5 +1,6 @@
 #include "config/config_service.h"
 #include "core/deferred_call.h"
+#include "core/toml.h"
 #include "scripting/plugin_manager.h"
 #include "scripting/plugin_script_watcher.h"
 #include "scripting/plugin_service_host.h"
@@ -900,7 +901,7 @@ int main() {
   std::vector<WallpaperMaskRequest> wallpaperMaskRequests;
   std::vector<std::uint64_t> clearedWallpaperMaskOwners;
   api.setWallpaperPaths({{"DP-1", "/wallpapers/current.png"}});
-  api.setOfflineMode(true);
+  api.setConfigSnapshot(std::make_shared<const toml::table>(toml::parse("[shell]\noffline_mode = true")));
   api.setWallpaperMaskHook([&](std::uint64_t ownerId, const std::string& outputName, const std::string& path,
                                const std::string& wallpaperPath) {
     wallpaperMaskRequests.push_back({
@@ -916,7 +917,7 @@ int main() {
     scripting::ScriptRuntime runtime("test/wallpaper-mask:service", {}, api, maskPluginDir);
     runtime.start(
         "=wallpaper-mask",
-        "assert(noctalia.offlineMode())\n"
+        "assert(noctalia.getSetting('shell.offline_mode'))\n"
         "assert(noctalia.wallpaperPath('DP-1') == '/wallpapers/current.png')\n"
         "assert(noctalia.wallpaperPath('missing') == nil)\n"
         "noctalia.setWallpaperMask('DP-1', {\n"

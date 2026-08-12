@@ -694,9 +694,20 @@ namespace {
     return 0;
   }
 
-  int luau_offlineMode(lua_State* L) {
+  // Any effective shell config value by dotted path. Array indices in the path are zero-based.
+  int luau_getSetting(lua_State* L) {
+    size_t len = 0;
+    const char* path = luaL_checklstring(L, 1, &len);
     auto* host = hostForState(L);
-    lua_pushboolean(L, host != nullptr && host->api().offlineMode() ? 1 : 0);
+    const auto snapshot = host != nullptr ? host->api().configSnapshot() : nullptr;
+    if (snapshot == nullptr) {
+      lua_pushnil(L);
+      return 1;
+    }
+    scripting::pushConfigSetting(L, *snapshot, std::string_view(path, len));
+    if (lua_isnil(L, -1)) {
+      kLog.warn("plugin {}: getSetting('{}') matched no config key", host->runtimeName(), std::string_view(path, len));
+    }
     return 1;
   }
 
@@ -1748,7 +1759,6 @@ namespace {
       {"setWallpaper", luau_setWallpaper},
       {"wallpaperPath", luau_wallpaperPath},
       {"setWallpaperMask", luau_setWallpaperMask},
-      {"offlineMode", luau_offlineMode},
       {"togglePanel", luau_togglePanel},
       {"openSettings", luau_openSettings},
       {"isDarkMode", luau_isDarkMode},
@@ -1784,6 +1794,7 @@ namespace {
       {"openColorPicker", luau_openColorPicker},
       {"fuzzyScore", luau_fuzzyScore},
       {"getConfig", scripting::luau_getConfig},
+      {"getSetting", luau_getSetting},
       {nullptr, nullptr},
   };
 
