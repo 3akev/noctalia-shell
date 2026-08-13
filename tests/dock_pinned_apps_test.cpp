@@ -45,20 +45,21 @@ int main() {
   const DesktopEntry chat = sampleEntry();
 
   TEST_CHECK(shell::dock::pinned_apps::matchesEntry(chat, "sample-chat.desktop"));
-  TEST_CHECK(shell::dock::pinned_apps::matchesEntry(chat, "SampleChat"));
-  TEST_CHECK(shell::dock::pinned_apps::matchesEntry(chat, "sample chat"));
-  TEST_CHECK(shell::dock::pinned_apps::matchesEntry(chat, "sample_chat_desktop"));
+  TEST_CHECK(!shell::dock::pinned_apps::matchesEntry(chat, "SampleChat"));
+  TEST_CHECK(!shell::dock::pinned_apps::matchesEntry(chat, "sample chat"));
+  TEST_CHECK(!shell::dock::pinned_apps::matchesEntry(chat, "sample_chat_desktop"));
   TEST_CHECK(!shell::dock::pinned_apps::matchesEntry(chat, ""));
   TEST_CHECK(!shell::dock::pinned_apps::matchesEntry(chat, "calendar"));
 
   const DesktopEntry mail = pathStyleEntry();
-  TEST_CHECK(shell::dock::pinned_apps::matchesEntry(mail, "org.example.Mail"));
+  TEST_CHECK(!shell::dock::pinned_apps::matchesEntry(mail, "org.example.Mail"));
+  TEST_CHECK(shell::dock::pinned_apps::matchesEntry(mail, "/usr/share/applications/org.example.Mail.desktop"));
 
   std::vector<std::string> pinned = {"calendar", "samplechat", "sample-chat.desktop"};
   TEST_CHECK(shell::dock::pinned_apps::containsEntry(pinned, chat));
 
   shell::dock::pinned_apps::removeEntry(pinned, chat);
-  TEST_CHECK((pinned == std::vector<std::string>{"calendar"}));
+  TEST_CHECK((pinned == std::vector<std::string>{"calendar", "samplechat"}));
 
   return 0;
 }
