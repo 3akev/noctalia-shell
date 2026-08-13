@@ -33,6 +33,11 @@ namespace {
     }
     const double genericScore = FuzzyMatch::score(pattern, entry.genericNameLower) * 2.0;
 
+    // Keep the application name as the primary match field.
+    if (FuzzyMatch::isMatch(nameScore)) {
+      return nameScore;
+    }
+
     auto scoreList = [&](std::string_view list, double weight) {
       double best = FuzzyMatch::noMatchScore;
       std::size_t start = 0;
