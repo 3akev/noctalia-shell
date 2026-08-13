@@ -6,7 +6,7 @@
 #include "render/scene/node.h"
 #include "scripting/plugin_file_cache.h"
 #include "scripting/plugin_manager.h"
-#include "shell/settings/config_export_dialog_popup.h"
+#include "shell/settings/config_export_dialog_modal.h"
 #include "shell/settings/search_picker_popup.h"
 #include "shell/settings/settings_control_factory.h"
 #include "shell/settings/settings_modal_host.h"
@@ -261,7 +261,7 @@ private:
   RovingListNavHost* m_sidebarNav = nullptr;
   std::unique_ptr<ContextMenuPopup> m_actionsMenuPopup;
   std::unique_ptr<settings::WidgetAddPopup> m_widgetAddPopup;
-  std::unique_ptr<settings::ConfigExportDialogPopup> m_configExportDialogPopup;
+  std::unique_ptr<settings::ConfigExportDialogModal> m_configExportDialogModal;
   std::unique_ptr<settings::SearchPickerPopup> m_searchPickerPopup;
   InputDispatcher m_inputDispatcher;
   settings::SettingsModalHost m_modalHost;

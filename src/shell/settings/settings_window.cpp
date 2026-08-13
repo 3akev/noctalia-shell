@@ -251,9 +251,6 @@ bool SettingsWindow::ownsKeyboardSurface(wl_surface* surface) const noexcept {
   if (m_widgetAddPopup != nullptr && m_widgetAddPopup->wlSurface() == surface) {
     return true;
   }
-  if (m_configExportDialogPopup != nullptr && m_configExportDialogPopup->wlSurface() == surface) {
-    return true;
-  }
   if (m_searchPickerPopup != nullptr && m_searchPickerPopup->wlSurface() == surface) {
     return true;
   }
@@ -302,12 +299,6 @@ std::optional<LayerPopupParentContext> SettingsWindow::topmostPopupParentContext
     return makeContext(
         m_searchPickerPopup->wlSurface(), m_searchPickerPopup->xdgSurface(), m_searchPickerPopup->width(),
         m_searchPickerPopup->height()
-    );
-  }
-  if (m_configExportDialogPopup != nullptr && m_configExportDialogPopup->isOpen()) {
-    return makeContext(
-        m_configExportDialogPopup->wlSurface(), m_configExportDialogPopup->xdgSurface(),
-        m_configExportDialogPopup->width(), m_configExportDialogPopup->height()
     );
   }
   if (m_widgetAddPopup != nullptr && m_widgetAddPopup->isOpen()) {
@@ -359,12 +350,6 @@ std::optional<LayerPopupParentContext> SettingsWindow::popupParentContextForSurf
     return makeContext(
         m_widgetAddPopup->wlSurface(), m_widgetAddPopup->xdgSurface(), m_widgetAddPopup->width(),
         m_widgetAddPopup->height()
-    );
-  }
-  if (m_configExportDialogPopup != nullptr && surface == m_configExportDialogPopup->wlSurface()) {
-    return makeContext(
-        m_configExportDialogPopup->wlSurface(), m_configExportDialogPopup->xdgSurface(),
-        m_configExportDialogPopup->width(), m_configExportDialogPopup->height()
     );
   }
   if (m_searchPickerPopup != nullptr && surface == m_searchPickerPopup->wlSurface()) {
@@ -532,6 +517,7 @@ void SettingsWindow::dismissOpenSelectDropdown() {
 
 void SettingsWindow::destroyWindow() {
   m_modalHost.closeAll();
+  m_configExportDialogModal.reset();
   m_editorSheetModal.reset();
   m_modalHost.detach();
   if (m_surface != nullptr) {
@@ -557,10 +543,6 @@ void SettingsWindow::destroyWindow() {
   if (m_widgetAddPopup != nullptr) {
     m_widgetAddPopup->close();
     m_widgetAddPopup.reset();
-  }
-  if (m_configExportDialogPopup != nullptr) {
-    m_configExportDialogPopup->close();
-    m_configExportDialogPopup.reset();
   }
   if (m_searchPickerPopup != nullptr) {
     m_searchPickerPopup->close();
@@ -862,8 +844,8 @@ void SettingsWindow::clearTransientSettingsState() {
   if (m_widgetAddPopup != nullptr && m_widgetAddPopup->isOpen()) {
     m_widgetAddPopup->close();
   }
-  if (m_configExportDialogPopup != nullptr && m_configExportDialogPopup->isOpen()) {
-    m_configExportDialogPopup->close();
+  if (m_configExportDialogModal != nullptr && m_configExportDialogModal->isOpen()) {
+    m_configExportDialogModal->close();
   }
   if (m_searchPickerPopup != nullptr && m_searchPickerPopup->isOpen()) {
     m_searchPickerPopup->close();
@@ -884,25 +866,6 @@ bool SettingsWindow::onPointerEvent(const PointerEvent& event) {
       && event.type == PointerEvent::Type::Button
       && event.pressed) {
     m_widgetAddPopup->close();
-    return true;
-  }
-  if (m_configExportDialogPopup != nullptr && m_configExportDialogPopup->onPointerEvent(event)) {
-    return true;
-  }
-  // Dialog: block settings-parent input while open; dismiss only via Escape / close.
-  // Events for other shell surfaces must not be swallowed here — Application still
-  // needs to forward them to the bar, dock, notifications, etc.
-  if (m_configExportDialogPopup != nullptr
-      && m_configExportDialogPopup->isOpen()
-      && !m_configExportDialogPopup->isInitializing()) {
-    if (!ownsKeyboardSurface(event.surface)) {
-      return false;
-    }
-    // Keep m_pointerInside honest while the parent is inert behind the dialog.
-    if (event.type == PointerEvent::Type::Leave && event.surface == m_surface->wlSurface()) {
-      m_pointerInside = false;
-      m_inputDispatcher.pointerLeave();
-    }
     return true;
   }
   if (m_searchPickerPopup != nullptr && m_searchPickerPopup->onPointerEvent(event)) {
@@ -1019,17 +982,6 @@ void SettingsWindow::onKeyboardEvent(const KeyboardEvent& event) {
       return;
     }
     m_widgetAddPopup->onKeyboardEvent(event);
-    return;
-  }
-
-  if (m_configExportDialogPopup != nullptr
-      && m_configExportDialogPopup->isOpen()
-      && !m_configExportDialogPopup->isInitializing()) {
-    if (event.pressed && KeybindMatcher::matches(KeybindAction::Cancel, event.sym, event.modifiers)) {
-      m_configExportDialogPopup->close();
-      return;
-    }
-    m_configExportDialogPopup->onKeyboardEvent(event);
     return;
   }
 
@@ -1161,8 +1113,8 @@ void SettingsWindow::requestRedraw() {
     if (m_widgetAddPopup != nullptr && m_widgetAddPopup->isOpen()) {
       m_widgetAddPopup->requestRedraw();
     }
-    if (m_configExportDialogPopup != nullptr && m_configExportDialogPopup->isOpen()) {
-      m_configExportDialogPopup->requestRedraw();
+    if (m_configExportDialogModal != nullptr && m_configExportDialogModal->isOpen()) {
+      m_configExportDialogModal->requestRedraw();
     }
     if (m_editorSheetModal != nullptr && m_editorSheetModal->isOpen()) {
       m_editorSheetModal->requestRedraw();
@@ -1177,8 +1129,8 @@ void SettingsWindow::onFontChanged() {
     if (m_widgetAddPopup != nullptr && m_widgetAddPopup->isOpen()) {
       m_widgetAddPopup->requestLayout();
     }
-    if (m_configExportDialogPopup != nullptr && m_configExportDialogPopup->isOpen()) {
-      m_configExportDialogPopup->requestLayout();
+    if (m_configExportDialogModal != nullptr && m_configExportDialogModal->isOpen()) {
+      m_configExportDialogModal->requestLayout();
     }
     if (m_editorSheetModal != nullptr && m_editorSheetModal->isOpen()) {
       m_editorSheetModal->requestLayout();
