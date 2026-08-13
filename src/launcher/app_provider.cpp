@@ -115,6 +115,38 @@ namespace {
     return i18n::tr("launcher.categories.applications." + std::string(id));
   }
 
+  std::string originLabel(DesktopEntryOrigin origin) {
+    switch (origin) {
+    case DesktopEntryOrigin::User:
+      return i18n::tr("launcher.origins.user");
+    case DesktopEntryOrigin::System:
+      return i18n::tr("launcher.origins.system");
+    case DesktopEntryOrigin::Flatpak:
+      return i18n::tr("launcher.origins.flatpak");
+    case DesktopEntryOrigin::Snap:
+      return i18n::tr("launcher.origins.snap");
+    case DesktopEntryOrigin::Nix:
+      return i18n::tr("launcher.origins.nix");
+    case DesktopEntryOrigin::Unknown:
+      return {};
+    }
+    return {};
+  }
+
+  std::string originGlyph(DesktopEntryOrigin origin) {
+    switch (origin) {
+    case DesktopEntryOrigin::Flatpak:
+    case DesktopEntryOrigin::Snap:
+      return "package";
+    case DesktopEntryOrigin::Unknown:
+    case DesktopEntryOrigin::User:
+    case DesktopEntryOrigin::System:
+    case DesktopEntryOrigin::Nix:
+      return {};
+    }
+    return {};
+  }
+
   std::optional<std::size_t> primaryCategoryIndex(std::string_view categories) {
     const auto& indexByToken = desktopCategoryIndexByToken();
     std::optional<std::size_t> found;
@@ -177,6 +209,8 @@ std::vector<LauncherResult> AppProvider::query(std::string_view text) const {
     result.id = entry.path;
     result.title = entry.name;
     result.subtitle = entry.genericName.empty() ? entry.comment : entry.genericName;
+    result.origin = originLabel(entry.origin);
+    result.originGlyph = originGlyph(entry.origin);
     result.iconName = entry.icon.empty() ? std::string(kDefaultAppIcon) : entry.icon;
     result.glyphName = "app-window";
     if (const auto index = primaryCategoryIndex(entry.categories)) {

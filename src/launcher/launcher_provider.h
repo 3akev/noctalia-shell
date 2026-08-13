@@ -23,6 +23,9 @@ struct LauncherResult {
   std::string id;
   std::string providerId; // Set by LauncherPanel after query; used for activation dispatch and usage tracking
   std::string title;
+  // Optional source label for application-origin indicators and tooltips.
+  std::string origin;
+  std::string originGlyph;
   std::string subtitle;
   std::string glyphName;
   std::string iconName;

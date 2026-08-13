@@ -11,9 +11,19 @@ struct DesktopAction {
   std::string exec;
 };
 
+enum class DesktopEntryOrigin : std::uint8_t {
+  Unknown,
+  User,
+  System,
+  Flatpak,
+  Snap,
+  Nix,
+};
+
 struct DesktopEntry {
   std::string id;
   std::string path;
+  DesktopEntryOrigin origin = DesktopEntryOrigin::Unknown;
   std::string name;
   std::string genericName;
   std::string comment;

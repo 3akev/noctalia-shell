@@ -275,6 +275,16 @@ namespace {
 
       m_row->addChild(
           ui::glyph({
+              .out = &m_originGlyph,
+              .glyph = "package",
+              .glyphSize = Style::fontSizeBody * m_style.scale,
+              .color = colorSpecFromRole(ColorRole::OnSurfaceVariant),
+              .visible = false,
+          })
+      );
+
+      m_row->addChild(
+          ui::glyph({
               .out = &m_pinnedGlyph,
               .glyph = "pin-filled",
               .glyphSize = Style::fontSizeBody * m_style.scale,
@@ -340,7 +350,15 @@ namespace {
       m_pinnedGlyph->setGlyphSize(Style::fontSizeBody * m_style.scale);
       m_pinnedGlyph->setVisible(result.pinned);
       m_pinnedGlyph->setParticipatesInLayout(result.pinned);
-      const float textWidth = std::max(0.0F, width - leadingWidth - pinnedWidth - horizontalPad);
+      const bool hasOrigin = !result.originGlyph.empty();
+      if (hasOrigin) {
+        m_originGlyph->setGlyph(result.originGlyph);
+      }
+      m_originGlyph->setGlyphSize(Style::fontSizeBody * m_style.scale);
+      m_originGlyph->setVisible(hasOrigin);
+      m_originGlyph->setParticipatesInLayout(hasOrigin);
+      const float originWidth = hasOrigin ? Style::fontSizeBody * m_style.scale + gap : 0.0F;
+      const float textWidth = std::max(0.0F, width - leadingWidth - pinnedWidth - originWidth - horizontalPad);
       m_title->setText(singleLinePreview(result.title));
       m_title->setMaxWidth(textWidth);
 
@@ -413,6 +431,7 @@ namespace {
       m_title->setColor(foreground);
       m_subtitle->setColor(mutedForeground);
       m_pinnedGlyph->setColor(mutedForeground);
+      m_originGlyph->setColor(mutedForeground);
     }
 
     LauncherListStyle m_style{};
@@ -427,6 +446,7 @@ namespace {
     Label* m_title = nullptr;
     Label* m_subtitle = nullptr;
     Glyph* m_pinnedGlyph = nullptr;
+    Glyph* m_originGlyph = nullptr;
     AsyncTextureCache* m_asyncTextures = nullptr;
     std::string m_iconPath;
     std::string m_fallbackGlyph;
@@ -457,6 +477,17 @@ namespace {
           ui::glyph({
               .out = &m_pinnedGlyph,
               .glyph = "pin-filled",
+              .glyphSize = Style::fontSizeBody * m_style.scale,
+              .color = colorSpecFromRole(ColorRole::OnSurfaceVariant),
+              .visible = false,
+              .participatesInLayout = false,
+          })
+      );
+
+      addChild(
+          ui::glyph({
+              .out = &m_originGlyph,
+              .glyph = "package",
               .glyphSize = Style::fontSizeBody * m_style.scale,
               .color = colorSpecFromRole(ColorRole::OnSurfaceVariant),
               .visible = false,
@@ -525,6 +556,14 @@ namespace {
       m_pinnedGlyph->setVisible(result.pinned);
       m_pinnedGlyph->setPosition(width - padding - pinSize, padding);
       m_pinnedGlyph->setFrameSize(pinSize, pinSize);
+      const bool hasOrigin = !result.originGlyph.empty();
+      if (hasOrigin) {
+        m_originGlyph->setGlyph(result.originGlyph);
+      }
+      m_originGlyph->setGlyphSize(pinSize);
+      m_originGlyph->setVisible(hasOrigin);
+      m_originGlyph->setPosition(width - padding - pinSize, height - padding - pinSize);
+      m_originGlyph->setFrameSize(pinSize, pinSize);
 
       m_image->setVisible(false);
       m_image->setParticipatesInLayout(false);
@@ -614,6 +653,9 @@ namespace {
       m_pinnedGlyph->setColor(
           active ? colorSpecFromRole(activeRole, 0.7F) : colorSpecFromRole(ColorRole::OnSurfaceVariant)
       );
+      m_originGlyph->setColor(
+          active ? colorSpecFromRole(activeRole, 0.7F) : colorSpecFromRole(ColorRole::OnSurfaceVariant)
+      );
     }
 
     LauncherListStyle m_style{};
@@ -623,6 +665,7 @@ namespace {
     Image* m_image = nullptr;
     Glyph* m_glyph = nullptr;
     Glyph* m_pinnedGlyph = nullptr;
+    Glyph* m_originGlyph = nullptr;
     Label* m_title = nullptr;
     AsyncTextureCache* m_asyncTextures = nullptr;
     std::string m_iconPath;
@@ -669,6 +712,32 @@ public:
     row->setListStyle(m_style);
     row->setReorderTarget(m_dropIndex.has_value() && *m_dropIndex == index);
     row->bind(*m_renderer, (*m_results)[index], tile.width(), tile.height(), selected, hovered);
+  }
+
+  [[nodiscard]] std::string itemTooltip(std::size_t index) const override {
+    if (m_results == nullptr || index >= m_results->size() || (*m_results)[index].originGlyph.empty()) {
+      return {};
+    }
+    return (*m_results)[index].origin;
+  }
+
+  [[nodiscard]] std::optional<TooltipAnchorInsets>
+  itemTooltipAnchorInsets(std::size_t index, float cellWidth, float cellHeight) const override {
+    if (m_results == nullptr || index >= m_results->size() || (*m_results)[index].originGlyph.empty()) {
+      return std::nullopt;
+    }
+    const float glyphSize = Style::fontSizeBody * m_style.scale;
+    const float gap = (m_style.compact ? Style::spaceSm : Style::spaceMd) * m_style.scale;
+    const float padding = Style::spaceSm * m_style.scale;
+    const float pinnedWidth = (*m_results)[index].pinned ? glyphSize + gap : 0.0F;
+    const float left = std::max(padding, cellWidth - padding - pinnedWidth - glyphSize);
+    const float top = std::max(0.0F, (cellHeight - glyphSize) * 0.5F);
+    return TooltipAnchorInsets{
+        .top = top,
+        .right = std::max(0.0F, cellWidth - left - glyphSize),
+        .bottom = std::max(0.0F, cellHeight - top - glyphSize),
+        .left = left,
+    };
   }
 
   [[nodiscard]] bool overlayHitTest(
@@ -795,6 +864,30 @@ public:
     gridTile->setListStyle(m_style);
     gridTile->setReorderTarget(m_dropIndex.has_value() && *m_dropIndex == index);
     gridTile->bind(*m_renderer, (*m_results)[index], tile.width(), tile.height(), selected, hovered);
+  }
+
+  [[nodiscard]] std::string itemTooltip(std::size_t index) const override {
+    if (m_results == nullptr || index >= m_results->size() || (*m_results)[index].originGlyph.empty()) {
+      return {};
+    }
+    return (*m_results)[index].origin;
+  }
+
+  [[nodiscard]] std::optional<TooltipAnchorInsets>
+  itemTooltipAnchorInsets(std::size_t index, float cellWidth, float cellHeight) const override {
+    if (m_results == nullptr || index >= m_results->size() || (*m_results)[index].originGlyph.empty()) {
+      return std::nullopt;
+    }
+    const float glyphSize = Style::fontSizeBody * m_style.scale;
+    const float padding = Style::spaceSm * m_style.scale;
+    const float left = std::max(0.0F, cellWidth - padding - glyphSize);
+    const float top = std::max(0.0F, cellHeight - padding - glyphSize);
+    return TooltipAnchorInsets{
+        .top = top,
+        .right = std::max(0.0F, cellWidth - left - glyphSize),
+        .bottom = std::max(0.0F, cellHeight - top - glyphSize),
+        .left = left,
+    };
   }
 
   [[nodiscard]] bool overlayHitTest(

@@ -680,6 +680,13 @@
         "title": "Windows"
       }
     },
+    "origins": {
+      "flatpak": "Flatpak",
+      "nix": "Nix",
+      "snap": "Snap",
+      "system": "System",
+      "user": "User"
+    },
     "search-placeholder": "Search applications…"
   },
   "location": {

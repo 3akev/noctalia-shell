@@ -22,6 +22,26 @@ namespace {
 
   constexpr Logger kLog("desktop_entry");
 
+  DesktopEntryOrigin detectOrigin(const fs::path& filepath) {
+    const std::string path = filepath.lexically_normal().string();
+    if (path.contains("/flatpak/") && path.contains("/exports/share/applications/")) {
+      return DesktopEntryOrigin::Flatpak;
+    }
+    if (path.contains("/snap/") || path.contains("/snapd/desktop/applications/")) {
+      return DesktopEntryOrigin::Snap;
+    }
+    if (path.contains("/nix/store/")) {
+      return DesktopEntryOrigin::Nix;
+    }
+    if (const char* home = std::getenv("HOME"); home != nullptr && home[0] != '\0') {
+      const std::string userApplications = std::string(home) + "/.local/share/applications/";
+      if (path.starts_with(userApplications)) {
+        return DesktopEntryOrigin::User;
+      }
+    }
+    return DesktopEntryOrigin::System;
+  }
+
   bool parseDesktopBool(std::string_view value) {
     const std::string lower = StringUtils::toLower(value);
     return lower == "true" || lower == "1" || lower == "yes";
@@ -140,6 +160,7 @@ namespace {
 
     DesktopEntry entry;
     entry.path = filepath.string();
+    entry.origin = detectOrigin(filepath);
     entry.id = filepath.stem().string();
 
     bool inDesktopEntry = false;
