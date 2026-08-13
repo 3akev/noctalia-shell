@@ -1048,6 +1048,9 @@ void Application::initSystemBusServices() {
             (void)m_logindService->acquireSleepDelayInhibit();
           }
           kLog.info("system resumed; rechecking night light and auto theme schedules");
+          // Drivers may discard glyph textures while suspended without reporting a
+          // full graphics reset. Re-rasterize them before the resumed surfaces paint.
+          m_renderContext.invalidateGlyphTexturesNextFrame();
           m_weatherService.requestRefresh();
           m_gammaService.reevaluateSchedule();
           // Auto theme mode schedules with steady_clock timers, which do not advance while
