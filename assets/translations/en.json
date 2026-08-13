@@ -681,6 +681,7 @@
       }
     },
     "origins": {
+      "appimage": "AppImage",
       "flatpak": "Flatpak",
       "nix": "Nix",
       "snap": "Snap",

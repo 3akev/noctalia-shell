@@ -128,6 +128,8 @@ namespace {
       return i18n::tr("launcher.origins.snap");
     case DesktopEntryOrigin::Nix:
       return i18n::tr("launcher.origins.nix");
+    case DesktopEntryOrigin::AppImage:
+      return i18n::tr("launcher.origins.appimage");
     case DesktopEntryOrigin::Unknown:
       return {};
     }
@@ -138,6 +140,7 @@ namespace {
     switch (origin) {
     case DesktopEntryOrigin::Flatpak:
     case DesktopEntryOrigin::Snap:
+    case DesktopEntryOrigin::AppImage:
       return "package";
     case DesktopEntryOrigin::Unknown:
     case DesktopEntryOrigin::User:

@@ -18,6 +18,7 @@ enum class DesktopEntryOrigin : std::uint8_t {
   Flatpak,
   Snap,
   Nix,
+  AppImage,
 };
 
 struct DesktopEntry {

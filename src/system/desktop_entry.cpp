@@ -5,6 +5,7 @@
 #include "util/string_utils.h"
 
 #include <algorithm>
+#include <array>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -22,7 +23,39 @@ namespace {
 
   constexpr Logger kLog("desktop_entry");
 
-  DesktopEntryOrigin detectOrigin(const fs::path& filepath) {
+  bool executableIsAppImage(std::string_view exec) {
+    const auto start = exec.find_first_not_of(' ');
+    if (start == std::string_view::npos) {
+      return false;
+    }
+
+    const char quote = exec[start] == '"' ? '"' : '\0';
+    const std::size_t executableStart = start + (quote == '\0' ? 0 : 1);
+    const std::size_t executableEnd =
+        quote == '\0' ? exec.find(' ', executableStart) : exec.find(quote, executableStart);
+    const fs::path executable(exec.substr(
+        executableStart,
+        executableEnd == std::string_view::npos ? std::string_view::npos : executableEnd - executableStart
+    ));
+    if (StringUtils::toLower(executable.extension().string()) == ".appimage") {
+      return true;
+    }
+
+    std::ifstream file(executable, std::ios::binary);
+    std::array<char, 10> header{};
+    if (!file.read(header.data(), static_cast<std::streamsize>(header.size()))) {
+      return false;
+    }
+    // AppImage reserves these two ELF identification bytes for its format marker.
+    return header[0] == '\x7F'
+        && header[1] == 'E'
+        && header[2] == 'L'
+        && header[3] == 'F'
+        && header[8] == 'A'
+        && header[9] == 'I';
+  }
+
+  DesktopEntryOrigin detectOrigin(const fs::path& filepath, bool appImage) {
     const std::string path = filepath.lexically_normal().string();
     if (path.contains("/flatpak/") && path.contains("/exports/share/applications/")) {
       return DesktopEntryOrigin::Flatpak;
@@ -32,6 +65,9 @@ namespace {
     }
     if (path.contains("/nix/store/")) {
       return DesktopEntryOrigin::Nix;
+    }
+    if (appImage) {
+      return DesktopEntryOrigin::AppImage;
     }
     if (const char* home = std::getenv("HOME"); home != nullptr && home[0] != '\0') {
       const std::string userApplications = std::string(home) + "/.local/share/applications/";
@@ -160,7 +196,6 @@ namespace {
 
     DesktopEntry entry;
     entry.path = filepath.string();
-    entry.origin = detectOrigin(filepath);
     entry.id = filepath.stem().string();
 
     bool inDesktopEntry = false;
@@ -169,6 +204,7 @@ namespace {
     std::string localizedGenericName;
     std::string localizedComment;
     std::string type;
+    bool hasAppImageMetadata = false;
 
     // Desktop-environment visibility lists (OnlyShowIn/NotShowIn)
     std::vector<std::string> onlyShowIn;
@@ -305,6 +341,8 @@ namespace {
         splitMultipleDesktopStrings(notShowIn, value);
       } else if (key == "Actions") {
         splitMultipleDesktopStrings(actionOrder, value);
+      } else if (key.starts_with("X-AppImage-")) {
+        hasAppImageMetadata = true;
       }
     }
 
@@ -338,6 +376,7 @@ namespace {
     entry.startupWmClassLower = StringUtils::toLower(entry.startupWmClass);
     entry.idLower = StringUtils::toLower(entry.id);
     entry.execLower = StringUtils::toLower(entry.exec);
+    entry.origin = detectOrigin(filepath, hasAppImageMetadata || executableIsAppImage(entry.exec));
 
     // Build actions in the declared order.
     for (const auto& id : actionOrder) {

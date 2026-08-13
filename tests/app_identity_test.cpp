@@ -3,9 +3,13 @@
 #include "tests/test_check.h"
 #include "util/string_utils.h"
 
+#include <cstdlib>
+#include <filesystem>
+#include <fstream>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <unistd.h>
 #include <vector>
 
 namespace internal_apps {
@@ -86,6 +90,68 @@ namespace {
     return entry;
   }
 
+  void testAppImageOriginDetection() {
+    namespace fs = std::filesystem;
+
+    const fs::path root = fs::temp_directory_path() / ("noctalia-appimage-origin-" + std::to_string(getpid()));
+    const fs::path applications = root / "data/applications";
+    const fs::path executable = root / "PortableApp";
+    fs::create_directories(applications);
+    {
+      std::ofstream binary(executable, std::ios::binary);
+      binary.write(
+          "\x7F"
+          "ELF\x02\x01\x01\0"
+          "AI",
+          10
+      );
+    }
+    {
+      std::ofstream entry(applications / "metadata.desktop");
+      entry
+          << "[Desktop Entry]\nType=Application\nName=Metadata AppImage\nExec=metadata-app\n"
+          << "X-AppImage-Version=1.0\n";
+    }
+    {
+      std::ofstream entry(applications / "portable.desktop");
+      entry << "[Desktop Entry]\nType=Application\nName=Portable AppImage\nExec=" << executable.string() << "\n";
+    }
+    {
+      std::ofstream entry(applications / "suffix.desktop");
+      entry << "[Desktop Entry]\nType=Application\nName=Suffixed AppImage\nExec=/opt/Suffixed.AppImage\n";
+    }
+
+    const char* oldDataHome = std::getenv("XDG_DATA_HOME");
+    const char* oldDataDirs = std::getenv("XDG_DATA_DIRS");
+    const std::optional<std::string> savedDataHome =
+        oldDataHome == nullptr ? std::nullopt : std::optional<std::string>(oldDataHome);
+    const std::optional<std::string> savedDataDirs =
+        oldDataDirs == nullptr ? std::nullopt : std::optional<std::string>(oldDataDirs);
+    setenv("XDG_DATA_HOME", (root / "data").c_str(), 1);
+    setenv("XDG_DATA_DIRS", (root / "empty").c_str(), 1);
+
+    const auto entries = scanDesktopEntries();
+    const auto findOrigin = [&](std::string_view id) {
+      const auto it = std::ranges::find(entries, id, &DesktopEntry::id);
+      return it == entries.end() ? DesktopEntryOrigin::Unknown : it->origin;
+    };
+    TEST_CHECK(findOrigin("metadata") == DesktopEntryOrigin::AppImage);
+    TEST_CHECK(findOrigin("portable") == DesktopEntryOrigin::AppImage);
+    TEST_CHECK(findOrigin("suffix") == DesktopEntryOrigin::AppImage);
+
+    if (savedDataHome.has_value()) {
+      setenv("XDG_DATA_HOME", savedDataHome->c_str(), 1);
+    } else {
+      unsetenv("XDG_DATA_HOME");
+    }
+    if (savedDataDirs.has_value()) {
+      setenv("XDG_DATA_DIRS", savedDataDirs->c_str(), 1);
+    } else {
+      unsetenv("XDG_DATA_DIRS");
+    }
+    fs::remove_all(root);
+  }
+
 } // namespace
 
 int main() {
@@ -162,6 +228,8 @@ int main() {
   };
   const DesktopEntry ambiguousResolved = app_identity::resolveRunningDesktopEntry("org.kde.easyeffects", ambiguousTail);
   TEST_CHECK(ambiguousResolved.id == "org.kde.easyeffects");
+
+  testAppImageOriginDetection();
 
   return 0;
 }
