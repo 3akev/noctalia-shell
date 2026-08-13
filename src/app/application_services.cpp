@@ -1048,6 +1048,7 @@ void Application::initSystemBusServices() {
             (void)m_logindService->acquireSleepDelayInhibit();
           }
           kLog.info("system resumed; rechecking night light and auto theme schedules");
+          m_weatherService.requestRefresh();
           m_gammaService.reevaluateSchedule();
           // Auto theme mode schedules with steady_clock timers, which do not advance while
           // suspended. Re-resolve so a day/night boundary crossed during sleep is applied.
