@@ -3697,7 +3697,11 @@
           "label": "Active Window Indicator"
         },
         "show-all-outputs": {
-          "description": "Include windows from every display on this widget",
+          "description": "Include windows from every monitor on this widget",
+          "label": "Show All Monitors"
+        },
+        "show-all-workspaces": {
+          "description": "Show workspaces from every monitor on this widget",
           "label": "Show All Monitors"
         },
         "show-caps-lock": {

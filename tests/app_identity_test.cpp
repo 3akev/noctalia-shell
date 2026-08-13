@@ -123,26 +123,35 @@ int main() {
   // production and does not re-filter them. If one is present it resolves like any other entry.
   DesktopEntry hidden = sampleChatEntry();
   hidden.hidden = true;
-  TEST_CHECK(app_identity::resolveRunningDesktopEntry("Sample.ChatDesktop", std::array<DesktopEntry, 1>{hidden}).id == "sample-chat-desktop");
+  TEST_CHECK(
+      app_identity::resolveRunningDesktopEntry("Sample.ChatDesktop", std::array<DesktopEntry, 1>{hidden}).id
+      == "sample-chat-desktop"
+  );
 
   DesktopEntry noDisplay = sampleChatEntry();
   noDisplay.noDisplay = true;
-  TEST_CHECK(app_identity::resolveRunningDesktopEntry("Sample.ChatDesktop", std::array<DesktopEntry, 1>{noDisplay}).id == "sample-chat-desktop");
+  TEST_CHECK(
+      app_identity::resolveRunningDesktopEntry("Sample.ChatDesktop", std::array<DesktopEntry, 1>{noDisplay}).id
+      == "sample-chat-desktop"
+  );
 
   const std::vector<DesktopEntry> multipleEntries = {sampleChatEntry(), sampleMailEntry()};
-  const auto resolvedApps =
-    app_identity::resolveRunningApps(std::array<std::string, 3>{"Sample.ChatDesktop", "sample-chat-desktop", "SampleMail"}, multipleEntries);
+  const auto resolvedApps = app_identity::resolveRunningApps(
+      std::array<std::string, 3>{"Sample.ChatDesktop", "sample-chat-desktop", "SampleMail"}, multipleEntries
+  );
   TEST_CHECK(resolvedApps.size() == 2);
   TEST_CHECK(resolvedApps[0].entry.id == "sample-chat-desktop");
   TEST_CHECK(resolvedApps[1].entry.id == "sample-mail");
 
-  const auto unknownApps = app_identity::resolveRunningApps(std::array<std::string, 2>{"Unknown.App", "unknown-app"}, multipleEntries);
+  const auto unknownApps =
+      app_identity::resolveRunningApps(std::array<std::string, 2>{"Unknown.App", "unknown-app"}, multipleEntries);
   TEST_CHECK(unknownApps.size() == 2);
   TEST_CHECK(unknownApps[0].entry.id == "Unknown.App");
   TEST_CHECK(unknownApps[1].entry.id == "unknown-app");
 
   const DesktopEntry easyEffects = easyEffectsEntry();
-  const DesktopEntry kdeResolved = app_identity::resolveRunningDesktopEntry("org.kde.easyeffects", std::array<DesktopEntry, 1>{easyEffects});
+  const DesktopEntry kdeResolved =
+      app_identity::resolveRunningDesktopEntry("org.kde.easyeffects", std::array<DesktopEntry, 1>{easyEffects});
   TEST_CHECK(kdeResolved.id == "com.github.wwmm.easyeffects");
   TEST_CHECK(kdeResolved.name == "Easy Effects");
   TEST_CHECK(kdeResolved.icon == "easyeffects");
