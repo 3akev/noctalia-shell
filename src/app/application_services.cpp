@@ -551,8 +551,10 @@ void Application::initStyleThemeAndWayland() {
   // i18n has no dependencies on other services and must be ready before any
   // UI construction reads a translated string.
   i18n::Service::instance().init(m_configService.config().shell.lang);
+  setDesktopEntryLanguage(i18n::Service::instance().language());
   m_configService.addReloadCallback([this]() {
     i18n::Service::instance().setLanguage(m_configService.config().shell.lang);
+    setDesktopEntryLanguage(i18n::Service::instance().language());
   });
 
   // Apply theme before any UI constructs palette-dependent scene nodes.

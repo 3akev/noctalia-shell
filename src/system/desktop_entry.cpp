@@ -2,15 +2,18 @@
 
 #include "core/inotify/inotify.h"
 #include "core/log.h"
+#include "i18n/language_tag.h"
 #include "util/string_utils.h"
 
 #include <algorithm>
 #include <array>
+#include <cctype>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <string_view>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -127,72 +130,73 @@ namespace {
     return visibleByDefault;
   }
 
-  struct LocaleInfo {
-    std::string lang;
-    std::string country;
+  using LocalizedValues = std::unordered_map<std::string, std::string>;
+
+  struct LocalizedAssignment {
+    std::string_view key;
+    std::string locale;
+    std::string_view value;
   };
 
-  LocaleInfo parseLocale() {
-    LocaleInfo info;
-    const char* lang = std::getenv("LANG");
-    if (lang == nullptr) {
-      lang = std::getenv("LC_MESSAGES");
-    }
-    if (lang == nullptr) {
-      return info;
+  std::string normalizeDesktopLocale(std::string_view rawLocale) {
+    const auto modifierStart = rawLocale.find('@');
+    const std::string_view base = rawLocale.substr(0, modifierStart);
+    std::string locale = i18n::detail::normalizeLanguageTag(base);
+    if (locale.empty() || modifierStart == std::string_view::npos) {
+      return locale;
     }
 
-    std::string_view sv(lang);
-
-    // Strip encoding (e.g., ".UTF-8")
-    auto dot = sv.find('.');
-    if (dot != std::string_view::npos) {
-      sv = sv.substr(0, dot);
+    const std::string_view modifier = rawLocale.substr(modifierStart + 1);
+    if (modifier.empty()) {
+      return {};
     }
-
-    // Strip modifier (e.g., "@euro")
-    auto at = sv.find('@');
-    if (at != std::string_view::npos) {
-      sv = sv.substr(0, at);
+    locale += '@';
+    for (const unsigned char character : modifier) {
+      locale += static_cast<char>(std::tolower(character));
     }
-
-    auto underscore = sv.find('_');
-    if (underscore != std::string_view::npos) {
-      info.lang = std::string(sv.substr(0, underscore));
-      info.country = std::string(sv);
-    } else {
-      info.lang = std::string(sv);
-    }
-
-    return info;
+    return locale;
   }
 
-  std::string extractLocalizedValue(const std::string& line, const std::string& key, const LocaleInfo& locale) {
-    // Try key[lang_COUNTRY]=
-    if (!locale.country.empty()) {
-      std::string locKey = key + "[" + locale.country + "]=";
-      if (line.size() > locKey.size() && line.starts_with(locKey)) {
-        return line.substr(locKey.size());
-      }
+  std::optional<LocalizedAssignment> parseLocalizedAssignment(std::string_view line) {
+    const auto equals = line.find('=');
+    if (equals == std::string_view::npos) {
+      return std::nullopt;
     }
-    // Try key[lang]=
-    if (!locale.lang.empty()) {
-      std::string locKey = key + "[" + locale.lang + "]=";
-      if (line.size() > locKey.size() && line.starts_with(locKey)) {
-        return line.substr(locKey.size());
-      }
+
+    const std::string_view fullKey = line.substr(0, equals);
+    const auto bracket = fullKey.find('[');
+    if (bracket == std::string_view::npos || bracket == 0 || fullKey.back() != ']') {
+      return std::nullopt;
     }
-    return {};
+
+    const std::string_view rawLocale = fullKey.substr(bracket + 1, fullKey.size() - bracket - 2);
+    std::string locale = normalizeDesktopLocale(rawLocale);
+    if (locale.empty()) {
+      return std::nullopt;
+    }
+
+    return LocalizedAssignment{
+        .key = fullKey.substr(0, bracket),
+        .locale = std::move(locale),
+        .value = line.substr(equals + 1),
+    };
   }
 
-  void parseDesktopFile(const fs::path& filepath, std::vector<DesktopEntry>& entries) {
+  std::string localizedValue(std::string_view language, const LocalizedValues& values, std::string_view defaultValue) {
+    for (const std::string& candidate : i18n::detail::catalogLanguageCandidates(language)) {
+      if (const auto it = values.find(candidate); it != values.end()) {
+        return it->second;
+      }
+    }
+    return std::string(defaultValue);
+  }
+
+  void parseDesktopFile(const fs::path& filepath, std::string_view language, std::vector<DesktopEntry>& entries) {
     std::ifstream file(filepath);
     if (!file.is_open()) {
       kLog.debug("failed to open desktop entry file '{}'", filepath.string());
       return;
     }
-
-    static const LocaleInfo locale = parseLocale();
 
     DesktopEntry entry;
     entry.path = filepath.string();
@@ -200,9 +204,10 @@ namespace {
 
     bool inDesktopEntry = false;
     bool inAction = false;
-    std::string localizedName;
-    std::string localizedGenericName;
-    std::string localizedComment;
+    LocalizedValues localizedNames;
+    LocalizedValues localizedGenericNames;
+    LocalizedValues localizedComments;
+    LocalizedValues localizedKeywords;
     std::string type;
     bool hasAppImageMetadata = false;
 
@@ -213,7 +218,9 @@ namespace {
     // Action parsing state
     std::vector<std::string> actionOrder;
     struct ActionData {
-      std::string name, exec, localizedName;
+      std::string name;
+      std::string exec;
+      LocalizedValues localizedNames;
     };
     std::unordered_map<std::string, ActionData> actionMap;
     std::string currentActionId;
@@ -221,9 +228,7 @@ namespace {
 
     auto flushCurrentAction = [&]() {
       if (!currentActionId.empty()) {
-        if (!currentActionData.localizedName.empty()) {
-          currentActionData.name = currentActionData.localizedName;
-        }
+        currentActionData.name = localizedValue(language, currentActionData.localizedNames, currentActionData.name);
         if (!currentActionData.name.empty() && !currentActionData.exec.empty()) {
           actionMap[currentActionId] = currentActionData;
         }
@@ -260,9 +265,8 @@ namespace {
       }
 
       if (inAction) {
-        auto locName = extractLocalizedValue(line, "Name", locale);
-        if (!locName.empty()) {
-          currentActionData.localizedName = std::move(locName);
+        if (const auto localized = parseLocalizedAssignment(line); localized && localized->key == "Name") {
+          currentActionData.localizedNames.insert_or_assign(localized->locale, localized->value);
           continue;
         }
         auto eq = line.find('=');
@@ -282,20 +286,20 @@ namespace {
         continue;
       }
 
-      // Check for localized values first
-      auto locName = extractLocalizedValue(line, "Name", locale);
-      if (!locName.empty()) {
-        localizedName = std::move(locName);
-        continue;
-      }
-      auto locGenericName = extractLocalizedValue(line, "GenericName", locale);
-      if (!locGenericName.empty()) {
-        localizedGenericName = std::move(locGenericName);
-        continue;
-      }
-      auto locComment = extractLocalizedValue(line, "Comment", locale);
-      if (!locComment.empty()) {
-        localizedComment = std::move(locComment);
+      if (const auto localized = parseLocalizedAssignment(line)) {
+        LocalizedValues* values = nullptr;
+        if (localized->key == "Name") {
+          values = &localizedNames;
+        } else if (localized->key == "GenericName") {
+          values = &localizedGenericNames;
+        } else if (localized->key == "Comment") {
+          values = &localizedComments;
+        } else if (localized->key == "Keywords") {
+          values = &localizedKeywords;
+        }
+        if (values != nullptr) {
+          values->insert_or_assign(localized->locale, localized->value);
+        }
         continue;
       }
 
@@ -357,15 +361,24 @@ namespace {
       return;
     }
 
-    // Apply localized values
-    if (!localizedName.empty()) {
-      entry.name = std::move(localizedName);
-    }
-    if (!localizedGenericName.empty()) {
-      entry.genericName = std::move(localizedGenericName);
-    }
-    if (!localizedComment.empty()) {
-      entry.comment = std::move(localizedComment);
+    const std::string defaultName = entry.name;
+    entry.name = localizedValue(language, localizedNames, entry.name);
+    entry.genericName = localizedValue(language, localizedGenericNames, entry.genericName);
+    entry.comment = localizedValue(language, localizedComments, entry.comment);
+    entry.keywords = localizedValue(language, localizedKeywords, entry.keywords);
+
+    entry.localizedNamesLower.reserve(localizedNames.size() + 1);
+    auto appendNameAlias = [&](std::string_view name) {
+      const std::string lower = StringUtils::toLower(name);
+      if (!lower.empty()
+          && lower != StringUtils::toLower(entry.name)
+          && !std::ranges::contains(entry.localizedNamesLower, lower)) {
+        entry.localizedNamesLower.push_back(lower);
+      }
+    };
+    appendNameAlias(defaultName);
+    for (const auto& [_, name] : localizedNames) {
+      appendNameAlias(name);
     }
 
     // Pre-lowercase for matching
@@ -493,13 +506,22 @@ namespace {
       }
     }
 
+    void setLanguage(std::string_view language) {
+      const std::string normalized = i18n::detail::normalizeLanguageTag(language);
+      if (normalized == m_language) {
+        return;
+      }
+      m_language = normalized;
+      m_dirty = true;
+    }
+
   private:
     void refreshIfNeeded() {
       if (!m_dirty) {
         return;
       }
 
-      auto scanned = std::make_shared<const std::vector<DesktopEntry>>(scanDesktopEntries());
+      auto scanned = std::make_shared<const std::vector<DesktopEntry>>(scanDesktopEntries(m_language));
       {
         std::scoped_lock lock(m_entriesMutex);
         m_entries = std::move(scanned);
@@ -613,6 +635,7 @@ namespace {
     std::unordered_map<int, std::string> m_watches;
     std::unordered_set<std::string> m_watchedPaths;
     std::string m_sourceSignature;
+    std::string m_language;
   };
 
   DesktopEntryCache& cache() {
@@ -622,7 +645,7 @@ namespace {
 
 } // namespace
 
-std::vector<DesktopEntry> scanDesktopEntries() {
+std::vector<DesktopEntry> scanDesktopEntries(std::string_view language) {
   std::vector<DesktopEntry> entries;
 
   // Track seen IDs to deduplicate (first occurrence wins per XDG spec).
@@ -650,7 +673,7 @@ std::vector<DesktopEntry> scanDesktopEntries() {
         continue;
       }
 
-      parseDesktopFile(dirEntry.path(), entries);
+      parseDesktopFile(dirEntry.path(), language, entries);
     }
   }
 
@@ -665,6 +688,8 @@ const std::vector<DesktopEntry>& desktopEntries() { return cache().entries(); }
 std::shared_ptr<const std::vector<DesktopEntry>> desktopEntriesSnapshot() { return cache().entriesSnapshot(); }
 
 std::uint64_t desktopEntriesVersion() { return cache().version(); }
+
+void setDesktopEntryLanguage(std::string_view language) { cache().setLanguage(language); }
 
 int desktopEntryWatchFd() noexcept { return cache().watchFd(); }
 

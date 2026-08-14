@@ -1138,6 +1138,7 @@ if build_tests
     'cpu_stat',
     'cpu_temp_sensor',
     'desktop_entry_launch',
+    'desktop_entry_localization',
     'disk_mounts',
     'dock_pinned_apps',
     'event_link',

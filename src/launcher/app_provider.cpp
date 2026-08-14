@@ -22,6 +22,7 @@ namespace {
   constexpr std::size_t kMaxSearchResults = 50;
   constexpr std::string_view kDefaultAppIcon = "application-x-executable";
   constexpr double kNameMatchPriority = 3'000.0;
+  constexpr double kLocalizedNameMatchPriority = 1'500.0;
 
   double scoreEntry(std::string_view pattern, const DesktopEntry& entry) {
     if (pattern.empty()) {
@@ -37,6 +38,14 @@ namespace {
     // Keep the application name as the primary match field.
     if (FuzzyMatch::isMatch(nameScore)) {
       return nameScore + kNameMatchPriority;
+    }
+
+    double localizedNameScore = FuzzyMatch::noMatchScore;
+    for (const std::string& name : entry.localizedNamesLower) {
+      localizedNameScore = std::max(localizedNameScore, FuzzyMatch::score(pattern, name) * 5.0);
+    }
+    if (FuzzyMatch::isMatch(localizedNameScore)) {
+      return localizedNameScore + kLocalizedNameMatchPriority;
     }
 
     auto scoreList = [&](std::string_view list, double weight) {
