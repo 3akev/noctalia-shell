@@ -18,6 +18,7 @@ namespace settings {
   struct SettingsSheetRequest {
     std::string sheetTitle;
     std::function<void()> removeAction;
+    std::function<std::unique_ptr<Node>()> createLeadingAction;
     std::function<std::unique_ptr<Node>()> createHeaderAction;
     std::function<void(Flex& sheetBody)> populateSheetBody;
     float scale = 1.0F;
@@ -77,6 +78,7 @@ namespace settings {
     Flex* m_statusBanner = nullptr;
     Label* m_statusLabel = nullptr;
     std::function<void()> m_removeAction;
+    std::function<std::unique_ptr<Node>()> m_createLeadingAction;
     std::function<std::unique_ptr<Node>()> m_createHeaderAction;
     std::function<void(Flex&)> m_populateBody;
     std::function<void()> m_closeAction;

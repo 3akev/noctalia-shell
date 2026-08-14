@@ -2090,6 +2090,22 @@ void SettingsWindow::openPluginStore() {
           settings::SettingsSheetRequest{
               .sheetTitle = i18n::tr("settings.plugins.store.title"),
               .removeAction = nullptr,
+              .createLeadingAction = [storeContent, scale]() -> std::unique_ptr<Node> {
+                if (!storeContent->isDetailView()) {
+                  return nullptr;
+                }
+                return ui::button({
+                    .glyph = "chevron-left",
+                    .glyphSize = Style::fontSizeBody * scale,
+                    .variant = ButtonVariant::Ghost,
+                    .tooltip = i18n::tr("settings.plugins.store.back-to-catalog"),
+                    .minWidth = Style::controlHeightSm * scale,
+                    .minHeight = Style::controlHeightSm * scale,
+                    .padding = Style::spaceXs * scale,
+                    .radius = Style::scaledRadiusMd(scale),
+                    .onClick = [storeContent]() { storeContent->closeDetail(); },
+                });
+              },
               .createHeaderAction = [storeContent, scale]() -> std::unique_ptr<Node> {
                 const auto pageUrl = storeContent->detailPageUrl();
                 const auto sourceUrl = storeContent->detailSourceUrl();

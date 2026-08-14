@@ -24,6 +24,7 @@ namespace settings {
     m_preDispatchKeyboard = std::move(request.preDispatchKeyboard);
     m_title = std::move(request.sheetTitle);
     m_removeAction = std::move(request.removeAction);
+    m_createLeadingAction = std::move(request.createLeadingAction);
     m_createHeaderAction = std::move(request.createHeaderAction);
     m_populateBody = std::move(request.populateSheetBody);
     clearNodePointers();
@@ -49,6 +50,11 @@ namespace settings {
         .align = FlexAlign::Center,
         .gap = Style::spaceSm * m_scale,
     });
+    if (m_createLeadingAction) {
+      if (auto action = m_createLeadingAction()) {
+        header->addChild(std::move(action));
+      }
+    }
     header->addChild(
         ui::label({
             .out = &m_titleLabel,
@@ -158,6 +164,7 @@ namespace settings {
     m_statusMessage.clear();
     m_statusIsError = false;
     m_removeAction = nullptr;
+    m_createLeadingAction = nullptr;
     m_createHeaderAction = nullptr;
     m_populateBody = nullptr;
     m_onCloseRequested = nullptr;

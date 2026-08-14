@@ -1524,6 +1524,7 @@
       },
       "store": {
         "add": "Add to Noctalia",
+        "back-to-catalog": "Back to the plugin catalog",
         "categories": "Categories",
         "category-all": "All",
         "empty": "No plugins found",
