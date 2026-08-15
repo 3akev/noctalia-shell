@@ -27,6 +27,7 @@ enum class NotificationOrigin : uint8_t {
 enum class NotificationDndPolicy : uint8_t {
   Respect = 0,
   ShowToast = 1,
+  Bypass = 2,
 };
 
 using Clock = std::chrono::steady_clock;

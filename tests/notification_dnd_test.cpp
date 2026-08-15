@@ -57,5 +57,39 @@ int main() {
   ok &= check(closeCallbacks == 0, "disabling DND does not emit protocol close callbacks");
   ok &= check(closedEvents == 0, "disabling DND does not emit closed events");
 
+  manager.setDoNotDisturb(true);
+  manager.setFilters({NotificationFilterConfig{
+      .name = "medication",
+      .match = "medication",
+      .bypassDnd = true,
+  }});
+  const uint32_t bypassId = manager.addOrReplace(
+      NotificationRequest{
+          .appName = "Medication Reminder",
+          .summary = "Take medication",
+          .timeout = 0,
+          .transient = true,
+      }
+  );
+  ok &= check(manager.all().back().id == bypassId, "DND bypass notification remains active");
+  ok &= check(
+      manager.all().back().dndPolicy == NotificationDndPolicy::Bypass,
+      "matching filter promotes notification to DND bypass"
+  );
+
+  const uint32_t ordinaryId = manager.addOrReplace(
+      NotificationRequest{
+          .appName = "Other",
+          .summary = "Ordinary",
+          .timeout = 0,
+          .transient = true,
+      }
+  );
+  ok &= check(manager.all().back().id == ordinaryId, "ordinary DND notification remains active");
+  ok &= check(
+      manager.all().back().dndPolicy == NotificationDndPolicy::Respect,
+      "unmatched notification continues to respect DND"
+  );
+
   return ok ? 0 : 1;
 }

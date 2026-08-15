@@ -284,6 +284,7 @@ struct NotificationFilterConfig {
   bool showToast = true;
   bool saveHistory = true;
   bool playSound = true;
+  bool bypassDnd = false;
   bool allowPermanent = true;
   std::optional<std::int32_t> overrideDuration;
   /// Empty = allow low, normal, and critical. Otherwise only listed urgencies pass this filter.

@@ -1274,7 +1274,9 @@
         "add-title": "Add Notification Filter",
         "allow-permanent": "Allow permanent",
         "allowed-urgencies-label": "Allowed urgencies",
+        "bypass-dnd": "Bypass Do Not Disturb",
         "flag": {
+          "dnd-bypass": "DND bypass",
           "history": "history",
           "permanent": "permanent",
           "sound": "sound",

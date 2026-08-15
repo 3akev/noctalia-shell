@@ -176,6 +176,7 @@ offset_y           = 8              # absolute vertical margin from the screen e
 # show_toast      = true
 # save_history    = false
 # play_sound      = true
+# bypass_dnd      = false            # bypass DND for matching notifications; play_sound still controls sound
 # allowed_urgencies = ["normal", "critical"]  # omit or list all three to allow every level
 # IPC examples:
 # noctalia msg notification-invoke-latest

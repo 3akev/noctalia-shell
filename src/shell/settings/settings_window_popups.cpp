@@ -953,6 +953,7 @@ void SettingsWindow::openNotificationFilterCreateEditor() {
       .showToast = true,
       .saveHistory = true,
       .playSound = true,
+      .bypassDnd = false,
       .allowPermanent = true,
       .allowedUrgencies = {},
   });

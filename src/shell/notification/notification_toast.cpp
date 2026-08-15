@@ -586,7 +586,7 @@ void NotificationToast::hideDndSuppressed() {
 
   for (std::size_t index = m_entries.size(); index-- > 0;) {
     const auto& entry = m_entries[index];
-    if (entry.dndPolicy == NotificationDndPolicy::ShowToast) {
+    if (entry.dndPolicy != NotificationDndPolicy::Respect) {
       continue;
     }
 
@@ -853,7 +853,7 @@ void NotificationToast::flushPendingAdds() {
   auto pending = std::move(m_pendingAdds);
   m_pendingAdds.clear();
   for (const auto& n : pending) {
-    if (!dndEnabled || n.dndPolicy == NotificationDndPolicy::ShowToast) {
+    if (!dndEnabled || n.dndPolicy != NotificationDndPolicy::Respect) {
       addPopup(n);
     }
   }

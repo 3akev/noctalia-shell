@@ -227,6 +227,7 @@ namespace noctalia::config::schema {
         field(&NotificationFilterConfig::showToast, "show_toast"),
         field(&NotificationFilterConfig::saveHistory, "save_history"),
         field(&NotificationFilterConfig::playSound, "play_sound"),
+        field(&NotificationFilterConfig::bypassDnd, "bypass_dnd"),
         field(&NotificationFilterConfig::allowPermanent, "allow_permanent"),
         field(&NotificationFilterConfig::overrideDuration, "override_duration"),
         field(&NotificationFilterConfig::allowedUrgencies, "allowed_urgencies"),

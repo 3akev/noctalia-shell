@@ -162,6 +162,7 @@ private:
     bool showToast = true;
     bool saveHistory = true;
     bool playSound = true;
+    bool bypassDnd = false;
     bool disallowPermanent = false;
     std::optional<std::int32_t> overrideDuration;
   };

@@ -2964,7 +2964,8 @@ namespace settings {
         SettingsSection::Notifications, "filtering", tr("settings.schema.notifications.filters.label"),
         tr("settings.schema.notifications.filters.description"), {"notification", "filter"},
         NotificationFiltersSetting{.items = cfg.notification.filters},
-        "filter blacklist suppress toast history sound app name desktop entry category urgency"
+        "filter blacklist suppress toast history sound dnd bypass do not disturb app name desktop entry category "
+        "urgency"
     ));
 
     // Bar — register every configured bar so global search can surface settings from all of them.

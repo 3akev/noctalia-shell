@@ -221,7 +221,7 @@ uint32_t NotificationManager::addOrReplace(NotificationRequest request) {
   const Urgency urgency = request.urgency;
   int32_t timeout = request.timeout;
   const NotificationOrigin origin = request.origin;
-  const NotificationDndPolicy dndPolicy = request.dndPolicy;
+  NotificationDndPolicy dndPolicy = request.dndPolicy;
   const bool transient = request.transient;
   auto& actions = request.actions;
   auto& icon = request.icon;
@@ -251,6 +251,9 @@ uint32_t NotificationManager::addOrReplace(NotificationRequest request) {
 
   const ExternalNotificationDispatch dispatch =
       evaluateExternalDispatch(origin, urgency, appName, category, desktopEntry, summary, body, transient);
+  if (dispatch.bypassDnd) {
+    dndPolicy = NotificationDndPolicy::Bypass;
+  }
 
   if (dispatch.overrideDuration.has_value()) {
     timeout = normalizeNotifyExpireTimeout(*dispatch.overrideDuration);
@@ -380,7 +383,8 @@ uint32_t NotificationManager::addOrReplace(NotificationRequest request) {
       cb(n, NotificationEvent::Added);
     }
   }
-  if (!m_doNotDisturb && m_soundPlayer != nullptr && dispatch.playSound) {
+  const bool dndAllowsSound = !m_doNotDisturb || dndPolicy == NotificationDndPolicy::Bypass;
+  if (dndAllowsSound && m_soundPlayer != nullptr && dispatch.playSound) {
     m_soundPlayer->play("notification");
   }
 
@@ -726,6 +730,7 @@ NotificationManager::ExternalNotificationDispatch NotificationManager::evaluateE
   dispatch.saveHistory =
       origin == NotificationOrigin::External && resolved.saveHistory && shouldTrackHistory(origin, urgency, transient);
   dispatch.playSound = resolved.playSound && dispatch.showToast;
+  dispatch.bypassDnd = resolved.bypassDnd;
   dispatch.fullySuppress = !dispatch.showToast && !dispatch.saveHistory;
   dispatch.overrideDuration = resolved.overrideDuration;
   return dispatch;
