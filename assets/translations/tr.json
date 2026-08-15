@@ -93,6 +93,7 @@
       },
       "sysmon": {
         "cpu": "CPU",
+        "cpu-freq": "CPU Frekansı",
         "cpu-temp": "CPU Isısı",
         "disk": "Disk",
         "disk-free": "Kullanılabilir Disk",
@@ -291,7 +292,7 @@
       "dnd-off": "Rahatsız Etmeyi Kapat",
       "dnd-on": "Rahatsız Etmeyi Aç",
       "empty-body": "Son bildirimler burada gözükecek.",
-      "empty-title": "Bildirim yok.",
+      "empty-title": "Bildirim yok",
       "filter": {
         "all": "Tümü",
         "older": "Daha eski",
@@ -485,6 +486,7 @@
         "gauge-layout": "Gösterge Düzeni",
         "glyph": "Simge",
         "hide-when-no-media": "Medya Yokken Gizle",
+        "highlight-color": "Vurgu Rengi",
         "horizontal": "Yatay",
         "image-path": "Görsel",
         "input-opacity": "Giriş Opaklığı",
@@ -522,6 +524,7 @@
         "show-weather": "Hava Durumu",
         "show-when-idle": "Boştayken Göster",
         "stat": "İstatistik",
+        "stat-cpu-freq": "CPU Frekansı",
         "stat-cpu-temp": "CPU Sıcaklığı",
         "stat-cpu-usage": "CPU Kullanımı",
         "stat-gpu-temp": "GPU Sıcaklığı",
@@ -560,6 +563,7 @@
       "types": {
         "audio-visualizer": "Ses Görselleştiricisi",
         "button": "Buton",
+        "calendar": "Takvim",
         "clock": "Saat",
         "fancy-audio-visualizer": "Havalı Ses Görselleştiricisi",
         "label": "Etiket",
@@ -634,6 +638,12 @@
       "no-results": "Sonuç bulunamadı",
       "type-to-search": "Arama…"
     },
+    "origins": {
+      "flatpak": "Flatpak",
+      "nix": "Nix",
+      "snap": "Snap",
+      "system": "Sistem"
+    },
     "providers": {
       "applications": {
         "title": "Uygulamalar"
@@ -700,11 +710,13 @@
       "battery-low-body": "{device}: {percent}% kaldı",
       "battery-low-title": "Düşük Pil",
       "calendar": "Takvim",
+      "keybind-app": "Noctalia",
       "launcher-usage-reset": "Başlat",
       "launcher-usage-reset-success": "Kullanım verisi temizlendi.",
       "lockscreen-widgets-editor": "Kilit ekranı bileşen düzenleyicisi",
       "lockscreen-widgets-editor-blocked-locked": "Kilit ekranı bileşenlerini düzenlemeden önce oturumu açın.",
       "lockscreen-widgets-editor-enabled": "Kilit ekranı bileşen düzenleyicisi açık. Açık pencerelerin düzenleyici ekranını kaplamaması için boş bir masaüstüne geçin.",
+      "mpris-disabled": "MPRIS devre dışı",
       "screen-time-reset": "Ekran Süresi",
       "screen-time-reset-success": "Kullanım geçmişi temizlendi.",
       "wallpaper-palette-export": "Özel Palet",
@@ -786,6 +798,19 @@
         "time-left": "Kalan Süre",
         "unknown-device": "Tanınmayan Cihaz"
       }
+    },
+    "profiles": {
+      "balanced": "Dengeli",
+      "performance": "Performans",
+      "power-saver": "Güç Tasarrufu"
+    }
+  },
+  "session": {
+    "actions": {
+      "custom": "Özel",
+      "lock": "Kilitle",
+      "logout": "Çıkış Yap",
+      "reboot": "Yeniden Başlat"
     }
   },
   "settings": {
@@ -880,32 +905,76 @@
       },
       "export-wallpaper-palette": "Duvar kağıdı paleti, özel palet olarak kaydedilemedi."
     },
+    "idle": {
+      "behavior": {
+        "kind": {
+          "custom": "Özel",
+          "lock": "Kilitle"
+        },
+        "name-label": "isim"
+      },
+      "live-status": {
+        "active": "Aktif"
+      }
+    },
     "navigation": {
       "groups": {
+        "accessibility": "Erişilebilirlik",
         "battery": "Pil",
+        "clipboard": "Pano",
+        "control-center": "Kontrol Merkezi",
+        "keyboard-layout": "Klavye Düzeni",
         "launcher": "Başlat",
         "location": "Konum",
         "media": "Medya",
         "osd": "OSD",
         "screen-time": "Ekran Süresi",
+        "system": "Sistem",
         "theme": "Tema",
         "wallpaper": "Duvar Kağıdı"
       },
       "sections": {
+        "control-center": "Kontrol Merkezi",
+        "desktop": "Masaüstü",
         "launcher": "Başlat",
         "location": "Konum",
+        "niri": "Niri",
+        "notifications": "Bildirimler",
         "osd": "OSD",
         "plugins": "Eklentiler",
+        "security": "Güvenlik",
+        "services": "Servisler",
+        "system": "Sistem",
         "wallpaper": "Duvar Kağıdı"
       }
     },
     "options": {
+      "clipboard": {
+        "auto-paste": {
+          "ctrl-shift-v": "Ctrl+Shift+V",
+          "ctrl-v": "Ctrl+V",
+          "shift-insert": "Shift+Insert"
+        }
+      },
+      "control-center": {
+        "sidebar": {
+          "compact": "Kompakt"
+        }
+      },
       "dock-launcher-position": {
         "end": "Son",
         "none": "Hiçbiri",
         "start": "Baş"
       },
+      "edge": {
+        "left": "Sol",
+        "right": "Sağ"
+      },
+      "font-weight": {
+        "thin": "İnce"
+      },
       "hot-corners": {
+        "control-center": "Kontrol Merkezi",
         "launcher": "Başlat",
         "window-switcher": "Pencere Değiştirici"
       },
@@ -961,28 +1030,54 @@
       },
       "plugins": {
         "delete": "Sil",
-        "delete-confirm-title": "\"{name}\"i sil?"
+        "delete-confirm-title": "\"{name}\"i sil?",
+        "remove": "Eklentiyi kaldır",
+        "title": "Eklentiler"
       },
       "sources": {
+        "add": "Kaynak Ekle",
+        "add-title": "Eklenti Kaynağı Ekle",
+        "edit": "Kaynağı düzenle",
+        "edit-title": "Eklenti kaynağını düzenle",
         "errors": {
           "location-required": "Kaynak "
+        },
+        "kind": {
+          "git": "Git"
         },
         "location-label": "Konum",
         "location-placeholder-git": "https://github.com/me/noctalia-plugins",
         "location-placeholder-path": "~/dev/noctalia-plugins",
         "save": "Kaydet"
+      },
+      "store": {
+        "categories": "Kategoriler"
       }
     },
     "schema": {
       "appearance": {
+        "animation-speed": {
+          "label": "Animasyon Hızı"
+        },
+        "animations": {
+          "label": "Animasyonlar"
+        },
         "export-wallpaper-palette": {
           "button": "Özel Paleti Farklı Kaydet",
           "description": "Şuanki, duvar kağıdına göre oluşturulmuş paleti, tekrar kullanılabilir özel palet dosyası olarak farklı kaydet",
           "label": "Duvar Kağıdı Paletini Dışa Aktar"
         },
         "theme-mode": {
-          "description": "Günün saatine göre koyu, açık veya otomatik seçeneğini seçin",
+          "description": "Günün saatine göre Koyu, Açık veya Otomatik modunu seç",
           "label": "Tema Modu"
+        }
+      },
+      "desktop": {
+        "hot-corners-top-left": {
+          "label": "Sol Üst Köşe"
+        },
+        "hot-corners-top-right": {
+          "label": "Sağ Üst Köşe"
         }
       },
       "dock": {
@@ -1083,7 +1178,15 @@
           "label": "Kilit Ekranı Bileşeni Editörü"
         }
       },
+      "notifications": {
+        "max-visible": {
+          "description": "Ekranda aynı anda gösterilecek en fazla toast sayısı (kullanılablir tüm alanı doldurmak için 0)"
+        }
+      },
       "panels": {
+        "control-center-width": {
+          "label": "Kontrol Merkezi Genişliği"
+        },
         "launcher-app-grid": {
           "description": "Sonuçlar yalnızca uygulamalarken uygulamaları, altlarında etiketleri yer alan bir uygulama ikonu ızgarası olarak göster",
           "label": "Uygulama Izgarası Görünümü"
@@ -1123,6 +1226,9 @@
         "launcher-global-windows": {
           "description": "Pencereleri önek olmadan aramada göster",
           "label": "Global Aramada Pencereler"
+        },
+        "launcher-pinned-apps": {
+          "label": "Sabitlenmiş Uygulamalar"
         },
         "launcher-prefix-calculator": {
           "description": "Hesap makinesi hesaplarını tetiklemek için önek",
@@ -1188,8 +1294,20 @@
           "description": "Çubuk bileşenine tıklayarak açıldığında duvar kağıdı seçicisinin nerede konumlandırılacağı",
           "label": "Çubuk Boyunca"
         },
+        "placement-clipboard": {
+          "label": "Konumlandırma"
+        },
+        "placement-control-center": {
+          "label": "Konumlandırma"
+        },
         "placement-launcher": {
           "description": "Başlatın çubuğa mı tutunacağını, yoksa ekranda seçilen konumda mı yer alacağını seçin",
+          "label": "Konumlandırma"
+        },
+        "placement-polkit": {
+          "label": "Konumlandırma"
+        },
+        "placement-session": {
           "label": "Konumlandırma"
         },
         "placement-wallpaper": {
@@ -1197,20 +1315,24 @@
           "label": "Konumlandırma"
         },
         "position-clipboard": {
-          "description": "Panonun nerede açılacağı; Çubuğu Takip Et, çubuğa yakın olmasını sağlar"
+          "description": "Panonun nerede açılacağı; Çubuğu Takip Et, çubuğa yakın olmasını sağlar",
+          "label": "Konum"
         },
         "position-control-center": {
-          "description": "Kontrol Merkezinin nerede açılacağı; Çubuğu Takip Et, çubuğa yakın olmasını sağlar"
+          "description": "Kontrol Merkezinin nerede açılacağı; Çubuğu Takip Et, çubuğa yakın olmasını sağlar",
+          "label": "Konum"
         },
         "position-launcher": {
           "description": "Başlatın nerede açılacağı; Çubuğu Takip Et, çubuğa yakın olmasını sağlar",
           "label": "Konum"
         },
         "position-polkit": {
-          "description": "Polkit doğrulamasının nerede açılacağı; Çubuğu Takip Et, çubuğa yakın olmasını sağlar"
+          "description": "Polkit doğrulamasının nerede açılacağı; Çubuğu Takip Et, çubuğa yakın olmasını sağlar",
+          "label": "Konum"
         },
         "position-session": {
-          "description": "Oturum panelinin nerede açılacağı; Çubuğu Takip Et, çubuğa yakın olmasını sağlar"
+          "description": "Oturum panelinin nerede açılacağı; Çubuğu Takip Et, çubuğa yakın olmasını sağlar",
+          "label": "Konum"
         },
         "position-wallpaper": {
           "description": "Duvar kağıdı seçicisinin nerede açılacağı; Çubuğu Takip Et, çubuğa yakın olmasını sağlar",
@@ -1218,6 +1340,18 @@
         }
       },
       "services": {
+        "calendar": {
+          "label": "Takvim"
+        },
+        "calendar-week-numbers": {
+          "label": "Hafta Numaraları"
+        },
+        "ddcutil": {
+          "label": "DDC/CI (ddcutil)"
+        },
+        "force-night-light": {
+          "label": "Gece Işığına Zorla"
+        },
         "location-address": {
           "description": "Konumlandırma için şehir veya adres bilgisi, otomatik-konumlandırma kapalıyken kullanılır",
           "label": "Adres",
@@ -1227,20 +1361,37 @@
           "description": "noctalia.dev aracılığıyla konumu IP üzerinden otomatikmen tespit et",
           "label": "Otomatik-Konumlandır (IP)"
         },
+        "night-light": {
+          "label": "Gece Işığı"
+        },
         "sunrise": {
           "description": "HH:MM manuel gün doğumu zamanı, konum ayarlanmadığında kullanılır"
         },
         "sunset": {
           "description": "HH:MM manuel gün batımı zamanı, konum ayarlanmadığında kullanılır"
+        },
+        "system-monitor": {
+          "stats": {
+            "cpu-freq": "CPU Frekansı",
+            "cpu-temp": "CPU Isısı",
+            "cpu-usage": "CPU Kullanımı",
+            "gpu-temp": "GPU Isısı",
+            "gpu-usage": "GPU Kullanımı",
+            "ram-usage": "RAM Kullanımı"
+          }
         }
       },
       "shell": {
+        "clipboard-enabled": {
+          "label": "Pano"
+        },
         "greeter-sync-auto": {
           "description": "Duvar kağıdı, renkler, veya tema modu değiştiğinde otomatikman karşılayıcı ekranını senkronize et"
         },
         "launch-apps-custom-command": {
           "description": "Başlatıcıdan, dock'tan ve görev çubuğundan başlatılan uygulamaları sarar; $CMD'yi orijinal komutla değiştirir.",
-          "label": "Özel Uygulama Çalıştırma Komutu"
+          "label": "Özel Uygulama Çalıştırma Komutu",
+          "placeholder": "$CMD"
         },
         "niri-overview-type-to-launch": {
           "description": "Niri genel bakışında yazarken başlatı aç; genel bakış açıkken küçük bir klavye odak yüzeyi kullanır",
@@ -1315,7 +1466,8 @@
           "label": "Çıkış Ses Düzeyi"
         },
         "osd-kinds-wifi": {
-          "description": "Wi-Fi açılıp kapandığında OSD bildirimi göster"
+          "description": "Wi-Fi açılıp kapandığında OSD bildirimi göster",
+          "label": "Wi-Fi"
         },
         "osd-monitors": {
           "description": "OSD bildirimlerinin gösterileceği monitörü seçin; tüm monitörlerde gösterilmesi için boş bırakın",
@@ -1342,11 +1494,17 @@
           "description": "Depolanan uygulama başına odaklı kullanım geçmişini sıfırla",
           "label": "Ekran Süresi Verisini Sıfırla"
         },
+        "screenshot-copy-to-clipboard": {
+          "label": "Panoya Kopyala"
+        },
         "screenshot-filename-pattern": {
           "description": "Uzantısız strftime biçim dizgesi (.png otomatik eklenir); Unix zaman damgası için %s kullanın"
         },
         "screenshot-save-to-file": {
           "label": "Dosyaya Kaydet"
+        },
+        "screenshot-show-cursor": {
+          "label": "İmleci Göster"
         },
         "show-location": {
           "description": "Konum ismini hava durumu bileşenlerinde göster",
@@ -1406,12 +1564,35 @@
       "clear-glyph": "Temizle"
     },
     "widgets": {
+      "instances": {
+        "ram": "RAM"
+      },
       "options": {
         "time": "Saat"
       },
       "settings": {
+        "color": {
+          "label": "Renk"
+        },
+        "custom-image": {
+          "dialog-title": "Özel Resim Seç",
+          "label": "Özel Resim"
+        },
+        "custom-image-colorize": {
+          "label": "Özel Resmi Renklendir"
+        },
         "format": {
           "description": "Saat biçimi dizgesi"
+        },
+        "height": {
+          "label": "Yükseklik"
+        },
+        "hide-album-art": {
+          "label": "Albüm Kapağını Gizle"
+        },
+        "hide-artist": {
+          "description": "Sanatçı adını gizle ve sadece parça başlığını göster",
+          "label": "Sanatçıyı Gizle"
         },
         "hide-when-no-media": {
           "description": "Hiçbir MPRIS oynatıcısı aktif değişken medya bileşenini gizle",

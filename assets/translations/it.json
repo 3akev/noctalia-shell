@@ -548,6 +548,7 @@
         "stat-gpu-temp": "Temp GPU",
         "stat-gpu-usage": "Uso GPU",
         "stat-gpu-vram": "VRAM GPU",
+        "stat-gpu-vram-used": "VRAM GPU utilizzata",
         "stat-net-rx": "Rete Rx",
         "stat-net-tx": "Rete Tx",
         "stat-none": "Nessuna",
@@ -2307,6 +2308,10 @@
           "description": "Visualizza le etichette di testo sotto le icone di collegamento nella scheda Home",
           "label": "Mostra etichette di scelta rapida"
         },
+        "launcher-app-actions": {
+          "description": "Mostra le voci delle azioni accanto alle applicazioni nei risultati",
+          "label": "Mostra azioni app"
+        },
         "launcher-app-grid": {
           "description": "Mostra una griglia di icone delle applicazioni con le etichette sottostanti quando i risultati riguardano solo le app",
           "label": "Vista app a griglia"
@@ -3252,6 +3257,7 @@
         "gpu-temp": "Temperatura GPU",
         "gpu-usage": "Uso GPU",
         "gpu-vram": "VRAM GPU",
+        "gpu-vram-used": "VRAM GPU utilizzata",
         "graph": "Grafico",
         "graphic": "Grafico",
         "hidden": "Nascosto",
@@ -3608,7 +3614,7 @@
         "max-label-chars": {
           "description": "Numero massimo di caratteri da mostrare per i nomi workspace",
           "label": "Caratteri etichetta max",
-          "workspaces-description": "Caratteri massimi per le etichette nome workspace"
+          "workspaces-description": "Numero massimo di caratteri per etichette non numeriche delle aree di lavoro"
         },
         "max-length": {
           "description": "Lunghezza massima widget in pixel",
@@ -3699,7 +3705,7 @@
           "label": "Indicatore finestra attiva"
         },
         "show-all-outputs": {
-          "description": "Include finestre da ogni display su questo widget",
+          "description": "Include finestre da ogni monitor su questo widget",
           "label": "Mostra tutti i monitor"
         },
         "show-all-workspaces": {

@@ -548,6 +548,7 @@
         "stat-gpu-temp": "GPU 温度",
         "stat-gpu-usage": "GPU 使用率",
         "stat-gpu-vram": "GPU 显存",
+        "stat-gpu-vram-used": "GPU 显存使用量",
         "stat-net-rx": "网络下行",
         "stat-net-tx": "网络上行",
         "stat-none": "无",
@@ -659,6 +660,7 @@
       "type-to-search": "输入以搜索…"
     },
     "origins": {
+      "appimage": "AppImage",
       "flatpak": "Flatpak",
       "nix": "Nix",
       "snap": "Snap",
@@ -1523,6 +1525,7 @@
       },
       "store": {
         "add": "添加到 Noctalia",
+        "back-to-catalog": "返回插件目录",
         "categories": "类别",
         "category-all": "全部",
         "empty": "未找到插件",
@@ -2304,6 +2307,10 @@
         "home-shortcuts-show-labels": {
           "description": "在主页选项卡的快捷项图标下方显示文本标签",
           "label": "显示快捷项标签"
+        },
+        "launcher-app-actions": {
+          "description": "在搜索结果中同时显示应用及其操作项",
+          "label": "显示应用操作"
         },
         "launcher-app-grid": {
           "description": "当搜索结果仅包含应用时，以网格形式显示应用图标，并在图标下方显示名称",
@@ -3250,6 +3257,7 @@
         "gpu-temp": "GPU 温度",
         "gpu-usage": "GPU 使用率",
         "gpu-vram": "GPU 显存",
+        "gpu-vram-used": "GPU 显存使用量",
         "graph": "图表",
         "graphic": "图形",
         "hidden": "隐藏",
@@ -3606,7 +3614,7 @@
         "max-label-chars": {
           "description": "工作区名称显示的最大字符数",
           "label": "最大标签字符数",
-          "workspaces-description": "工作区名称标签的最大字符数"
+          "workspaces-description": "非数字工作区标签的最大字符数"
         },
         "max-length": {
           "description": "小组件最大长度（像素）",
@@ -3698,6 +3706,10 @@
         },
         "show-all-outputs": {
           "description": "显示所有屏幕上的窗口",
+          "label": "包含所有屏幕"
+        },
+        "show-all-workspaces": {
+          "description": "显示所有屏幕上的工作区",
           "label": "包含所有屏幕"
         },
         "show-caps-lock": {

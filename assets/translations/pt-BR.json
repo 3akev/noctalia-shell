@@ -548,6 +548,7 @@
         "stat-gpu-temp": "Temperatura da GPU",
         "stat-gpu-usage": "Uso da GPU",
         "stat-gpu-vram": "VRAM da GPU",
+        "stat-gpu-vram-used": "VRAM Em Uso da GPU",
         "stat-net-rx": "Velocidade de Download",
         "stat-net-tx": "Velocidade de Upload",
         "stat-none": "Nenhum",
@@ -2307,6 +2308,10 @@
           "description": "Mostrar rótulos de texto sob ícones de atalho na aba de início",
           "label": "Mostra Rótulos de Atalhos"
         },
+        "launcher-app-actions": {
+          "description": "Mostrar ações de aplicação junto com as aplicações",
+          "label": "Mostrar Ações de Aplicação"
+        },
         "launcher-app-grid": {
           "description": "Exibe uma grade de ícones de aplicativos com legendas abaixo deles quando os resultados forem apenas aplicativos",
           "label": "Visão em Grade de Apps"
@@ -3252,6 +3257,7 @@
         "gpu-temp": "Temperatura da GPU",
         "gpu-usage": "Uso da GPU",
         "gpu-vram": "VRAM da GPU",
+        "gpu-vram-used": "VRAM Em Uso da GPU",
         "graph": "Gráfico",
         "graphic": "Gráfico",
         "hidden": "Oculto",
@@ -3608,7 +3614,7 @@
         "max-label-chars": {
           "description": "Número máximo de caracteres a serem exibidos nos nomes dos espaços de trabalho",
           "label": "Máximo de Caracteres de Rótulo",
-          "workspaces-description": "Número máximo de caracteres para rótulos de nomes de espaços de trabalho"
+          "workspaces-description": "Número máximo de caracteres para rótulos não-numéricos de espaços de trabalho"
         },
         "max-length": {
           "description": "Comprimento máximo do widget em pixels",
