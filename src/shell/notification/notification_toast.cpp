@@ -577,7 +577,7 @@ void NotificationToast::hideAll() {
       if (entry.rawTimeoutMs <= 0) {
         continue;
       }
-      const float remaining = std::clamp(entry.remainingProgress, 0.0f, 1.0f);
+      const float remaining = std::clamp(entry.remainingProgress, 0.0F, 1.0F);
       const int32_t remainingMs = std::max<int32_t>(
           0, static_cast<int32_t>(std::ceil(static_cast<float>(entry.displayDurationMs) * remaining))
       );
