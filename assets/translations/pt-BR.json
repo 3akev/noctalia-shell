@@ -3502,6 +3502,10 @@
           "description": "Oculta ícones de privacidade inativos e oculta o widget quando nada estiver ativo",
           "label": "Ocultar Inativo"
         },
+        "hide-passive": {
+          "description": "Ocultar itens do tray cujo status do StatusNotifierItem seja \"Passive\"",
+          "label": "Ocultar Itens Passivos"
+        },
         "hide-when-empty": {
           "description": "Ocultar ícones da área de trabalho quando não houver janelas abertas",
           "label": "Ocultar Quando Inativo",

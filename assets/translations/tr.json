@@ -1482,8 +1482,6 @@
         "held-back": "eski sürüm",
         "held-back-hint": "v{version} sürümü {required} eklenti API'sine ihtiyaç duyuyor; Noctalia sürümünüz en fazla {current} destekliyor. Yüklemek için Noctalia'yı güncelleyin.",
         "incompatible-plugin-api": "uyumsuz eklenti API'si",
-        "loading": "Eklentiler yükleniyor...",
-        "refreshing": "Eklentiler yenileniyor...",
         "remove": "Eklentiyi kaldır",
         "requires": "Gereksinimler: {dependencies}",
         "title": "Eklentiler",
