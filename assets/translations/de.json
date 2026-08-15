@@ -3606,7 +3606,7 @@
         "max-label-chars": {
           "description": "Maximale Anzahl der angezeigten Zeichen für Arbeitsbereichsnamen",
           "label": "Maximale Beschriftungszeichen",
-          "workspaces-description": "Maximale Zeichenanzahl für Beschriftungen von Arbeitsbereichsnamen"
+          "workspaces-description": "Maximale Zeichenanzahl für nicht-numerische Arbeitsbereichsbeschriftungen"
         },
         "max-length": {
           "description": "Maximale Widget-Länge in Pixeln",
