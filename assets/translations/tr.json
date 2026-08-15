@@ -453,6 +453,9 @@
         "show": "Göster",
         "trash": "Sil"
       },
+      "dialogs": {
+        "select-sticker-image": "Çıkartma resmi seç"
+      },
       "settings": {
         "aspect-ratio": "En Boy Oranı",
         "background": "Arka Plan",
@@ -522,6 +525,7 @@
         "show-unlock-hint": "Kilit Açama İpucu",
         "show-vpn-label": "VPN Etiketini Göster",
         "show-weather": "Hava Durumu",
+        "show-week-numbers": "Hafta numaralarını göster",
         "show-when-idle": "Boştayken Göster",
         "stat": "İstatistik",
         "stat-cpu-freq": "CPU Frekansı",
@@ -530,6 +534,7 @@
         "stat-gpu-temp": "GPU Sıcaklığı",
         "stat-gpu-usage": "GPU Kullanımı",
         "stat-gpu-vram": "GPU VRAM",
+        "stat-gpu-vram-used": "GPU VRAM Kullanımı",
         "stat-net-rx": "Ağ Alımı (RX)",
         "stat-net-tx": "Ağ Gönderimi (TX)",
         "stat-none": "Hiçbiri",
@@ -639,6 +644,7 @@
       "type-to-search": "Arama…"
     },
     "origins": {
+      "appimage": "AppImage",
       "flatpak": "Flatpak",
       "nix": "Nix",
       "snap": "Snap",
@@ -710,6 +716,7 @@
       "battery-low-body": "{device}: {percent}% kaldı",
       "battery-low-title": "Düşük Pil",
       "calendar": "Takvim",
+      "calendar-google-connect-failed-title": "Google Takvim bağlantısı başarısız oldu",
       "keybind-app": "Noctalia",
       "launcher-usage-reset": "Başlat",
       "launcher-usage-reset-success": "Kullanım verisi temizlendi.",
@@ -809,8 +816,10 @@
     "actions": {
       "custom": "Özel",
       "lock": "Kilitle",
+      "lock-and-suspend": "Kilitle ve Askıya Al",
       "logout": "Çıkış Yap",
-      "reboot": "Yeniden Başlat"
+      "reboot": "Yeniden Başlat",
+      "suspend": "Askıya Al"
     }
   },
   "settings": {
@@ -1184,7 +1193,12 @@
         }
       },
       "panels": {
+        "control-center-sidebar": {
+          "description": "Kenar çubuğunun nasıl gösterileceğini seç",
+          "label": "Kenar çubuğu"
+        },
         "control-center-width": {
+          "description": "Kontrol merkezi panelinin pixel genişliği (kompakt ve kenar çubuğu olmayan modlar buna göre küçülür)",
           "label": "Kontrol Merkezi Genişliği"
         },
         "launcher-app-grid": {
@@ -1667,6 +1681,7 @@
       "offline-mode-notice": {
         "launcher": "Döviz kuru çekimi çalışmayacak.",
         "location": "Hava durumu ve konum sorgulamaları çalışmayacak.",
+        "services": "Takvim hesabı eşitlemesi çalışmayacak",
         "title": "Çevrimdışı Mod"
       },
       "reset-page": "Sayfayı Sıfırla",
