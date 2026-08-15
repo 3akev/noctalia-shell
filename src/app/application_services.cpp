@@ -1126,14 +1126,16 @@ void Application::initSystemBusServices() {
       m_upowerService = std::make_unique<UPowerService>(*m_systemBus);
       m_batteryHookState.reset(m_upowerService->state());
       m_batteryWarningMonitor.evaluate(m_configService.config().battery, *m_upowerService, m_notificationManager);
-      m_upowerService->setChangeCallback([this, shouldRefreshControlCenter]() {
+      m_upowerService->setChangeCallback([this, shouldRefreshControlCenter](const UPowerChange& change) {
         onUpowerStateChangedForHooks();
         m_batteryWarningMonitor.evaluate(m_configService.config().battery, *m_upowerService, m_notificationManager);
         if (m_bluetoothService != nullptr) {
           m_bluetoothService->refreshBatteryFromUPower();
         }
         m_bar.refresh();
-        m_settingsWindow.onExternalOptionsChanged();
+        if (change.deviceCatalogChanged) {
+          m_settingsWindow.onExternalOptionsChanged();
+        }
         if (shouldRefreshControlCenter()) {
           m_panelManager.refresh();
         }

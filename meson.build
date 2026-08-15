@@ -1191,6 +1191,7 @@ if build_tests
     'tray_identifier',
     'triad_workspace_backend',
     'ui_tree_reconciler',
+    'upower_device_catalog',
     'wayland_output_scale',
     'wayland_toplevels_identity',
     'widget_action',

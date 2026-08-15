@@ -3488,10 +3488,6 @@
           "description": "Tray item IDs to hide",
           "label": "Hidden Items"
         },
-        "hide-passive": {
-          "description": "Hide tray items whose StatusNotifierItem status is Passive",
-          "label": "Hide Passive Items"
-        },
         "hide-album-art": {
           "description": "Hide the album artwork",
           "label": "Hide Album Art"
@@ -3507,6 +3503,10 @@
         "hide-inactive": {
           "description": "Hide inactive privacy icons and hide the widget when nothing is active",
           "label": "Hide Inactive"
+        },
+        "hide-passive": {
+          "description": "Hide tray items whose StatusNotifierItem status is Passive",
+          "label": "Hide Passive Items"
         },
         "hide-when-empty": {
           "description": "Hide workspace pills when there are no open windows",
