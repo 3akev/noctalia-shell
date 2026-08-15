@@ -328,6 +328,9 @@ void Application::initLockScreenAndSession() {
         m_lockscreenWidgetsController.onLockStateChanged();
         m_idleManager.setSessionLocked(true);
         m_hookManager.fire(HookKind::SessionLocked);
+        if (m_logindService != nullptr) {
+          m_logindService->setSessionLockedHint(true);
+        }
         releaseSleepDelayInhibitIfPending();
       },
       [this]() {
@@ -335,13 +338,17 @@ void Application::initLockScreenAndSession() {
         m_lockscreenWidgetsController.onLockStateChanged();
         m_idleManager.setSessionLocked(false);
         m_hookManager.fire(HookKind::SessionUnlocked);
-        // Lock aborted before engage (e.g. compositor finished the lock object) — still release
-        // so PrepareForSleep is not stuck on the delay inhibit.
         releaseSleepDelayInhibitIfPending();
         requestAllSurfacesRedraw();
         if (m_logindService != nullptr) {
-          m_logindService->syncSessionUnlocked();
+          m_logindService->setSessionLockedHint(false);
         }
+      },
+      [this]() {
+        m_idleGraceOverlay.hide();
+        m_lockscreenWidgetsController.onLockStateChanged();
+        releaseSleepDelayInhibitIfPending();
+        requestAllSurfacesRedraw();
       }
   );
   if (m_logindService != nullptr) {
@@ -359,12 +366,6 @@ void Application::initLockScreenAndSession() {
       if (m_lockScreen.isActive()) {
         m_lockScreen.unlock();
       }
-    });
-    m_lockScreen.setLockEngagedCallback([this]() {
-      if (!m_configService.isLockScreenEnabled() || m_logindService == nullptr) {
-        return;
-      }
-      m_logindService->syncSessionLocked();
     });
   }
 
