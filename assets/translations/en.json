@@ -659,6 +659,14 @@
       "no-results": "No results found",
       "type-to-search": "Type to search…"
     },
+    "origins": {
+      "appimage": "AppImage",
+      "flatpak": "Flatpak",
+      "nix": "Nix",
+      "snap": "Snap",
+      "system": "System",
+      "user": "User"
+    },
     "providers": {
       "applications": {
         "title": "Applications"
@@ -680,14 +688,6 @@
       "window": {
         "title": "Windows"
       }
-    },
-    "origins": {
-      "appimage": "AppImage",
-      "flatpak": "Flatpak",
-      "nix": "Nix",
-      "snap": "Snap",
-      "system": "System",
-      "user": "User"
     },
     "search-placeholder": "Search applications…"
   },
