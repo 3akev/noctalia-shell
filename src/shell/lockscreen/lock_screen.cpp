@@ -232,6 +232,15 @@ void LockScreen::requestUpdate() {
   }
 }
 
+void LockScreen::forceRepaintAfterResume() {
+  for (auto& inst : m_instances) {
+    if (inst.surface != nullptr) {
+      inst.surface->discardPendingFrameCallback();
+      inst.surface->requestRedraw();
+    }
+  }
+}
+
 void LockScreen::onOutputChange() {
   if (m_lockDeferred) {
     if (m_wayland != nullptr && !m_wayland->outputs().empty()) {
