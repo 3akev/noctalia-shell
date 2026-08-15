@@ -289,9 +289,9 @@ std::vector<LauncherResult> AppProvider::query(std::string_view text) const {
       scored.emplace_back(s, std::make_pair(&entry, nullptr));
     }
 
-    if (!m_config->config().shell.launcher.showAppActions)
+    if (m_config == nullptr || !m_config->config().shell.launcher.showAppActions) {
       continue;
-
+    }
     for (const auto& action : entry.actions) {
       const double actionScore = scoreAction(pattern, action);
       if (FuzzyMatch::isMatch(actionScore)) {
