@@ -569,7 +569,29 @@ void NotificationToast::onOutputChange() {
   requestLayout();
 }
 
+void NotificationToast::hideAll() {
+  m_pendingAdds.clear();
+
+  if (m_notifications != nullptr) {
+    for (const auto& entry : m_entries) {
+      if (entry.rawTimeoutMs <= 0) {
+        continue;
+      }
+      const float remaining = std::clamp(entry.remainingProgress, 0.0f, 1.0f);
+      const int32_t remainingMs = std::max<int32_t>(
+          0, static_cast<int32_t>(std::ceil(static_cast<float>(entry.displayDurationMs) * remaining))
+      );
+      m_notifications->resumeExpiry(entry.notificationId, remainingMs);
+    }
+  }
+
+  if (!m_entries.empty() || !m_instances.empty()) {
+    destroySurfaces();
+  }
+}
+
 void NotificationToast::requestLayout() {
+
   for (auto& inst : m_instances) {
     if (inst->surface != nullptr) {
       inst->rebuildRequested = true;
@@ -809,6 +831,10 @@ void NotificationToast::schedulePendingAdds() {
 void NotificationToast::flushPendingAdds() {
   m_pendingAddsScheduled = false;
   if (m_pendingAdds.empty()) {
+    return;
+  }
+  if (m_notifications->doNotDisturb()) {
+    m_pendingAdds.clear();
     return;
   }
   auto pending = std::move(m_pendingAdds);

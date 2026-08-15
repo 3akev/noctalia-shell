@@ -1164,6 +1164,7 @@ if build_tests
     'location_service',
     'math_provider',
     'monitor_selector',
+    'notification_dnd',
     'notification_filter',
     'notification_history_utf8',
     'niri_workspace_backend',
