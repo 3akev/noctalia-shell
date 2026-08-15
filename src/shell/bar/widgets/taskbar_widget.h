@@ -50,6 +50,7 @@ struct TaskbarWidgetOptions {
   ColorSpec activeIndicatorColor = colorSpecFromRole(ColorRole::Primary);
   float activeOpacity = 1.0F;
   float inactiveOpacity = 1.0F;
+  int itemSpacing = 4;
   std::vector<std::string> pinned;
   float pinnedOpacity = 0.5F;
   ColorSpec focusedColor = colorSpecFromRole(ColorRole::Primary);

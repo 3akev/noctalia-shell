@@ -67,6 +67,13 @@ const noctalia::bar::WidgetDefinition<TaskbarWidgetOptions>& taskbarWidgetDefini
                   .step = 0.01,
                   .presentation = presentation("taskbar.windows"),
               }),
+              field<&Options::itemSpacing>({
+                  .key = "item_spacing",
+                  .minValue = 0.0,
+                  .maxValue = 48.0,
+                  .step = 1.0,
+                  .presentation = presentation("taskbar.windows", matches("group_by_workspace", {"false"})),
+              }),
               field<&Options::pinned>({
                   .key = "pinned",
                   .presentation = presentation(
@@ -122,14 +129,18 @@ const noctalia::bar::WidgetDefinition<TaskbarWidgetOptions>& taskbarWidgetDefini
                   .key = "only_active_workspace",
                   .presentation = presentation("taskbar.grouping", std::nullopt, true),
               }),
-              field<&Options::groupByWorkspace>({
-                  .key = "group_by_workspace",
-                  .presentation = presentation("taskbar.grouping", std::nullopt, true),
-              }),
-              field<&Options::hideEmptyWorkspaces>({
-                  .key = "hide_empty_workspaces",
-                  .presentation = presentation("taskbar.grouping", groupedOnly(), true),
-              }),
+              field<&Options::groupByWorkspace>(
+                  {
+                      .key = "group_by_workspace",
+                      .presentation = presentation("taskbar.grouping", std::nullopt, true),
+                  }
+              ),
+              field<&Options::hideEmptyWorkspaces>(
+                  {
+                      .key = "hide_empty_workspaces",
+                      .presentation = presentation("taskbar.grouping", groupedOnly(), true),
+                  }
+              ),
               field<&Options::workspaceGroupContent>(
                   {
                       .key = "workspace_group_content",
@@ -154,28 +165,38 @@ const noctalia::bar::WidgetDefinition<TaskbarWidgetOptions>& taskbarWidgetDefini
                       .presentation = presentation("taskbar.grouping", groupedOnly(), true),
                   }
               ),
-              field<&Options::groupSingleIconPerApp>({
-                  .key = "group_single_icon_per_app",
-                  .presentation = presentation(
-                      "taskbar.grouping",
-                      all({
-                          {"group_by_workspace", {"true"}},
-                          {"workspace_group_content", {"icons"}},
-                      }),
-                      true
-                  ),
-              }),
-              field<&Options::workspaceGroupCapsule>({
-                  .key = "workspace_group_capsule",
-                  .presentation = presentation(
-                      "taskbar.grouping", groupedOnly(), true,
-                      "settings.widgets.settings.workspace-group-capsule.description"
-                  ),
-              }),
-              field<&Options::showWorkspaceLabel>({
-                  .key = "show_workspace_label",
-                  .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
-              }),
+              field<&Options::groupSingleIconPerApp>(
+                  {
+                      .key = "group_single_icon_per_app",
+                      .presentation =
+                          presentation(
+                              "taskbar.grouping",
+                              all(
+                                  {
+                                      {"group_by_workspace", {"true"}},
+                                      {"workspace_group_content", {"icons"}},
+                                  }
+                              ),
+                              true
+                          ),
+                  }
+              ),
+              field<&Options::workspaceGroupCapsule>(
+                  {
+                      .key = "workspace_group_capsule",
+                      .presentation =
+                          presentation(
+                              "taskbar.grouping", groupedOnly(), true,
+                              "settings.widgets.settings.workspace-group-capsule.description"
+                          ),
+                  }
+              ),
+              field<&Options::showWorkspaceLabel>(
+                  {
+                      .key = "show_workspace_label",
+                      .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
+                  }
+              ),
               field<&Options::workspaceLabelPlacement>(
                   {
                       .key = "workspace_label_placement",
@@ -200,44 +221,62 @@ const noctalia::bar::WidgetDefinition<TaskbarWidgetOptions>& taskbarWidgetDefini
                       .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
                   }
               ),
-              field<&Options::minimal>({
-                  .key = "minimal",
-                  .presentation = presentation(
-                      "taskbar.workspace-labels",
-                      all({
-                          {"group_by_workspace", {"true"}},
-                          {"show_workspace_label", {"true"}},
-                      }),
-                      true, "settings.widgets.settings.minimal.taskbar-description"
-                  ),
-              }),
-              field<&Options::focusedOutputOnly>({
-                  .key = "focused_output_only",
-                  .presentation = presentation(
-                      "taskbar.workspace-labels",
-                      all({
-                          {"group_by_workspace", {"true"}},
-                          {"show_workspace_label", {"true"}},
-                      }),
-                      true, "settings.widgets.settings.focused-output-only.taskbar-description"
-                  ),
-              }),
-              field<&Options::focusedColor>({
-                  .key = "focused_color",
-                  .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
-              }),
-              field<&Options::occupiedColor>({
-                  .key = "occupied_color",
-                  .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
-              }),
-              field<&Options::emptyColor>({
-                  .key = "empty_color",
-                  .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
-              }),
-              field<&Options::urgentColor>({
-                  .key = "urgent_color",
-                  .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
-              }),
+              field<&Options::minimal>(
+                  {
+                      .key = "minimal",
+                      .presentation =
+                          presentation(
+                              "taskbar.workspace-labels",
+                              all(
+                                  {
+                                      {"group_by_workspace", {"true"}},
+                                      {"show_workspace_label", {"true"}},
+                                  }
+                              ),
+                              true, "settings.widgets.settings.minimal.taskbar-description"
+                          ),
+                  }
+              ),
+              field<&Options::focusedOutputOnly>(
+                  {
+                      .key = "focused_output_only",
+                      .presentation =
+                          presentation(
+                              "taskbar.workspace-labels",
+                              all(
+                                  {
+                                      {"group_by_workspace", {"true"}},
+                                      {"show_workspace_label", {"true"}},
+                                  }
+                              ),
+                              true, "settings.widgets.settings.focused-output-only.taskbar-description"
+                          ),
+                  }
+              ),
+              field<&Options::focusedColor>(
+                  {
+                      .key = "focused_color",
+                      .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
+                  }
+              ),
+              field<&Options::occupiedColor>(
+                  {
+                      .key = "occupied_color",
+                      .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
+                  }
+              ),
+              field<&Options::emptyColor>(
+                  {
+                      .key = "empty_color",
+                      .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
+                  }
+              ),
+              field<&Options::urgentColor>(
+                  {
+                      .key = "urgent_color",
+                      .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
+                  }
+              ),
           },
       .commonOverrides = {
           {

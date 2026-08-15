@@ -3580,6 +3580,10 @@
           "description": "Network interface to monitor; leave empty to use the total across all interfaces",
           "label": "Interface"
         },
+        "item-spacing": {
+          "description": "Space between taskbar items when workspace grouping is off",
+          "label": "Item Spacing"
+        },
         "label": {
           "description": "Optional static text shown on this button",
           "label": "Label"

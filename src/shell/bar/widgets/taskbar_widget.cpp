@@ -571,7 +571,7 @@ void TaskbarWidget::doLayout(Renderer& renderer, float containerWidth, float con
   m_taskStrip->setDirection(m_vertical ? FlexDirection::Vertical : FlexDirection::Horizontal);
   m_taskStrip->setAlign(FlexAlign::Center);
   if (!m_groupByWorkspace) {
-    m_taskStrip->setGap(Style::spaceSm * m_contentScale);
+    m_taskStrip->setGap(static_cast<float>(m_configOptions.itemSpacing) * m_contentScale);
   }
 
   if (m_rebuildPending) {
@@ -650,7 +650,7 @@ void TaskbarWidget::buildTaskButtons(Renderer& renderer) {
       tileSize = std::round(iconSize + tilePadding * 2.0F);
     }
   }
-  const float tileGap = Style::spaceSm * m_contentScale;
+  const float tileGap = static_cast<float>(m_configOptions.itemSpacing) * m_contentScale;
 
   const FontWeight fontWeight = labelFontWeight();
   const std::string fontFamily = labelFontFamily();
