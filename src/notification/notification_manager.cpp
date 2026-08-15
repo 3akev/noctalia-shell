@@ -221,6 +221,7 @@ uint32_t NotificationManager::addOrReplace(NotificationRequest request) {
   const Urgency urgency = request.urgency;
   int32_t timeout = request.timeout;
   const NotificationOrigin origin = request.origin;
+  const NotificationDndPolicy dndPolicy = request.dndPolicy;
   const bool transient = request.transient;
   auto& actions = request.actions;
   auto& icon = request.icon;
@@ -281,6 +282,7 @@ uint32_t NotificationManager::addOrReplace(NotificationRequest request) {
            || n.urgency != urgency
            || n.origin != origin
            || n.transient != transient
+           || n.dndPolicy != dndPolicy
            || n.actions != actions
            || n.icon != icon
            || n.imageData != imageData
@@ -290,6 +292,7 @@ uint32_t NotificationManager::addOrReplace(NotificationRequest request) {
       n.origin = origin;
       n.transient = transient;
       n.appName = std::move(appName);
+      n.dndPolicy = dndPolicy;
       n.summary = std::move(summary);
       n.body = std::move(body);
       n.timeout = timeout;
@@ -344,6 +347,7 @@ uint32_t NotificationManager::addOrReplace(NotificationRequest request) {
       Notification{
           .id = id,
           .origin = origin,
+          .dndPolicy = dndPolicy,
           .transient = transient,
           .appName = std::move(appName),
           .summary = std::move(summary),
@@ -410,7 +414,7 @@ uint32_t NotificationManager::adoptExternal(uint32_t id, NotificationRequest req
 uint32_t NotificationManager::addInternal(
     std::string appName, std::string summary, std::string body, Urgency urgency, int32_t timeout,
     std::optional<std::string> icon, std::optional<NotificationImageData> imageData,
-    std::optional<std::string> category, std::optional<std::string> desktopEntry
+    std::optional<std::string> category, std::optional<std::string> desktopEntry, NotificationDndPolicy dndPolicy
 ) {
   return addOrReplace(
       NotificationRequest{
@@ -420,6 +424,7 @@ uint32_t NotificationManager::addInternal(
           .urgency = urgency,
           .timeout = timeout,
           .origin = NotificationOrigin::Internal,
+          .dndPolicy = dndPolicy,
           .icon = std::move(icon),
           .imageData = std::move(imageData),
           .category = std::move(category),

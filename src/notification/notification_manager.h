@@ -53,6 +53,7 @@ struct NotificationRequest {
   Urgency urgency = Urgency::Normal;
   int32_t timeout = kDefaultNotificationTimeout;
   NotificationOrigin origin = NotificationOrigin::External;
+  NotificationDndPolicy dndPolicy = NotificationDndPolicy::Respect;
   bool transient = false;
   std::vector<std::string> actions;
   std::optional<std::string> icon = std::nullopt;
@@ -86,7 +87,8 @@ public:
       std::string appName, std::string summary, std::string body, Urgency urgency = Urgency::Normal,
       int32_t timeout = kDefaultNotificationTimeout, std::optional<std::string> icon = std::nullopt,
       std::optional<NotificationImageData> imageData = std::nullopt, std::optional<std::string> category = std::nullopt,
-      std::optional<std::string> desktopEntry = std::nullopt
+      std::optional<std::string> desktopEntry = std::nullopt,
+      NotificationDndPolicy dndPolicy = NotificationDndPolicy::Respect
   );
 
   void setActionInvokeCallback(ActionInvokeCallback callback);

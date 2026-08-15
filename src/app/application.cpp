@@ -164,7 +164,7 @@ Application::Application()
 
   m_notificationManager.setStateCallback([this]() {
     if (m_notificationManager.doNotDisturb()) {
-      m_notificationToast.hideAll();
+      m_notificationToast.hideDndSuppressed();
     }
     scheduleNotificationShellRefresh();
   });

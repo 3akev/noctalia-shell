@@ -579,24 +579,27 @@ void NotificationToast::onOutputChange() {
   requestLayout();
 }
 
-void NotificationToast::hideAll() {
-  m_pendingAdds.clear();
+void NotificationToast::hideDndSuppressed() {
+  std::erase_if(m_pendingAdds, [](const Notification& pending) {
+    return pending.dndPolicy == NotificationDndPolicy::Respect;
+  });
 
-  if (m_notifications != nullptr) {
-    for (const auto& entry : m_entries) {
-      if (entry.rawTimeoutMs <= 0) {
-        continue;
-      }
+  for (std::size_t index = m_entries.size(); index-- > 0;) {
+    const auto& entry = m_entries[index];
+    if (entry.dndPolicy == NotificationDndPolicy::ShowToast) {
+      continue;
+    }
+
+    if (entry.rawTimeoutMs > 0 && m_notifications != nullptr) {
       const float remaining = std::clamp(entry.remainingProgress, 0.0F, 1.0F);
       const int32_t remainingMs = std::max<int32_t>(
           0, static_cast<int32_t>(std::ceil(static_cast<float>(entry.displayDurationMs) * remaining))
       );
       m_notifications->resumeExpiry(entry.notificationId, remainingMs);
     }
-  }
 
-  if (!m_entries.empty() || !m_instances.empty()) {
-    destroySurfaces();
+    const uint32_t notificationId = entry.notificationId;
+    finishRemoval(notificationId);
   }
 }
 
@@ -623,7 +626,9 @@ void NotificationToast::requestRedraw() {
 void NotificationToast::onNotificationEvent(const Notification& n, NotificationEvent event) {
   switch (event) {
   case NotificationEvent::Added:
-    if (m_notifications != nullptr && m_notifications->doNotDisturb()) {
+    if (m_notifications != nullptr
+        && m_notifications->doNotDisturb()
+        && n.dndPolicy == NotificationDndPolicy::Respect) {
       break;
     }
     m_pendingAdds.push_back(n);
@@ -651,6 +656,7 @@ void NotificationToast::onNotificationEvent(const Notification& n, NotificationE
         m_entries[i].actions = n.actions;
         m_entries[i].icon = n.icon;
         m_entries[i].imageData = n.imageData;
+        m_entries[i].dndPolicy = n.dndPolicy;
         refreshEntryGeometry(m_entries[i]);
         m_entries[i].rawTimeoutMs = n.timeout;
         const bool layoutChanged = contentChanged
@@ -843,14 +849,13 @@ void NotificationToast::flushPendingAdds() {
   if (m_pendingAdds.empty()) {
     return;
   }
-  if (m_notifications->doNotDisturb()) {
-    m_pendingAdds.clear();
-    return;
-  }
+  const bool dndEnabled = m_notifications != nullptr && m_notifications->doNotDisturb();
   auto pending = std::move(m_pendingAdds);
   m_pendingAdds.clear();
   for (const auto& n : pending) {
-    addPopup(n);
+    if (!dndEnabled || n.dndPolicy == NotificationDndPolicy::ShowToast) {
+      addPopup(n);
+    }
   }
 }
 
@@ -872,6 +877,7 @@ void NotificationToast::addPopup(const Notification& n) {
   entry.icon = n.icon;
   entry.imageData = n.imageData;
   entry.urgency = n.urgency;
+  entry.dndPolicy = n.dndPolicy;
   entry.displayDurationMs = resolveDisplayDuration(n.timeout);
   entry.rawTimeoutMs = n.timeout;
   entry.remainingProgress = 1.0F;

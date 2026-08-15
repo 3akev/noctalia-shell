@@ -44,7 +44,7 @@ public:
   );
   void onConfigReload();
   void onOutputChange();
-  void hideAll();
+  void hideDndSuppressed();
   void requestLayout();
   void requestRedraw();
 
@@ -64,6 +64,7 @@ private:
     std::optional<std::string> icon;
     std::optional<NotificationImageData> imageData;
     Urgency urgency = Urgency::Normal;
+    NotificationDndPolicy dndPolicy = NotificationDndPolicy::Respect;
     int displayDurationMs = 0; // -1 = persistent (no auto-dismiss)
     int32_t rawTimeoutMs = 0;  // raw DBus timeout; >0 means manager has an auto-expire timer we must coordinate with
     float remainingProgress = 1.0F;
