@@ -174,8 +174,9 @@ private:
   void prepareFrame(bool needsUpdate, bool needsLayout);
   void applyPendingPanelFocus();
   void destroyPanel();
-  // Called BEFORE the panel surface commits so shields sit below the panel
-  // within the layer-shell layer. No-op when the focus-grab path is in use.
+  // Called before the panel surface commits so outside-click dismissal is ready
+  // for its first frame. The panel rect is excluded separately because
+  // same-layer stacking order is compositor-defined.
   void activateClickShield(LayerShellLayer layer);
   // Called AFTER the panel surface is mapped so the panel wl_surface is
   // available for the whitelist. No-op when focus-grab is unavailable.
@@ -245,6 +246,7 @@ private:
   std::int32_t m_panelInsetY = 0;
   std::uint32_t m_panelVisualWidth = 0;
   std::uint32_t m_panelVisualHeight = 0;
+  std::optional<InputRect> m_panelOutputInputRect;
   // Fill axes derive their visual size from the compositor-configured surface
   // size in buildScene; that math also needs the trailing shadow bleed.
   bool m_panelFillWidth = false;
