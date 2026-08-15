@@ -27,6 +27,8 @@ struct BarCapsuleRun {
   Node* content = nullptr;
   WidgetBarCapsuleSpec spec{};
   float contentScale = 1.0F;
+  // Capsule geometry can exist without a painted fill or border.
+  bool hasPaintedCapsuleBackground = false;
   std::vector<Widget*> widgets;
   // Hover highlight overlays, parallel to `widgets` for group runs; one shared box for single runs.
   std::vector<Box*> hoverBoxes;
