@@ -327,6 +327,7 @@ void Application::initLockScreenAndSession() {
         m_idleGraceOverlay.hide();
         m_lockscreenWidgetsController.onLockStateChanged();
         m_idleManager.setSessionLocked(true);
+        m_screenTimeService.setSessionLocked(true);
         m_hookManager.fire(HookKind::SessionLocked);
         if (m_logindService != nullptr) {
           m_logindService->setSessionLockedHint(true);
@@ -337,6 +338,7 @@ void Application::initLockScreenAndSession() {
         m_idleGraceOverlay.hide();
         m_lockscreenWidgetsController.onLockStateChanged();
         m_idleManager.setSessionLocked(false);
+        m_screenTimeService.setSessionLocked(false);
         m_hookManager.fire(HookKind::SessionUnlocked);
         releaseSleepDelayInhibitIfPending();
         requestAllSurfacesRedraw();
