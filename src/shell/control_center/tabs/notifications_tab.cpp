@@ -1008,7 +1008,7 @@ void NotificationsTab::invokeNotificationAction(uint32_t id, const std::string& 
     return;
   }
   const std::string activationToken =
-      m_platform != nullptr ? m_platform->requestActivationToken(nullptr) : std::string{};
+      m_platform != nullptr ? m_platform->requestActivationToken(m_platform->lastPointerSurface()) : std::string{};
   if (!m_notifications->invokeAction(id, actionKey, activationToken, true)) {
     kLog.warn("notification history: failed to invoke action '{}' for #{}", actionKey, id);
     return;
