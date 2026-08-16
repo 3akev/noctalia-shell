@@ -46,6 +46,10 @@ struct BarInstance {
   std::uint32_t outputName = 0;
   wl_output* output = nullptr;
   std::int32_t scale = 1;
+  std::int32_t outputLogicalX = 0;
+  std::int32_t outputLogicalY = 0;
+  std::int32_t outputLogicalWidth = 0;
+  std::int32_t outputLogicalHeight = 0;
   std::size_t barIndex = 0;
   BarConfig barConfig;
   std::unique_ptr<LayerSurface> surface;

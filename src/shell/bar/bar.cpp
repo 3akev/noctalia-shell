@@ -2273,6 +2273,13 @@ void Bar::syncInstances() {
   const auto& outputs = m_platform->outputs();
   const auto& bars = m_config->config().bars;
 
+  const auto geometryChanged = [](const BarInstance& instance, const WaylandOutput& output) {
+    return instance.outputLogicalX != output.logicalX
+        || instance.outputLogicalY != output.logicalY
+        || instance.outputLogicalWidth != output.effectiveLogicalWidth()
+        || instance.outputLogicalHeight != output.effectiveLogicalHeight();
+  };
+
   std::erase_if(m_lastActiveWorkspaceByOutput, [&outputs](const auto& pair) {
     return std::ranges::find(outputs, pair.first, &WaylandOutput::name) == outputs.end();
   });
@@ -2287,14 +2294,25 @@ void Bar::syncInstances() {
     }
   }
 
-  // Remove instances for outputs that no longer exist
-  std::erase_if(m_instances, [&outputs, this](const auto& inst) {
+  // Layer-shell surfaces are output-bound, but some compositors do not reposition an existing surface after that
+  // output moves. Recreate every bar on an affected output to preserve their config-order stacking.
+  std::unordered_set<std::uint32_t> outputsNeedingRecreate;
+  for (const auto& instance : m_instances) {
+    const auto output = std::ranges::find(outputs, instance->outputName, &WaylandOutput::name);
+    if (output != outputs.end() && output->done && output->hasUsableGeometry() && geometryChanged(*instance, *output)) {
+      outputsNeedingRecreate.insert(output->name);
+    }
+  }
+
+  // Remove instances for outputs that no longer exist or whose output geometry changed.
+  std::erase_if(m_instances, [&outputs, &outputsNeedingRecreate, this](const auto& inst) {
     const auto it = std::ranges::find(outputs, inst->outputName, &WaylandOutput::name);
     const bool found = it != outputs.end() && it->done && it->hasUsableGeometry();
-    if (!found) {
+    const bool recreate = found && outputsNeedingRecreate.contains(inst->outputName);
+    if (!found || recreate) {
       kLog.info("removing instance for output {}", inst->outputName);
     }
-    if (!found) {
+    if (!found || recreate) {
       if (inst->surface != nullptr) {
         m_surfaceMap.erase(inst->surface->wlSurface());
       }
@@ -2302,7 +2320,7 @@ void Bar::syncInstances() {
         m_hoveredInstance = nullptr;
       }
     }
-    return !found;
+    return !found || recreate;
   });
 
   // Create instances for each bar definition × each output
@@ -2334,6 +2352,10 @@ void Bar::createInstance(const WaylandOutput& output, std::size_t barIndex, cons
   instance->outputName = output.name;
   instance->output = output.output;
   instance->scale = output.scale;
+  instance->outputLogicalX = output.logicalX;
+  instance->outputLogicalY = output.logicalY;
+  instance->outputLogicalWidth = output.effectiveLogicalWidth();
+  instance->outputLogicalHeight = output.effectiveLogicalHeight();
   instance->barConfig = barConfig;
   instance->barIndex = barIndex;
 
