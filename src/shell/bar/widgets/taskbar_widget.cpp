@@ -620,7 +620,9 @@ void TaskbarWidget::buildTaskButtons(Renderer& renderer) {
   if (m_taskStrip == nullptr) {
     return;
   }
-  float iconSize = std::round(Style::baseGlyphSize * m_contentScale);
+  const float effectiveIconScale =
+      m_groupByWorkspace && m_workspaceGroupContent != WorkspaceGroupContent::Icons ? 1.0F : m_configOptions.iconScale;
+  float iconSize = std::round(Style::baseGlyphSize * effectiveIconScale * m_contentScale);
   float tilePadding = Style::spaceXs * 0.35F * m_contentScale;
   float tileSize = std::round(iconSize + tilePadding * 2.0F);
   const float barCross = m_vertical ? m_containerWidth : m_containerHeight;
@@ -2940,7 +2942,8 @@ void TaskbarWidget::buildDesktopIconIndex() {
 }
 
 std::string TaskbarWidget::resolveIconPath(const std::string& appId, const std::string& iconNameOrPath) {
-  const int iconTargetSize = std::max(1, static_cast<int>(std::round(Style::baseGlyphSize * m_contentScale)));
+  const int iconTargetSize =
+      std::max(1, static_cast<int>(std::round(Style::baseGlyphSize * m_configOptions.iconScale * m_contentScale)));
 
   auto resolveIconName = [this, iconTargetSize](const std::string& name) -> std::string {
     if (name.empty()) {

@@ -37,139 +37,153 @@ const noctalia::bar::WidgetDefinition<TaskbarWidgetOptions>& taskbarWidgetDefini
   using noctalia::bar::field;
   using Options = TaskbarWidgetOptions;
 
-  static const noctalia::bar::WidgetDefinition<Options> definition{
-      .type = "taskbar",
-      .fields =
-          {
-              field<&Options::showAllOutputs>({
-                  .key = "show_all_outputs",
-                  .presentation = presentation("taskbar.windows"),
-              }),
-              field<&Options::showActiveIndicator>({
-                  .key = "show_active_indicator",
-                  .presentation = presentation("taskbar.windows"),
-              }),
-              field<&Options::activeIndicatorColor>({
-                  .key = "active_indicator_color",
-                  .presentation = presentation("taskbar.windows", matches("show_active_indicator", {"true"})),
-              }),
-              field<&Options::activeOpacity>({
-                  .key = "active_opacity",
-                  .minValue = 0.1,
-                  .maxValue = 1.0,
-                  .step = 0.01,
-                  .presentation = presentation("taskbar.windows"),
-              }),
-              field<&Options::inactiveOpacity>({
-                  .key = "inactive_opacity",
-                  .minValue = 0.1,
-                  .maxValue = 1.0,
-                  .step = 0.01,
-                  .presentation = presentation("taskbar.windows"),
-              }),
-              field<&Options::itemSpacing>({
-                  .key = "item_spacing",
-                  .minValue = 0.0,
-                  .maxValue = 48.0,
-                  .step = 1.0,
-                  .presentation = presentation("taskbar.windows", matches("group_by_workspace", {"false"})),
-              }),
-              field<&Options::pinned>({
-                  .key = "pinned",
-                  .presentation = presentation(
-                      "taskbar.windows", matches("group_by_workspace", {"false"}), false,
-                      "settings.widgets.settings.pinned.taskbar-description",
-                      "settings.widgets.settings.pinned.taskbar-label"
+  static const noctalia::bar::WidgetDefinition<Options>
+      definition{
+          .type = "taskbar",
+          .fields =
+              {
+                  field<&Options::showAllOutputs>({
+                      .key = "show_all_outputs",
+                      .presentation = presentation("taskbar.windows"),
+                  }),
+                  field<&Options::showActiveIndicator>({
+                      .key = "show_active_indicator",
+                      .presentation = presentation("taskbar.windows"),
+                  }),
+                  field<&Options::activeIndicatorColor>({
+                      .key = "active_indicator_color",
+                      .presentation = presentation("taskbar.windows", matches("show_active_indicator", {"true"})),
+                  }),
+                  field<&Options::activeOpacity>({
+                      .key = "active_opacity",
+                      .minValue = 0.1,
+                      .maxValue = 1.0,
+                      .step = 0.01,
+                      .presentation = presentation("taskbar.windows"),
+                  }),
+                  field<&Options::inactiveOpacity>({
+                      .key = "inactive_opacity",
+                      .minValue = 0.1,
+                      .maxValue = 1.0,
+                      .step = 0.01,
+                      .presentation = presentation("taskbar.windows"),
+                  }),
+                  field<&Options::iconScale>({
+                      .key = "icon_scale",
+                      .minValue = 0.1,
+                      .maxValue = 2.0,
+                      .step = 0.05,
+                      .presentation = presentation("taskbar.windows"),
+                  }),
+                  field<&Options::itemSpacing>({
+                      .key = "item_spacing",
+                      .minValue = 0.0,
+                      .maxValue = 48.0,
+                      .step = 1.0,
+                      .presentation = presentation("taskbar.windows", matches("group_by_workspace", {"false"})),
+                  }),
+                  field<&Options::pinned>({
+                      .key = "pinned",
+                      .presentation = presentation(
+                          "taskbar.windows", matches("group_by_workspace", {"false"}), false,
+                          "settings.widgets.settings.pinned.taskbar-description",
+                          "settings.widgets.settings.pinned.taskbar-label"
+                      ),
+                  }),
+                  field<&Options::pinnedOpacity>({
+                      .key = "pinned_opacity",
+                      .minValue = 0.0,
+                      .maxValue = 1.0,
+                      .step = 0.01,
+                      .presentation = presentation(
+                          "taskbar.windows",
+                          all({
+                              {"pinned", {}, true},
+                              {"group_by_workspace", {"false"}},
+                          })
+                      ),
+                  }),
+                  field<&Options::showWindowTitle>({
+                      .key = "show_window_title",
+                      .presentation = presentation("taskbar.windows", matches("group_by_workspace", {"false"})),
+                  }),
+                  field<&Options::windowTitleMaxWidth>({
+                      .key = "window_title_max_width",
+                      .minValue = 10.0,
+                      .maxValue = 200.0,
+                      .step = 1.0,
+                      .presentation = presentation(
+                          "taskbar.windows",
+                          all({
+                              {"show_window_title", {"true"}},
+                              {"group_by_workspace", {"false"}},
+                          })
+                      ),
+                  }),
+                  field<&Options::taskbarMaxWidth>(
+                      {
+                          .key = "taskbar_max_width",
+                          .minValue = 10.0,
+                          .maxValue = 8192.0,
+                          .step = 1.0,
+                          .presentation =
+                              presentation(
+                                  "taskbar.windows",
+                                  all(
+                                      {
+                                          {"show_window_title", {"true"}},
+                                          {"group_by_workspace", {"false"}},
+                                      }
+                                  )
+                              ),
+                      }
                   ),
-              }),
-              field<&Options::pinnedOpacity>({
-                  .key = "pinned_opacity",
-                  .minValue = 0.0,
-                  .maxValue = 1.0,
-                  .step = 0.01,
-                  .presentation = presentation(
-                      "taskbar.windows",
-                      all({
-                          {"pinned", {}, true},
-                          {"group_by_workspace", {"false"}},
-                      })
+                  field<&Options::onlyActiveWorkspace>(
+                      {
+                          .key = "only_active_workspace",
+                          .presentation = presentation("taskbar.grouping", std::nullopt, true),
+                      }
                   ),
-              }),
-              field<&Options::showWindowTitle>({
-                  .key = "show_window_title",
-                  .presentation = presentation("taskbar.windows", matches("group_by_workspace", {"false"})),
-              }),
-              field<&Options::windowTitleMaxWidth>({
-                  .key = "window_title_max_width",
-                  .minValue = 10.0,
-                  .maxValue = 200.0,
-                  .step = 1.0,
-                  .presentation = presentation(
-                      "taskbar.windows",
-                      all({
-                          {"show_window_title", {"true"}},
-                          {"group_by_workspace", {"false"}},
-                      })
+                  field<&Options::groupByWorkspace>(
+                      {
+                          .key = "group_by_workspace",
+                          .presentation = presentation("taskbar.grouping", std::nullopt, true),
+                      }
                   ),
-              }),
-              field<&Options::taskbarMaxWidth>({
-                  .key = "taskbar_max_width",
-                  .minValue = 10.0,
-                  .maxValue = 8192.0,
-                  .step = 1.0,
-                  .presentation = presentation(
-                      "taskbar.windows",
-                      all({
-                          {"show_window_title", {"true"}},
-                          {"group_by_workspace", {"false"}},
-                      })
+                  field<&Options::hideEmptyWorkspaces>(
+                      {
+                          .key = "hide_empty_workspaces",
+                          .presentation = presentation("taskbar.grouping", groupedOnly(), true),
+                      }
                   ),
-              }),
-              field<&Options::onlyActiveWorkspace>({
-                  .key = "only_active_workspace",
-                  .presentation = presentation("taskbar.grouping", std::nullopt, true),
-              }),
-              field<&Options::groupByWorkspace>(
-                  {
-                      .key = "group_by_workspace",
-                      .presentation = presentation("taskbar.grouping", std::nullopt, true),
-                  }
-              ),
-              field<&Options::hideEmptyWorkspaces>(
-                  {
-                      .key = "hide_empty_workspaces",
-                      .presentation = presentation("taskbar.grouping", groupedOnly(), true),
-                  }
-              ),
-              field<&Options::workspaceGroupContent>(
-                  {
-                      .key = "workspace_group_content",
-                      .choices =
-                          {
+                  field<&Options::workspaceGroupContent>(
+                      {
+                          .key = "workspace_group_content",
+                          .choices =
                               {
-                                  .value = WorkspaceGroupContent::Icons,
-                                  .configValue = "icons",
-                                  .labelKey = "settings.widgets.options.icons",
+                                  {
+                                      .value = WorkspaceGroupContent::Icons,
+                                      .configValue = "icons",
+                                      .labelKey = "settings.widgets.options.icons",
+                                  },
+                                  {
+                                      .value = WorkspaceGroupContent::Count,
+                                      .configValue = "count",
+                                      .labelKey = "settings.widgets.options.count",
+                                  },
+                                  {
+                                      .value = WorkspaceGroupContent::Dots,
+                                      .configValue = "dots",
+                                      .labelKey = "settings.widgets.options.dots",
+                                  },
                               },
-                              {
-                                  .value = WorkspaceGroupContent::Count,
-                                  .configValue = "count",
-                                  .labelKey = "settings.widgets.options.count",
-                              },
-                              {
-                                  .value = WorkspaceGroupContent::Dots,
-                                  .configValue = "dots",
-                                  .labelKey = "settings.widgets.options.dots",
-                              },
-                          },
-                      .presentation = presentation("taskbar.grouping", groupedOnly(), true),
-                  }
-              ),
-              field<&Options::groupSingleIconPerApp>(
-                  {
-                      .key = "group_single_icon_per_app",
-                      .presentation =
-                          presentation(
+                          .presentation = presentation("taskbar.grouping", groupedOnly(), true),
+                      }
+                  ),
+                  field<&Options::groupSingleIconPerApp>(
+                      {
+                          .key = "group_single_icon_per_app",
+                          .presentation = presentation(
                               "taskbar.grouping",
                               all(
                                   {
@@ -179,53 +193,49 @@ const noctalia::bar::WidgetDefinition<TaskbarWidgetOptions>& taskbarWidgetDefini
                               ),
                               true
                           ),
-                  }
-              ),
-              field<&Options::workspaceGroupCapsule>(
-                  {
-                      .key = "workspace_group_capsule",
-                      .presentation =
-                          presentation(
+                      }
+                  ),
+                  field<&Options::workspaceGroupCapsule>(
+                      {
+                          .key = "workspace_group_capsule",
+                          .presentation = presentation(
                               "taskbar.grouping", groupedOnly(), true,
                               "settings.widgets.settings.workspace-group-capsule.description"
                           ),
-                  }
-              ),
-              field<&Options::showWorkspaceLabel>(
-                  {
+                      }
+                  ),
+                  field<&Options::showWorkspaceLabel>({
                       .key = "show_workspace_label",
                       .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
-                  }
-              ),
-              field<&Options::workspaceLabelPlacement>(
-                  {
-                      .key = "workspace_label_placement",
-                      .choices =
-                          {
+                  }),
+                  field<&Options::workspaceLabelPlacement>(
+                      {
+                          .key = "workspace_label_placement",
+                          .choices =
                               {
-                                  .value = WorkspaceLabelPlacement::Corner,
-                                  .configValue = "corner",
-                                  .labelKey = "settings.widgets.options.workspace-label-corner",
+                                  {
+                                      .value = WorkspaceLabelPlacement::Corner,
+                                      .configValue = "corner",
+                                      .labelKey = "settings.widgets.options.workspace-label-corner",
+                                  },
+                                  {
+                                      .value = WorkspaceLabelPlacement::Centered,
+                                      .configValue = "centered",
+                                      .labelKey = "settings.widgets.options.workspace-label-centered",
+                                  },
+                                  {
+                                      .value = WorkspaceLabelPlacement::Inside,
+                                      .configValue = "inside",
+                                      .labelKey = "settings.widgets.options.workspace-label-inside",
+                                  },
                               },
-                              {
-                                  .value = WorkspaceLabelPlacement::Centered,
-                                  .configValue = "centered",
-                                  .labelKey = "settings.widgets.options.workspace-label-centered",
-                              },
-                              {
-                                  .value = WorkspaceLabelPlacement::Inside,
-                                  .configValue = "inside",
-                                  .labelKey = "settings.widgets.options.workspace-label-inside",
-                              },
-                          },
-                      .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
-                  }
-              ),
-              field<&Options::minimal>(
-                  {
-                      .key = "minimal",
-                      .presentation =
-                          presentation(
+                          .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
+                      }
+                  ),
+                  field<&Options::minimal>(
+                      {
+                          .key = "minimal",
+                          .presentation = presentation(
                               "taskbar.workspace-labels",
                               all(
                                   {
@@ -235,13 +245,12 @@ const noctalia::bar::WidgetDefinition<TaskbarWidgetOptions>& taskbarWidgetDefini
                               ),
                               true, "settings.widgets.settings.minimal.taskbar-description"
                           ),
-                  }
-              ),
-              field<&Options::focusedOutputOnly>(
-                  {
-                      .key = "focused_output_only",
-                      .presentation =
-                          presentation(
+                      }
+                  ),
+                  field<&Options::focusedOutputOnly>(
+                      {
+                          .key = "focused_output_only",
+                          .presentation = presentation(
                               "taskbar.workspace-labels",
                               all(
                                   {
@@ -251,43 +260,35 @@ const noctalia::bar::WidgetDefinition<TaskbarWidgetOptions>& taskbarWidgetDefini
                               ),
                               true, "settings.widgets.settings.focused-output-only.taskbar-description"
                           ),
-                  }
-              ),
-              field<&Options::focusedColor>(
-                  {
+                      }
+                  ),
+                  field<&Options::focusedColor>({
                       .key = "focused_color",
                       .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
-                  }
-              ),
-              field<&Options::occupiedColor>(
-                  {
+                  }),
+                  field<&Options::occupiedColor>({
                       .key = "occupied_color",
                       .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
-                  }
-              ),
-              field<&Options::emptyColor>(
-                  {
+                  }),
+                  field<&Options::emptyColor>({
                       .key = "empty_color",
                       .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
-                  }
-              ),
-              field<&Options::urgentColor>(
-                  {
+                  }),
+                  field<&Options::urgentColor>({
                       .key = "urgent_color",
                       .presentation = presentation("taskbar.workspace-labels", groupedOnly(), true),
-                  }
-              ),
-          },
-      .commonOverrides = {
-          {
-              .key = "capsule_radius",
-              .descriptionKey = "settings.widgets.settings.capsule-radius.taskbar-description",
-              .replaceVisibleWhen = settings::WidgetSettingVisibility{
-                  {"capsule", {"true"}},
-                  {"group_by_workspace", {"true"}},
+                  }),
+              },
+          .commonOverrides = {
+              {
+                  .key = "capsule_radius",
+                  .descriptionKey = "settings.widgets.settings.capsule-radius.taskbar-description",
+                  .replaceVisibleWhen = settings::WidgetSettingVisibility{
+                      {"capsule", {"true"}},
+                      {"group_by_workspace", {"true"}},
+                  },
               },
           },
-      },
-  };
+      };
   return definition;
 }

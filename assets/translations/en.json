@@ -3553,6 +3553,10 @@
           "description": "Overrides the widget color for icons only; fixed hex colors are also supported",
           "label": "Icon Color"
         },
+        "icon-scale": {
+          "description": "Scale of taskbar application icons relative to their default size",
+          "label": "Icon Scale"
+        },
         "icon-size": {
           "description": "Icon size in pixels",
           "label": "Icon Size"

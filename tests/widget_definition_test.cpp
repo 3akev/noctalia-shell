@@ -177,8 +177,13 @@ int main() {
   WidgetConfig spacedTaskbar;
   spacedTaskbar.type = "taskbar";
   spacedTaskbar.settings["item_spacing"] = 3.0;
-  if (taskbarWidgetDefinition().resolve(&spacedTaskbar, "taskbar").itemSpacing != 3) {
+  spacedTaskbar.settings["icon_scale"] = 0.75;
+  const auto resolvedTaskbar = taskbarWidgetDefinition().resolve(&spacedTaskbar, "taskbar");
+  if (resolvedTaskbar.itemSpacing != 3) {
     fail("taskbar", "item spacing override did not resolve");
+  }
+  if (resolvedTaskbar.iconScale != 0.75F) {
+    fail("taskbar", "icon scale override did not resolve");
   }
 
   Config taskbarConfig;
