@@ -1274,7 +1274,9 @@
         "add-title": "Adicionar Filtro de Notificação",
         "allow-permanent": "Autorização permanente",
         "allowed-urgencies-label": "Urgências permitidas",
+        "bypass-dnd": "Ignorar “Não Perturbe”",
         "flag": {
+          "dnd-bypass": "Ignorar \"Não perturbe\"",
           "history": "histórico",
           "permanent": "permanente",
           "sound": "som",
@@ -3579,6 +3581,10 @@
         "interface": {
           "description": "Interface de rede para monitorar; deixe vazio para usar o total agregado de todas interfaces",
           "label": "Interface"
+        },
+        "item-spacing": {
+          "description": "Espaço entre ítens da barra de tarefas quando agrupamento de espaços de trabalho está desativado",
+          "label": "Espaçamento de Ítem"
         },
         "label": {
           "description": "Texto estático opcional exibido neste botão",
