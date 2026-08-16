@@ -3584,7 +3584,7 @@
         },
         "item-spacing": {
           "description": "Espaço entre ítens da barra de tarefas quando agrupamento de espaços de trabalho está desativado",
-          "label": "Espaçamento de Ítem"
+          "label": "Espaçamento de Item"
         },
         "label": {
           "description": "Texto estático opcional exibido neste botão",

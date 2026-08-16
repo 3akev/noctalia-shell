@@ -1274,7 +1274,9 @@
         "add-title": "Aggiunta filtro notifiche",
         "allow-permanent": "Permetti permanente",
         "allowed-urgencies-label": "Livelli priorità consentiti",
+        "bypass-dnd": "Ignora Non disturbare",
         "flag": {
+          "dnd-bypass": "Ignora Non disturbare",
           "history": "cronologia",
           "permanent": "permanente",
           "sound": "suono",
@@ -3502,6 +3504,10 @@
           "description": "Nascondi le icone privacy inattive e nascondi il widget quando non c'è nulla di attivo",
           "label": "Nascondi inattivo"
         },
+        "hide-passive": {
+          "description": "Nascondi gli elementi del vassoio il cui stato StatusNotifierItem è Passivo",
+          "label": "Nascondi elementi passivi"
+        },
         "hide-when-empty": {
           "description": "Nasconde le pillole workspace quando non ci sono finestre aperte",
           "label": "Nascondi quando vuoto",
@@ -3575,6 +3581,10 @@
         "interface": {
           "description": "Interfaccia di rete da monitorare; lasciare vuoto per riportare il totale su tutte le interfacce",
           "label": "Interfaccia"
+        },
+        "item-spacing": {
+          "description": "Spazio tra gli elementi della barra delle applicazioni quando il raggruppamento dell'area di lavoro è disattivato",
+          "label": "Spaziatura elementi"
         },
         "label": {
           "description": "Testo statico opzionale mostrato su questo pulsante",

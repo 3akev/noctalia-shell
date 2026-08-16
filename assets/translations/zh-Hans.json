@@ -1274,7 +1274,9 @@
         "add-title": "添加通知过滤器",
         "allow-permanent": "允许常驻通知",
         "allowed-urgencies-label": "允许的通知级别",
+        "bypass-dnd": "绕过勿扰模式",
         "flag": {
+          "dnd-bypass": "绕过勿扰",
           "history": "历史记录",
           "permanent": "常驻",
           "sound": "提示音",
@@ -3502,6 +3504,10 @@
           "description": "隐藏未活动的隐私图标，无任何活动项时隐藏小组件",
           "label": "隐藏未活动项"
         },
+        "hide-passive": {
+          "description": "隐藏 StatusNotifierItem 状态为被动（Passive）的托盘项",
+          "label": "隐藏被动项"
+        },
         "hide-when-empty": {
           "description": "隐藏无窗口的工作区胶囊",
           "label": "无窗口时隐藏",
@@ -3575,6 +3581,10 @@
         "interface": {
           "description": "监视的网络接口；留空时统计所有接口的总流量",
           "label": "网络接口"
+        },
+        "item-spacing": {
+          "description": "禁用“按工作区分组”时任务栏各项之间的间距",
+          "label": "项目间距"
         },
         "label": {
           "description": "可选的按钮固定文本",
