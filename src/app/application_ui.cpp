@@ -1006,7 +1006,7 @@ void Application::initWidgetControllersAndCallbacks() {
         lastShellFontFamily = newShellFontFamily;
         text::invalidateFontWeightCatalogCache();
         m_renderContext.setTextFontFamily(newShellFontFamily);
-        m_bar.requestLayout();
+        m_bar.reload();
         m_dock.requestLayout();
         m_desktopWidgetsController.requestLayout();
         m_lockscreenWidgetsController.requestLayout();
