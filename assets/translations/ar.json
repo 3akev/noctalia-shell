@@ -4,24 +4,24 @@
       "disconnected": "قارئ البصمة غير متصل",
       "error": "خطأ في المصادقة بالبصمة",
       "no-match": "البصمة غير متطابقة",
-      "not-centered": "ضع إصبعك في المنتصف وحاول مرة أخرى",
+      "not-centered": "ضع إصبعك في المنتصف ثم حاول مرة أخرى",
       "present": "جاري قراءة البصمة...",
       "ready": "ضع إصبعك على قارئ البصمة",
       "remove-and-retry": "ارفع إصبعك وحاول مرة أخرى",
       "retry": "يرجى مسح البصمة مرة أخرى",
       "swipe-too-short": "السحب كان قصيراً جداً، حاول مرة أخرى",
-      "too-many-attempts": "تم تعطيل البصمة (محاولات كثيرة جداً)"
+      "too-many-attempts": "تم تعطيل قارئ البصمة (محاولات كثيرة جدًا)"
     },
     "pam": {
       "authentication-failed": "فشلت المصادقة",
-      "start-failed": "فشل بدء PAM",
+      "start-failed": "فشل بدء وحدة المصادقة القابلة للتوصيل",
       "user-unavailable": "تعذر التعرف على المستخدم الحالي"
     },
     "polkit": {
       "authenticate": "مصادقة",
-      "authenticating": "جاري المصادقة...",
+      "authenticating": "جارٍ التحقق...",
       "default-message": "المصادقة مطلوبة",
-      "invalid-password": "كلمة المرور غير صحيحة",
+      "invalid-password": "كلمة المرور غير صالحة",
       "password-placeholder": "كلمة المرور",
       "title": "المصادقة مطلوبة"
     }
@@ -29,9 +29,9 @@
   "bar": {
     "screenshot": {
       "choose-display": "اختر الشاشة",
-      "confirm-region": "Enter أو Space للالتقاط · Esc للإلغاء · اسحب لإعادة التحديد",
+      "confirm-region": "{copy} للنسخ · {save} للحفظ · Enter أو Space للقيم الافتراضية · {cancel} للإلغاء · اسحب لإعادة التحديد",
       "fullscreen": "الشاشة كاملة",
-      "overlay-alloc-failed": "تعذر عرض غطاء لقطة الشاشة (هل نفدت ذاكرة الفيديو من معالج الرسوميات؟)",
+      "overlay-alloc-failed": "تعذر عرض غطاء لقطة الشاشة (هل نفدت VRAM من وحدة معالجة الرسوميات؟)",
       "region": "تحديد منطقة"
     },
     "widgets": {
@@ -46,11 +46,11 @@
         "display": "الشاشة"
       },
       "lock-keys": {
-        "caps": "Caps",
+        "caps": "قفل الأحرف الكبيرة",
         "caps-short": "C",
-        "num": "Num",
+        "num": "قفل الأرقام",
         "num-short": "N",
-        "scroll": "Scroll",
+        "scroll": "قفل التمرير",
         "scroll-short": "S"
       },
       "media": {
@@ -59,24 +59,26 @@
       },
       "network": {
         "active": "نشط",
+        "band": "النطاق",
         "connected": "متصل",
         "connecting": "جاري الاتصال",
         "download": "التنزيل",
         "interface": "الواجهة",
-        "ip": "عنوان IP",
+        "ip": "IP",
         "network": "الشبكة",
         "networks": "الشبكات",
         "networks-count": "{count} شبكة",
-        "networks-count-plural": "{count} شبكة",
+        "networks-count-plural": "{count} شبكات",
         "no": "لا",
         "not-connected": "غير متصل",
         "off": "متوقف",
-        "on": "مفعل",
-        "scanning": "جاري البحث",
+        "on": "مفعّل",
+        "scanning": "جارٍ البحث",
         "signal": "الإشارة",
         "upload": "الرفع",
         "vpn": "VPN",
-        "wifi": "واي فاي",
+        "wan-ip": "عنوان WAN",
+        "wifi": "Wi‑Fi",
         "wired": "سلكي",
         "yes": "نعم"
       },
@@ -90,15 +92,20 @@
         "reloaded": "تمت إعادة تحميل النص البرمجي"
       },
       "sysmon": {
-        "cpu": "المعالج",
-        "cpu-temp": "حرارة المعالج",
+        "cpu": "CPU",
+        "cpu-freq": "تردد CPU",
+        "cpu-temp": "حرارة CPU",
         "disk": "القرص",
+        "disk-free": "المساحة الحرة على القرص",
+        "disk-free-pct": "نسبة المساحة الحرة على القرص",
+        "disk-used": "المساحة المستخدمة على القرص",
+        "disk-used-pct": "نسبة المساحة المستخدمة على القرص",
         "download": "التنزيل",
-        "gpu-temp": "حرارة معالج الرسوميات",
-        "gpu-usage": "استخدام معالج الرسوميات",
-        "gpu-vram": "ذاكرة معالج الرسوميات",
-        "ram": "الذاكرة العشوائية",
-        "swap": "ذاكرة التبادل",
+        "gpu-temp": "حرارة GPU",
+        "gpu-usage": "استخدام GPU",
+        "gpu-vram": "VRAM",
+        "ram": "RAM",
+        "swap": "Swap",
         "system": "النظام",
         "upload": "الرفع"
       },
@@ -109,10 +116,21 @@
       },
       "weather": {
         "default": "الطقس",
-        "error": "خطأ بالطقس",
+        "error": "خطأ في الطقس",
         "loading": "الطقس...",
-        "no-location": "لا يوجد موقع",
-        "off": "الطقس متوقف"
+        "no-location": "لا يوجد موقع محدد",
+        "off": "الطقس متوقف",
+        "tooltip": {
+          "condition": "الحالة",
+          "high": "الأعلى",
+          "humidity": "الرطوبة",
+          "low": "الأدنى",
+          "sunrise": "الشروق",
+          "sunset": "الغروب",
+          "temperature": "درجة الحرارة",
+          "uv": "مؤشر الأشعة فوق البنفسجية",
+          "wind": "الرياح"
+        }
       }
     }
   },
@@ -144,7 +162,7 @@
     "preview": {
       "empty-text-payload": "(حمولة نصية فارغة)",
       "image-title": "عنصر صورة بالحافظة",
-      "loading": "جاري تحميل المعاينة...",
+      "loading": "جارٍ تحميل المعاينة...",
       "text-title": "عنصر نصي بالحافظة",
       "truncated": "… مقتطع"
     },
@@ -165,7 +183,7 @@
   "control-center": {
     "audio": {
       "application-volumes": "مستويات صوت التطبيقات",
-      "choose-effects-profile": "اختر ملف شخصي",
+      "choose-effects-profile": "اختر ملفًا شخصيًا",
       "effects-profile": "التأثيرات",
       "input-device-prefix": "الإدخال",
       "no-application-audio": "لا يوجد صوت للتطبيقات",
@@ -182,11 +200,12 @@
     },
     "bluetooth": {
       "accept": "قبول",
+      "address": "العنوان",
       "auto-reconnect": "إعادة اتصال تلقائية",
-      "bluetooth": "بلوتوث",
+      "bluetooth": "Bluetooth",
       "enter-code": "أدخل الرمز",
-      "no-devices": "لم يتم العثور على أجهزة. ابدأ المسح لاكتشاف أجهزة البلوتوث المجاورة.",
-      "off": "البلوتوث متوقف",
+      "no-devices": "لم يتم العثور على أجهزة. ابدأ البحث لاكتشاف أجهزة البلوتوث القريبة.",
+      "off": "Bluetooth متوقف",
       "pair-title": "اقتران {device}",
       "pairing-detail": {
         "authorize": "قبول طلب الاقتران الوارد؟",
@@ -198,7 +217,7 @@
         "pin-code": "أدخل رمز PIN المعروض على الجهاز:"
       },
       "reject": "رفض",
-      "rfkill-blocked": "البلوتوث محظور بواسطة النظام. قم بتشغيله لإلغاء الحظر.",
+      "rfkill-blocked": "البلوتوث محظور بواسطة النظام. شغّله لإلغاء الحظر.",
       "sections": {
         "available": "المتاحة",
         "connected": "المتصلة",
@@ -206,13 +225,14 @@
       },
       "unavailable": "خدمة البلوتوث غير متاحة",
       "unknown-device": "جهاز غير معروف",
-      "visible": "قابل للاكتشاف بواسطة الأجهزة المجاورة"
+      "visible": "مرئي للأجهزة القريبة"
     },
     "calendar": {
       "all-day": "طوال اليوم",
       "events": "الأحداث",
       "no-events": "لا توجد أحداث.",
-      "today": "اليوم"
+      "today": "اليوم",
+      "toggle-events-card": "إظهار/إخفاء بطاقة الأحداث"
     },
     "display": {
       "disabled": "معطل",
@@ -220,7 +240,7 @@
       "unknown-resolution": "دقة غير معروفة"
     },
     "home": {
-      "avatar-error-title": "لم يتم تحديث الصورة الشخصية",
+      "avatar-error-title": "تعذر تحديث الصورة الشخصية",
       "media": {
         "idle": "خامل",
         "no-active-player": "لا يوجد مشغل نشط",
@@ -232,36 +252,39 @@
         "unknown-artist": "فنان غير معروف",
         "unknown-track": "مسار غير معروف"
       },
-      "select-avatar": "حدد الصورة الشخصية",
+      "select-avatar": "اختيار الصورة الشخصية",
       "unknown": "غير معروف",
-      "uptime": "مدة التشغيل - {uptime}",
+      "uptime": "مدة التشغيل: {uptime}",
       "weather": {
         "data-unavailable": "بيانات الطقس غير متاحة.",
-        "disabled": "الطقس معطل في الإعدادات.",
-        "fetching": "جاري جلب التوقعات..."
+        "disabled": "الطقس معطّل في الإعدادات.",
+        "fetching": "جارٍ جلب التوقعات..."
       }
     },
     "media": {
       "active-player": "المشغل النشط",
       "nothing-playing": "لا يوجد تشغيل حالي",
-      "now-playing": "يعزف الآن",
-      "start-playback": "ابدأ التشغيل في تطبيق يدعم MPRIS"
+      "now-playing": "يُشغّل الآن",
+      "start-playback": "ابدأ التشغيل في تطبيق يدعم واجهة MPRIS"
     },
     "network": {
+      "available": "المتاحة",
       "connect": "اتصال",
       "current-connection": "الاتصال الحالي",
+      "external-ip": "عنوان WAN {ip}",
       "no-networks": "لا توجد شبكات في النطاق",
       "not-connected": "غير متصل",
       "password": "كلمة المرور",
       "password-prompt": "أدخل كلمة المرور",
       "password-prompt-for": "أدخل كلمة المرور لـ {ssid}",
-      "unavailable-detail": "قم بتثبيت وتفعيل NetworkManager لإدارة الشبكات من هنا.",
-      "unavailable-title": "NetworkManager غير متاح",
-      "vpns": "شبكات VPN",
-      "wi-fi": "واي فاي",
-      "wifi": "واي فاي",
-      "wifi-off": "الواي فاي متوقف",
-      "wifi-on": "الواي فاي مفعل",
+      "saved": "محفوظ",
+      "unavailable-detail": "ثبّت وفعّل NetworkManager أو wpa_supplicant أو iwd لإدارة الشبكات من هنا.",
+      "unavailable-title": "خدمة الشبكة غير متاحة",
+      "vpns": "الشبكات الافتراضية الخاصة",
+      "wi-fi": "Wi‑Fi",
+      "wifi": "Wi‑Fi",
+      "wifi-off": "Wi‑Fi متوقف",
+      "wifi-on": "Wi‑Fi مفعّل",
       "wired-connection": "اتصال سلكي"
     },
     "notifications": {
@@ -277,7 +300,7 @@
         "yesterday": "أمس"
       },
       "filter-empty-body": "لا توجد إشعارات تطابق هذا المرشح.",
-      "filter-empty-title": "لا يوجد شيء هنا",
+      "filter-empty-title": "لا شيء هنا",
       "untitled": "إشعار بدون عنوان"
     },
     "power": {
@@ -286,13 +309,14 @@
       "health": "صحة البطارية",
       "performance-inhibited": "الأداء غير متاح",
       "peripherals": "الأجهزة المتصلة",
-      "power-profile": "ملف الطاقة",
-      "time-to-empty": "متبقي {time}",
-      "time-to-full": "{time} حتى الامتلاء",
+      "power-profile": "نمط الطاقة",
+      "time-to-empty": "متبقٍ {time}",
+      "time-to-full": "{time} حتى اكتمال الشحن",
       "unknown-device": "جهاز غير معروف"
     },
     "screen-time": {
-      "disabled": "تتبع وقت الشاشة متوقف. قم بتفعيله في الإعدادات لتسجيل استخدام التطبيقات.",
+      "back": "رجوع",
+      "disabled": "تتبع وقت الشاشة متوقف. فعّله في الإعدادات لتسجيل استخدام التطبيقات.",
       "empty": "لم يتم تسجيل استخدام للتطبيقات بعد. قم بالتركيز على نافذة للبدء بالتتبع.",
       "hour-0": "12 صباحاً",
       "hour-12": "12 مساءً",
@@ -303,11 +327,12 @@
         "14-days": "14 يوماً",
         "3-days": "3 أيام",
         "today": "اليوم"
-      }
+      },
+      "view-day": "عرض تفاصيل اليوم"
     },
     "shortcuts": {
       "audio": "الصوت",
-      "bluetooth": "بلوتوث",
+      "bluetooth": "Bluetooth",
       "caffeine": "الكافيين (منع النوم)",
       "clipboard": "الحافظة",
       "dark-mode": {
@@ -320,29 +345,29 @@
       "mic-mute": "الميكروفون",
       "nightlight": "الإضاءة الليلية",
       "nightlight-states": {
-        "forced": "مفعل دائماً",
+        "forced": "مفعّل دائماً",
         "off": "الإضاءة الليلية",
         "scheduled-day": "مجدول",
-        "scheduled-night": "قيد التشغيل"
+        "scheduled-night": "يعمل منذ"
       },
       "notification": "عدم الإزعاج",
       "power-profile": "الطاقة",
-      "screen-time": "وقت الشاشة",
+      "screen-time": "مدة استخدام الشاشة",
       "session": "الجلسة",
       "system": "النظام",
       "wallpaper": "خلفية الشاشة",
       "weather": "الطقس",
-      "wifi": "واي فاي"
+      "wifi": "Wi‑Fi"
     },
     "system": {
       "labels": {
-        "load": "حمل المعالج",
-        "ram": "الذاكرة العشوائية",
-        "swap": "ذاكرة التبادل"
+        "load": "حمل وحدة المعالجة المركزية",
+        "ram": "RAM",
+        "swap": "الذاكرة الافتراضية (ذاكرة التبديل)"
       },
       "titles": {
-        "cpu": "المعالج",
-        "gpu": "معالج الرسوميات",
+        "cpu": "وحدة المعالجة المركزية",
+        "gpu": "وحدة معالجة الرسوميات",
         "memory": "الذاكرة",
         "network": "الشبكة",
         "resources": "الموارد",
@@ -352,19 +377,19 @@
         "load": "متوسط الحمل خلال 1 / 5 / 15 دقيقة"
       },
       "unknown": "غير معروف",
-      "uptime-prefix": "قيد التشغيل {uptime} · {osAge}"
+      "uptime-prefix": "يعمل منذ {uptime} · عمر النظام {osAge}"
     },
     "tabs": {
       "audio": "الصوت",
-      "bluetooth": "بلوتوث",
+      "bluetooth": "Bluetooth",
       "calendar": "التقويم",
       "home": "الرئيسية",
       "media": "الوسائط",
-      "monitor": "المراقب",
+      "monitor": "الشاشة",
       "network": "الشبكة",
       "notifications": "الإشعارات",
       "power": "الطاقة",
-      "screen-time": "وقت الشاشة",
+      "screen-time": "مدة استخدام الشاشة",
       "system": "النظام",
       "weather": "الطقس"
     },
@@ -390,7 +415,7 @@
         "wind": "الرياح"
       },
       "disabled": "قم بتفعيل [weather] في ملف config.toml",
-      "fetching": "جاري جلب التوقعات...",
+      "fetching": "جارٍ جلب التوقعات...",
       "forecast-placeholder": {
         "day": "الأحد",
         "description": "الطقس",
@@ -401,7 +426,7 @@
         "hourly": "ساعي"
       },
       "hourly": {
-        "summary": "{condition} / أمطار {precip}%",
+        "summary": "{condition} / احتمال هطول {precip}%",
         "tooltip": {
           "condition": "الحالة",
           "humidity": "الرطوبة",
@@ -412,7 +437,7 @@
       "location-unavailable": "الموقع غير متاح",
       "no-location-body": "أضف عنوانك أو فعّل تحديد الموقع التلقائي في إعدادات الموقع.",
       "no-location-title": "لم يتم تحديد موقع",
-      "refreshing": "جاري تحديث الطقس...",
+      "refreshing": "جارٍ تحديث الطقس...",
       "waiting": "في انتظار بيانات الطقس"
     }
   },
@@ -420,7 +445,7 @@
     "editor": {
       "actions": {
         "add": "إضافة",
-        "clone": "تكرار (Ctrl+C, Ctrl+V للنسخ/اللقط)",
+        "clone": "تكرار (Ctrl+C، Ctrl+V للنسخ واللصق)",
         "done": "تم",
         "flip-horizontal": "عكس أفقي",
         "flip-vertical": "عكس رأسي",
@@ -435,16 +460,17 @@
         "select-sticker-image": "اختر صورة الملصق"
       },
       "settings": {
-        "aspect-ratio": "نسبة الارتفاع إلى العرض",
+        "aspect-ratio": "نسبة العرض إلى الارتفاع",
         "background": "الخلفية",
         "background-color": "اللون",
         "background-opacity": "شفافية الخلفية",
-        "background-padding": "الهامش الداخلي للخلفية",
-        "background-radius": "نصف قطر انحناء الخلفية",
+        "background-padding": "الحشوة الداخلية للخلفية",
+        "background-radius": "نصف قطر الخلفية",
         "background-section": "الخلفية",
         "bands": "الأشرطة",
         "bar-width": "عرض الشريط",
         "bloom-intensity": "التوهج",
+        "center-password-text": "توسيط نص كلمة المرور",
         "center-text": "توسيط النص",
         "centered": "مُوسّط",
         "change-image": "تغيير…",
@@ -459,21 +485,23 @@
         "command": "الأمر",
         "custom-color": "مخصص…",
         "description": "الوصف",
+        "device": "الجهاز",
         "display": "العرض",
         "display-gauge": "مقياس",
         "display-graph": "رسم بياني",
-        "fade-when-idle": "خفت عند الخمول",
+        "fade-when-idle": "التلاشي عند الخمول",
+        "fill-color": "لون التعبئة",
         "font-family": "الخط",
         "font-family-default": "افتراضي النظام",
         "forecast-days": "أيام التوقعات",
         "format": "الصيغة",
-        "gauge-layout": "مخطط المقياس",
+        "gauge-layout": "تخطيط المقياس",
         "glyph": "الرمز",
         "hide-when-no-media": "إخفاء عند عدم وجود وسائط",
         "highlight-color": "لون التمييز",
         "horizontal": "أفقي",
         "hover-background": "خلفية التمرير",
-        "hover-foreground": "واجهة التمرير",
+        "hover-foreground": "مقدمة التمرير",
         "image-path": "الصورة",
         "inner-diameter": "القطر الداخلي",
         "input-opacity": "شفافية الإدخال",
@@ -481,7 +509,7 @@
         "interface": "الواجهة",
         "label": "التسمية",
         "label-min-width": "أدنى عرض للتسمية",
-        "layout": "المخطط",
+        "layout": "التخطيط",
         "mirrored": "منعكس",
         "network-speed-compact": "سرعة الشبكة المدمجة",
         "network-speed-unit": "وحدة سرعة الشبكة",
@@ -489,38 +517,51 @@
         "network-speed-unit-kilobytes": "ك.بايت/ث",
         "network-speed-unit-megabytes": "م.بايت/ث",
         "opacity": "الشفافية",
-        "primary-color": "اللون الرئيسي",
-        "reset-defaults": "إعادة للقيم الافتراضية",
+        "primary-color": "اللون الأساسي",
+        "reset-defaults": "إعادة تعيين إلى القيم الافتراضية",
+        "reversed": "معكوس",
         "ring-opacity": "شفافية الحلقة",
         "rotation-speed": "سرعة الدوران",
+        "scroll-step": "خطوة التمرير",
         "secondary-color": "اللون الثانوي",
         "sensitivity": "الحساسية",
         "shadow": "الظل",
-        "show-caps-lock": "تحذير Caps Lock",
+        "show-caps-lock": "تحذير قفل الأحرف الكبيرة",
+        "show-device": "إظهار الجهاز",
+        "show-events": "إظهار الأحداث",
         "show-forecast": "إظهار التوقعات",
         "show-keyboard-layout": "تخطيط لوحة المفاتيح",
         "show-label": "إظهار التسمية",
-        "show-login-button": "زر التسجيل",
+        "show-login-button": "زر تسجيل الدخول",
+        "show-media": "الوسائط",
         "show-password-hint": "تلميح كلمة المرور",
+        "show-session-buttons": "أزرار الجلسة",
+        "show-unlock-hint": "تلميح إلغاء القفل",
+        "show-vpn-label": "إظهار تسمية VPN",
+        "show-weather": "الطقس",
+        "show-week-numbers": "إظهار أرقام الأسابيع",
         "show-when-idle": "إظهار عند الخمول",
         "stat": "الإحصائية",
-        "stat-cpu-temp": "حرارة المعالج",
+        "stat-cpu-freq": "تردد المعالج",
+        "stat-cpu-temp": "درجة حرارة المعالج",
         "stat-cpu-usage": "استخدام المعالج",
-        "stat-gpu-temp": "حرارة معالج الرسوميات",
-        "stat-gpu-usage": "استخدام معالج الرسوميات",
-        "stat-gpu-vram": "ذاكرة معالج الرسوميات",
+        "stat-gpu-temp": "درجة حرارة وحدة معالجة الرسوميات",
+        "stat-gpu-usage": "استخدام وحدة معالجة الرسوميات",
+        "stat-gpu-vram": "ذاكرة وحدة معالجة الرسوميات",
+        "stat-gpu-vram-used": "ذاكرة VRAM المستخدمة",
         "stat-net-rx": "استقبال الشبكة",
         "stat-net-tx": "إرسال الشبكة",
         "stat-none": "بلا",
-        "stat-ram-pct": "% الذاكرة العشوائية",
-        "stat-swap-pct": "% ذاكرة التبادل",
-        "stat2": "الإحصائية 2",
+        "stat-ram-pct": "% RAM",
+        "stat-swap-pct": "% ذاكرة التبديل",
+        "stat2": "الإحصائية الثانية",
         "title": "العنوان",
+        "track-color": "لون المسار",
         "variant": "النمط",
         "variant-default": "افتراضي",
         "variant-destructive": "تدميري",
-        "variant-ghost": "خفي",
-        "variant-outline": "حدود خارجية",
+        "variant-ghost": "شبح",
+        "variant-outline": "مخطط",
         "variant-primary": "رئيسي",
         "variant-secondary": "ثانوي",
         "vertical": "رأسي",
@@ -532,29 +573,39 @@
         "visualization-mode-wave": "موجة",
         "visualization-mode-wave-rings": "موجة + حلقات",
         "wave-thickness": "سمك الموجة",
-        "widget-section": "القطعة"
+        "widget-section": "الودجت"
       },
-      "title": "ودجت سطح المكتب",
+      "state": {
+        "grid": "الشبكة"
+      },
+      "title": "ودجات سطح المكتب",
       "types": {
-        "audio-visualizer": "المؤثر البصري للصوت",
+        "audio-visualizer": "مؤثر صوتي بصري",
         "button": "زر",
+        "calendar": "التقويم",
         "clock": "ساعة",
-        "fancy-audio-visualizer": "مؤثر بصري صوتي متقدم",
+        "fancy-audio-visualizer": "مؤثر صوتي بصري متقدم",
         "label": "تسمية",
         "login-box": "مربع الدخول",
         "media-player": "مشغل الوسائط",
         "sticker": "ملصق",
         "system-monitor": "مراقب النظام",
+        "volume": "مستوى الصوت",
         "weather": "الطقس"
       }
     },
     "media": {
       "nothing-playing": "لا يوجد تشغيل حالي"
     },
+    "volume": {
+      "mic": "الميكروفون",
+      "muted": "مكتوم",
+      "volume": "مستوى الصوت"
+    },
     "weather": {
       "error": "خطأ",
-      "loading": "جاري التحميل",
-      "no-location": "لا يوجد موقع",
+      "loading": "جارٍ التحميل",
+      "no-location": "لا يوجد موقع محدد",
       "off": "الطقس متوقف"
     }
   },
@@ -563,7 +614,7 @@
       "close": "إغلاق",
       "close-all": "إغلاق الكل"
     },
-    "launcher": "مشغل التطبيقات"
+    "launcher": "مشغّل التطبيقات"
   },
   "internal-apps": {
     "settings": {
@@ -590,21 +641,31 @@
         "flags": "الأعلام",
         "food": "الطعام",
         "nature": "الطبيعة",
-        "objects": "الأشياء",
+        "objects": "الكائنات",
         "people": "الأشخاص",
         "symbols": "الرموز",
         "travel": "السفر"
       },
-      "recently-used": "المستخدمة حديثاً"
+      "recently-used": "المستخدمة مؤخرًا"
     },
     "context-menu": {
       "open": "فتح",
+      "pin": "تثبيت في المشغل",
       "pin-to-dock": "تثبيت بالمنصة",
+      "unpin": "إلغاء التثبيت من المشغل",
       "unpin-from-dock": "إلغاء التثبيت من المنصة"
     },
     "empty": {
       "no-results": "لم يتم العثور على نتائج",
-      "type-to-search": "اكتب للبحث..."
+      "type-to-search": "اكتب للبحث…"
+    },
+    "origins": {
+      "appimage": "AppImage",
+      "flatpak": "Flatpak",
+      "nix": "Nix",
+      "snap": "Snap",
+      "system": "النظام",
+      "user": "المستخدم"
     },
     "providers": {
       "applications": {
@@ -628,13 +689,13 @@
         "title": "النوافذ"
       }
     },
-    "search-placeholder": "البحث عن التطبيقات..."
+    "search-placeholder": "البحث عن التطبيقات…"
   },
   "location": {
     "errors": {
       "address-lookup-failed": "فشل البحث عن العنوان",
       "ip-geolocation-failed": "فشل تحديد الموقع عبر IP",
-      "parse-geocode": "تعذر تحليل استجابة التشفير الجغرافي",
+      "parse-geocode": "تعذر تحليل استجابة الترميز الجغرافي",
       "parse-ip-geolocation": "تعذر تحليل استجابة الموقع عبر IP"
     },
     "locations": {
@@ -642,13 +703,14 @@
     },
     "source": {
       "address": "العنوان",
-      "auto": "تلقائي"
+      "auto": "تلقائي",
+      "manual": "يدوي"
     }
   },
   "lockscreen": {
-    "authenticating": "جاري المصادقة...",
+    "authenticating": "جارٍ التحقق...",
     "authentication-failed": "فشلت المصادقة",
-    "caps-lock-on": "مفتاح Caps Lock مفعل",
+    "caps-lock-on": "مفتاح قفل الأحرف الكبيرة مفعّل",
     "password-cleared": "تم مسح كلمة المرور",
     "password-placeholder": "كلمة المرور",
     "ready": "اكتب كلمة المرور واضغط Enter.",
@@ -672,7 +734,10 @@
       "battery-low-body": "{device}: متبقي {percent}%",
       "battery-low-title": "البطارية منخفضة",
       "calendar": "التقويم",
+      "calendar-credential-locked-body": "افتح حلقة المفاتيح المستخدمة بواسطة خدمة الأسرار، ثم أعد المحاولة من الإعدادات. مع GNOME Keyring، اجعل حلقة المفاتيح تُفتح تلقائياً مثل Login هي الافتراضية.",
+      "calendar-credential-locked-title": "حلقة المفاتيح التقويم مقفلة",
       "calendar-google-connect-browser-failed": "تعذر تشغيل المتصفح للمصادقة مع Google. تحقق من المتصفح الافتراضي أو إعدادات xdg-open.",
+      "calendar-google-connect-credential-store-failed": "اكتملت المصادقة، ولكن تعذر حفظ رمز التحديث. افتح خدمة الأسرار أو شغّله، ثم أعد الاتصال.",
       "calendar-google-connect-expired": "انتهت صلاحية مصادقة Google قبل إتمام التسجيل. ابدأ الاتصال مجدداً.",
       "calendar-google-connect-failed-title": "فشل الاتصال بتقويم Google",
       "calendar-google-connect-missing-account": "لا يوجد حساب تقويم Google مكوّن يطابق \"{account}\".",
@@ -681,30 +746,32 @@
       "calendar-google-connect-start-failed": "تعذر بدء مصادقة Google. تحقق من اتصال الشبكة وحاول مجدداً.",
       "calendar-google-connect-start-http": "تعذر بدء مصادقة Google. أعاد وسيط OAuth الخطأ HTTP {status}.",
       "calendar-google-connect-timeout": "انتهت مهلة مصادقة Google. ابدأ الاتصال مجدداً عندما تكون مستعداً للتسجيل.",
-      "dbus-disabled": "إشعارات DBus معطلة",
-      "desktop-widgets-editor": "محرر الودجت",
-      "desktop-widgets-editor-enabled": "محرر ودجت سطح المكتب مفعل. انتقل لمساحة عمل فارغة لرؤية الغطاء.",
-      "greeter-sync": "مستقبل Noctalia",
+      "config-migration-body": "حدّث {path} في الملف المصدر. يطبّق Noctalia هذا الاستبدال مؤقتاً فقط. شغّل noctalia config validate لعرض جميع التغييرات المطلوبة.",
+      "config-migration-title": "يلزم تحديث الإعدادات",
+      "dbus-disabled": "إشعارات D-Bus معطلة",
+      "desktop-widgets-editor": "محرر ودجت",
+      "desktop-widgets-editor-enabled": "محرر ودجات سطح المكتب مفعّل. انتقل إلى مساحة عمل فارغة حتى لا تغطي النوافذ المفتوحة المحرر.",
+      "greeter-sync": "مزامنة شاشة الدخول",
       "greeter-sync-pending": "في انتظار موافقة المسؤول للكتابة على الشاشة الرئيسية.",
-      "greeter-sync-pending-console": "في انتظار موافقة المسؤول. وافق على طلب polkit في Noctalia أو عبر Console، أو شغل pkexec يدوياً.",
-      "greeter-sync-pending-manual": "الملفات جاهزة. نفذ في الطرفية: pkexec noctalia-greeter-apply-appearance \"$XDG_RUNTIME_DIR/noctalia-greeter-sync\". أو اضبط الأمر في الإعدادات ثم حاول مجدداً.",
+      "greeter-sync-pending-console": "في انتظار موافقة المسؤول. وافق على طلب Polkit في Noctalia أو عبر وحدة التحكم، أو شغّل pkexec يدويًا.",
+      "greeter-sync-pending-manual": "الملفات جاهزة. نفّذ في الطرفية: pkexec noctalia-greeter-apply-appearance \"$XDG_RUNTIME_DIR/noctalia-greeter-sync\". أو اضبط الأمر في الإعدادات ثم حاول مرة أخرى.",
       "greeter-sync-success": "تمت مزامنة المظهر. ستطبق التغييرات في شاشة الدخول القادمة.",
-      "greeter-sync-timeout": "لا تزال مزامنة شاشة الدخول تنتظر موافقة المسؤول. تحقق من الطرفية لطلب polkit، أو فعّل وكيل polkit من الأمان، أو شغل pkexec يدوياً.",
-      "greeter-sync-timeout-manual": "مزامنة شاشة الدخول تحتاج موافقة المسؤول. شغل في الطرفية: pkexec noctalia-greeter-apply-appearance \"$XDG_RUNTIME_DIR/noctalia-greeter-sync\"",
+      "greeter-sync-timeout": "لا تزال مزامنة شاشة الدخول في انتظار موافقة المسؤول. تحقق من الطرفية لطلب Polkit، أو فعّل وكيل Polkit من إعدادات الأمان، أو شغّل pkexec يدويًا.",
+      "greeter-sync-timeout-manual": "تحتاج مزامنة شاشة الدخول إلى موافقة المسؤول. شغّل في الطرفية: pkexec noctalia-greeter-apply-appearance \"$XDG_RUNTIME_DIR/noctalia-greeter-sync\"",
       "keybind-app": "Noctalia",
       "keybind-invalid-modifier": "يقبل هذا الاختصار مفتاحاً واحداً بدون معدّلات.",
       "keybind-invalid-printable": "المفاتيح القابلة للطباعة (أحرف، أرقام، رموز) تتطلب معدّلاً مثل Ctrl أو Alt.",
-      "keybind-invalid-super": "لا يمكن استخدام مفتاح Super/Windows في اختصارات الغلاف (shell).",
+      "keybind-invalid-super": "لا يمكن استخدام مفتاح Super/Windows في اختصارات الغلاف (واجهة الأوامر).",
       "keybind-invalid-title": "الاختصار غير مسموح به",
       "launcher-usage-reset": "المشغل",
       "launcher-usage-reset-success": "تم مسح بيانات الاستخدام.",
       "lockscreen-widgets-editor": "محرر ودجت شاشة القفل",
       "lockscreen-widgets-editor-blocked-locked": "إلغاء قفل الجلسة قبل تعديل ودجت شاشة القفل.",
-      "lockscreen-widgets-editor-enabled": "محرر ودجت شاشة القفل مفعل. رتب الودجت على الشاشة ثم اقفل الجلسة للتحقق من التنسيق.",
-      "mpris-disabled": "MPRIS معطل",
+      "lockscreen-widgets-editor-enabled": "محرر ودجات شاشة القفل مفعّل. رتّب ودجت على الشاشة ثم اقفل الجلسة للتحقق من التنسيق.",
+      "mpris-disabled": "واجهة MPRIS معطلة",
       "polkit-agent": "وكيل Polkit",
       "polkit-no-session": "يحتاج وكيل Polkit إلى logind أو elogind أو XDG_SESSION_ID. لا يمكن التسجيل للمطالبات الرسومية. استخدم pkexec من الطرفية بدلاً من ذلك.",
-      "screen-time-reset": "وقت الشاشة",
+      "screen-time-reset": "مدة استخدام الشاشة",
       "screen-time-reset-success": "تم مسح سجل الاستخدام.",
       "session-bus-unavailable": "ناقل الجلسة غير متاح",
       "wallpaper-palette-export": "لوحة ألوان مخصصة",
@@ -713,33 +780,33 @@
   },
   "osd": {
     "bluetooth": {
-      "off": "البلوتوث متوقف",
-      "on": "البلوتوث مفعل"
+      "off": "Bluetooth متوقف",
+      "on": "Bluetooth مفعّل"
     },
     "caffeine": {
       "off": "الكافيين متوقف",
-      "on": "الكافيين مفعل"
+      "on": "الكافيين مفعّل"
     },
     "dnd": {
       "off": "عدم الإزعاج متوقف",
-      "on": "عدم الإزعاج مفعل"
+      "on": "عدم الإزعاج مفعّل"
     },
     "effects": {
       "input": "تأثيرات الإدخال",
       "output": "تأثيرات الإخراج"
     },
     "lock-keys": {
-      "caps-off": "Caps Lock متوقف",
-      "caps-on": "Caps Lock مفعل",
-      "num-off": "Num Lock متوقف",
-      "num-on": "Num Lock مفعل",
-      "scroll-off": "Scroll Lock متوقف",
-      "scroll-on": "Scroll Lock مفعل"
+      "caps-off": "قفل الأحرف الكبيرة متوقف",
+      "caps-on": "قفل الأحرف الكبيرة مفعّل",
+      "num-off": "قفل الأرقام متوقف",
+      "num-on": "قفل الأرقام مفعّل",
+      "scroll-off": "قفل التمرير متوقف",
+      "scroll-on": "قفل التمرير مفعّل"
     },
     "nightlight": {
-      "forced": "مفعل دائماً",
+      "forced": "مفعّل دائماً",
       "off": "الإضاءة الليلية متوقفة",
-      "running": "قيد التشغيل",
+      "running": "يعمل منذ",
       "scheduled": "مجدول"
     },
     "privacy": {
@@ -751,8 +818,8 @@
       "screen-on": "مشاركة الشاشة نشطة"
     },
     "wifi": {
-      "off": "الواي فاي متوقف",
-      "on": "الواي فاي مفعل"
+      "off": "Wi‑Fi متوقف",
+      "on": "Wi‑Fi مفعّل"
     }
   },
   "plugins": {
@@ -760,6 +827,12 @@
       "body-errors": "تعرض الإضافة {plugin} لأخطاء كثيرة وتم تعطيلها. أعد تحميلها بعد إصلاح المشكلة.",
       "body-timeouts": "توقفت الإضافة {plugin} عن الاستجابة وتم تعطيلها. أعد تحميلها بعد إصلاح المشكلة.",
       "title": "تم تعطيل الإضافة"
+    },
+    "enable-failed": {
+      "body-error": "{plugin}: {error}",
+      "body-incompatible": "{plugin} يستهدف واجهة API للإضافات {version}؛ يدعم هذا الإصدار من Noctalia واجهة API من {oldest} إلى {current}.",
+      "body-timeout": "استغرق تثبيت {plugin} وقتاً طويلاً.",
+      "title": "لم يتم تفعيل الإضافة"
     }
   },
   "power": {
@@ -806,11 +879,13 @@
   },
   "settings": {
     "actions": {
+      "confirm-reset": "تأكيد إعادة الضبط",
       "reset": "إعادة ضبط"
     },
     "badges": {
       "advanced": "متقدم",
       "community": "مجتمعي",
+      "deprecated": "مهجور",
       "inherited": "موروث",
       "monitor": "الشاشة",
       "official": "رسمي",
@@ -818,13 +893,20 @@
     },
     "calendar-accounts": {
       "add-title": "إضافة حساب تقويم",
+      "calendars-label": "التقويمات",
       "color-label": "اللون",
+      "credential-source-file": "ملف كلمة المرور",
+      "credential-source-keyring": "حلقة المفاتيح",
+      "credential-source-label": "تخزين بيانات الاعتماد",
       "delete-error": "تعذر حذف حساب التقويم.",
       "edit-title": "تعديل حساب التقويم",
+      "ics-url-label": "رابط ICS",
       "id-label": "معرّف الحساب",
       "invalid": "تحقق من حقول حساب التقويم المحددة.",
       "name-label": "اسم العرض",
       "name-placeholder": "تقويم شخصي",
+      "password-file-error": "تعذر قراءة ملف كلمة المرور المُعد. تحقق من وجوده وأنه ملف عادي قابل للقراءة ويحتوي على كلمة مرور.",
+      "password-file-label": "ملف كلمة المرور",
       "password-keep-placeholder": "اتركه فارغاً للإبقاء على كلمة المرور الحالية",
       "password-label": "كلمة مرور التطبيق",
       "password-placeholder": "كلمة مرور خاصة بالتطبيق",
@@ -832,12 +914,18 @@
       "provider": {
         "custom": "CalDAV",
         "google": "Google",
-        "icloud": "iCloud"
+        "icloud": "iCloud",
+        "ics": "رابط ICS"
       },
       "provider-label": "المزود",
       "save": "حفظ",
       "save-connect": "حفظ واتصال",
       "save-error": "تعذر حفظ حساب التقويم.",
+      "secret-cleanup-error": "تعذر حفظ الحساب، كما تعذر استعادة بيانات اعتماد حلقة المفاتيح أو تنظيفها. أعد المحاولة بعد فتح خدمة الأسرار.",
+      "secret-service-cancelled": "تم إلغاء مطالبة خدمة الأسرار. أعد المحاولة عندما تكون مستعداً لفتحه.",
+      "secret-service-error": "تعذر الوصول إلى بيانات اعتماد التقويم في خدمة الأسرار. أعد محاولة العملية.",
+      "secret-service-locked": "بيانات اعتماد التقويم مقفلة أو تم رفض الوصول. افتح خدمة الأسرار وأعد المحاولة.",
+      "secret-service-unavailable": "لا يتوفر موفر خدمة الأسرار. شغّل موفراً متوافقاً وأعد المحاولة.",
       "server-url-label": "رابط الخادم",
       "username-label": "اسم المستخدم",
       "username-placeholder": "name@example.com"
@@ -894,24 +982,42 @@
       "widget": {
         "add": "إضافة ودجت",
         "detail": {
-          "custom": "ودجت مخصص"
+          "custom": "ودجت مخصّص"
         },
         "editor": {
-          "description": "رتب الودجت عبر مسارات الشريط",
+          "description": "رتّب الودجت عبر مسارات الشريط",
           "title": "ودجت الشريط"
         },
         "group": {
+          "accordion": "أكورديون",
+          "accordion-description": "إظهار الودجت الأول فقط؛ مرّر المؤشر فوق الكبسولة لإظهار البقية",
+          "accordion-direction": "اتجاه الكشف",
+          "accordion-direction-description": "جانب الودجت الأولى الذي تنفتح منه القطع المخفية",
           "action": "تجميع",
           "border": "الحدود",
           "border-description": "دور لون الحدود؛ اتركه على الافتراضي بدون حدود",
           "clear": "مسح",
+          "deselect": "إلغاء التحديد",
+          "drag": "إعادة الترتيب",
+          "drawer-columns": "أعمدة اللوحة المنسدلة",
+          "drawer-columns-description": "عدد القطع في كل صف داخل اللوحة المنسدلة",
+          "drawer-detached": "لوحة منفصلة",
+          "drawer-detached-description": "فتح اللوحة المنسدلة كلوحة عائمة بخلفيتها الخاصة بدلاً من دمجها مع الشريط",
+          "drawer-enabled": "اللوحة المنسدلة",
+          "drawer-enabled-description": "نقل قطع المجموعة إلى لوحة منسدلة يتم تبديلها بواسطة زر",
+          "drawer-glyph-closed": "أيقونة مغلقة",
+          "drawer-glyph-closed-description": "الرمز المعروض على زر تبديل اللوحة عندما تكون مغلقة",
+          "drawer-glyph-opened": "أيقونة مفتوحة",
+          "drawer-glyph-opened-description": "الرمز المعروض على زر تبديل اللوحة عندما تكون مفتوحة",
           "edit": "تعديل النمط",
           "fill": "الخلفية",
           "fill-description": "دور لون خلفية الكبسولة؛ يدعم ألوان Hex الثابتة أيضاً",
           "foreground": "الواجهة",
           "foreground-description": "دور لون الأيقونات والنصوص للودجت في هذه المجموعة",
+          "hide": "إخفاء هذه المجموعة",
+          "hide-widget": "إخفاء هذا الودجت",
           "hint": "جزء من مجموعة كبسولة",
-          "members": "{count} ودجت",
+          "members": "{count} ودجات",
           "opacity": "الشفافية",
           "opacity-description": "شفافية خلفية الكبسولة",
           "orphan": "مجموعة غير معروفة",
@@ -919,39 +1025,49 @@
           "padding-description": "الهامش الداخلي بين حافة الكبسولة وعناصرها بالبكسل",
           "radius": "نصف القطر",
           "radius-description": "نصف قطر زوايا الكبسولة بالبكسل؛ الخيار التلقائي يرث نصف قطر الشريط",
-          "selected": "{count} محدد",
+          "remove-from-group": "إزالة من المجموعة",
+          "remove-orphan": "إزالة المجموعة غير المعروفة",
+          "remove-widget": "إزالة من الشريط",
+          "select": "تحديد للتجميع",
+          "selected": "{count} محددة",
+          "settings-widget": "إعدادات الودجت",
+          "show": "إظهار هذه المجموعة",
+          "show-widget": "إظهار هذا الودجت",
           "style": "النمط",
           "title": "مجموعة كبسولة",
-          "ungroup": "فك التجميع"
+          "ungroup": "فك التجميع",
+          "widget-spacing": "التباعد",
+          "widget-spacing-description": "المسافة بين القطع في هذه المجموعة بالبكسل؛ تلقائي يرث تباعد قطع الشريط"
         },
         "inspector": {
-          "add-instance-title": "إضافة ودجت {widget} جديد ومسمى إلى {lane}",
+          "add-instance-title": "إضافة ودجت جديد باسم {widget} إلى {lane}",
           "add-title": "إضافة ودجت إلى {lane}",
-          "move-to-lane": "النقل إلى {lane}"
+          "move-to-lane": "نقل إلى {lane}",
+          "reset-defaults": "إعادة إلى القيم الافتراضية"
         },
         "instance": {
           "create-save": "إنشاء",
           "delete": "حذف",
-          "delete-confirm-desc": "سيتم إزالة هذا الودجت المسمى من كل شريط وحذف إعداداته.",
+          "delete-confirm-desc": "سيتم إزالة هذا الودجت المسمّاة من كل شريط وحذف إعداداته.",
           "delete-confirm-title": "حذف \"{name}\"؟",
           "id-description": "استخدم الأحرف، الأرقام، الشرطات السفلية أو العادية فقط بدون مسافات.",
-          "id-placeholder": "معرّف الودجت",
+          "id-placeholder": "معرّف ودجت",
           "rename": "إعادة تسمية",
           "rename-save": "حفظ"
         },
         "lanes": {
           "center": "المنتصف",
           "customize": "تخصيص",
-          "empty": "لا توجد ودجت",
+          "empty": "لا توجد ودجات",
           "empty-hint": "أضف ودجت لملء هذا المسار.",
           "end": "النهاية",
           "start": "البداية"
         },
         "picker": {
           "empty": "لم يتم العثور على ودجت",
-          "instance-description": "ودجت مسمى للنوع \"{type}\"",
-          "instance-toggle": "ودجت مسمى",
-          "placeholder": "البحث في الودجت..."
+          "instance-description": "ودجت مسمّاة من النوع \"{type}\"",
+          "instance-toggle": "ودجت مسمّى",
+          "placeholder": "البحث في ودجت..."
         },
         "raw": {
           "delete": "حذف",
@@ -961,10 +1077,22 @@
         "settings": {
           "empty": "لا توجد إعدادات تطابق مرشحات البحث.",
           "groups": {
+            "actions": "الإجراءات",
+            "behavior": "السلوك",
             "grouping": "التجميع",
             "presentation": "العرض",
             "runtime": "وقت التشغيل",
-            "widget": "الودجت"
+            "taskbar": {
+              "grouping": "التجميع",
+              "windows": "النوافذ",
+              "workspace-labels": "تسميات مساحات العمل"
+            },
+            "widget": "ودجت",
+            "workspaces": {
+              "colors": "الألوان",
+              "list": "مساحات العمل",
+              "pills": "نمط الحبوب"
+            }
           }
         }
       }
@@ -981,6 +1109,7 @@
         "rename": "تعذر إعادة تسمية الشريط."
       },
       "batch-write": "تعذر حفظ بعض الإعدادات.",
+      "custom-schedule-times": "يحتاج الجدول المخصص إلى وقت للشروق ووقت للغروب بصيغة HH:MM.",
       "export-config": "فشل حفظ تصدير الإعدادات.",
       "export-wallpaper-palette": "تعذر حفظ ألوان الخلفية كلوحة ألوان مخصصة.",
       "monitor-override": {
@@ -990,11 +1119,11 @@
       },
       "reset-page": "فشل إعادة ضبط بعض الإعدادات.",
       "support-report": "فشل حفظ تقرير الدعم.",
-      "sync-greeter": "تعذر مزامنة المظهر مع المستقبل Noctalia Greeter.",
+      "sync-greeter": "تعذرت مزامنة المظهر مع Noctalia Greeter.",
       "sync-greeter-timeout": "لا تزال المزامنة تنتظر موافقة المسؤول. تحقق من الطرفية لطلب polkit، أو فعّل وكيل polkit من الأمان، أو شغل pkexec يدوياً.",
       "sync-greeter-timeout-manual": "تطلب المزامنة موافقة المسؤول. نفذ في الطرفية: pkexec noctalia-greeter-apply-appearance \"$XDG_RUNTIME_DIR/noctalia-greeter-sync\"",
       "widget": {
-        "rename": "تعذر إعادة تسمية الودجت المسمى."
+        "rename": "تعذر إعادة تسمية الودجت المسمّاة."
       },
       "write": "فشل حفظ الإعدادات."
     },
@@ -1021,6 +1150,7 @@
           "suspend": "تعليق"
         },
         "kind-section-label": "الإجراء",
+        "locked-timeout-label": "مهلة القفل (بالثواني، 0 = متوقف)",
         "name-label": "الاسم",
         "name-placeholder": "سلوك الخمول",
         "resume-command-label": "أمر الاستئناف",
@@ -1038,12 +1168,15 @@
     },
     "navigation": {
       "groups": {
+        "accessibility": "إمكانية الوصول",
         "audio": "الصوت",
+        "authentication": "المصادقة",
         "automation": "الأتمتة",
         "backdrop": "خلفية المشهد",
         "background": "الخلفية",
         "battery": "البطارية",
         "behavior": "السلوك",
+        "borders": "الحدود",
         "brightness": "السطوع",
         "built-in": "مدمج",
         "calendar": "التقويم",
@@ -1053,20 +1186,24 @@
         "control-center": "مركز التحكم",
         "dead-zone": "المنطقة الميتة",
         "directories": "المجلدات",
+        "display": "العرض",
         "effects": "التأثيرات",
         "filtering": "التصفية",
         "focus-styling": "تنسيق التركيز",
         "formats": "الصيغ",
         "general": "عام",
+        "greeter": "شاشة الترحيب",
         "grouping": "التجميع",
+        "history": "السجل",
         "home": "الرئيسية",
         "hot-corners": "الزوايا النشطة",
         "idle": "الخمول",
         "interface": "الواجهة",
         "keybinds": "الاختصارات",
+        "keyboard-layout": "تخطيط لوحة المفاتيح",
         "kinds": "الأنواع",
         "launcher": "المشغل",
-        "layout": "المخطط",
+        "layout": "التخطيط",
         "lifecycle": "دورة الحياة",
         "location": "الموقع",
         "lock-screen": "شاشة القفل",
@@ -1076,6 +1213,7 @@
         "monitor-thresholds": "عتبات التمييز",
         "monitors": "الشاشات",
         "motion": "الحركة",
+        "navigation": "التنقل",
         "network": "الشبكة",
         "night-light": "الإضاءة الليلية",
         "notifications": "الإشعارات",
@@ -1084,9 +1222,11 @@
         "pinned-apps": "التطبيقات المثبتة",
         "polkit": "Polkit",
         "power": "الطاقة",
+        "privacy": "الخصوصية",
         "profile": "الملف الشخصي",
+        "providers": "المزوّدون",
         "screen-corners": "زوايا الشاشة",
-        "screen-time": "وقت الشاشة",
+        "screen-time": "مدة استخدام الشاشة",
         "screenshot": "لقطة الشاشة",
         "security": "الأمان",
         "session-panel": "الجلسة",
@@ -1098,18 +1238,20 @@
         "user": "المستخدم",
         "wallpaper": "خلفية الشاشة",
         "weather": "الطقس",
-        "widget-list": "قائمة الودجت",
-        "widgets": "الودجت"
+        "widget-list": "قائمة ودجت",
+        "widgets": "ودجت"
       },
       "sections": {
+        "accessibility": "إمكانية الوصول",
         "appearance": "المظهر",
         "backdrop": "خلفية المشهد",
         "bar": "الشريط",
         "control-center": "مركز التحكم",
         "desktop": "سطح المكتب",
         "dock": "المنصة (Dock)",
-        "hooks": "المخطافات (Hooks)",
+        "hooks": "الخطافات (Hooks)",
         "keybinds": "الاختصارات",
+        "launcher": "المشغل",
         "location": "الموقع",
         "niri": "Niri",
         "notifications": "الإشعارات",
@@ -1120,7 +1262,7 @@
         "power": "الطاقة",
         "security": "الأمان",
         "services": "الخدمات",
-        "shell": "الغلاف (Shell)",
+        "shell": "واجهة الأوامر",
         "system": "النظام",
         "templates": "القوالب",
         "wallpaper": "خلفية الشاشة"
@@ -1132,15 +1274,20 @@
         "add-title": "إضافة مرشح إشعارات",
         "allow-permanent": "السماح بالدائم",
         "allowed-urgencies-label": "مستويات الأهمية المسموحة",
+        "bypass-dnd": "تجاوز عدم الإزعاج",
         "flag": {
+          "dnd-bypass": "تجاوز DND",
           "history": "السجل",
           "permanent": "دائم",
           "sound": "الصوت",
           "toast": "منبثق"
         },
         "flags-label": "عند المطابقة",
+        "match-content-label": "تعبير نمطي لمحتوى الإشعار",
+        "match-content-placeholder": "نمط تعبير نمطي لمطابقة الملخص أو النص…",
         "match-label": "التطبيق",
         "match-placeholder": "اسم التطبيق، العنصر، أو الفئة…",
+        "override-duration": "تجاوز المدة",
         "play-sound": "تشغيل صوت",
         "save-history": "حفظ في السجل",
         "show-toast": "إظهار تنبيه منبثق",
@@ -1151,6 +1298,17 @@
       }
     },
     "options": {
+      "accordion-direction": {
+        "end": "بعد الودجت الأولى",
+        "start": "قبل الودجت الأولى"
+      },
+      "bar": {
+        "auto-hide": {
+          "off": "متوقف",
+          "on": "مفعّل",
+          "smart": "ذكي"
+        }
+      },
       "clipboard": {
         "auto-paste": {
           "ctrl-shift-v": "Ctrl+Shift+V",
@@ -1210,6 +1368,10 @@
       "orientation": {
         "horizontal": "أفقي",
         "vertical": "رأسي"
+      },
+      "panel-bar-alignment": {
+        "centered": "متمركز",
+        "near-trigger": "بالقرب من المشغّل"
       },
       "panel-position": {
         "auto": "متابعة الشريط"
@@ -1300,7 +1462,7 @@
       "browse-store": "تصفح الإضافات",
       "panels": {
         "open-near-click": {
-          "description": "فتح اللوحة بالقرب من الودجت الذي أنشطها",
+          "description": "فتح اللوحة بالقرب من ودجت الذي أنشطها",
           "label": "الفتح بالقرب من النقر"
         },
         "placement": {
@@ -1314,11 +1476,20 @@
       },
       "plugins": {
         "configure": "تكوين",
+        "delete": "حذف",
+        "delete-confirm-desc": "سيتم إلغاء تثبيت هذه الإضافة وإزالتها من القرص.",
+        "delete-confirm-title": "حذف \"{name}\"؟",
         "deprecated": "مهجور",
-        "empty": "لا توجد إضافات مفعلة.",
+        "empty": "لا توجد إضافات مفعّلة.",
+        "held-back": "إصدار أقدم",
+        "held-back-hint": "يحتاج v{version} إلى واجهة API للإضافات {required}؛ هذا الإصدار من Noctalia يدعم حتى {current}. قم بترقية Noctalia للحصول عليه.",
+        "incompatible-plugin-api": "واجهة API للإضافات غير متوافقة",
         "remove": "إزالة الإضافة",
         "requires": "يتطلب: {dependencies}",
-        "title": "الإضافات"
+        "title": "الإضافات",
+        "update-all": "تحديث الكل ({count})",
+        "update-available": "يتوفر تحديث",
+        "update-to": "التحديث إلى {version}"
       },
       "settings": {
         "empty": "لا توجد إعدادات متاحة."
@@ -1326,6 +1497,8 @@
       "sources": {
         "add": "إضافة مصدر",
         "add-title": "إضافة مصدر إضافات",
+        "auto-update": "تحديث الإضافات تلقائياً",
+        "auto-update-desc": "التحقق من المصادر المفعّلة عن إصدارات جديدة في الخلفية والحفاظ على تحديث الإضافات المثبتة",
         "edit": "تعديل المصدر",
         "edit-title": "تعديل مصدر الإضافات",
         "empty": "لم يتم تكوين أي مصادر.",
@@ -1352,17 +1525,37 @@
       },
       "store": {
         "add": "إضافة إلى Noctalia",
+        "back-to-catalog": "العودة إلى كتالوج الإضافات",
+        "categories": "الفئات",
         "category-all": "الكل",
         "empty": "لم يتم العثور على إضافات",
+        "held-back": "إصدار أقدم",
+        "held-back-hint": "يثبّت v{version} لواجهة API للإضافات {resolved}. يتطلب أحدث إصدار v{latest} واجهة API للإضافات {latestRequired}؛ ويدعم هذا الإصدار من Noctalia حتى {current}.",
         "incompatible": "غير متوافق",
+        "incompatible-hint": "يتطلب واجهة API للإضافات {required}؛ ويدعم هذا الإصدار من Noctalia من {oldest} إلى {current}.",
         "loading": "جاري تحميل الكتالوج...",
         "no-readme": "لا يوجد وصف متاح.",
+        "open-page": "فتح صفحة الإضافة على noctalia.dev",
+        "open-source": "فتح مستودع مصدر الإضافة",
         "results-count": "{count} إضافة",
         "search-placeholder": "البحث في الإضافات...",
+        "sort-added-at-asc": "الترتيب حسب تاريخ الإضافة (الأقدم أولاً)",
+        "sort-added-at-desc": "الترتيب حسب تاريخ الإضافة (الأحدث أولاً)",
+        "sort-name-asc": "الترتيب حسب الاسم (أ-ي)",
+        "sort-name-desc": "الترتيب حسب الاسم (ي-أ)",
+        "sort-updated-at-asc": "الترتيب حسب تاريخ التحديث (الأقدم أولاً)",
+        "sort-updated-at-desc": "الترتيب حسب تاريخ التحديث (الأحدث أولاً)",
+        "source-all": "جميع المصادر",
         "title": "متجر الإضافات"
       }
     },
     "schema": {
+      "accessibility": {
+        "high-contrast": {
+          "description": "زيادة التباين بدفع ألوان الأسطح والخلفيات نحو القيم القصوى",
+          "label": "تباين عالٍ"
+        }
+      },
       "appearance": {
         "animation-speed": {
           "description": "مضاعف سرعة جميع التحرّكات (الأنيميشن)",
@@ -1383,6 +1576,14 @@
         "builtin-palette": {
           "description": "اختر لوحة ألوان من الكتالوج المدمج",
           "label": "لوحة الألوان المدمجة"
+        },
+        "button-borders": {
+          "description": "رسم حدود حول الأزرار في جميع أنحاء الواجهة",
+          "label": "حدود الأزرار"
+        },
+        "card-borders": {
+          "description": "رسم حدود حول بطاقات الأقسام داخل اللوحات ونافذة الإعدادات",
+          "label": "حدود البطاقات"
         },
         "community-palette": {
           "description": "اختر لوحة ألوان من كتالوج المجتمع",
@@ -1413,6 +1614,10 @@
         "global-shadow-direction": {
           "description": "اتجاه الظل المسقط من الأسطح"
         },
+        "input-borders": {
+          "description": "رسم حدود حول حقول النص وحقول الإدخال الأخرى في جميع أنحاء الواجهة",
+          "label": "حدود حقول الإدخال"
+        },
         "language": {
           "description": "تجاوز الكشف التلقائي عن اللغة",
           "label": "اللغة"
@@ -1420,6 +1625,18 @@
         "palette-source": {
           "description": "مصدر اشتقاق لوحة الألوان",
           "label": "مصدر لوحة الألوان"
+        },
+        "popup-borders": {
+          "description": "رسم حدود حول النوافذ المنبثقة والقوائم المنسدلة",
+          "label": "حدود النوافذ المنبثقة"
+        },
+        "popup-shadows": {
+          "description": "رسم ظلال خلف النوافذ المنبثقة والقوائم المنسدلة",
+          "label": "ظلال النوافذ المنبثقة"
+        },
+        "pure-black-dark": {
+          "description": "تثبيت الأسطح الداكنة على الأسود الخالص لمنع التدرج غير المتجانس على شاشات OLED (الوضع الداكن فقط)",
+          "label": "أسود خالص"
         },
         "theme-mode": {
           "description": "اختر الوضع الداكن، الفاتح، أو التلقائي حسب الوقت",
@@ -1475,11 +1692,11 @@
           "label": "واجهة الكبسولة"
         },
         "capsule-opacity": {
-          "description": "شفافية خلفيات كبسولات الودجت",
+          "description": "شفافية خلفيات كبسولات ودجت",
           "label": "شفافية الكبسولة"
         },
         "capsule-padding": {
-          "description": "الهامش الداخلي لكبسولات الودجت",
+          "description": "الهامش الداخلي لكبسولات ودجت",
           "label": "هامش الكبسولة"
         },
         "capsule-radius": {
@@ -1491,8 +1708,12 @@
           "label": "سمك الكبسولة"
         },
         "center-widgets": {
-          "description": "الودجت في منتصف الشريط",
+          "description": "ودجت في منتصف الشريط",
           "label": "ودجت المنتصف"
+        },
+        "concave-edge-corners": {
+          "description": "حفر زوايا مقعرة في زاويتين من الشريط (يتطلب أن يكون هامش الحافة 0)؛ عند جعل هامش الأطراف 0، تُحفر الزوايا على الحافة الداخلية للشريط، وإلا تُحفر الزوايا الملامسة لحافة الشاشة",
+          "label": "زوايا حافة مقعرة"
         },
         "contact-shadow": {
           "description": "تدرج داكن بين اللوحة الملتصقة والشريط لإعطاء عمق"
@@ -1520,6 +1741,9 @@
         "corner-top-right": {
           "description": "نصف قطر الزاوية العلوية اليمنى للشريط"
         },
+        "dead-zone-action": {
+          "description": "الإجراء الذي يتم تشغيله على أجزاء الشريط التي لا تغطيها أي قطعة"
+        },
         "edge-margin": {
           "description": "الفجوة بين الشريط وحافة الشاشة. اجعله 0 px ليكون ملاصقاً."
         },
@@ -1527,7 +1751,7 @@
           "description": "إظهار أو إخفاء هذا الشريط"
         },
         "end-widgets": {
-          "description": "الودجت في نهاية الشريط (يمين/أسفل)",
+          "description": "ودجت في نهاية الشريط (يمين/أسفل)",
           "label": "ودجت النهاية"
         },
         "ends-margin": {
@@ -1538,8 +1762,12 @@
           "label": "عائلة الخط"
         },
         "font-weight": {
-          "description": "وزن الخط الافتراضي لتسميات الودجت في هذا الشريط.",
+          "description": "وزن الخط الافتراضي لتسميات ودجت في هذا الشريط.",
           "label": "وزن الخط"
+        },
+        "hover-highlight": {
+          "description": "تلوين الودجت الموجودة تحت مؤشر الفأرة بلطف باستخدام لون المقدمة الخاص بها",
+          "label": "تمييز عند التمرير"
         },
         "layer": {
           "description": "استخدم \"غطاء فوقي\" لإظهار الشريط فوق التطبيقات بشاشة كاملة.",
@@ -1566,7 +1794,7 @@
           "label": "الإظهار عند تغيير مساحة العمل"
         },
         "start-widgets": {
-          "description": "الودجت في بداية الشريط (يسار/أعلى)",
+          "description": "ودجت في بداية الشريط (يسار/أعلى)",
           "label": "ودجت البداية"
         },
         "thickness": {
@@ -1574,20 +1802,20 @@
           "label": "السمك"
         },
         "widget-capsules": {
-          "description": "تغليف الودجت في خلفيات كبسولة",
-          "label": "كبسولات الودجت"
+          "description": "تغليف ودجت في خلفيات كبسولة",
+          "label": "كبسولات ودجت"
         },
         "widget-color": {
           "description": "دور اللون الافتراضي للأيقونات والتسميات في هذا الشريط",
-          "label": "لون الودجت"
+          "label": "لون ودجت"
         },
         "widget-icon-color": {
-          "description": "يتجاوز لون الودجت للأيقونات فقط في هذا الشريط",
-          "label": "لون أيقونة الودجت"
+          "description": "يتجاوز لون ودجت للأيقونات فقط في هذا الشريط",
+          "label": "لون أيقونة ودجت"
         },
         "widget-spacing": {
           "description": "المسافة بين ودجت الشريط",
-          "label": "تباعد الودجت"
+          "label": "تباعد ودجت"
         }
       },
       "desktop": {
@@ -1606,6 +1834,10 @@
         "hot-corners-bottom-right-command": {
           "description": "أمر الغلاف للتشغيل عند الوصول للزاوية السفلية اليمنى",
           "label": "الأمر"
+        },
+        "hot-corners-delay-ms": {
+          "description": "المدة التي يجب أن يبقى فيها المؤشر في الزاوية قبل تشغيل الإجراء (0 = فوري)",
+          "label": "مهلة التفعيل"
         },
         "hot-corners-enabled": {
           "description": "تفعيل الإجراءات بدفع مؤشر الماوس إلى زوايا الشاشة",
@@ -1636,13 +1868,13 @@
           "label": "حجم الزاوية"
         },
         "widgets": {
-          "description": "إظهار الودجت على سطح المكتب",
-          "label": "ودجت سطح المكتب"
+          "description": "إظهار ودجت على سطح المكتب",
+          "label": "ودجات سطح المكتب"
         },
         "widgets-editor": {
           "button": "تبديل المحرر",
           "description": "إضافة، تحريك، وإعادة حجم ودجت سطح المكتب",
-          "label": "محرر الودجت"
+          "label": "محرر ودجت"
         }
       },
       "dock": {
@@ -1663,6 +1895,18 @@
         },
         "background-opacity": {
           "description": "شفافية خلفية المنصة"
+        },
+        "border": {
+          "description": "دور اللون لمخطط المنصة؛ يمكن أيضاً استخدام ألوان hex ثابتة",
+          "label": "الحدود"
+        },
+        "border-width": {
+          "description": "عرض المخطط الداخلي للمنصة",
+          "label": "عرض الحدود"
+        },
+        "concave-edge-corners": {
+          "description": "حفر زوايا للداخل على الجانب الملامس لحافة الشاشة؛ يتطلب أن يكون الهامش إلى حافة الشاشة 0",
+          "label": "زوايا حافة مقعرة"
         },
         "corner-bottom-left": {
           "description": "نصف قطر الزاوية السفلية اليسرى للمنصة"
@@ -1724,8 +1968,12 @@
           "description": "إظهار زر المشغل في بداية أو نهاية المنصة",
           "label": "زر المشغل"
         },
+        "layer": {
+          "description": "استخدم طبقة تراكبية لإظهار المنصة فوق التطبيقات بملء الشاشة",
+          "label": "طبقة Wayland"
+        },
         "magnification": {
-          "description": "تكتبر أيقونات المنصة بالقرب من المؤشر بأسلوب macOS",
+          "description": "تكبير أيقونات المنصة بالقرب من المؤشر بأسلوب macOS",
           "label": "التكبير"
         },
         "magnification-scale": {
@@ -1766,7 +2014,7 @@
         }
       },
       "hooks": {
-        "command-placeholder": "أمر غلاف أو مسار نص برلمجي",
+        "command-placeholder": "أمر غلاف أو مسار نص برمجي",
         "events": {
           "battery-charging": {
             "description": "الأمر عند بدء شحن البطارية",
@@ -1833,12 +2081,12 @@
             "label": "عند تغير الخلفية"
           },
           "wifi-disabled": {
-            "description": "الأمر عند تعطيل الواي فاي",
-            "label": "عند تعطيل الواي فاي"
+            "description": "الأمر عند تعطيل Wi‑Fi",
+            "label": "عند تعطيل Wi‑Fi"
           },
           "wifi-enabled": {
-            "description": "الأمر عند تفعيل الواي فاي",
-            "label": "عند تفعيل الواي فاي"
+            "description": "الأمر عند تفعيل Wi‑Fi",
+            "label": "عند تفعيل Wi‑Fi"
           }
         }
       },
@@ -1857,6 +2105,14 @@
           "description": "إغلاق النوافذ المنبثقة، إخفاء اللوحات، أو إلغاء العملية الحالية",
           "label": "إلغاء"
         },
+        "copy": {
+          "description": "نسخ التحديد أو العنصر الحالي",
+          "label": "نسخ"
+        },
+        "delete": {
+          "description": "حذف العنصر المحدد",
+          "label": "حذف"
+        },
         "down": {
           "description": "تحريك التركيز أو التحديد صفاً واحداً لأسفل",
           "label": "تنقل لأسفل"
@@ -1868,6 +2124,10 @@
         "right": {
           "description": "تحريك التركيز أو التحديد إلى اليمين",
           "label": "تنقل لليمين"
+        },
+        "save": {
+          "description": "حفظ التحديد أو العنصر الحالي",
+          "label": "حفظ"
         },
         "tab-next": {
           "description": "تحريك التركيز إلى العنصر التالي",
@@ -1907,6 +2167,10 @@
           "description": "إلغاء القفل ببصمة الإصبع عبر fprintd إلى جانب كلمة المرور",
           "label": "إلغاء القفل بالبصمة"
         },
+        "lock-before-suspend": {
+          "description": "قفل الجلسة قبل السكون (إغلاق الغطاء، systemctl suspend، الإسبات)؛ إجراءات القفل والسكون تقفل أولًا أيضًا",
+          "label": "القفل قبل السكون"
+        },
         "monitors": {
           "description": "اختر الشاشات التي تظهر عليها شاشة القفل (اتركه فارغاً للكل)",
           "label": "الشاشات"
@@ -1942,6 +2206,10 @@
         "blacklist-allow-critical": {
           "description": "إظهار الإشعارات الحرجة دائماً حتى لو كانت من مرسلين بالقائمة السوداء"
         },
+        "border": {
+          "description": "رسم حدود حول إشعارات التنبيه",
+          "label": "الحدود"
+        },
         "collapse-on-dismiss": {
           "description": "سحب التنبيهات المنبثقة المتبقية لإغلاق الفجوات عند إغلاق أحدها",
           "label": "ضم عند الإغلاق"
@@ -1954,9 +2222,17 @@
           "description": "قواعد التنبيهات والسجل والأصوات لكل مرسل",
           "label": "مرشحات الإشعارات"
         },
+        "history-retention-hours": {
+          "description": "إزالة إدخالات سجل الإشعارات الأقدم من عدد الساعات المحدد تلقائياً (0 للاحتفاظ بها إلى الأبد)",
+          "label": "مدة الاحتفاظ"
+        },
         "layer": {
           "description": "استخدم \"غطاء فوقي\" لإظهار التنبيهات فوق التطبيقات بشاشة كاملة.",
           "label": "طبقة Wayland"
+        },
+        "max-visible": {
+          "description": "الحد الأقصى لعدد إشعارات التنبيه الظاهرة على الشاشة في وقت واحد (0 لملء كل المساحة المتاحة)",
+          "label": "الحد الأقصى للتنبيهات الظاهرة"
         },
         "monitors": {
           "description": "اختر الشاشات التي تظهر عليها تنبيهات الإشعارات",
@@ -2012,17 +2288,37 @@
           "description": "عرض لوحة مركز التحكم بالبكسل",
           "label": "عرض مركز التحكم"
         },
+        "floating-layer": {
+          "description": "استخدم Top إذا كانت نوافذ اقتراحات أسلوب الإدخال مخفية خلف اللوحات العائمة؛ يبقي طبقة تراكبية اللوحات فوق محتوى ملء الشاشة",
+          "label": "طبقة اللوحة العائمة"
+        },
         "floating-offset": {
           "description": "الفجوة بالبكسل بين اللوحة العائمة وحافة الشريط",
           "label": "إزاحة العوم"
+        },
+        "home-session-button": {
+          "description": "إظهار زر إجراءات الجلسة في ترويسة علامة التبويب الرئيسية",
+          "label": "إظهار زر الجلسة في الترويسة"
         },
         "home-shortcuts": {
           "description": "اختر ما يصل إلى ستة أزرار اختصار للتبويب الرئيسي",
           "label": "اختصارات الرئيسية"
         },
+        "home-shortcuts-show-labels": {
+          "description": "عرض تسميات نصية أسفل أيقونات الاختصارات في علامة التبويب الرئيسية",
+          "label": "إظهار تسميات الاختصارات"
+        },
+        "launcher-app-actions": {
+          "description": "إظهار إدخالات إجراءات التطبيقات بجانب التطبيقات في النتائج",
+          "label": "إظهار إجراءات التطبيقات"
+        },
         "launcher-app-grid": {
           "description": "إظهار شبكة من أيقونات التطبيقات مع تسميات أسفلها عندما تكون النتائج تطبيقات فقط",
           "label": "عرض شبكة التطبيقات"
+        },
+        "launcher-auto-paste": {
+          "description": "بعد عمليات النسخ من الحاسبة والرموز التعبيرية وغيرها، الصق في النافذة المركّز عليها (نفس اختصارات اللصق التلقائي للحافظة)",
+          "label": "اللصق التلقائي"
         },
         "launcher-categories": {
           "description": "إظهار مرشحات الفئات في المشغل",
@@ -2031,6 +2327,58 @@
         "launcher-compact": {
           "description": "استخدام أيقونات أصغر وصفوف نتائج أكثر تراصاً",
           "label": "صفوف مدمجة"
+        },
+        "launcher-currency-exchange": {
+          "description": "جلب أسعار الصرف من مصادر خارجية عبر الإنترنت",
+          "label": "تحويل العملات"
+        },
+        "launcher-global-calculator": {
+          "description": "إظهار نتائج الحاسبة أيضاً في البحث غير المسبوق",
+          "label": "الحاسبة في البحث العام"
+        },
+        "launcher-global-emoji": {
+          "description": "إظهار نتائج الرموز التعبيرية أيضاً في البحث غير المسبوق",
+          "label": "الرموز التعبيرية في البحث العام"
+        },
+        "launcher-global-session": {
+          "description": "إظهار إجراءات الجلسة أيضاً في البحث غير المسبوق",
+          "label": "الجلسة في البحث العام"
+        },
+        "launcher-global-wallpaper": {
+          "description": "إظهار الخلفيات أيضاً في البحث غير المسبوق",
+          "label": "الخلفية في البحث العام"
+        },
+        "launcher-global-windows": {
+          "description": "إظهار النوافذ المفتوحة أيضاً في البحث غير المسبوق",
+          "label": "النوافذ في البحث العام"
+        },
+        "launcher-pinned-apps": {
+          "description": "معرّفات إدخالات سطح المكتب للتطبيقات المثبتة في المشغل؛ تظهر أولاً عند فتح المشغل",
+          "label": "التطبيقات المثبتة"
+        },
+        "launcher-prefix-calculator": {
+          "description": "البادئة التي تُشغّل حسابات الحاسبة",
+          "label": "بادئة الحاسبة"
+        },
+        "launcher-prefix-character": {
+          "description": "حرف البادئة المشترك المستخدم لتشغيل جميع بادئات المزوّدين (مثل /)",
+          "label": "حرف البادئة المشترك"
+        },
+        "launcher-prefix-emoji": {
+          "description": "البادئة التي تُشغّل بحث الرموز التعبيرية",
+          "label": "بادئة الرموز التعبيرية"
+        },
+        "launcher-prefix-session": {
+          "description": "البادئة التي تُشغّل إجراءات طاقة الجلسة",
+          "label": "بادئة الجلسة"
+        },
+        "launcher-prefix-wallpaper": {
+          "description": "البادئة التي تُشغّل محدد الخلفيات",
+          "label": "بادئة الخلفية"
+        },
+        "launcher-prefix-windows": {
+          "description": "البادئة التي تُشغّل بحث النوافذ",
+          "label": "بادئة النوافذ"
         },
         "launcher-reset-usage": {
           "button": "إعادة ضبط",
@@ -2048,6 +2396,10 @@
         "launcher-sort-by-usage": {
           "description": "تقديم التطبيقات الأكثر استخداماً للأعلى وإظهار مرشح الأكثر استخداماً",
           "label": "الترتيب حسب الاستخدام"
+        },
+        "list-item-background": {
+          "description": "رسم خلفية مستديرة خلف كل عنصر في قائمة المشغل والحافظة",
+          "label": "خلفية عنصر القائمة"
         },
         "open-near-click-clipboard": {
           "description": "وضع لوحة الحافظة بالقرب من مكان النقر بدلاً من التوسيط",
@@ -2068,6 +2420,10 @@
         "open-near-click-wallpaper": {
           "description": "وضع لوحة اختيار الخلفية بالقرب من النقر بدلاً من التوسيط",
           "label": "الفتح بالقرب من النقر"
+        },
+        "panel-anchor-bar": {
+          "description": "شريط اللوحة الذي تتصل به عند فتحها؛ اتركه فارغاً لتتبع الودجت أو الاختصار أو المنصة التي فتحت اللوحة",
+          "label": "شريط الارتساء"
         },
         "placement-clipboard": {
           "description": "تحديد ما إذا كانت الحافظة تتصل بالشريط أو تعوم في موقع محدد",
@@ -2129,6 +2485,18 @@
         "session-actions": {
           "description": "مدخلات قائمة الطاقة، ترتيبها، أوامرها المخصصة، وأيقوناتها",
           "label": "المدخلات"
+        },
+        "session-grid": {
+          "description": "عرض إجراءات لوحة الجلسة في تخطيط شبكي",
+          "label": "تخطيط الشبكة"
+        },
+        "session-grid-columns": {
+          "description": "عدد أعمدة تخطيط الشبكة",
+          "label": "الأعمدة"
+        },
+        "session-show-shortcuts": {
+          "description": "إظهار أو إخفاء تلميحات الاختصارات",
+          "label": "إظهار الاختصارات"
         }
       },
       "services": {
@@ -2142,16 +2510,58 @@
         },
         "calendar-add": {
           "button": "إضافة حساب",
-          "description": "إضافة حسابات iCloud, CalDAV, أو Google",
+          "description": "إضافة حسابات iCloud أو CalDAV أو Google",
           "label": "حسابات التقويم"
+        },
+        "calendar-credentials": {
+          "button": "إعادة المحاولة",
+          "description-cancelled": "تم إلغاء مطالبة خدمة الأسرار؛ أعد المحاولة عندما تكون مستعداً",
+          "description-error": "تعذر الوصول إلى بيانات اعتماد التقويم عبر خدمة الأسرار",
+          "description-locked": "بيانات اعتماد التقويم مقفلة أو تم رفض الوصول؛ افتح خدمة الأسرار وأعد المحاولة",
+          "description-migration": "بيانات اعتماد التقويم النصية تنتظر نقلها إلى خدمة الأسرار؛ لا تُستخدم لمزامنة التقويم",
+          "description-opening": "جارٍ فتح بيانات اعتماد التقويم عبر خدمة الأسرار",
+          "description-unavailable": "لا يتوفر موفر خدمة الأسرار في هذه الجلسة",
+          "label": "تخزين بيانات اعتماد التقويم"
         },
         "calendar-edit": {
           "button": "تعديل",
-          "description": "تحديث حساب التقويم هذا"
+          "button-reconnect": "إعادة الاتصال",
+          "button-retry": "إعادة المحاولة",
+          "description": "تحديث حساب التقويم هذا",
+          "description-locked": "رمز التحديث موجود في حلقة المفاتيح مقفلة؛ افتح حلقة المفاتيح وأعد المحاولة",
+          "description-reconnect": "مصادقة Google مفقودة؛ أعد الاتصال بهذا الحساب"
+        },
+        "calendar-event-date-format": {
+          "description": "تنسيق التاريخ المعروض في بطاقة الحدث للتاريخ المحدد",
+          "label": "تنسيق تاريخ الحدث"
+        },
+        "calendar-event-time-format": {
+          "description": "تنسيق الوقت المعروض لأحداث التقويم",
+          "label": "تنسيق وقت الحدث"
         },
         "calendar-refresh-interval": {
           "description": "معدل المزامنة لأحداث التقويم (بالدقائق)",
           "label": "فترة التحديث"
+        },
+        "calendar-storage": {
+          "button": "إعادة المحاولة",
+          "description-cancelled": "تم إلغاء مطالبة التخزين المشفر؛ ستظل أحداث التقويم متاحة لهذه الجلسة فقط",
+          "description-error": "تعذر فتح ذاكرة التخزين المؤقت المشفرة لأحداث التقويم أو حفظها",
+          "description-locked": "التخزين المشفر مقفل أو تم رفض الوصول؛ أصلح الوصول وأعد المحاولة",
+          "description-migration": "ذاكرة التخزين المؤقت النصية لأحداث التقويم تنتظر التشفير؛ سيتم الاحتفاظ بها حتى تنجح عملية النقل",
+          "description-missing-key": "مفتاح ذاكرة التخزين المؤقت لأحداث التقويم مفقود؛ تستخدم بيانات اعتماد الحساب تخزيناً منفصلاً (تم الاحتفاظ بملفات ذاكرة التخزين المؤقت الموجودة)",
+          "description-opening": "جارٍ فتح ذاكرة التخزين المؤقت المشفرة لأحداث التقويم",
+          "description-recovery": "تعذر مصادقة ذاكرة التخزين المؤقت لأحداث التقويم أو أنها تالفة؛ أعد المحاولة بعد استعادة المفتاح الصحيح، أو أعد ضبط التخزين الخاص",
+          "description-unavailable": "لا يتوفر موفر خدمة الأسرار؛ ستظل أحداث التقويم متاحة لهذه الجلسة فقط",
+          "label": "تخزين أحداث التقويم"
+        },
+        "calendar-week-numbers": {
+          "description": "إظهار أرقام الأسابيع وفق ISO 8601 بجانب شبكة التقويم",
+          "label": "أرقام الأسابيع"
+        },
+        "custom-schedule": {
+          "description": "استخدام أوقات يدوية للشروق والغروب بدلاً من حسابها من الإحداثيات",
+          "label": "جدول مخصص"
         },
         "day-temperature": {
           "description": "حرارة ألوان الشاشة في النهار (بالكلفن)",
@@ -2176,8 +2586,8 @@
           "placeholder": "المدينة، الدولة"
         },
         "location-auto-locate": {
-          "description": "تحديد الموقع تلقائياً من عنوان IP عبر noctalia.dev",
-          "label": "التحديد التلقائي للموقع (IP)"
+          "description": "تحديد الموقع تلقائياً من IP عبر noctalia.dev",
+          "label": "التحديد التلقائي للموقع (بروتوكول الإنترنت)"
         },
         "longitude": {
           "description": "خط الطول اليدوي لجداول الشروق والغروب",
@@ -2189,12 +2599,12 @@
         },
         "mpris-blacklist": {
           "description": "المشغلات التي يتم تجاهلها من عناصر التحكم",
-          "label": "القائمة السوداء لمشغلات MPRIS"
+          "label": "قائمة حظر مشغلات MPRIS"
         },
         "night-light": {
           "description": "تغيير ألوان الشاشة لدرجات أدفأ ليلاً",
           "label": "الإضاءة الليلية",
-          "requires-gamma-control": "مدير النوافذ لا يدعم التحكم بـ gamma"
+          "requires-gamma-control": "مدير النوافذ لا يدعم التحكم في gamma"
         },
         "night-temperature": {
           "description": "حرارة ألوان الشاشة ليلاً (بالكلفن)",
@@ -2232,16 +2642,16 @@
           },
           "description": "أخذ عينات المعالج، الذاكرة، الشبكة، الحرارة، والقرص",
           "disk-poll": {
-            "description": "الثواني بين عينات القرص وذاكرة التبادل (0 للتعطيل)",
+            "description": "الثواني بين عينات القرص وذاكرة التبديل (0 للتعطيل)",
             "label": "معدل تحديث القرص"
           },
           "gpu-poll": {
-            "description": "الثواني بين عينات معالج الرسوميات والذاكرة (0 للتعطيل)",
-            "label": "معدل تحديث معالج الرسوميات"
+            "description": "الثواني بين عينات وحدة معالجة الرسوميات والذاكرة (0 للتعطيل)",
+            "label": "معدل تحديث وحدة معالجة الرسوميات"
           },
           "label": "مراقب النظام",
           "memory-poll": {
-            "description": "الثواني بين عينات الذاكرة العشوائية (0 للتعطيل)",
+            "description": "الثواني بين عينات RAM (0 للتعطيل)",
             "label": "معدل تحديث الذاكرة"
           },
           "network-poll": {
@@ -2249,16 +2659,21 @@
             "label": "معدل تحديث الشبكة"
           },
           "stats": {
-            "cpu-temp": "حرارة المعالج",
+            "cpu-freq": "تردد المعالج",
+            "cpu-temp": "درجة حرارة المعالج",
             "cpu-usage": "استخدام المعالج",
+            "disk-free": "المساحة الحرة على القرص",
+            "disk-free-pct": "نسبة المساحة الحرة على القرص",
             "disk-usage": "استخدام القرص",
-            "gpu-temp": "حرارة معالج الرسوميات",
-            "gpu-usage": "استخدام معالج الرسوميات",
-            "gpu-vram": "ذاكرة معالج الرسوميات",
+            "disk-used": "المساحة المستخدمة على القرص",
+            "disk-used-pct": "نسبة المساحة المستخدمة على القرص",
+            "gpu-temp": "درجة حرارة وحدة معالجة الرسوميات",
+            "gpu-usage": "استخدام وحدة معالجة الرسوميات",
+            "gpu-vram": "ذاكرة وحدة معالجة الرسوميات",
             "network-rx": "التنزيل",
             "network-tx": "الرفع",
-            "ram-usage": "استخدام الذاكرة العشوائية",
-            "swap-usage": "استخدام ذاكرة التبادل"
+            "ram-usage": "استخدام RAM",
+            "swap-usage": "استخدام ذاكرة التبديل"
           },
           "threshold": {
             "description": "عتبة النشاط (يمين) والعتبة الحرجة (يسار)",
@@ -2319,7 +2734,7 @@
           "label": "هامش الحافة"
         },
         "enabled": {
-          "label": "مفعل"
+          "label": "مفعّل"
         },
         "ends-margin": {
           "label": "هامش الطرفين"
@@ -2369,13 +2784,33 @@
           "label": "حجم السجل"
         },
         "clipboard-image-action": {
-          "description": "الأمر المنفذ عند اختيار عناصر الصور من الحافظة",
+          "description": "الأمر الذي سيتم تشغيله من عناصر صور الحافظة؛ استخدم {path} لمسار الملف، أو {stdin} لتحديد موضع الإدخال القياسي، أو احذف {path} لتمرير البيانات تلقائياً عبر stdin",
           "label": "أمر إجراء الصور",
           "placeholder": "gimp {path} أو satty -f -"
+        },
+        "clipboard-keep-from-closed-apps": {
+          "description": "الاحتفاظ بآخر عنصر تم نسخه لإتاحة لصقه بعد إغلاق التطبيق الذي نُسخ منه",
+          "label": "الاحتفاظ بالحافظة من التطبيقات المغلقة"
+        },
+        "clipboard-storage": {
+          "button": "إعادة المحاولة",
+          "description-cancelled": "تم إلغاء مطالبة خدمة الأسرار؛ سيظل سجل الحافظة متاحاً لهذه الجلسة فقط",
+          "description-error": "تعذر فتح سجل الحافظة المشفر أو حفظه",
+          "description-locked": "تخزين مفتاح الحافظة مقفل أو تم رفض الوصول؛ أصلح الوصول وأعد المحاولة",
+          "description-migration": "سجل الحافظة النصي ينتظر التشفير؛ يتم الاحتفاظ بالملفات الموجودة حتى تنجح عملية النقل",
+          "description-missing-key": "مفتاح التخزين المشفر المُعد مفقود؛ تم الاحتفاظ بملفات سجل الحافظة الموجودة",
+          "description-opening": "جارٍ فتح سجل الحافظة المشفر",
+          "description-recovery": "تعذر مصادقة سجل الحافظة أو أنه تالف؛ أعد المحاولة بعد استعادة المفتاح الصحيح، أو أعد ضبط التخزين الخاص",
+          "description-unavailable": "لا يتوفر موفر خدمة الأسرار؛ سيظل سجل الحافظة متاحاً لهذه الجلسة فقط",
+          "label": "تخزين سجل الحافظة"
         },
         "date-format": {
           "description": "صيغة التاريخ الافتراضية لواجهة الغلاف",
           "label": "صيغة التاريخ"
+        },
+        "external-ip": {
+          "description": "حل عنوان WAN العام للاتصال (عبر api.noctalia.dev) وإظهاره في علامة تبويب الشبكة في مركز التحكم",
+          "label": "إظهار عنوان WAN"
         },
         "greeter-sync-auto": {
           "description": "مزامنة المستقبل تلقائياً عند تغيير الخلفية، الألوان، أو وضع السمة",
@@ -2385,9 +2820,14 @@
           "description": "استبدال pkexec/run0 لأمر المزامنة الآن للمستقبل.",
           "label": "أمر امتيازات مزامنة المستقبل"
         },
+        "keyboard-layout-custom-labels": {
+          "description": "ربط أسماء تخطيطات لوحة المفاتيح بالتسميات المستخدمة في الواجهة",
+          "label": "تسميات تخطيطات لوحة المفاتيح"
+        },
         "launch-apps-as-systemd-services": {
           "description": "تشغيل التطبيقات كخدمات systemd منفصلة لتفادي مشاركة مجموعات Noctalia",
-          "label": "تشغيل التطبيقات كخدمات systemd"
+          "label": "تشغيل التطبيقات كخدمات systemd",
+          "requires-systemd-session": "يتطلب تشغيل Noctalia كخدمة مستخدم systemd (uwsm أو وحدة مستخدم systemd)"
         },
         "launch-apps-custom-command": {
           "description": "أمر مخصص بواسطة مشغل التطبيقات، يستبدل $CMD بالأمر الأصلي.",
@@ -2406,9 +2846,17 @@
           "description": "شفافية خلفية المنبثقات المباشرة (OSD)",
           "label": "شفافية الخلفية"
         },
+        "osd-border": {
+          "description": "رسم مخطط حول نوافذ OSD المنبثقة",
+          "label": "الحدود"
+        },
+        "osd-enabled": {
+          "description": "المفتاح الرئيسي لجميع نوافذ OSD؛ عند إيقافه لا يظهر أي OSD",
+          "label": "تفعيل OSD"
+        },
         "osd-kinds-bluetooth": {
           "description": "إظهار منبثق عند تبديل البلوتوث",
-          "label": "البلوتوث"
+          "label": "Bluetooth"
         },
         "osd-kinds-brightness": {
           "description": "إظهار منبثق عند تغيير سطوع الشاشة",
@@ -2422,17 +2870,21 @@
           "description": "إظهار منبثق عند تبديل وضع عدم الإزعاج",
           "label": "عدم الإزعاج"
         },
+        "osd-kinds-keyboard-backlight": {
+          "description": "إظهار نافذة OSD عند تغير مستوى إضاءة لوحة المفاتيح",
+          "label": "إضاءة لوحة المفاتيح"
+        },
         "osd-kinds-keyboard-layout": {
           "description": "إظهار منبثق عند تغيير تخطيط لوحة المفاتيح",
           "label": "تخطيط لوحة المفاتيح"
         },
         "osd-kinds-lock-keys": {
-          "description": "إظهار منبثقات لمفاتيح القفل Caps/Num/Scroll Lock",
+          "description": "إظهار منبثقات لمفاتيح القفل: قفل الأحرف الكبيرة وقفل الأرقام وقفل التمرير",
           "label": "مفاتيح القفل"
         },
         "osd-kinds-media": {
           "description": "إظهار منبثق عند تشغيل مسار جديد",
-          "label": "يعزف الآن"
+          "label": "يُشغّل الآن"
         },
         "osd-kinds-nightlight": {
           "description": "إظهار منبثق عند تبديل الإضاءة الليلية",
@@ -2459,8 +2911,8 @@
           "label": "صوت الإخراج"
         },
         "osd-kinds-wifi": {
-          "description": "إظهار منبثق عند تبديل الواي فاي",
-          "label": "الواي فاي"
+          "description": "إظهار منبثق عند تبديل Wi‑Fi",
+          "label": "Wi‑Fi"
         },
         "osd-monitors": {
           "description": "اختر الشاشات التي تظهر عليها منبثقات OSD",
@@ -2500,15 +2952,19 @@
         },
         "privacy-cam-filter-regex": {
           "description": "التعبير النمطي لتجاهل تطبيقات الكاميرا في الخصوصية",
-          "label": "Regex تصفية الكاميرا"
+          "label": "تعبير نمطي لتصفية الكاميرا"
         },
         "privacy-mic-filter-regex": {
           "description": "التعبير النمطي لتجاهل تطبيقات الميكروفون في الخصوصية",
-          "label": "Regex تصفية الميكروفون"
+          "label": "تعبير نمطي لتصفية الميكروفون"
+        },
+        "privacy-screen-filter-regex": {
+          "description": "تعبير تعبير نمطي لتجاهل تطبيقات مشاركة الشاشة في مؤشرات الخصوصية ونوافذ OSD",
+          "label": "تعبير تعبير نمطي لتصفية مشاركة الشاشة"
         },
         "screen-time-enabled": {
           "description": "تتبع الاستخدام لكل تطبيق وعرضه في مركز التحكم",
-          "label": "وقت الشاشة"
+          "label": "مدة استخدام الشاشة"
         },
         "screen-time-reset": {
           "button": "إعادة ضبط",
@@ -2545,9 +3001,21 @@
           "description": "إرسال لقطة الشاشة إلى أمر غلاف عبر الدخل القياسي",
           "label": "التمرير إلى أمر"
         },
+        "screenshot-remember-last-region": {
+          "description": "تحديد المنطقة الأخيرة مسبقاً (بما في ذلك بعد الإلغاء) في لقطة المنطقة التالية",
+          "label": "تذكر المنطقة الأخيرة"
+        },
         "screenshot-save-to-file": {
           "description": "حفظ لقطات الشاشة كملفات PNG في مجلد الإخراج",
           "label": "حفظ إلى ملف"
+        },
+        "screenshot-show-cursor": {
+          "description": "تضمين مؤشر الفأرة في لقطات الشاشة",
+          "label": "إظهار المؤشر"
+        },
+        "settings-window-translucent": {
+          "description": "جعل خلفية الإعدادات شفافة جزئياً لتأثيرات مدير النوافذ",
+          "label": "خلفية إعدادات شفافة"
         },
         "show-location": {
           "description": "إظهار اسم الموقع في ودجت الطقس",
@@ -2555,8 +3023,8 @@
         },
         "sync-greeter": {
           "button": "مزامنة الآن",
-          "description": "نسخ الخلفية والألوان الحالية إلى شاشة الدخول Noctalia Greeter",
-          "label": "مستقبل Noctalia"
+          "description": "نسخ الخلفية والألوان الحالية إلى Noctalia Greeter (يتطلب موافقة المسؤول)",
+          "label": "Noctalia Greeter"
         },
         "telemetry": {
           "description": "إرسال إشارة مجهولة عند بدء التشغيل تتضمن معلومات النظام والإصدار",
@@ -2585,7 +3053,7 @@
         },
         "community-ids": {
           "description": "تمكين قوالب المجتمع المخزنة مؤقتاً عند تغيير السمة",
-          "empty": "لا تتوفر قوالب مجتمعية بعد. قم بتفعيلها وتحديث الكتالوج أولاً.",
+          "empty": "لا تتوفر قوالب مجتمعية بعد. فعّلها وتحديث الكتالوج أولاً.",
           "label": "قوالب المجتمع"
         },
         "dynamic-output": "يتم تحديد مسار الإخراج عند تطبيق القالب",
@@ -2695,65 +3163,149 @@
       "variant": {
         "default": "افتراضي",
         "destructive": "تدميري",
-        "ghost": "خفي",
-        "outline": "حدود خارجية",
+        "ghost": "شبح",
+        "outline": "مخطط",
         "primary": "رئيسي",
         "secondary": "ثانوي"
       },
       "variant-label": "نمط الزر"
     },
+    "storage-recovery": {
+      "button": "إعادة ضبط التخزين الخاص",
+      "button-confirm": "تأكيد إعادة ضبط التخزين",
+      "description": "حذف سجل الحافظة المحفوظ وذاكرة التخزين المؤقت لأحداث التقويم نهائياً، ثم إعادة فتح التخزين الخاص (لا يتم تعديل ملف المفتاح المُعد أبداً)",
+      "error-delete": "تعذر حذف بعض ملفات التخزين الخاص. تم الاحتفاظ بمفتاح التخزين.",
+      "error-key": "تم حذف ملفات التخزين الخاص، ولكن تعذر إعادة فتح التخزين الآمن. أصلح الوصول وأعد المحاولة.",
+      "label": "استعادة التخزين الخاص",
+      "success": "تمت إعادة ضبط التخزين الخاص بنجاح."
+    },
+    "templates": {
+      "store": {
+        "browse": "تصفح القوالب",
+        "categories": "الفئات",
+        "category-all": "الكل",
+        "empty": "لا توجد قوالب تطابق عوامل التصفية",
+        "enabled-count": "{count} مفعّلة",
+        "filter-all": "الكل",
+        "filter-enabled": "مفعّلة",
+        "results-count": "{count} قالباً",
+        "search-placeholder": "البحث عن القوالب…",
+        "sort-category-asc": "الترتيب حسب الفئة (أ-ي)",
+        "sort-category-desc": "الترتيب حسب الفئة (ي-أ)",
+        "sort-name-asc": "الترتيب حسب الاسم (أ-ي)",
+        "sort-name-desc": "الترتيب حسب الاسم (ي-أ)",
+        "title": "قوالب المجتمع"
+      }
+    },
     "widgets": {
+      "actions": {
+        "command-placeholder": "أمر واجهة الأوامر",
+        "default": "افتراضي",
+        "disabled": "معطل",
+        "run-command": "تشغيل أمر…",
+        "unset": "غير محدد"
+      },
+      "gestures": {
+        "back": "زر الرجوع",
+        "forward": "زر التقدم",
+        "left": "النقر الأيسر",
+        "middle": "النقر الأوسط",
+        "right": "النقر الأيمن",
+        "scroll-down": "التمرير للأسفل",
+        "scroll-left": "التمرير لليسار",
+        "scroll-right": "التمرير لليمين",
+        "scroll-up": "التمرير للأعلى"
+      },
       "instances": {
-        "cpu": "المعالج",
+        "cpu": "وحدة المعالجة المركزية",
         "date": "التاريخ",
         "input-volume": "صوت الإدخال",
         "network-rx": "استقبال الشبكة",
         "network-tx": "إرسال الشبكة",
         "output-volume": "صوت الإخراج",
-        "ram": "الذاكرة العشوائية",
+        "ram": "RAM",
         "temp": "الدرجة"
       },
+      "map-placeholders": {
+        "effects-profile-name": "اسم الملف الشخصي",
+        "glyph-name": "اسم الرمز",
+        "key": "المفتاح",
+        "label": "التسمية",
+        "layout-name": "اسم التخطيط",
+        "value": "القيمة"
+      },
       "options": {
+        "after": "بعد",
         "always": "دائماً",
         "auto": "تلقائي",
-        "cpu-temp": "حرارة المعالج",
+        "before": "قبل",
+        "both": "كلاهما",
+        "compact": "مدمج",
+        "count": "العدد",
+        "cpu-freq": "تردد المعالج",
+        "cpu-temp": "درجة حرارة المعالج",
         "cpu-usage": "استخدام المعالج",
+        "disk-free": "المساحة الحرة على القرص",
+        "disk-free-percent": "نسبة المساحة الحرة على القرص",
+        "disk-used": "المساحة المستخدمة على القرص",
+        "disk-used-percent": "نسبة المساحة المستخدمة على القرص",
+        "dots": "نقاط",
+        "focus-hint": "تلميح التركيز",
         "full": "كامل",
         "gauge": "مقياس",
         "glyph": "رمز",
-        "gpu-temp": "حرارة معالج الرسوميات",
-        "gpu-usage": "استخدام معالج الرسوميات",
-        "gpu-vram": "ذاكرة معالج الرسوميات",
+        "gpu-temp": "درجة حرارة وحدة معالجة الرسوميات",
+        "gpu-usage": "استخدام وحدة معالجة الرسوميات",
+        "gpu-vram": "ذاكرة وحدة معالجة الرسوميات",
+        "gpu-vram-used": "ذاكرة VRAM المستخدمة",
         "graph": "رسم بياني",
         "graphic": "رسومي",
+        "hidden": "مخفي",
         "icon-and-text": "أيقونة ونص",
         "icon-only": "أيقونة فقط",
+        "icons": "أيقونات",
         "id": "المعرف",
         "input": "إدخال",
         "instance": "لكل موضع",
         "kilobytes": "ك.بايت/ث",
         "megabytes": "م.بايت/ث",
+        "minimal": "مبسط",
         "name": "الاسم",
         "net-rx": "استقبال الشبكة",
         "net-tx": "إرسال الشبكة",
         "none": "بدون",
         "on-hover": "عند التمرير",
         "output": "إخراج",
+        "percent": "النسبة المئوية",
         "ram-percent": "نسبة الذاكرة",
         "ram-used": "الذاكرة المستخدمة",
+        "rate": "المعدل",
+        "regular": "عادي",
+        "replace": "استبدال",
+        "scroll-gesture": "مرة واحدة لكل إيماءة",
+        "scroll-steps": "مع كل خطوة",
         "shared": "مشترك",
         "short": "قصير",
-        "swap-percent": "نسبة ذاكرة التبادل",
+        "swap-percent": "نسبة ذاكرة التبديل",
         "text": "نص",
         "text-only": "نص فقط",
+        "time": "الوقت",
         "workspace-label-centered": "مُوسّط",
         "workspace-label-corner": "الزاوية",
         "workspace-label-inside": "داخل الكبسولة"
       },
       "settings": {
+        "actions": {
+          "description": "تحديد ما تفعله كل إيماءة بالفأرة على هذا الودجت؛ اختر أمرًا، أو شغّل أمرًا في واجهة الأوامر، أو عطّلها",
+          "label": "إجراءات الإيماءات"
+        },
         "active-color": {
           "description": "اللون المستخدم لمؤشرات الخصوصية النشطة",
           "label": "اللون النشط"
+        },
+        "active-indicator-color": {
+          "description": "لون المؤشر أسفل أيقونة النافذة النشطة",
+          "label": "لون مؤشر النشاط"
         },
         "active-opacity": {
           "description": "شفافية أيقونة النافذة النشطة (المحذوة بالتركيز).",
@@ -2776,13 +3328,17 @@
           "description": "حجم غلاف الوسائط بالبكسل",
           "label": "حجم الغلاف"
         },
+        "artist-first": {
+          "description": "إظهار اسم الفنان قبل عنوان المسار (الفنان - العنوان)",
+          "label": "الفنان أولاً"
+        },
         "bands": {
           "description": "عدد أشرطة المؤثر البصري",
           "label": "الأشرطة"
         },
         "cam-filter-regex": {
           "description": "التعبير النمطي لأسماء عمليات الكاميرا لتجاهلها",
-          "label": "Regex تصفية الكاميرا"
+          "label": "تعبير نمطي لتصفية الكاميرا"
         },
         "capsule": {
           "description": "رسم كبسولة خلف هذا الودجت",
@@ -2809,14 +3365,18 @@
           "label": "هامش الكبسولة"
         },
         "capsule-radius": {
-          "description": "نصف قطر الزوايا لكبسولة الودجت",
+          "description": "نصف قطر الزوايا لكبسولة ودجت",
           "label": "نصف قطر الكبسولة",
-          "taskbar-description": "نصف قطر زوايا كبسولة الودجت، ومؤشرات مساحة العمل",
-          "workspaces-description": "نصف قطر زوايا كبسولة الودجت وكبسولات مساحة العمل"
+          "taskbar-description": "نصف قطر زوايا كبسولة ودجت، ومؤشرات مساحة العمل",
+          "workspaces-description": "نصف قطر زوايا كبسولة ودجت وكبسولات مساحة العمل"
         },
         "centered": {
           "description": "توسيط أشرطة المؤثر البصري بدلاً من محاذاتها للحافة",
           "label": "مُوسّط"
+        },
+        "change-color-on-hover": {
+          "description": "تغيير ألوان تعبئة وتسمية مساحة العمل عند تمرير المؤشر فوقها",
+          "label": "تغيير اللون عند التمرير"
         },
         "color": {
           "description": "دور اللون لأيقونة وتسمية هذا الودجت",
@@ -2836,7 +3396,7 @@
           "label": "صورة مخصصة"
         },
         "custom-image-colorize": {
-          "description": "تظليل الصورة المخصصة بلون أيقونة الودجت",
+          "description": "تظليل الصورة المخصصة بلون أيقونة ودجت",
           "label": "تلوين الصورة المخصصة"
         },
         "detached-panel": {
@@ -2864,9 +3424,21 @@
           "description": "عدد أيقونات الصينية لكل صف في لوحة الدرج",
           "label": "أعمدة الدرج"
         },
+        "drawer-item-size": {
+          "description": "حجم أيقونات علبة النظام داخل اللوحة المنسدلة بالبكسل",
+          "label": "حجم أيقونة اللوحة المنسدلة"
+        },
+        "effects-profile-glyphs": {
+          "description": "ربط أسماء ملفات EasyEffects الشخصية برموز الأيقونات",
+          "label": "رموز ملفات التأثيرات الشخصية"
+        },
         "empty-color": {
           "description": "دور اللون المستخدم لمساحات العمل الفارغة",
           "label": "لون الفارغ"
+        },
+        "enable-scroll": {
+          "description": "السماح بإجراءات عجلة الفأرة ولوحة اللمس للتمرير على هذا الودجت",
+          "label": "تفعيل التمرير"
         },
         "focused-color": {
           "description": "دور اللون المستخدم لمساحة العمل المحددة",
@@ -2896,6 +3468,10 @@
           "sysmon-description": "رمز أيقونة مخصص. اتركه فارغاً لاستخدام أيقونة الإحصائية المحددة.",
           "volume-description": "رمز أيقونة مخصص. اتركه فارغاً لاستخدام الأيقونات الديناميكية المدمجة."
         },
+        "glyph-position": {
+          "description": "ترتيب عرض الرمز بالنسبة إلى النص/الرسم البياني/المقياس",
+          "label": "موضع الرمز"
+        },
         "group-by-workspace": {
           "description": "تجميع أيقونات شريط المهام في كبسولات مساحة العمل",
           "label": "التجميع حسب مساحة العمل"
@@ -2905,7 +3481,7 @@
           "label": "أيقونة واحدة لكل تطبيق"
         },
         "height": {
-          "description": "ارتفاع الودجت بالبكسل",
+          "description": "ارتفاع ودجت بالبكسل",
           "label": "الارتفاع"
         },
         "hidden": {
@@ -2916,13 +3492,21 @@
           "description": "إخفاء صورة غلاف الألبوم",
           "label": "إخفاء غلاف الألبوم"
         },
+        "hide-artist": {
+          "description": "إخفاء اسم الفنان وإظهار عنوان المسار فقط",
+          "label": "إخفاء الفنان"
+        },
         "hide-empty-workspaces": {
           "description": "عند التجميع حسب مساحة العمل، حذف الكبسولات التي لا تحتوي على نوافذ شغالة.",
           "label": "إخفاء مساحات العمل الفارغة"
         },
         "hide-inactive": {
-          "description": "إخفاء أيقونات الخصوصية غير النشطة والودجت بأكمله عند عدم النشاط",
+          "description": "إخفاء أيقونات الخصوصية غير النشطة وودجت بأكمله عند عدم النشاط",
           "label": "إخفاء غير النشط"
+        },
+        "hide-passive": {
+          "description": "إخفاء عناصر علبة النظام التي تكون حالة StatusNotifierItem الخاصة بها Passive",
+          "label": "إخفاء العناصر غير النشطة"
         },
         "hide-when-empty": {
           "description": "إخفاء كبسولات مساحات العمل عند عدم وجود نوافذ مفتوحة",
@@ -2938,7 +3522,7 @@
           "label": "إخفاء عند عدم اتصال جهاز"
         },
         "hide-when-no-media": {
-          "description": "إخفاء ودجت الوسائط عند عدم وجود مشغل MPRIS نشط",
+          "description": "إخفاء ودجت الوسائط عند عدم وجود مشغل لواجهة التحكم بالوسائط نشط",
           "label": "إخفاء عند عدم وجود وسائط"
         },
         "hide-when-no-unread": {
@@ -2962,12 +3546,16 @@
           "label": "لون التمييز"
         },
         "hot-reload": {
-          "description": "إعادة تحميل الودجت المكتوب بنص برلمجي عند تغيير مصدره",
+          "description": "إعادة تحميل الودجت البرمجي عند تغيير مصدره",
           "label": "إعادة التحميل المباشر"
         },
         "icon-color": {
-          "description": "يتجاوز لون الودجت للأيقونات فقط",
+          "description": "يتجاوز لون ودجت للأيقونات فقط",
           "label": "لون الأيقونة"
+        },
+        "icon-scale": {
+          "description": "مقياس أيقونات تطبيقات شريط المهام مقارنة بحجمها الافتراضي",
+          "label": "مقياس الأيقونات"
         },
         "icon-size": {
           "description": "حجم الأيقونة بالبكسل",
@@ -2990,17 +3578,37 @@
           "label": "حجم الكبسولة غير النشطة",
           "workspaces-description": "أدنى طول لكبسولة مساحة العمل غير النشطة على طول الشريط"
         },
+        "interactive": {
+          "description": "السماح بتمرير المؤشر والنقر والتمرير والتلميحات لهذا الودجت",
+          "label": "تفاعلي"
+        },
         "interface": {
           "description": "واجهة الشبكة المراد مراقبتها؛ اتركه فارغاً للإجمالي",
           "label": "الواجهة"
+        },
+        "item-spacing": {
+          "description": "المسافة بين عناصر شريط المهام عند إيقاف تجميع مساحات العمل",
+          "label": "تباعد العناصر"
         },
         "label": {
           "description": "نص ثابت اختياري يظهر على هذا الزر",
           "label": "التسمية"
         },
+        "label-content": {
+          "description": "ما تعرضه تسمية البطارية: نسبة الشحن أو الوقت المتبقي أو استهلاك الطاقة",
+          "label": "محتوى التسمية"
+        },
         "label-min-width": {
           "description": "أدنى عرض للتسمية بالبكسل لمنع تغيير الحجم",
           "label": "أدنى عرض للتسمية"
+        },
+        "label-show-units": {
+          "description": "إظهار الوحدات مثل النسبة المئوية / GiB / °C",
+          "label": "إظهار الوحدات"
+        },
+        "label-source": {
+          "description": "ما تعرضه تسميات مساحات العمل",
+          "label": "مصدر التسمية"
         },
         "labels-only-when-occupied": {
           "description": "إخفاء تسميات مساحات العمل على مساحات العمل الفارغة وغير النشطة",
@@ -3012,8 +3620,8 @@
           "label": "الطول"
         },
         "match-adjacent-spacing": {
-          "description": "توسيع الفجوات بين أيقونات الصينية المباشرة لتماثل تباعد الودجت المجاورة",
-          "label": "مطابقة تباعد الودجت المجاورة"
+          "description": "توسيع الفجوات بين أيقونات لوحة النظام المباشرة لمطابقة التباعد البصري لودجات الشريط المجاورة (يشمل حشو الكبسولة)",
+          "label": "مطابقة تباعد ودجت المجاورة"
         },
         "max-label-chars": {
           "description": "الحد الأقصى للأحرف المعروضة لأسماء مساحات العمل",
@@ -3026,7 +3634,7 @@
         },
         "mic-filter-regex": {
           "description": "تعبير نمطي لأسماء تطبيقات الميكروفون المراد تجاهلها",
-          "label": "Regex تصفية الميكروفون"
+          "label": "تعبير نمطي لتصفية الميكروفون"
         },
         "min-length": {
           "description": "أدنى طول للودجت بالبكسل",
@@ -3034,7 +3642,8 @@
         },
         "minimal": {
           "description": "إظهار تسميات مساحة العمل فقط بدون الكبسولات المتحركة",
-          "label": "النمط البسيط"
+          "label": "النمط البسيط",
+          "taskbar-description": "تسميات مساحات العمل نصية فقط دون خلفيات دائرية ملونة"
         },
         "mirrored": {
           "description": "عكس المؤثر البصري حول منتصفه",
@@ -3075,7 +3684,17 @@
         },
         "pinned": {
           "description": "معرفات عناصر الصينية الظاهرة دائماً في الشريط",
-          "label": "العناصر المثبتة"
+          "label": "العناصر المثبتة",
+          "taskbar-description": "تطبيقات سطح المكتب التي تبقى في شريط المهام عند عدم تشغيلها؛ يتم تجاهلها عند تفعيل التجميع حسب مساحة العمل",
+          "taskbar-label": "التطبيقات المثبتة"
+        },
+        "pinned-opacity": {
+          "description": "شفافية التطبيقات المثبتة التي لا تعمل حالياً",
+          "label": "شفافية التطبيقات المثبتة"
+        },
+        "reversed": {
+          "description": "عكس ترتيب الأشرطة من التردد المنخفض إلى المرتفع",
+          "label": "معكوس"
         },
         "scale": {
           "description": "تكبير/تصغير هذا الودجت بالنسبة لمقياس محتوى الشريط",
@@ -3089,6 +3708,10 @@
           "description": "مسار نص Lua البرمجي",
           "label": "النص البرمجي"
         },
+        "scroll-repeat": {
+          "description": "اختيار ما إذا كانت إجراءات التمرير تتبع دلالات الأمر، أو تُنفذ مرة لكل إيماءة، أو تتكرر مع كل خطوة تمرير",
+          "label": "تكرار التمرير"
+        },
         "show-active-indicator": {
           "description": "إظهار نقطة صغيرة أسفل أيقونة النافذة النشطة في شريط المهام.",
           "label": "مؤشر النافذة النشطة"
@@ -3097,33 +3720,57 @@
           "description": "تضمين النوافذ من كل الشاشات في هذا الودجت.",
           "label": "إظهار كل الشاشات"
         },
+        "show-all-workspaces": {
+          "description": "إظهار مساحات العمل من كل شاشة على هذا الودجت",
+          "label": "إظهار جميع الشاشات"
+        },
         "show-caps-lock": {
-          "description": "إظهار حالة Caps Lock",
-          "label": "إظهار Caps Lock"
+          "description": "إظهار حالة قفل الأحرف الكبيرة",
+          "label": "إظهار قفل الأحرف الكبيرة"
         },
         "show-condition": {
           "description": "إظهار نص حالة الطقس",
           "label": "إظهار الحالة"
         },
         "show-empty-label": {
-          "description": "إظهار نص نائبة عند عدم وجود نافذة محددة بدلاً من إخفاء الودجت",
+          "description": "إظهار نص نائبة عند عدم وجود نافذة محددة بدلاً من إخفاء ودجت",
           "label": "إظهار التسمية الفارغة"
+        },
+        "show-glyph": {
+          "description": "إظهار رمز الودجت أو صورة مخصصة",
+          "label": "إظهار الرمز"
         },
         "show-label": {
           "description": "إظهار النص بجانب الأيقونة",
           "label": "إظهار التسمية"
         },
+        "show-labels": {
+          "description": "إظهار تسميات نصية لمساحات العمل",
+          "label": "إظهار التسميات"
+        },
         "show-num-lock": {
-          "description": "إظهار حالة Num Lock",
-          "label": "إظهار Num Lock"
+          "description": "إظهار حالة قفل الأرقام",
+          "label": "إظهار قفل الأرقام"
         },
         "show-scroll-lock": {
-          "description": "إظهار حالة Scroll Lock",
-          "label": "إظهار Scroll Lock"
+          "description": "إظهار حالة قفل التمرير",
+          "label": "إظهار قفل التمرير"
         },
         "show-temperature": {
           "description": "إظهار نص درجة الحرارة الحالية",
           "label": "إظهار درجة الحرارة"
+        },
+        "show-unlock-hint": {
+          "description": "إظهار بطاقة الحالة فوق مربع تسجيل الدخول لتلميحات إلغاء القفل ومطالبات المصادقة؛ تظل الأخطاء وتحذيرات قفل الأحرف الكبيرة ظاهرة عند إيقاف هذا الخيار",
+          "label": "تلميح إلغاء القفل"
+        },
+        "show-value": {
+          "description": "إظهار القيمة الحالية بجانب الرسم المرئي",
+          "label": "إظهار القيمة"
+        },
+        "show-vpn-label": {
+          "description": "استبدال تسمية الشبكة بتسمية VPN في وضع الاستبدال؛ إضافة تسمية VPN بجانب أيقونة VPN في وضع كليهما",
+          "label": "إظهار تسمية VPN"
         },
         "show-when-idle": {
           "description": "إبقاء المؤثر البصري ظاهراً حتى عند عدم تشغيل وسائط",
@@ -3141,12 +3788,25 @@
           "description": "الإحصائية المراد عرضها من النظام",
           "label": "الإحصائية"
         },
+        "style": {
+          "description": "مظهر مبدّل مساحات العمل",
+          "label": "النمط",
+          "workspaces-description": "يعرض النمط العادي حبوباً متحركة؛ المبسط يعرض تسميات نصية فقط؛ ويستخدم تلميح التركيز نقاطاً لمساحات العمل غير النشطة وحبة نشطة موسعة مع أيقونة التطبيق المركّز عليه"
+        },
         "taskbar-max-width": {
           "description": "إجمالي العرض المخصص بالبكسل؛ تتقلص العناوين لتلائم المساحة",
           "label": "أقصى عرض لشريط المهام"
         },
+        "text": {
+          "description": "النص المعروض على الشريط",
+          "label": "النص"
+        },
+        "timezone": {
+          "description": "معرّف المنطقة الزمنية (مثل Europe/Berlin) المستخدم لهذه الساعة؛ اتركه فارغاً لاستخدام وقت النظام المحلي",
+          "label": "المنطقة الزمنية"
+        },
         "title-scroll": {
-          "description": "متى يجب تمرير عنوان الودجت",
+          "description": "متى يجب تمرير عنوان ودجت",
           "label": "تمرير العنوان"
         },
         "tooltip": {
@@ -3158,19 +3818,31 @@
           "label": "صيغة التلميح"
         },
         "type": {
-          "description": "نوع الودجت المدمج لهذا الودجت المسمى",
+          "description": "نوع ودجت المدمج لهذا الودجت المسمّاة",
           "label": "النوع"
+        },
+        "urgent-color": {
+          "description": "دور اللون المستخدم لمساحات العمل العاجلة؛ تُدعم أيضاً ألوان hex ثابتة",
+          "label": "لون عاجل"
         },
         "vertical-format": {
           "description": "صيغة اختيارية مستخدمة في الأشرطة الرأسية",
           "label": "الصيغة الرأسية"
+        },
+        "visualization": {
+          "description": "مقياس أو رسم بياني أو بدون تصور للبيانات",
+          "label": "التصور"
+        },
+        "vpn-status": {
+          "description": "كيفية عرض حالة VPN: الاستبدال يستبدل أيقونة الشبكة بدرع VPN، وكلاهما يعرضهما جنباً إلى جنب، والمخفي يعطل مؤشر VPN",
+          "label": "حالة VPN"
         },
         "warning-color": {
           "description": "اللون المطبق عند وصول الشحن لعتبة تحذير البطارية",
           "label": "لون التحذير"
         },
         "width": {
-          "description": "عرض الودجت بالبكسل",
+          "description": "عرض ودجت بالبكسل",
           "label": "العرض"
         },
         "window-title-max-width": {
@@ -3181,6 +3853,10 @@
           "description": "رسم الخلفية والحدود حول كل مساحة عمل مجمعة.",
           "label": "كبسولة مجموعة مساحة العمل"
         },
+        "workspace-group-content": {
+          "description": "ما تعرضه كل مجموعة لمساحات العمل: أيقونات التطبيقات أو عدد النوافذ أو النقاط (حتى خمس نقاط، ثم +N للباقي)",
+          "label": "محتوى المجموعة"
+        },
         "workspace-label-placement": {
           "description": "في الزاوية، مُوسّط عند الحافة، أو داخل الكبسولة.",
           "label": "موقع تسمية مساحة العمل"
@@ -3190,7 +3866,7 @@
         "active-window": "النافذة النشطة",
         "audio-visualizer": "مؤثرات الصوت البصرية",
         "battery": "البطارية",
-        "bluetooth": "البلوتوث",
+        "bluetooth": "Bluetooth",
         "brightness": "السطوع",
         "caffeine": "وضع عدم النوم",
         "clipboard": "الحافظة",
@@ -3198,7 +3874,7 @@
         "control-center": "مركز التحكم",
         "custom-button": "زر مخصص",
         "keyboard-layout": "تخطيط لوحة المفاتيح",
-        "launcher": "مشغل التطبيقات",
+        "launcher": "مشغّل التطبيقات",
         "lock-keys": "مفاتيح القفل",
         "media": "الوسائط",
         "network": "الشبكة",
@@ -3214,6 +3890,7 @@
         "sysmon": "مراقب النظام",
         "taskbar": "شريط المهام",
         "test": "اختبار",
+        "text": "نص",
         "theme-mode": "وضع المظهر",
         "tray": "شريط النظام",
         "volume": "مستوى الصوت",
@@ -3225,9 +3902,25 @@
     "window": {
       "export-config": "تصدير الإعدادات…",
       "export-config-saved": "تم حفظ تصدير الإعدادات.",
+      "filter-overridden": "تم تجاوزه",
+      "legacy-config-warning": "إعداد قديم: {issue}. عدّل هذا الإدخال في المصدر؛ يطبّق Noctalia الاستبدال مؤقتاً فقط. شغّل noctalia config validate لعرض جميع التغييرات المطلوبة.",
       "native-title": "إعدادات Noctalia",
       "no-results": "لم يتم العثور على إعدادات",
       "no-results-hint": "جرب البحث باسم إعداد آخر أو مفتاح تهيئة مختلف.",
+      "offline-mode-notice": {
+        "appearance": "لن تعمل تنزيلات لوحات ألوان المجتمع.",
+        "calendar-account": "لن يعمل اكتشاف التقويم ومزامنته.",
+        "disable-hint": "عطّل وضع عدم الاتصال في قسم الأمان.",
+        "launcher": "لن يعمل جلب أسعار صرف العملات.",
+        "location": "لن تعمل عمليات البحث عن الطقس والموقع.",
+        "plugin-store": "لن تعمل طلبات كتالوج الإضافات عن بُعد وتنزيلها.",
+        "plugins": "لن تعمل طلبات HTTP الخاصة بالإضافات. لا تزال مصادر Git قادرة على التحديث.",
+        "security": "لن يعمل البحث عن IP الخارجي والقياس عن بُعد.",
+        "services": "لن تعمل مزامنة حساب التقويم.",
+        "template-store": "لن تعمل تنزيلات قوالب المجتمع.",
+        "templates": "لن تعمل تنزيلات قوالب المجتمع وتحديثاتها.",
+        "title": "وضع عدم الاتصال"
+      },
       "reset-page": "إعادة ضبط الصفحة",
       "reset-page-confirm": "تأكيد إعادة الضبط",
       "search-placeholder": "البحث في الإعدادات…",
@@ -3284,25 +3977,27 @@
       "unknown": "غير معروف"
     },
     "relative": {
-      "days-ago": "منذ يوم واحد",
+      "days-ago": "منذ {count} يوم",
       "days-ago-plural": "منذ {count} أيام",
-      "hours-ago": "منذ ساعة واحدة",
+      "hours-ago": "منذ {count} ساعة",
       "hours-ago-plural": "منذ {count} ساعات",
       "just-now": "الآن",
-      "minutes-ago": "منذ دقيقة واحدة",
+      "minutes-ago": "منذ {count} دقيقة",
       "minutes-ago-plural": "منذ {count} دقائق"
     },
     "units": {
-      "day": "يوم",
-      "day-plural": "أيام",
-      "hour": "ساعة",
-      "hour-plural": "ساعات",
-      "minute": "دقيقة",
-      "minute-plural": "دقائق",
-      "month": "شهر",
-      "month-plural": "أشهر",
-      "year": "سنة",
-      "year-plural": "سنوات"
+      "day": "{count} يوم",
+      "day-plural": "{count} أيام",
+      "hour": "{count} ساعة",
+      "hour-compact": "{count}س",
+      "hour-plural": "{count} ساعات",
+      "minute": "{count} دقيقة",
+      "minute-compact": "{count}د",
+      "minute-plural": "{count} دقائق",
+      "month": "{count} شهر",
+      "month-plural": "{count} أشهر",
+      "year": "{count} سنة",
+      "year-plural": "{count} سنوات"
     }
   },
   "tray": {
@@ -3370,6 +4065,7 @@
       "sort-date-desc": "الفرز حسب التاريخ (الأحدث أولًا)",
       "sort-name-asc": "الفرز حسب الاسم (أ-ي)",
       "sort-name-desc": "الفرز حسب الاسم (ي-أ)",
+      "sort-random": "الترتيب عشوائياً (خلط)",
       "title": "خلفية الشاشة"
     }
   },
