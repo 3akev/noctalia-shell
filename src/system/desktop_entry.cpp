@@ -26,6 +26,36 @@ namespace {
 
   constexpr Logger kLog("desktop_entry");
 
+  fs::path resolveExecutable(std::string_view executable) {
+    const fs::path path(executable);
+    if (path.has_parent_path()) {
+      return path;
+    }
+
+    const char* pathEnv = std::getenv("PATH");
+    if (pathEnv == nullptr || pathEnv[0] == '\0') {
+      return {};
+    }
+
+    const std::string_view searchPath(pathEnv);
+    std::size_t start = 0;
+    while (start <= searchPath.size()) {
+      const std::size_t end = searchPath.find(':', start);
+      const std::string_view directory =
+          end == std::string_view::npos ? searchPath.substr(start) : searchPath.substr(start, end - start);
+      const fs::path candidate = directory.empty() ? path : fs::path(directory) / path;
+      std::error_code ec;
+      if (::access(candidate.c_str(), X_OK) == 0 && fs::is_regular_file(candidate, ec)) {
+        return candidate;
+      }
+      if (end == std::string_view::npos) {
+        break;
+      }
+      start = end + 1;
+    }
+    return {};
+  }
+
   bool executableIsAppImage(std::string_view exec) {
     const auto start = exec.find_first_not_of(' ');
     if (start == std::string_view::npos) {
@@ -44,7 +74,7 @@ namespace {
       return true;
     }
 
-    std::ifstream file(executable, std::ios::binary);
+    std::ifstream file(resolveExecutable(executable.string()), std::ios::binary);
     std::array<char, 10> header{};
     if (!file.read(header.data(), static_cast<std::streamsize>(header.size()))) {
       return false;
