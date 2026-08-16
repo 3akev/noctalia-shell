@@ -1,6 +1,7 @@
 #pragma once
 
 #include "config/config_types.h"
+#include "shell/desktop/desktop_widget_layout.h"
 #include "shell/desktop/desktop_widget_services.h"
 #include "shell/desktop/wallpaper_mask.h"
 #include "ui/dialogs/layer_popup_host.h"
@@ -87,6 +88,7 @@ private:
   RenderContext* m_renderContext = nullptr;
 
   DesktopWidgetsSnapshot m_snapshot;
+  desktop_widgets::PlacementMapper m_placementMapper;
   OutputWallpaperMaskMap m_wallpaperMasks;
   bool m_initialized = false;
   bool m_displaySuppressed = false;

@@ -518,6 +518,16 @@ void LockScreen::syncInstances() {
     return !exists;
   });
 
+  for (auto& instance : m_instances) {
+    const auto it = std::ranges::find(outputs, instance.outputName, &WaylandOutput::name);
+    if (it == outputs.end() || instance.surface == nullptr) {
+      continue;
+    }
+    instance.surface->syncOutputScale(
+        it->scale, it->configuredScaleNumerator > 0 ? static_cast<std::uint32_t>(it->configuredScaleNumerator) : 1U
+    );
+  }
+
   for (const auto& output : outputs) {
     if (!output.done || output.output == nullptr || !output.hasUsableGeometry()) {
       continue;

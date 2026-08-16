@@ -101,9 +101,13 @@ void DesktopWidgetsController::initialize(const DesktopWidgetsControllerServices
   m_editor->initialize(services.widgets);
   m_editor->setExitRequestedCallback([this]() { exitEdit(); });
   loadSnapshotFromConfig();
+  const bool placementChanged = m_placementMapper.remapForOutputChange(*m_wayland, m_snapshot.widgets);
   m_initialized = true;
   if (m_config != nullptr) {
     m_lastEnabled = m_config->config().desktopWidgets.enabled;
+  }
+  if (placementChanged) {
+    saveSnapshotToConfig();
   }
   applyVisibility();
 
@@ -255,7 +259,12 @@ void DesktopWidgetsController::onOutputChange() {
   if (!m_initialized) {
     return;
   }
+  bool placementChanged = m_placementMapper.remapForOutputChange(*m_wayland, m_snapshot.widgets);
   normalizeSnapshot();
+  placementChanged |= m_placementMapper.remapForOutputChange(*m_wayland, m_snapshot.widgets);
+  if (placementChanged) {
+    saveSnapshotToConfig();
+  }
   pruneWallpaperMasks();
   if (isEditing()) {
     m_editor->onOutputChange();
@@ -335,6 +344,7 @@ void DesktopWidgetsController::exitEdit() {
 
   m_snapshot = m_editor->snapshot();
   normalizeSnapshot();
+  m_placementMapper.rebaseForCurrentOutputs(*m_wayland, m_snapshot.widgets);
   m_host->show(m_snapshot);
   (void)m_editor->close();
   saveSnapshotToConfig();

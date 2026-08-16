@@ -665,6 +665,10 @@ struct DesktopWidgetState {
   std::string outputName;
   float cx = 0.0F;
   float cy = 0.0F;
+  // Logical output size the position was last stored against. Zero denotes a
+  // legacy position whose reference size has not been recorded yet.
+  float placementWidth = 0.0F;
+  float placementHeight = 0.0F;
   // Box size of the widget's grid tile, in logical px. 0 means "unsized": the tile
   // auto-fits the content's natural size. Resizing in the editor sets explicit values.
   float boxWidth = 0.0F;

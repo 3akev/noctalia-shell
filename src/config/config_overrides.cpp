@@ -124,6 +124,8 @@ namespace {
         && a.outputName == b.outputName
         && a.cx == b.cx
         && a.cy == b.cy
+        && a.placementWidth == b.placementWidth
+        && a.placementHeight == b.placementHeight
         && a.boxWidth == b.boxWidth
         && a.boxHeight == b.boxHeight
         && a.rotationRad == b.rotationRad
@@ -449,6 +451,8 @@ namespace {
     widgetTable.insert_or_assign("output", widget.outputName);
     widgetTable.insert_or_assign("cx", static_cast<double>(widget.cx));
     widgetTable.insert_or_assign("cy", static_cast<double>(widget.cy));
+    widgetTable.insert_or_assign("placement_width", static_cast<double>(widget.placementWidth));
+    widgetTable.insert_or_assign("placement_height", static_cast<double>(widget.placementHeight));
     widgetTable.insert_or_assign("box_width", static_cast<double>(widget.boxWidth));
     widgetTable.insert_or_assign("box_height", static_cast<double>(widget.boxHeight));
     widgetTable.insert_or_assign("rotation", static_cast<double>(widget.rotationRad));

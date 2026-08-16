@@ -153,6 +153,7 @@ protected:
   // Seed the surface-local configured scale (/120 numerator) from a known output
   // before first sizing, so explicit-output roles measure at the right scale.
   void setConfiguredScaleNumerator(std::uint32_t numerator) noexcept;
+  void updateOutputScale(std::int32_t bufferScale, std::uint32_t configuredScaleNumerator);
   void requestFrame();
   void destroySurface();
 
