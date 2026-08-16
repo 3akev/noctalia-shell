@@ -403,6 +403,9 @@ void Surface::onSurfaceOutputEnter(wl_surface* surface, wl_output* output) {
     return;
   }
   m_connection.notifySurfaceOutputEnter(surface, output);
+  if (m_outputChangedCallback) {
+    m_outputChangedCallback(output);
+  }
 
   const WaylandOutput* outputInfo = m_connection.findOutputByWl(output);
   if (outputInfo == nullptr) {
@@ -417,6 +420,9 @@ void Surface::onSurfaceOutputLeave(wl_surface* surface, wl_output* output) {
     return;
   }
   m_connection.notifySurfaceOutputLeave(surface, output);
+  if (m_outputChangedCallback) {
+    m_outputChangedCallback(m_connection.outputForSurface(m_surface));
+  }
 }
 
 bool Surface::createWlSurface() {
@@ -472,6 +478,10 @@ void Surface::setUpdateCallback(UpdateCallback callback) { m_updateCallback = st
 void Surface::setFrameTickCallback(FrameTickCallback callback) { m_frameTickCallback = std::move(callback); }
 
 void Surface::setScaleChangedCallback(ScaleChangedCallback callback) { m_scaleChangedCallback = std::move(callback); }
+
+void Surface::setOutputChangedCallback(OutputChangedCallback callback) {
+  m_outputChangedCallback = std::move(callback);
+}
 
 void Surface::setSceneRoot(Node* root) {
   if (m_sceneRoot == root) {
