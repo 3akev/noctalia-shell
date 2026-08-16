@@ -534,10 +534,6 @@
         "wave-thickness": "سمك الموجة",
         "widget-section": "القطعة"
       },
-      "state": {
-        "grid-off": "الشبكة متوقفة",
-        "grid-on": "الشبكة مفعلة"
-      },
       "title": "ودجت سطح المكتب",
       "types": {
         "audio-visualizer": "المؤثر البصري للصوت",
@@ -1088,7 +1084,6 @@
         "pinned-apps": "التطبيقات المثبتة",
         "polkit": "Polkit",
         "power": "الطاقة",
-        "privacy-security": "الخصوصية والأمان",
         "profile": "الملف الشخصي",
         "screen-corners": "زوايا الشاشة",
         "screen-time": "وقت الشاشة",
@@ -1321,11 +1316,8 @@
         "configure": "تكوين",
         "deprecated": "مهجور",
         "empty": "لا توجد إضافات مفعلة.",
-        "loading": "جاري تحميل الإضافات...",
-        "refreshing": "جاري تحديث الإضافات...",
         "remove": "إزالة الإضافة",
         "requires": "يتطلب: {dependencies}",
-        "requires-newer-noctalia": "يتطلب إصداراً أحدث من Noctalia",
         "title": "الإضافات"
       },
       "settings": {
@@ -1356,8 +1348,7 @@
         "remove": "إزالة المصدر",
         "save": "حفظ",
         "title": "المصادر",
-        "update": "تحديث",
-        "update-on-startup": "التحديث عند البدء"
+        "update": "تحديث"
       },
       "store": {
         "add": "إضافة إلى Noctalia",
@@ -1528,26 +1519,6 @@
         },
         "corner-top-right": {
           "description": "نصف قطر الزاوية العلوية اليمنى للشريط"
-        },
-        "dead-zone-command": {
-          "description": "أمر الغلاف الذي يتم تشغيله عند النقر بالأيسر على الهامش الميت للشريط",
-          "label": "النقر الأيسر"
-        },
-        "dead-zone-middle-command": {
-          "description": "أمر الغلاف عند النقر بالأوسط على الهامش الميت للشريط",
-          "label": "النقر الأوسط"
-        },
-        "dead-zone-right-command": {
-          "description": "أمر الغلاف عند النقر بالأيمن؛ اتركه فارغاً لفتح مركز التحكم",
-          "label": "النقر الأيمن"
-        },
-        "dead-zone-scroll-down-command": {
-          "description": "أمر الغلاف عند التمرير للأسفل",
-          "label": "التمرير للأسفل"
-        },
-        "dead-zone-scroll-up-command": {
-          "description": "أمر الغلاف عند التمرير للأعلى",
-          "label": "التمرير للأعلى"
         },
         "edge-margin": {
           "description": "الفجوة بين الشريط وحافة الشاشة. اجعله 0 px ليكون ملاصقاً."
@@ -2423,10 +2394,6 @@
           "label": "أمر المشغل المخصص",
           "placeholder": "$CMD"
         },
-        "middle-click-opens-widget-settings": {
-          "description": "فتح إعدادات ودجت الشريط بالنقر الأوسط عليه",
-          "label": "النقر الأوسط يفتح إعدادات الودجت"
-        },
         "niri-overview-type-to-launch": {
           "description": "فتح المشغل عند الكتابة أثناء عرض niri العام",
           "label": "الكتابة للتشغيل"
@@ -2591,10 +2558,10 @@
           "description": "نسخ الخلفية والألوان الحالية إلى شاشة الدخول Noctalia Greeter",
           "label": "مستقبل Noctalia"
         },
-	"telemetry": {
-	  "description": "إرسال إشارة مجهولة عند بدء التشغيل تتضمن معلومات النظام والإصدار",
-	  "label": "إرسال بينج مجهول عند بدء التشغيل"
-  	},
+        "telemetry": {
+          "description": "إرسال إشارة مجهولة عند بدء التشغيل تتضمن معلومات النظام والإصدار",
+          "label": "إرسال بينج مجهول عند بدء التشغيل"
+        },
         "time-format": {
           "description": "صيغة الوقت الافتراضية لواجهة الغلاف",
           "label": "صيغة الوقت"
@@ -2751,7 +2718,6 @@
         "auto": "تلقائي",
         "cpu-temp": "حرارة المعالج",
         "cpu-usage": "استخدام المعالج",
-        "disk-percent": "نسبة القرص",
         "full": "كامل",
         "gauge": "مقياس",
         "glyph": "رمز",
@@ -2775,8 +2741,6 @@
         "output": "إخراج",
         "ram-percent": "نسبة الذاكرة",
         "ram-used": "الذاكرة المستخدمة",
-        "screenshot-primary-fullscreen": "الشاشة كاملة",
-        "screenshot-primary-region": "منطقة",
         "shared": "مشترك",
         "short": "قصير",
         "swap-percent": "نسبة ذاكرة التبادل",
@@ -2824,10 +2788,10 @@
           "description": "رسم كبسولة خلف هذا الودجت",
           "label": "كبسولة"
         },
-	"capsule-border": {
+        "capsule-border": {
           "description": "إظهار حدود حول الكبسولة",
-    	  "label": "حدود الكبسولة"
-  	},
+          "label": "حدود الكبسولة"
+        },
         "capsule-fill": {
           "description": "دور اللون لخلفية الكبسولة",
           "label": "تعبئة الكبسولة"
@@ -2866,10 +2830,6 @@
           "description": "اللون الثاني للتدرج في المؤثر البصري",
           "label": "اللون الثاني"
         },
-        "command": {
-          "description": "أمر الغلاف المنفذ عند النقر بالأيسر على هذا الزر",
-          "label": "أمر النقر الأيسر"
-        },
         "custom-image": {
           "description": "مسار صورة مخصصة. اتركه فارغاً لاستخدام الرمز.",
           "dialog-title": "اختر صورة مخصصة",
@@ -2878,14 +2838,6 @@
         "custom-image-colorize": {
           "description": "تظليل الصورة المخصصة بلون أيقونة الودجت",
           "label": "تلوين الصورة المخصصة"
-        },
-        "custom-labels": {
-          "description": "ربط أسماء تخطيط لوحة المفاتيح بتسميات مخصصة",
-          "label": "تسميات مخصصة"
-        },
-        "cycle-command": {
-          "description": "الأمر المنفذ عند التبديل بين تخطيطات لوحة المفاتيح",
-          "label": "أمر التبديل"
         },
         "detached-panel": {
           "description": "فتح الدرج كلوحة عائمة بخلفيتها الخاصة بدلاً من الاندمج مع الشريط",
@@ -3076,18 +3028,13 @@
           "description": "تعبير نمطي لأسماء تطبيقات الميكروفون المراد تجاهلها",
           "label": "Regex تصفية الميكروفون"
         },
-        "middle-command": {
-          "description": "أمر الغلاف المنفذ عند النقر بالأوسط على هذا الزر.",
-          "label": "أمر النقر الأوسط"
-        },
         "min-length": {
           "description": "أدنى طول للودجت بالبكسل",
           "label": "أدنى طول"
         },
         "minimal": {
           "description": "إظهار تسميات مساحة العمل فقط بدون الكبسولات المتحركة",
-          "label": "النمط البسيط",
-          "workspaces-description": "تسميات نصية فقط لمساحة العمل بدون خلفيات كبسولة"
+          "label": "النمط البسيط"
         },
         "mirrored": {
           "description": "عكس المؤثر البصري حول منتصفه",
@@ -3130,14 +3077,6 @@
           "description": "معرفات عناصر الصينية الظاهرة دائماً في الشريط",
           "label": "العناصر المثبتة"
         },
-        "primary-click": {
-          "description": "الإجراء المنفذ عند النقر بالزر الأيسر على زر الشريط",
-          "label": "النقر الرئيسي"
-        },
-        "right-command": {
-          "description": "أمر الغلاف المنفذ عند النقر بالأيمن على هذا الزر",
-          "label": "أمر النقر الأيمن"
-        },
         "scale": {
           "description": "تكبير/تصغير هذا الودجت بالنسبة لمقياس محتوى الشريط",
           "label": "المقياس"
@@ -3149,18 +3088,6 @@
         "script": {
           "description": "مسار نص Lua البرمجي",
           "label": "النص البرمجي"
-        },
-        "scroll-down-command": {
-          "description": "أمر الغلاف المنفذ عند التمرير لأسفل فوق هذا الزر",
-          "label": "أمر التمرير لأسفل"
-        },
-        "scroll-step": {
-          "description": "نسبة التغير المطبقة مع كل خطوة لعجلة الماوس",
-          "label": "خطوة التمرير"
-        },
-        "scroll-up-command": {
-          "description": "أمر الغلاف المنفذ عند التمرير لأعلى فوق هذا الزر",
-          "label": "أمر التمرير لأعلى"
         },
         "show-active-indicator": {
           "description": "إظهار نقطة صغيرة أسفل أيقونة النافذة النشطة في شريط المهام.",
@@ -3181,10 +3108,6 @@
         "show-empty-label": {
           "description": "إظهار نص نائبة عند عدم وجود نافذة محددة بدلاً من إخفاء الودجت",
           "label": "إظهار التسمية الفارغة"
-        },
-        "show-icon": {
-          "description": "إظهار أيقونة هذا الودجت",
-          "label": "إظهار الأيقونة"
         },
         "show-label": {
           "description": "إظهار النص بجانب الأيقونة",
@@ -3302,7 +3225,6 @@
     "window": {
       "export-config": "تصدير الإعدادات…",
       "export-config-saved": "تم حفظ تصدير الإعدادات.",
-      "filter-modified": "المعدلة",
       "native-title": "إعدادات Noctalia",
       "no-results": "لم يتم العثور على إعدادات",
       "no-results-hint": "جرب البحث باسم إعداد آخر أو مفتاح تهيئة مختلف.",
