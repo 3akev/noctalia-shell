@@ -3262,13 +3262,15 @@ void Bar::buildScene(BarInstance& instance, std::uint32_t width, std::uint32_t h
 
     // Create section boxes
     auto makeSection = [widgetSpacing, isVertical]() {
-      return ui::flex(
+      auto section = ui::flex(
           isVertical ? FlexDirection::Vertical : FlexDirection::Horizontal,
           {
               .align = FlexAlign::Center,
               .gap = widgetSpacing,
           }
       );
+      section->setMirrorInRtl(false);
+      return section;
     };
 
     instance.startSection = static_cast<Flex*>(instance.startSlot->addChild(makeSection()));

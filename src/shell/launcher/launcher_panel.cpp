@@ -555,7 +555,7 @@ namespace {
       const float padding = Style::spaceSm * m_style.scale;
       m_pinnedGlyph->setGlyphSize(pinSize);
       m_pinnedGlyph->setVisible(result.pinned);
-      m_pinnedGlyph->setPosition(width - padding - pinSize, padding);
+      m_pinnedGlyph->setPosition(Style::rtl() ? padding : width - padding - pinSize, padding);
       m_pinnedGlyph->setFrameSize(pinSize, pinSize);
       const bool hasOrigin = !result.originGlyph.empty();
       if (hasOrigin) {
@@ -563,7 +563,7 @@ namespace {
       }
       m_originGlyph->setGlyphSize(pinSize);
       m_originGlyph->setVisible(hasOrigin);
-      m_originGlyph->setPosition(width - padding - pinSize, height - padding - pinSize);
+      m_originGlyph->setPosition(Style::rtl() ? padding : width - padding - pinSize, height - padding - pinSize);
       m_originGlyph->setFrameSize(pinSize, pinSize);
 
       m_image->setVisible(false);

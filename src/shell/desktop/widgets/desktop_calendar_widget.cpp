@@ -99,7 +99,7 @@ void DesktopCalendarWidget::create() {
   header->addChild(
       ui::button({
           .out = &m_previousButton,
-          .glyph = "chevron-left",
+          .glyph = Style::rtl() ? "chevron-right" : "chevron-left",
           .variant = ButtonVariant::Ghost,
           .onClick = [this]() { changeMonthBy(-1); },
       })
@@ -123,7 +123,7 @@ void DesktopCalendarWidget::create() {
   header->addChild(
       ui::button({
           .out = &m_nextButton,
-          .glyph = "chevron-right",
+          .glyph = Style::rtl() ? "chevron-left" : "chevron-right",
           .variant = ButtonVariant::Ghost,
           .onClick = [this]() { changeMonthBy(1); },
       })

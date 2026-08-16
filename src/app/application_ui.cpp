@@ -129,6 +129,8 @@ void Application::initUiRenderSurfacesAndSettings() {
     m_asyncTextureCache.setMakeCurrentCallback([this]() { m_renderContext.backend().makeCurrentNoSurface(); });
   }
   m_renderContext.setTextFontFamily(m_configService.config().shell.fontFamily);
+  Style::setRtl(i18n::Service::instance().rtl());
+  m_renderContext.setTextBaseDirection(i18n::Service::instance().rtl());
   m_wallpaper.initialize(m_wayland, &m_configService, &m_renderContext, &m_sharedTextureCache, &m_themeService);
   m_backdrop.initialize(m_wayland, &m_configService, &m_sharedTextureCache, &m_glShared);
   m_settingsWindow.initialize(
@@ -1021,6 +1023,36 @@ void Application::initWidgetControllersAndCallbacks() {
         scheduleGreeterAutoSync();
       },
       "shell-font-family"
+  );
+
+  bool lastRtl = i18n::Service::instance().rtl();
+  m_configService.addReloadCallback(
+      [this, lastRtl]() mutable {
+        const bool rtl = i18n::Service::instance().rtl();
+        if (rtl == lastRtl) {
+          return;
+        }
+
+        lastRtl = rtl;
+        Style::setRtl(rtl);
+        m_renderContext.setTextBaseDirection(rtl);
+        m_bar.requestLayout();
+        m_dock.requestLayout();
+        m_desktopWidgetsController.requestLayout();
+        m_lockscreenWidgetsController.requestLayout();
+        m_panelManager.requestLayout();
+        m_notificationToast.requestLayout();
+        m_lockScreen.onFontChanged();
+        m_osdOverlay.requestLayout();
+        m_trayMenu.onFontChanged();
+        m_backdrop.onFontChanged();
+        m_settingsWindow.onFontChanged();
+        m_colorPickerDialogPopup.requestLayout();
+        m_glyphPickerDialogPopup.requestLayout();
+        m_fileDialogPopup.requestLayout();
+        scheduleGreeterAutoSync();
+      },
+      "shell-language-direction"
   );
 
   m_timeService.setTickSecondCallback([this]() {

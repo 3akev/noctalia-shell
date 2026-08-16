@@ -130,7 +130,7 @@ std::unique_ptr<Flex> CalendarTab::create() {
       {.out = &m_previousSlot, .align = FlexAlign::Center, .justify = FlexJustify::Center},
       ui::button({
           .out = &m_previousButton,
-          .glyph = "chevron-left",
+          .glyph = Style::rtl() ? "chevron-right" : "chevron-left",
           .variant = ButtonVariant::Ghost,
           .minWidth = kCalendarNavButtonSize * scale,
           .minHeight = kCalendarNavButtonSize * scale,
@@ -155,7 +155,7 @@ std::unique_ptr<Flex> CalendarTab::create() {
       {.out = &m_nextSlot, .align = FlexAlign::Center, .justify = FlexJustify::Center},
       ui::button({
           .out = &m_nextButton,
-          .glyph = "chevron-right",
+          .glyph = Style::rtl() ? "chevron-left" : "chevron-right",
           .variant = ButtonVariant::Ghost,
           .minWidth = kCalendarNavButtonSize * scale,
           .minHeight = kCalendarNavButtonSize * scale,

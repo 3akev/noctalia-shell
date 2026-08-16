@@ -2096,7 +2096,7 @@ void SettingsWindow::openPluginStore() {
                   return nullptr;
                 }
                 return ui::button({
-                    .glyph = "chevron-left",
+                    .glyph = Style::rtl() ? "chevron-right" : "chevron-left",
                     .glyphSize = Style::fontSizeBody * scale,
                     .variant = ButtonVariant::Ghost,
                     .tooltip = i18n::tr("settings.plugins.store.back-to-catalog"),
