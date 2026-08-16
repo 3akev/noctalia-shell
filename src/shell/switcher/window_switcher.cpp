@@ -205,7 +205,7 @@ namespace {
       platform.activateToplevel(handle);
       return;
     }
-    platform.focusCompositorWindow(entry.windowId);
+    platform.focusCompositorWindow(entry.windowId, true);
   }
 
   [[nodiscard]] std::string identityKeyForEntry(const WindowSwitcherEntry& entry) {
