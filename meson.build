@@ -1208,7 +1208,9 @@ if build_tests
       override_options: ['b_ndebug=false'],
     )
     test_args = []
-    if test_name == 'i18n_supported_languages'
+    if test_name == 'desktop_entry_localization'
+      test_args = [meson.project_source_root() / 'assets']
+    elif test_name == 'i18n_supported_languages'
       test_args = [meson.project_source_root() / 'assets' / 'translations']
     endif
     test(test_name, test_exe, args: test_args)
