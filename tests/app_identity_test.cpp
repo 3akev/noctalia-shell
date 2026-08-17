@@ -110,6 +110,7 @@ namespace {
           "AI",
           10
       );
+      chmod(executable.c_str(), 0700);
     }
     {
       std::ofstream entry(applications / "metadata.desktop");
