@@ -1323,6 +1323,7 @@ namespace noctalia::config::schema {
       static const Schema<ShellConfig::LauncherConfig> s = {
           field(&ShellConfig::LauncherConfig::categories, "categories"),
           field(&ShellConfig::LauncherConfig::showIcons, "show_icons"),
+          field(&ShellConfig::LauncherConfig::showAppOriginIndicator, "show_app_origin_indicator"),
           field(&ShellConfig::LauncherConfig::compact, "compact"),
           field(&ShellConfig::LauncherConfig::appGrid, "app_grid"),
           field(&ShellConfig::LauncherConfig::showAppActions, "show_app_actions"),

@@ -2316,6 +2316,10 @@
           "description": "Show a grid of application icons with labels underneath when results are apps only",
           "label": "App Grid View"
         },
+        "launcher-app-origin-indicator": {
+          "description": "Show package origin indicators on application results",
+          "label": "Show App Origin Indicators"
+        },
         "launcher-auto-paste": {
           "description": "After calculator, emoji, and other copy activations, paste into the focused window (same shortcuts as clipboard auto-paste)",
           "label": "Auto-Paste"

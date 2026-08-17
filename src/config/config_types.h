@@ -990,6 +990,7 @@ struct ShellConfig {
   struct LauncherConfig {
     bool categories = true;
     bool showIcons = true;
+    bool showAppOriginIndicator = true;
     bool compact = false;
     bool appGrid = false;
     bool showAppActions = false;
