@@ -57,6 +57,7 @@ PluginPanel::PluginPanel(scripting::PluginRuntimeContext context, PluginPanelOpt
     : m_entryId(std::move(context.entryId)), m_sourcePath(std::move(context.sourcePath)),
       m_pluginDir(std::move(context.pluginDir)), m_scriptApi(context.scriptApi),
       m_settings(std::move(context.settings)), m_fileWatcher(context.fileWatcher), m_httpClient(context.httpClient),
+      m_clipboard(context.clipboard),
       m_preferredWidth(options.width > 0.0 ? static_cast<float>(options.width) : kDefaultPanelWidth),
       m_preferredHeight(options.height > 0.0 ? static_cast<float>(options.height) : kDefaultPanelHeight),
       m_widthFill(options.widthFill), m_heightFill(options.heightFill),
