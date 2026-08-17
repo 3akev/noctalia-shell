@@ -1061,7 +1061,6 @@ _noctalia_test_dependencies = _noctalia_system_dependencies + [
 ]
 
 _noctalia_compile_definitions = [
-  '-DNOCTALIA_SOURCE_ASSETS_DIR="' + meson.project_source_root() / 'assets' + '"',
   '-DNOCTALIA_INSTALL_PREFIX="' + get_option('prefix') + '"',
   '-DNOCTALIA_INSTALL_DATADIR="' + get_option('datadir') + '"',
   '-DNOCTALIA_VERSION="' + meson.project_version() + '"',
@@ -1208,7 +1207,11 @@ if build_tests
       dependencies: noctalia_core_dep,
       override_options: ['b_ndebug=false'],
     )
-    test(test_name, test_exe)
+    test_args = []
+    if test_name == 'i18n_supported_languages'
+      test_args = [meson.project_source_root() / 'assets' / 'translations']
+    endif
+    test(test_name, test_exe, args: test_args)
   endforeach
 
   config_validate_env = environment()
