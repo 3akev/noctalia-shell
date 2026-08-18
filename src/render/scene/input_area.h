@@ -141,6 +141,12 @@ public:
   void setAcceptedScrollDirections(std::uint32_t mask) noexcept { m_acceptedScrollDirections = mask; }
   [[nodiscard]] std::uint32_t acceptedScrollDirections() const noexcept { return m_acceptedScrollDirections; }
 
+  // Marks a scroll-view viewport as a touch drag-to-scroll target on one axis.
+  // The dispatcher hands a touch drag past child areas to the nearest marked ancestor.
+  enum class TouchScrollAxis : std::uint8_t { None, Vertical, Horizontal };
+  void setTouchScrollAxis(TouchScrollAxis axis) noexcept { m_touchScrollAxis = axis; }
+  [[nodiscard]] TouchScrollAxis touchScrollAxis() const noexcept { return m_touchScrollAxis; }
+
   void setPropagateEvents(bool propagate);
   [[nodiscard]] bool propagateEvents() const noexcept { return m_propagateEvents; }
 
@@ -217,6 +223,7 @@ private:
   std::uint32_t m_cursorShape = 0;
   std::uint32_t m_acceptedButtons = buttonMask(BTN_LEFT);
   std::uint32_t m_acceptedScrollDirections = allScrollDirections();
+  TouchScrollAxis m_touchScrollAxis = TouchScrollAxis::None;
   bool m_propagateEvents = false;
   bool m_enabled = true;
   HitShape m_hitShape = HitShape::Rect;

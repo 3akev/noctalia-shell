@@ -522,7 +522,7 @@ bool PersistentPanelHost::onPointerEvent(const PointerEvent& event) {
     }
     instance->inputDispatcher.pointerButton(
         static_cast<float>(event.sx), static_cast<float>(event.sy), event.button, event.pressed, event.serial,
-        event.time
+        event.time, event.touch
     );
     break;
   case PointerEvent::Type::Axis:

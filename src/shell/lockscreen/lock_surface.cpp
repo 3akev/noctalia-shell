@@ -797,7 +797,7 @@ void LockSurface::onPointerEvent(const PointerEvent& event) {
     if (m_locked && pressed && passwordFieldContainsPoint(x, y)) {
       focusPasswordField();
     }
-    m_inputDispatcher.pointerButton(x, y, event.button, pressed);
+    m_inputDispatcher.pointerButton(x, y, event.button, pressed, event.serial, event.time, event.touch);
     if (m_locked && pressed && passwordFieldContainsPoint(x, y)) {
       focusPasswordField();
       requestRedraw();

@@ -990,7 +990,8 @@ bool SettingsWindow::onPointerEvent(const PointerEvent& event) {
         break;
       }
       m_inputDispatcher.pointerButton(
-          static_cast<float>(event.sx), static_cast<float>(event.sy), event.button, pressed
+          static_cast<float>(event.sx), static_cast<float>(event.sy), event.button, pressed, event.serial, event.time,
+          event.touch
       );
       consumed = m_pointerInside;
     }

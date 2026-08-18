@@ -1566,7 +1566,8 @@ bool PanelManager::onPointerEvent(const PointerEvent& event) {
         }
       }
       m_inputDispatcher.pointerButton(
-          static_cast<float>(event.sx), static_cast<float>(event.sy), event.button, pressed, event.serial, event.time
+          static_cast<float>(event.sx), static_cast<float>(event.sy), event.button, pressed, event.serial, event.time,
+          event.touch
       );
     }
     break;
