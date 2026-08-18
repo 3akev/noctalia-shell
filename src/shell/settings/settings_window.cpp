@@ -535,6 +535,21 @@ void SettingsWindow::close() {
   destroyWindow();
 }
 
+void SettingsWindow::closeForWidgetEditor() {
+  if (!isOpen()) {
+    return;
+  }
+  m_reopenAfterWidgetEditorSection = m_selectedSection;
+  DeferredCall::callLater([this]() { close(); });
+}
+
+void SettingsWindow::reopenAfterWidgetEditor() {
+  if (m_reopenAfterWidgetEditorSection.empty()) {
+    return;
+  }
+  open(std::exchange(m_reopenAfterWidgetEditorSection, {}));
+}
+
 void SettingsWindow::dismissOpenSelectDropdown() {
   if (m_selectPopup != nullptr && m_selectPopup->isSelectDropdownOpen()) {
     m_selectPopup->closeSelectDropdown();
