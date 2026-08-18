@@ -1134,7 +1134,7 @@ void DesktopWidgetsEditor::rebuildScene(OverlaySurface& surface) {
                           .glyphSize = 14.0F,
                       }),
                       ui::label({
-                          .text = i18n::tr("desktop-widgets.editor.title"),
+                          .text = i18n::tr(m_profile.titleKey),
                           .fontSize = Style::fontSizeBody,
                           .fontWeight = FontWeight::Bold,
                       }),
@@ -1199,20 +1199,22 @@ void DesktopWidgetsEditor::rebuildScene(OverlaySurface& surface) {
                       .tooltip = i18n::tr("desktop-widgets.editor.actions.flip-vertical"),
                       .onClick = [this]() { deferEditorMutation([this]() { flipSelectedWidgetVertical(); }); },
                   }),
-                  ui::button({
-                      .glyph = "settings",
-                      .enabled = hasSelectedWidget,
-                      .selected = m_inspectorOpen,
-                      .variant = ButtonVariant::Default,
-                      .tooltip = i18n::tr("desktop-widgets.editor.actions.settings"),
-                      .onClick =
-                          [this]() {
-                            deferEditorMutation([this]() {
-                              m_inspectorOpen = !m_inspectorOpen;
-                              requestLayout();
-                            });
-                          },
-                  }),
+                  ui::button(
+                      {
+                          .glyph = "settings",
+                          .enabled = hasSelectedWidget,
+                          .selected = m_inspectorOpen,
+                          .variant = ButtonVariant::Default,
+                          .tooltip = i18n::tr("desktop-widgets.editor.actions.settings"),
+                          .onClick =
+                              [this]() {
+                                deferEditorMutation([this]() {
+                                  m_inspectorOpen = !m_inspectorOpen;
+                                  requestLayout();
+                                });
+                              },
+                      }
+                  ),
                   [&]() -> std::unique_ptr<Node> {
                     bool canToggleVisibility = hasSelectedWidget;
                     if (hasSelectedWidget
