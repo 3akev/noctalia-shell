@@ -22,6 +22,9 @@
 #include "compositors/triad/triad_output_backend.h"
 #include "compositors/triad/triad_runtime.h"
 #include "compositors/triad/triad_workspace_backend.h"
+#include "compositors/umbriel/umbriel_keyboard_backend.h"
+#include "compositors/umbriel/umbriel_runtime.h"
+#include "compositors/umbriel/umbriel_workspace_backend.h"
 #include "compositors/workspace_alert_service.h"
 #include "core/log.h"
 #include "core/process/process.h"
@@ -354,6 +357,7 @@ namespace {
     case compositors::CompositorKind::Dwl:
     case compositors::CompositorKind::Labwc:
     case compositors::CompositorKind::Kde:
+    case compositors::CompositorKind::Umbriel:
     case compositors::CompositorKind::Unknown:
       return std::make_unique<LambdaOutputPowerBackend>(&setGenericOutputPower);
     }
@@ -375,6 +379,7 @@ namespace {
     case compositors::CompositorKind::Labwc:
     case compositors::CompositorKind::Kde:
     case compositors::CompositorKind::Mango:
+    case compositors::CompositorKind::Umbriel:
     case compositors::CompositorKind::Unknown:
       break;
     }
@@ -388,6 +393,8 @@ namespace {
       return std::make_unique<TriadWorkspaceBackend>(runtimeRegistry.triad());
     case compositors::CompositorKind::Niri:
       return std::make_unique<NiriWorkspaceBackend>(runtimeRegistry.niri());
+    case compositors::CompositorKind::Umbriel:
+      return std::make_unique<UmbrielWorkspaceBackend>(runtimeRegistry.umbriel());
     case compositors::CompositorKind::Hyprland:
     case compositors::CompositorKind::Sway:
     case compositors::CompositorKind::Mango:
@@ -413,6 +420,8 @@ namespace {
       return std::make_unique<KeyboardLayoutBackendAdapter<SwayKeyboardBackend>>(runtimeRegistry.sway());
     case compositors::CompositorKind::Triad:
       return std::make_unique<KeyboardLayoutBackendAdapter<TriadKeyboardBackend>>(runtimeRegistry.triad());
+    case compositors::CompositorKind::Umbriel:
+      return std::make_unique<KeyboardLayoutBackendAdapter<UmbrielKeyboardBackend>>(runtimeRegistry.umbriel());
     case compositors::CompositorKind::Dwl:
     case compositors::CompositorKind::Labwc:
     case compositors::CompositorKind::Kde:
@@ -1549,6 +1558,11 @@ bool CompositorPlatform::requestSessionExit() const {
     break;
   case compositors::CompositorKind::Labwc:
     if (requestLabwcSessionExit()) {
+      return true;
+    }
+    break;
+  case compositors::CompositorKind::Umbriel:
+    if (m_runtimeRegistry->umbriel().requestAction("session-quit")) {
       return true;
     }
     break;
