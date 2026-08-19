@@ -35,6 +35,58 @@ awk '
         added = 1
     }
 
+    # Rebuild a complete "files = [ ... ]" statement (buf may span lines),
+    # dropping any existing noctalia.toml entry and appending it last so it
+    # overrides earlier includes. Handles single-line and multi-line arrays.
+    function build(buf,   open, endp, i, head, inner, tail, test, multiline, indent) {
+        open = index(buf, "[")
+        endp = 0
+        for (i = length(buf); i >= 1; i--)
+            if (substr(buf, i, 1) == "]") { endp = i; break }
+        if (open == 0 || endp == 0 || endp < open) {
+            print "error: include.files must be an array" > "/dev/stderr"
+            exit 2
+        }
+        head  = substr(buf, 1, open)
+        inner = substr(buf, open + 1, endp - open - 1)
+        tail  = substr(buf, endp)
+
+        gsub(/"noctalia\.toml"[[:space:]]*,[[:space:]]*/, "", inner)
+        gsub(/,[[:space:]]*"noctalia\.toml"/, "", inner)
+        gsub(/"noctalia\.toml"/, "", inner)
+
+        test = inner
+        gsub(/[[:space:]]/, "", test)
+        multiline = (index(inner, "\n") > 0)
+
+        if (multiline) {
+            indent = "  "
+            if (match(inner, /\n[ \t]*"/))
+                indent = substr(inner, RSTART + 1, RLENGTH - 2)
+            if (test == "")
+                return head "\n" indent "\"noctalia.toml\",\n" tail
+            sub(/[[:space:]]+$/, "", inner)
+            if (inner !~ /,$/)
+                inner = inner ","
+            return head inner "\n" indent "\"noctalia.toml\",\n" tail
+        }
+
+        if (test == "")
+            return head "\"noctalia.toml\"" tail
+        sub(/[[:space:]]+$/, "", inner)
+        return head inner ", \"noctalia.toml\"" tail
+    }
+
+    collecting {
+        buf = buf "\n" $0
+        if (index($0, "]") > 0) {
+            print build(buf)
+            collecting = 0
+            added = 1
+        }
+        next
+    }
+
     /^[[:space:]]*\[include\][[:space:]]*(#.*)?$/ {
         saw_include = 1
         in_include = 1
@@ -54,20 +106,21 @@ awk '
             print "error: include.files must be an array" > "/dev/stderr"
             exit 2
         }
-        gsub(/"noctalia\.toml"[[:space:]]*,[[:space:]]*/, "")
-        gsub(/,[[:space:]]*"noctalia\.toml"/, "")
-        gsub(/"noctalia\.toml"/, "")
-        if ($0 ~ /\[[[:space:]]*\]/) {
-            sub(/\[[[:space:]]*\]/, "[\"noctalia.toml\"]")
+        buf = $0
+        if (index($0, "]") > 0) {
+            print build(buf)
+            added = 1
         } else {
-            sub(/[[:space:]]*\]/, ", \"noctalia.toml\"]")
+            collecting = 1
         }
-        added = 1
+        next
     }
 
     { print }
 
     END {
+        if (collecting)
+            print buf
         if (in_include && !saw_files)
             add_files()
         if (!saw_include) {
