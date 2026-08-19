@@ -1138,6 +1138,12 @@ void Application::initSystemBusServices() {
       m_batteryHookState.reset(m_upowerService->state());
       m_batteryWarningMonitor.evaluate(m_configService.config().battery, *m_upowerService, m_notificationManager);
       m_upowerService->setChangeCallback([this, shouldRefreshControlCenter](const UPowerChange& change) {
+        if (change.origin != UPowerService::ChangeOrigin::DeviceState) {
+          if (shouldRefreshControlCenter()) {
+            m_panelManager.refresh();
+          }
+          return;
+        }
         onUpowerStateChangedForHooks();
         m_batteryWarningMonitor.evaluate(m_configService.config().battery, *m_upowerService, m_notificationManager);
         if (m_bluetoothService != nullptr) {
