@@ -934,6 +934,7 @@ _noctalia_sources = files(
   'src/compositors/umbriel/umbriel_event_handler.cpp',
   'src/compositors/umbriel/umbriel_workspace_backend.cpp',
   'src/compositors/umbriel/umbriel_keyboard_backend.cpp',
+  'src/compositors/umbriel/umbriel_output_backend.cpp',
   'src/compositors/sway/sway_runtime.cpp',
   'src/compositors/sway/sway_keyboard_backend.cpp',
   'src/compositors/sway/sway_output_backend.cpp',
