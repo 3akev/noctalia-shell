@@ -1191,8 +1191,24 @@ void ClipboardPanel::rebuildPreview(Renderer& renderer, float width, float heigh
         .width = width,
         .height = imageHeight,
     });
+    m_previewImage = image.get();
     const int previewTargetSize = static_cast<int>(std::ceil(std::max(width, imageHeight)));
-    image->setAsyncReadyCallback([]() { PanelManager::instance().refresh(); });
+    image->setAsyncReadyCallback([this, historyIndex]() {
+      if (m_clipboard == nullptr
+          || m_previewMeta == nullptr
+          || m_previewImage == nullptr
+          || selectedHistoryIndex() != historyIndex) {
+        return;
+      }
+      const auto& currentHistory = m_clipboard->history();
+      if (historyIndex >= currentHistory.size() || !m_previewImage->hasImage()) {
+        return;
+      }
+      m_previewMeta->setText(
+          formatPreviewMeta(currentHistory[historyIndex], m_previewImage->sourceWidth(), m_previewImage->sourceHeight())
+      );
+      PanelManager::instance().refresh();
+    });
     if (m_asyncTextures != nullptr && m_clipboard != nullptr) {
       const auto imageSource = m_clipboard->imageDataUri(historyIndex);
       if (imageSource.has_value()) {
@@ -1202,7 +1218,6 @@ void ClipboardPanel::rebuildPreview(Renderer& renderer, float width, float heigh
         }
       }
     }
-    m_previewImage = image.get();
     m_previewContent->addChild(std::move(image));
   } else {
     Color previewColor;
