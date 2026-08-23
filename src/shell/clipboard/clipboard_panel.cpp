@@ -136,6 +136,14 @@ namespace {
     return buffer;
   }
 
+  std::string formatPreviewMeta(const ClipboardEntry& entry, int imageWidth = 0, int imageHeight = 0) {
+    std::string meta = formatTimeAgo(entry.capturedAt) + "  •  " + formatBytes(entry.byteSize);
+    if (imageWidth > 0 && imageHeight > 0) {
+      meta += "  •  " + std::to_string(imageWidth) + "x" + std::to_string(imageHeight);
+    }
+    return meta;
+  }
+
   std::string entryTitle(const ClipboardEntry& entry) {
     if (!entry.textPreview.empty()) {
       return entry.textPreview;
@@ -1152,7 +1160,7 @@ void ClipboardPanel::rebuildPreview(Renderer& renderer, float width, float heigh
   const auto& entry = history[historyIndex];
   m_previewTitle->setText(previewTitle(entry));
   m_previewTitle->setMaxWidth(width);
-  m_previewMeta->setText(formatTimeAgo(entry.capturedAt) + "  •  " + formatBytes(entry.byteSize));
+  m_previewMeta->setText(formatPreviewMeta(entry));
   m_previewMeta->setMaxWidth(width);
 
   if (m_previewPayloadIndex != historyIndex) {
@@ -1189,6 +1197,9 @@ void ClipboardPanel::rebuildPreview(Renderer& renderer, float width, float heigh
       const auto imageSource = m_clipboard->imageDataUri(historyIndex);
       if (imageSource.has_value()) {
         (void)image->setSourceFileAsync(renderer, *m_asyncTextures, *imageSource, previewTargetSize);
+        if (image->hasImage()) {
+          m_previewMeta->setText(formatPreviewMeta(entry, image->sourceWidth(), image->sourceHeight()));
+        }
       }
     }
     m_previewImage = image.get();
