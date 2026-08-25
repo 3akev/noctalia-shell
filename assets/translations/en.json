@@ -1750,6 +1750,10 @@
           "description": "Scale factor for bar content",
           "label": "Content Scale"
         },
+        "font-scale": {
+          "description": "Scale factor for text across all widgets on this bar; per-widget font_scale multiplies this",
+          "label": "Font Scale"
+        },
         "corner-bottom-left": {
           "description": "Bottom left corner radius for the bar"
         },
@@ -3485,6 +3489,10 @@
         "font-weight": {
           "description": "Default inherits the bar font weight",
           "label": "Font Weight"
+        },
+        "font-scale": {
+          "description": "Scale multiplier for text in this widget, independent of the widget's overall scale",
+          "label": "Font Scale"
         },
         "format": {
           "description": "Time format string",
