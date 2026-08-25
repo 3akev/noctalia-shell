@@ -1275,6 +1275,7 @@ struct BrightnessMonitorOverride {
   std::string match;
   std::optional<BrightnessBackendPreference> backend;
   std::optional<std::string> backlightDevice; // sysfs device name or path, e.g. "intel_backlight"
+  std::optional<std::int32_t> ddcBus;         // DDC bus number, e.g. 6 for i2c-6
 
   bool operator==(const BrightnessMonitorOverride&) const = default;
 };
