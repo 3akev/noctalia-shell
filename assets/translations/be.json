@@ -304,6 +304,22 @@
     },
     "power": {
       "battery": "Батарэя",
+      "charging": {
+        "configured": "Сканфігуравана: {limits}",
+        "display-only": "Толькі дысплэй",
+        "error-denied": "Аўтарызацыя забаронена. Парогі зарадкі не змяніліся.",
+        "error-failed": "Не ўдалося змяніць парогі зарадкі.",
+        "externally-managed": "Задана іншым інструментам. Сканфігуруйце UPower, каб кіраваць парогамі зарадкі.",
+        "firmware-managed": "Зарадка кіруецца ўбудаваным ПЗ",
+        "full-charge": "Можа зараджацца да 100%",
+        "starts": "Пачынаецца ніжэй за {start}%",
+        "starts-stops": "Пачынаецца ніжэй за {start}% · Спыняецца на {end}%",
+        "stops": "Спыняецца на {end}%",
+        "title": "Зарадка батарэі",
+        "unreadable": "Недаступна",
+        "unsupported": "Парогі зарадкі не падтрымліваюцца",
+        "use-thresholds": "Выкарыстоўваць парогі западкі"
+      },
       "design-capacity": "Ад зыходнай ёмістасці",
       "health": "Рэсурс батарэі",
       "performance-inhibited": "Прадукцыйнасць недаступна",
@@ -1000,6 +1016,7 @@
           "drag": "Змяніць парадак",
           "drawer-columns": "Слупкі высоўнага меню",
           "drawer-columns-description": "Колькасць віджэтаў ",
+          "drawer-detached": "Нефіксаваная панэль",
           "drawer-detached-description": "Адкрываць высоўнае меню асобным акном замест аб'яднання яго з панэллю",
           "drawer-enabled": "Высоўнае меню",
           "drawer-enabled-description": "Перамясціць згрупаваныя віджэты ў высоўнае меню, якое актывуецца з кнопкі",
@@ -1152,7 +1169,7 @@
         "name-label": "Назва",
         "name-placeholder": "dziejannie-pry-niekat",
         "resume-command-label": "Каманда пры ўзнаўленні",
-        "resume-command-placeholder": "",
+        "resume-command-placeholder": "notify-send 'Зноў актыўны'",
         "summary": "{name} · {seconds} с",
         "summary-disabled-timeout": "{name} · без часу",
         "timeout-label": "Час да неактыўнасці",
@@ -1186,7 +1203,7 @@
         "directories": "Каталогі",
         "display": "Дысплэй",
         "effects": "Эфекты",
-        "filtering": "Фільтрацыя",
+        "filtering": "Фільтраванне",
         "focus-styling": "Стыль факусіроўкі",
         "formats": "Фарматы",
         "general": "Агульныя",
@@ -1373,6 +1390,13 @@
       },
       "panel-position": {
         "auto": "Кіравацца панэлі"
+      },
+      "plugins": {
+        "auto-update": {
+          "all": "Усе крыніцы",
+          "none": "Нічога",
+          "official": "Толькі афіцыйныя"
+        }
       },
       "screen-position": {
         "bottom-center": "Унізе па цэнтры",
