@@ -168,12 +168,21 @@ namespace {
     spa_hook* listener = nullptr;
   };
 
-  int onMetadataProperty(void* data, std::uint32_t, const char* key, const char*, const char* value) {
-    if (key == nullptr || value == nullptr) {
+  constexpr Logger kLog("pipewire");
+
+  // Deprecated per-stream routing key in the "default" metadata; PipeWire ships no PW_KEY_* for it.
+  constexpr auto kMetadataTargetNodeKey = "target.node";
+
+  int onMetadataProperty(void* data, std::uint32_t subject, const char* key, const char*, const char* value) {
+    if (key == nullptr) {
       return 0;
     }
     auto* md = static_cast<MetadataData*>(data);
+
     if (std::strcmp(key, "default.audio.sink") == 0 || std::strcmp(key, "default.audio.source") == 0) {
+      if (value == nullptr) {
+        return 0;
+      }
       const std::string name = extractDefaultMetadataNodeName(std::string_view(value));
       if (!name.empty()) {
         spa_dict_item items[1];
@@ -181,7 +190,15 @@ namespace {
         spa_dict dict = SPA_DICT_INIT(items, 1);
         md->service->parseDefaultNodes(&dict);
       }
+      return 0;
     }
+
+    if (std::strcmp(key, PW_KEY_TARGET_OBJECT) == 0) {
+      // value == nullptr means the property was cleared (route reset to default).
+      md->service->onTargetObjectMetadata(subject, value != nullptr ? std::string(value) : std::string{});
+      return 0;
+    }
+
     return 0;
   }
 
@@ -269,6 +286,10 @@ namespace {
   }
 
   std::uint32_t parseUint32Or(const std::string& value, std::uint32_t fallback = 0) {
+    return parseIntegerOr(value, fallback);
+  }
+
+  std::uint64_t parseUint64Or(const std::string& value, std::uint64_t fallback = 0) {
     return parseIntegerOr(value, fallback);
   }
 
@@ -505,8 +526,6 @@ namespace {
     }
     return 0;
   }
-
-  constexpr Logger kLog("pipewire");
 
   constexpr auto kTrackedNodeClasses = std::to_array<std::string_view>({
       "Audio/Sink",
@@ -951,6 +970,7 @@ void PipeWireService::onRegistryGlobal(std::uint32_t id, const char* type, std::
     auto nd = std::make_unique<NodeData>();
     nd->service = this;
     nd->id = id;
+    nd->serial = parseUint64Or(dictGet(props, PW_KEY_OBJECT_SERIAL));
     nd->name = dictGet(props, PW_KEY_NODE_NAME);
     nd->description = dictGet(props, PW_KEY_NODE_DESCRIPTION);
     if (nd->description.empty()) {
@@ -1117,6 +1137,8 @@ void PipeWireService::onRegistryGlobalRemove(std::uint32_t id) {
     pw_proxy_destroy(reinterpret_cast<pw_proxy*>(nd->proxy));
   }
   m_nodes.erase(it);
+  // Node ids are recycled, so a route left in the metadata must not carry over to the next node.
+  m_metadataTargetObjects.erase(id);
   rebuildState();
 }
 
@@ -1498,6 +1520,21 @@ void PipeWireService::onMixerVolumeChanged(std::uint32_t id, float volume, bool 
   }
 }
 
+void PipeWireService::onTargetObjectMetadata(std::uint32_t subject, const std::string& target) {
+  if (target.empty()) {
+    if (m_metadataTargetObjects.erase(subject) == 0) {
+      return;
+    }
+  } else {
+    const auto it = m_metadataTargetObjects.find(subject);
+    if (it != m_metadataTargetObjects.end() && it->second == target) {
+      return;
+    }
+    m_metadataTargetObjects.insert_or_assign(subject, target);
+  }
+  rebuildState();
+}
+
 void PipeWireService::refreshNodeIdentity(NodeData& nd) {
   const auto it = m_clients.find(nd.clientId);
   if (it == m_clients.end()) {
@@ -1640,6 +1677,18 @@ void PipeWireService::rebuildState() {
     }
   }
 
+  // A stream whose target.object metadata is set does not follow the default sink. The value is
+  // either an object.serial (what we write) or a node.name, per PipeWire's target.object contract;
+  // "-1" is its "no target" sentinel.
+  for (AudioNode& stream : next.programOutputs) {
+    const auto targetIt = m_metadataTargetObjects.find(stream.id);
+    if (targetIt == m_metadataTargetObjects.end() || targetIt->second == "-1") {
+      continue;
+    }
+    stream.routePinned = true;
+    stream.routeSinkId = resolveTargetObjectSink(targetIt->second);
+  }
+
   for (const LinkData& link : std::views::values(m_links)) {
     const NodeData* source = findNode(link.outputNodeId);
     const NodeData* consumer = findNode(link.inputNodeId);
@@ -1674,6 +1723,20 @@ void PipeWireService::rebuildState() {
   m_privacyState = std::move(nextPrivacy);
   ++m_changeSerial;
   emitChanged();
+}
+
+std::uint32_t PipeWireService::resolveTargetObjectSink(const std::string& target) const {
+  // Numeric values are object.serial, anything else is a node.name.
+  const std::uint64_t serial = parseUint64Or(target);
+  for (const auto& [id, nd] : m_nodes) {
+    if (nd->mediaClass != "Audio/Sink") {
+      continue;
+    }
+    if (serial != 0 ? nd->serial == serial : nd->name == target) {
+      return id;
+    }
+  }
+  return 0;
 }
 
 void PipeWireService::recomputeEffectiveMute(NodeData& nd) {
@@ -2038,6 +2101,53 @@ void PipeWireService::emitChanged() {
   if (m_changeCallback) {
     m_changeCallback();
   }
+}
+
+void PipeWireService::moveProgramOutput(std::uint32_t programStreamId, std::uint32_t targetSinkId) {
+  if (m_defaultMetadata == nullptr) {
+    kLog.warn("moveProgramOutput: default metadata not available");
+    return;
+  }
+
+  if (!m_nodes.contains(programStreamId)) {
+    kLog.warn("moveProgramOutput: unknown program stream id {}", programStreamId);
+    return;
+  }
+
+  // pipewire-pulse writes the deprecated target.node (an object.id) next to target.object whenever a
+  // Pulse client moves a stream. target.object wins while it is set, so a leftover target.node would
+  // silently re-pin the stream the moment the route is cleared: drop it either way.
+  const auto clearProperty = [this, programStreamId](const char* key) {
+    const int ret = pw_metadata_set_property(m_defaultMetadata, programStreamId, key, nullptr, nullptr);
+    if (ret < 0) {
+      kLog.warn("moveProgramOutput: failed to clear {} for stream {} ({})", key, programStreamId, ret);
+    }
+  };
+
+  if (targetSinkId == 0) {
+    clearProperty(PW_KEY_TARGET_OBJECT);
+    clearProperty(kMetadataTargetNodeKey);
+    return;
+  }
+
+  const auto sinkIt = m_nodes.find(targetSinkId);
+  if (sinkIt == m_nodes.end()) {
+    kLog.warn("moveProgramOutput: unknown target sink id {}", targetSinkId);
+    return;
+  }
+  if (sinkIt->second->serial == 0) {
+    kLog.warn("moveProgramOutput: sink {} has no object.serial", targetSinkId);
+    return;
+  }
+
+  const std::string serial = std::to_string(sinkIt->second->serial);
+  const int ret =
+      pw_metadata_set_property(m_defaultMetadata, programStreamId, PW_KEY_TARGET_OBJECT, "Spa:Id", serial.c_str());
+  if (ret < 0) {
+    kLog.warn("moveProgramOutput: failed to move stream {} to sink {} ({})", programStreamId, targetSinkId, ret);
+    return;
+  }
+  clearProperty(kMetadataTargetNodeKey);
 }
 
 void PipeWireService::registerIpc(IpcService& ipc, const ConfigService& config) {
