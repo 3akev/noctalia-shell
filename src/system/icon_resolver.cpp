@@ -14,6 +14,7 @@
 #include <optional>
 #include <set>
 #include <string_view>
+#include <system_error>
 #include <unordered_set>
 #include <utility>
 
@@ -89,7 +90,7 @@ namespace {
   bool pathIsDirectory(const fs::path& path) {
     std::error_code ec;
     const bool isDirectory = fs::is_directory(path, ec);
-    if (ec) {
+    if (ec == std::errc::permission_denied || ec == std::errc::operation_not_permitted) {
       static std::mutex logMutex;
       static std::unordered_set<std::string> loggedPaths;
       std::scoped_lock lock(logMutex);

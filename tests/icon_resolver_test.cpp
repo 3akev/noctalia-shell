@@ -1,5 +1,6 @@
 #include "system/icon_resolver.h"
 
+#include <array>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
@@ -41,7 +42,41 @@ int main() {
   setenv("XDG_DATA_DIRS", tempDir, 1);
 
   bool ok = true;
+
+  std::array<int, 2> logPipe{-1, -1};
+  if (!expect(::pipe(logPipe.data()) == 0, "failed to create stderr capture pipe")) {
+    return 1;
+  }
+  std::fflush(stderr);
+  const int savedStderr = ::dup(STDERR_FILENO);
+  if (!expect(savedStderr >= 0 && ::dup2(logPipe[1], STDERR_FILENO) >= 0, "failed to redirect stderr")) {
+    ::close(logPipe[0]);
+    ::close(logPipe[1]);
+    if (savedStderr >= 0) {
+      ::close(savedStderr);
+    }
+    return 1;
+  }
+
   IconResolver resolver(true);
+
+  std::fflush(stderr);
+  (void)::dup2(savedStderr, STDERR_FILENO);
+  ::close(savedStderr);
+  ::close(logPipe[1]);
+
+  std::string startupLogs;
+  std::array<char, 1024> logBuffer{};
+  ssize_t count = 0;
+  while ((count = ::read(logPipe[0], logBuffer.data(), logBuffer.size())) > 0) {
+    startupLogs.append(logBuffer.data(), static_cast<std::size_t>(count));
+  }
+  ::close(logPipe[0]);
+
+  ok = expect(startupLogs.contains(deniedDataHome.string()), "an inaccessible icon directory should be logged") && ok;
+  ok =
+      expect(!startupLogs.contains((root / ".icons/hicolor").string()), "a missing icon directory should not be logged")
+      && ok;
 
   ok = expect(
            resolver.resolve(deniedIcon.string(), 32).empty(),
