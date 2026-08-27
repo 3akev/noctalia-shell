@@ -73,17 +73,19 @@ int main() {
   }
   ::close(logPipe[0]);
 
-  ok = expect(startupLogs.contains(deniedDataHome.string()), "an inaccessible icon directory should be logged") && ok;
+  const bool permissionsEnforced = (geteuid() != 0);
+  if (permissionsEnforced) {
+    ok = expect(startupLogs.contains(deniedDataHome.string()), "an inaccessible icon directory should be logged") && ok;
+    ok = expect(
+             resolver.resolve(deniedIcon.string(), 32).empty(),
+             "an icon beneath an inaccessible directory should not terminate resolution"
+         )
+        && ok;
+    fs::permissions(deniedDataHome, fs::perms::owner_all);
+  }
   ok =
       expect(!startupLogs.contains((root / ".icons/hicolor").string()), "a missing icon directory should not be logged")
       && ok;
-
-  ok = expect(
-           resolver.resolve(deniedIcon.string(), 32).empty(),
-           "an icon beneath an inaccessible directory should not terminate resolution"
-       )
-      && ok;
-  fs::permissions(deniedDataHome, fs::perms::owner_all);
   ok = expect(
            resolver.resolve(deniedIcon.string(), 32) == deniedIcon.string(),
            "an absolute icon denied earlier should resolve once it is readable"
