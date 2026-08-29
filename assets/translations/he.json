@@ -1,0 +1,629 @@
+{
+  "auth": {
+    "fingerprint": {
+      "disconnected": "קורא טביעות אצבע מנותק",
+      "error": "שגיאת אימות טביעת אצבע",
+      "no-match": "טביעת אצבע לא תאמה",
+      "not-centered": "מרכז את האצבע ונסה שוב",
+      "present": "קורא טביעת אצבע…",
+      "ready": "הנח את האצבע על הקורא",
+      "remove-and-retry": "הסר את האצבע ונסה שוב",
+      "retry": "אנא סרוק את טביעת האצבע שלך שוב",
+      "swipe-too-short": "ההחלקה הייתה קצרה מדי, נסה שוב",
+      "too-many-attempts": "טביעת אצבע הושבתה (יותר מדי ניסיונות)"
+    },
+    "pam": {
+      "authentication-failed": "האימות נכשל",
+      "start-failed": "הפעלת PAM נכשלה",
+      "user-unavailable": "לא ניתן לזהות את המשתמש הנוכחי"
+    },
+    "polkit": {
+      "authenticate": "אמת",
+      "authenticating": "מאמת…",
+      "default-message": "נדרש אימות",
+      "invalid-password": "סיסמה שגויה",
+      "password-placeholder": "סיסמה",
+      "title": "נדרש אימות"
+    }
+  },
+  "bar": {
+    "screenshot": {
+      "choose-display": "בחר תצוגה",
+      "confirm-region": "{copy} להעתקה · {save} לשמירה · Enter או Space לברירת מחדל · {cancel} לביטול · גרור לבחירה מחדש",
+      "fullscreen": "מסך מלא",
+      "overlay-alloc-failed": "לא ניתן להציג את שכבת צילום המסך (נגמר הזיכרון ב-GPU?)",
+      "region": "בחר אזור"
+    },
+    "widgets": {
+      "active-window": {
+        "no-active-window": "אין חלון פעיל"
+      },
+      "bluetooth": {
+        "connected": "מחובר"
+      },
+      "brightness": {
+        "brightness": "בהירות",
+        "display": "תצוגה"
+      },
+      "lock-keys": {
+        "caps": "Caps",
+        "caps-short": "C",
+        "num": "Num",
+        "num-short": "N",
+        "scroll": "Scroll",
+        "scroll-short": "S"
+      },
+      "media": {
+        "nothing-playing": "שום דבר לא מתנגן",
+        "playing": "מתנגן"
+      },
+      "network": {
+        "active": "פעיל",
+        "band": "תדר",
+        "connected": "מחובר",
+        "connecting": "מתחבר",
+        "download": "הורדה",
+        "interface": "ממשק",
+        "ip": "IP",
+        "network": "רשת",
+        "networks": "רשתות",
+        "networks-count": "רשת {count}",
+        "networks-count-plural": "{count} רשתות",
+        "no": "לא",
+        "not-connected": "לא מחובר",
+        "off": "כבוי",
+        "on": "פעיל",
+        "scanning": "סורק",
+        "signal": "אות",
+        "upload": "העלאה",
+        "vpn": "VPN",
+        "wan-ip": "WAN IP",
+        "wifi": "Wi-Fi",
+        "wired": "קווי",
+        "yes": "כן"
+      },
+      "privacy": {
+        "camera": "מצלמה",
+        "microphone": "מיקרופון",
+        "screen-sharing": "שיתוף מסך"
+      },
+      "scripted": {
+        "reload-failed": "טעינת סקריפט מחדש נכשלה",
+        "reloaded": "סקריפט נטען מחדש"
+      },
+      "sysmon": {
+        "cpu": "CPU",
+        "cpu-freq": "תדר CPU",
+        "cpu-temp": "טמפ' CPU",
+        "disk": "כונן",
+        "disk-free": "כונן פנוי",
+        "disk-free-pct": "% כונן פנוי",
+        "disk-used": "כונן בשימוש",
+        "disk-used-pct": "% כונן בשימוש",
+        "download": "הורדה",
+        "gpu-temp": "טמפ' GPU",
+        "gpu-usage": "שימוש ב-GPU",
+        "gpu-vram": "VRAM ב-GPU",
+        "ram": "RAM",
+        "swap": "Swap",
+        "system": "מערכת",
+        "upload": "העלאה"
+      },
+      "volume": {
+        "device": "התקן",
+        "mic": "מיקרופון",
+        "volume": "עוצמת שמע"
+      },
+      "weather": {
+        "default": "מזג אוויר",
+        "error": "שגיאת מזג אוויר",
+        "loading": "מזג אוויר…",
+        "no-location": "אין מיקום",
+        "off": "מזג אוויר כבוי",
+        "tooltip": {
+          "condition": "מצב",
+          "high": "גבוה",
+          "humidity": "לחות",
+          "low": "נמוך",
+          "sunrise": "זריחה",
+          "sunset": "שקיעה",
+          "temperature": "טמפרטורה",
+          "uv": "אינדקס UV",
+          "wind": "רוח"
+        }
+      }
+    }
+  },
+  "clipboard": {
+    "actions": {
+      "clear-all": "נקה הכל",
+      "delete-item": "מחק פריט",
+      "keep-pinned": "השאר נעוץ"
+    },
+    "confirm": {
+      "clear-desc": "בחר האם לשמור פריטים נעוצים.",
+      "clear-desc-all-pinned": "כל רשומה נעוצה. השתמש ב'נקה הכל' כדי להסיר את כולן.",
+      "clear-desc-no-pinned": "פעולה זו מסירה כל רשומה מהיסטוריית הלוח.",
+      "clear-title": "לנקות את היסטוריית הלוח?",
+      "delete-desc": "פעולה זו מסירה את הפריט שנבחר מהיסטוריית הלוח.",
+      "delete-title": "למחוק פריט מהלוח?"
+    },
+    "empty": {
+      "history-message": "אין רשומות בהיסטוריית הלוח.",
+      "history-title": "היסטוריית הלוח ריקה",
+      "no-matches-message": "אין רשומות שתואמות למסנן הנוכחי.",
+      "no-matches-title": "אין רשומות תואמות"
+    },
+    "entry": {
+      "image": "תמונה",
+      "title": "רשומת לוח"
+    },
+    "filter-placeholder": "סנן לוח…",
+    "preview": {
+      "empty-text-payload": "(תוכן טקסט ריק)",
+      "image-title": "רשומת תמונה בלוח",
+      "loading": "טוען תצוגה מקדימה…",
+      "text-title": "רשומת טקסט בלוח",
+      "truncated": "… קוצץ"
+    },
+    "title": "לוח"
+  },
+  "common": {
+    "actions": {
+      "apply": "החל",
+      "cancel": "ביטול"
+    },
+    "states": {
+      "auto": "אוטומטי",
+      "custom": "מותאם אישית",
+      "inherit": "ירושה",
+      "off": "כבוי"
+    }
+  },
+  "control-center": {
+    "audio": {
+      "application-volumes": "עוצמת שמע של יישומים",
+      "choose-effects-profile": "בחר פרופיל",
+      "default-device": "התקן ברירת מחדל",
+      "effects-profile": "אפקטים",
+      "input-device-prefix": "קלט",
+      "no-application-audio": "אין שמע מיישומים",
+      "no-application-audio-body": "אין כרגע זרמי שמע של יישומים זמינים.",
+      "no-input-devices": "אין התקני קלט",
+      "no-input-devices-body": "אין כרגע מקורות הקלטה זמינים.",
+      "no-input-selected": "לא נבחר התקן קלט",
+      "no-output-devices": "אין התקני פלט",
+      "no-output-devices-body": "אין כרגע יעדי השמעה זמינים.",
+      "no-output-selected": "לא נבחר התקן פלט",
+      "output-device-prefix": "פלט",
+      "unavailable-body": "Pipewire אינו פעיל.",
+      "unavailable-title": "שמע לא זמין"
+    },
+    "bluetooth": {
+      "accept": "קבל",
+      "address": "כתובת",
+      "auto-reconnect": "התחברות אוטומטית",
+      "bluetooth": "Bluetooth",
+      "enter-code": "הזן קוד",
+      "no-devices": "לא נמצאו התקנים. התחל לסרוק כדי לגלות התקני Bluetooth קרובים.",
+      "off": "Bluetooth כבוי",
+      "pair-title": "צמד {device}",
+      "pairing-detail": {
+        "authorize": "לאשר את בקשת הצימוד הנכנסת?",
+        "authorize-service": "לאפשר גישה לשירות {uuid}?",
+        "confirm": "אשר שקוד זה תואם לקוד המוצג על ההתקן:",
+        "display-passkey": "הזן קוד זה בהתקן:",
+        "display-pin": "הזן PIN זה בהתקן:",
+        "passkey": "הזן את הקוד המוצג על ההתקן:",
+        "pin-code": "הזן את ה-PIN המוצג על ההתקן:"
+      },
+      "reject": "דחה",
+      "rfkill-blocked": "Bluetooth חסום על ידי המערכת. הפעל אותו כדי להסיר את החסימה.",
+      "sections": {
+        "available": "זמין",
+        "connected": "מחובר",
+        "paired": "מצומד"
+      },
+      "unavailable": "שירות Bluetooth לא זמין",
+      "unknown-device": "התקן לא ידוע",
+      "visible": "ניתן לגילוי על ידי התקנים קרובים"
+    },
+    "calendar": {
+      "all-day": "כל היום",
+      "events": "אירועים",
+      "no-events": "אין אירועים.",
+      "today": "היום",
+      "toggle-events-card": "הצג/הסתר כרטיס אירועים"
+    },
+    "display": {
+      "disabled": "מושבת",
+      "no-displays": "אין צגים זמינים",
+      "unknown-resolution": "רזולוציה לא ידועה"
+    },
+    "home": {
+      "avatar-error-title": "הסמל האישי לא עודכן",
+      "media": {
+        "idle": "בהמתנה",
+        "no-active-player": "אין נגן פעיל",
+        "nothing-playing": "שום דבר לא מתנגן",
+        "paused": "מושהה",
+        "playback-unavailable": "השמעה לא זמינה",
+        "playing": "מתנגן",
+        "unavailable": "לא זמין",
+        "unknown-artist": "אמן לא ידוע",
+        "unknown-track": "רצועה לא ידועה"
+      },
+      "select-avatar": "בחר סמל אישי",
+      "unknown": "לא ידוע",
+      "uptime": "זמן פעולה – {uptime}",
+      "weather": {
+        "data-unavailable": "נתוני מזג אוויר לא זמינים.",
+        "disabled": "מזג אוויר מושבת בהגדרות.",
+        "fetching": "מאחזר תחזית…"
+      }
+    },
+    "media": {
+      "active-player": "נגן פעיל",
+      "nothing-playing": "שום דבר לא מתנגן",
+      "now-playing": "מתנגן כעת",
+      "start-playback": "התחל השמעה ביישום MPRIS"
+    },
+    "network": {
+      "available": "זמין",
+      "connect": "התחבר",
+      "current-connection": "חיבור נוכחי",
+      "external-ip": "WAN {ip}",
+      "no-networks": "אין רשתות בטווח",
+      "not-connected": "לא מחובר",
+      "password": "סיסמה",
+      "password-prompt": "הזן סיסמה",
+      "password-prompt-for": "הזן סיסמה עבור {ssid}",
+      "saved": "שמור",
+      "unavailable-detail": "התקן והפעל את NetworkManager, wpa_supplicant או iwd כדי לנהל רשתות מכאן.",
+      "unavailable-title": "שירות רשת לא זמין",
+      "vpns": "VPNs",
+      "wi-fi": "Wi-Fi",
+      "wifi": "Wi-Fi",
+      "wifi-off": "Wi-Fi כבוי",
+      "wifi-on": "Wi-Fi מופעל"
+    },
+    "notifications": {
+      "clear-all": "נקה את כל ההתראות",
+      "dnd-off": "כבה 'נא לא להפריע'",
+      "dnd-on": "הפעל 'נא לא להפריע'",
+      "empty-body": "התראות אחרונות יופיעו כאן.",
+      "empty-title": "אין התראות",
+      "filter": {
+        "all": "הכל",
+        "older": "ישן יותר",
+        "today": "היום",
+        "yesterday": "אתמול"
+      },
+      "filter-empty-body": "אין התראות שתואמות למסנן זה.",
+      "filter-empty-title": "אין כאן כלום",
+      "untitled": "התראה ללא שם"
+    },
+    "power": {
+      "battery": "סוללה",
+      "charging": {
+        "configured": "מוגדר: {limits}",
+        "display-only": "תצוגה בלבד",
+        "error-denied": "ההרשאה נדחתה. ספי הטעינה לא שונו.",
+        "error-failed": "לא ניתן לשנות את ספי הטעינה.",
+        "externally-managed": "מוגדר על ידי כלי אחר. הגדר את UPower לניהול ספי טעינה.",
+        "firmware-managed": "הטעינה מנוהלת על ידי קושחת המערכת",
+        "full-charge": "יכול לטעון עד 100%",
+        "starts": "מתחיל מתחת ל-{start}%",
+        "starts-stops": "מתחיל מתחת ל-{start}% · עוצר ב-{end}%",
+        "stops": "עוצר ב-{end}%",
+        "title": "טעינת סוללה",
+        "unreadable": "לא זמין",
+        "unsupported": "ספי טעינה אינם נתמכים",
+        "use-thresholds": "השתמש בספי טעינה"
+      },
+      "design-capacity": "מקיבולת התכנון",
+      "health": "בריאות סוללה",
+      "performance-inhibited": "ביצועים לא זמינים",
+      "peripherals": "התקנים מחוברים",
+      "power-profile": "פרופיל צריכת חשמל",
+      "time-to-empty": "נותרו {time}",
+      "time-to-full": "{time} עד לטעינה מלאה",
+      "unknown-device": "התקן לא ידוע"
+    },
+    "screen-time": {
+      "back": "חזור",
+      "disabled": "מעקב זמן מסך כבוי. הפעל אותו בהגדרות כדי להקליט שימוש לפי יישום.",
+      "empty": "עדיין לא הוקלט שימוש ביישומים. מקד חלון כדי להתחיל במעקב.",
+      "hour-0": "12 AM",
+      "hour-12": "12 PM",
+      "hour-18": "6 PM",
+      "hour-6": "6 AM",
+      "most-used": "בשימוש הרב ביותר",
+      "range": {
+        "14-days": "14 ימים",
+        "3-days": "3 ימים",
+        "today": "היום"
+      },
+      "view-day": "הצג פרטי יום"
+    },
+    "shortcuts": {
+      "audio": "שמע",
+      "bluetooth": "Bluetooth",
+      "caffeine": "Caffeine",
+      "clipboard": "לוח",
+      "dark-mode": {
+        "auto": "מצב אוטומטי",
+        "dark": "מצב כהה",
+        "light": "מצב בהיר"
+      },
+      "keyboard-layout": "פריסת מקלדת",
+      "media": "מדיה",
+      "mic-mute": "מיקרופון",
+      "nightlight": "תאורת לילה",
+      "nightlight-states": {
+        "forced": "פועל תמיד",
+        "off": "תאורת לילה",
+        "scheduled-day": "מתוזמן",
+        "scheduled-night": "פועל"
+      },
+      "notification": "DND",
+      "power-profile": "צריכת חשמל",
+      "screen-time": "זמן מסך",
+      "session": "הפעלה",
+      "system": "מערכת",
+      "wallpaper": "רקע",
+      "weather": "מזג אוויר",
+      "wifi": "Wi-Fi"
+    },
+    "system": {
+      "labels": {
+        "load": "עומס CPU",
+        "ram": "RAM",
+        "swap": "Swap"
+      },
+      "titles": {
+        "cpu": "CPU",
+        "gpu": "GPU",
+        "memory": "זיכרון",
+        "network": "רשת",
+        "resources": "משאבים",
+        "system": "מערכת"
+      },
+      "tooltips": {
+        "load": "עומס ממוצע לאורך 1 / 5 / 15 דקות"
+      },
+      "unknown": "לא ידוע",
+      "uptime-prefix": "פועל {uptime} · {osAge}"
+    },
+    "tabs": {
+      "audio": "שמע",
+      "bluetooth": "Bluetooth",
+      "calendar": "לוח שנה",
+      "home": "בית",
+      "media": "מדיה",
+      "monitor": "צג",
+      "network": "רשת",
+      "notifications": "התראות",
+      "power": "חשמל",
+      "screen-time": "זמן מסך",
+      "system": "מערכת",
+      "weather": "מזג אוויר"
+    },
+    "weather": {
+      "daily": {
+        "tooltip": {
+          "condition": "מצב",
+          "high": "גבוה",
+          "low": "נמוך",
+          "sunrise": "זריחה",
+          "sunset": "שקיעה"
+        }
+      },
+      "data-unavailable": "נתוני מזג אוויר לא זמינים",
+      "details": {
+        "elevation": "גובה",
+        "sunrise": "זריחה",
+        "sunset": "שקיעה",
+        "temp-max": "טמפרטורה מקסימלית",
+        "temp-min": "טמפרטורה מינימלית",
+        "timezone": "אזור זמן",
+        "uv-index": "אינדקס UV",
+        "wind": "רוח"
+      },
+      "disabled": "הפעל את [weather] ב-config.toml",
+      "fetching": "מאחזר תחזית…",
+      "forecast-placeholder": {
+        "day": "ראשון",
+        "description": "מזג אוויר",
+        "temperature": "10 / 4°C"
+      },
+      "forecast-view": {
+        "daily": "יומי",
+        "hourly": "שעתי"
+      },
+      "hourly": {
+        "summary": "{condition} / גשם {precip}%",
+        "tooltip": {
+          "condition": "מצב",
+          "humidity": "לחות",
+          "rain": "גשם",
+          "wind": "רוח"
+        }
+      },
+      "location-unavailable": "מיקום לא זמין",
+      "no-location-body": "הוסף את הכתובת שלך או הפעל איתור אוטומטי בהגדרות מיקום.",
+      "no-location-title": "לא הוגדר מיקום",
+      "refreshing": "מרענן מזג אוויר…",
+      "waiting": "ממתין לנתוני מזג אוויר"
+    }
+  },
+  "desktop-widgets": {
+    "editor": {
+      "actions": {
+        "add": "הוסף",
+        "clone": "שכפל (Ctrl+C, Ctrl+V להעתקה/הדבקה)",
+        "done": "סיום",
+        "flip-horizontal": "הפוך אופקית",
+        "flip-vertical": "הפוך אנכית",
+        "hide": "הסתר",
+        "settings": "הגדרות",
+        "show": "הצג",
+        "stack-back": "העבר לאחור",
+        "stack-front": "העבר לחזית",
+        "trash": "מחק"
+      },
+      "dialogs": {
+        "select-sticker-image": "בחר תמונת מדבקה"
+      },
+      "settings": {
+        "aspect-ratio": "יחס גובה-רוחב",
+        "background": "רקע",
+        "background-color": "צבע",
+        "background-opacity": "אטימות",
+        "background-padding": "ריווח פנימי (Padding)",
+        "background-radius": "רדיוס",
+        "background-section": "רקע",
+        "bands": "רצועות",
+        "bar-width": "רוחב סרגל",
+        "bloom-intensity": "Bloom",
+        "center-password-text": "מרכז טקסט סיסמה",
+        "center-text": "מרכז טקסט",
+        "centered": "ממורכז",
+        "change-image": "שנה…",
+        "circle": "מעגל",
+        "clock-style": "סגנון שעון",
+        "clock-style-analog": "אנלוגי",
+        "clock-style-digital": "דיגיטלי",
+        "color": "צבע",
+        "color-1": "צבע 1",
+        "color-2": "צבע 2",
+        "color2": "צבע 2",
+        "command": "פקודה",
+        "custom-color": "מותאם אישית",
+        "description": "תיאור",
+        "device": "התקן",
+        "display": "תצוגה",
+        "display-gauge": "Gauge",
+        "display-graph": "גרף",
+        "fade-when-idle": "עמעם בעת חוסר פעילות",
+        "fill-color": "צבע מילוי",
+        "font-family": "גופן",
+        "font-family-default": "ברירת מחדל של המערכת",
+        "forecast-days": "ימי תחזית",
+        "format": "פורמט",
+        "gauge-layout": "פריסת Gauge",
+        "glyph": "סמל (Glyph)",
+        "hide-when-no-media": "הסתר כשאין מדיה",
+        "highlight-color": "צבע הדגשה",
+        "horizontal": "אופקי",
+        "hover-background": "רקע בריחוף",
+        "hover-foreground": "חזית בריחוף",
+        "image-path": "תמונה",
+        "inner-diameter": "קוטר פנימי",
+        "input-opacity": "אטימות קלט",
+        "input-radius": "רדיוס קלט",
+        "interface": "ממשק",
+        "label": "תווית",
+        "label-min-width": "רוחב תווית מינימלי",
+        "layout": "פריסה",
+        "mirrored": "משוקף",
+        "network-speed-compact": "מהירות רשת קומפקטית",
+        "network-speed-unit": "יחידת מהירות רשת",
+        "network-speed-unit-auto": "אוטומטי",
+        "network-speed-unit-kilobytes": "kB/s",
+        "network-speed-unit-megabytes": "MB/s",
+        "opacity": "אטימות",
+        "primary-color": "צבע ראשי",
+        "reset-defaults": "שחזר לברירות מחדל",
+        "reversed": "הפוך",
+        "ring-opacity": "אטימות טבעת",
+        "rotation-speed": "מהירות סיבוב",
+        "scroll-step": "שלב גלילה",
+        "secondary-color": "צבע משני",
+        "sensitivity": "רגישות",
+        "shadow": "צל",
+        "show-caps-lock": "אזהרת Caps Lock",
+        "show-device": "הצג התקן",
+        "show-events": "הצג אירועים",
+        "show-forecast": "הצג תחזית",
+        "show-keyboard-layout": "פריסת מקלדת",
+        "show-label": "הצג תווית",
+        "show-login-button": "כפתור התחברות",
+        "show-media": "מדיה",
+        "show-password-hint": "רמז סיסמה",
+        "show-session-buttons": "כפתורי הפעלה",
+        "show-unlock-hint": "רמז שחרור נעילה",
+        "show-vpn-label": "הצג תווית VPN",
+        "show-weather": "מזג אוויר",
+        "show-week-numbers": "הצג מספרי שבועות",
+        "show-when-idle": "הצג בזמן חוסר פעילות",
+        "stat": "סטטיסטיקה",
+        "stat-cpu-freq": "תדר CPU",
+        "stat-cpu-temp": "טמפ' CPU",
+        "stat-cpu-usage": "שימוש ב-CPU",
+        "stat-gpu-temp": "טמפ' GPU",
+        "stat-gpu-usage": "שימוש ב-GPU",
+        "stat-gpu-vram": "VRAM ב-GPU",
+        "stat-gpu-vram-used": "VRAM משומש ב-GPU",
+        "stat-net-rx": "קבלה ברשת (Rx)",
+        "stat-net-tx": "שליחה ברשת (Tx)",
+        "stat-none": "ללא",
+        "stat-ram-pct": "% RAM",
+        "stat-swap-pct": "% Swap",
+        "stat2": "סטטיסטיקה 2",
+        "title": "כותרת",
+        "track-color": "צבע מסלול",
+        "variant": "סגנון",
+        "variant-default": "ברירת מחדל",
+        "variant-destructive": "הרסני",
+        "variant-ghost": "Ghost",
+        "variant-outline": "Outline",
+        "variant-primary": "ראשי",
+        "variant-secondary": "משני",
+        "vertical": "אנכי",
+        "visualization-mode": "מצב",
+        "visualization-mode-all": "הכל",
+        "visualization-mode-bars": "פסים",
+        "visualization-mode-bars-rings": "פסים + טבעות",
+        "visualization-mode-rings": "טבעות",
+        "visualization-mode-wave": "גל",
+        "visualization-mode-wave-rings": "גל + טבעות",
+        "wave-thickness": "עובי גל",
+        "widget-section": "יישומון"
+      },
+      "state": {
+        "grid": "רשת"
+      },
+      "title": "יישומוני שולחן עבודה",
+      "title-lockscreen": "יישומוני מסך נעילה",
+      "types": {
+        "audio-visualizer": "ויזואליזציה של שמע",
+        "button": "כפתור",
+        "calendar": "לוח שנה",
+        "clock": "שעון",
+        "fancy-audio-visualizer": "ויזואליזציה מתקדמת של שמע",
+        "label": "תווית",
+        "login-box": "תיבת התחברות",
+        "media-player": "נגן מדיה",
+        "sticker": "מדבקה",
+        "system-monitor": "צג מערכת",
+        "volume": "עוצמת שמע",
+        "weather": "מזג אוויר"
+      }
+    },
+    "media": {
+      "nothing-playing": "שום דבר לא מתנגן"
+    },
+    "volume": {
+      "mic": "מיקרופון",
+      "muted": "מושתק",
+      "volume": "עוצמת שמע"
+    },
+    "weather": {
+      "error": "שגיאה",
+      "loading": "טוען…",
+      "no-location": "אין מיקום",
+      "off": "מזג אוויר כבוי"
+    }
+  }
+}
