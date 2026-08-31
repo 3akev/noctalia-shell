@@ -1183,6 +1183,7 @@ if build_tests
     'network_manager_security',
     'notification_dnd',
     'notification_filter',
+    'notification_history_dismiss',
     'notification_history_utf8',
     'niri_workspace_backend',
     'path_browse',
