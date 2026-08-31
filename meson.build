@@ -1266,4 +1266,11 @@ if build_tests
     workdir: meson.current_source_dir(),
     env: config_validate_env,
   )
+
+  bash_program = find_program('bash')
+  test('template_undo_signal',
+    bash_program,
+    args: ['tests/template_undo_signal_test.sh', meson.current_source_dir() / 'assets/templates'],
+    workdir: meson.current_source_dir(),
+  )
 endif # build_tests
