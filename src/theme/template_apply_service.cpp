@@ -8,10 +8,13 @@
 #include "core/process/process.h"
 #include "ipc/ipc_service.h"
 #include "theme/community_templates.h"
+#include "theme/hook_runner.h"
 #include "theme/template_engine.h"
 #include "util/file_utils.h"
 #include "util/string_utils.h"
 
+#include <algorithm>
+#include <chrono>
 #include <filesystem>
 #include <string>
 #include <unordered_set>
@@ -23,6 +26,12 @@ namespace noctalia::theme {
   namespace {
 
     constexpr Logger kLog("theme_templates");
+
+    // Request coalescing window: a burst of requests applies once, after the stream has
+    // been quiet for kRequestQuietWindow, and at the latest kMaxRequestDeferral after the
+    // first request of the burst.
+    constexpr auto kRequestQuietWindow = std::chrono::milliseconds(100);
+    constexpr auto kMaxRequestDeferral = std::chrono::milliseconds(500);
 
     std::filesystem::path builtinTemplateConfigPath() { return paths::assetPath("templates/builtin.toml"); }
 
@@ -126,6 +135,9 @@ namespace noctalia::theme {
         if (userTemplate.index != 0) {
           templateTable.insert_or_assign("index", static_cast<std::int64_t>(userTemplate.index));
         }
+        if (!userTemplate.hookAsync) {
+          templateTable.insert_or_assign("hook_async", false);
+        }
         userTemplates.insert_or_assign(userTemplate.id, std::move(templateTable));
       }
 
@@ -157,7 +169,8 @@ namespace noctalia::theme {
 
   } // namespace
 
-  TemplateApplyService::TemplateApplyService(const ConfigService& config) : m_config(config) {
+  TemplateApplyService::TemplateApplyService(const ConfigService& config)
+      : m_config(config), m_hookRunner(std::make_unique<HookRunner>()) {
     m_worker = std::thread([this]() { workerLoop(); });
   }
 
@@ -168,6 +181,9 @@ namespace noctalia::theme {
       m_pendingRequest.reset();
     }
     m_cv.notify_one();
+    // The worker may be draining hooks; drop the backlog so shutdown waits only for
+    // the hooks already running.
+    m_hookRunner->requestShutdown();
     if (m_worker.joinable()) {
       m_worker.join();
     }
@@ -187,7 +203,8 @@ namespace noctalia::theme {
       // are captured only when an application is queued; forced IPC re-application bypasses
       // this deduplication.
       if (!force && m_lastAppliedRequest.has_value() && sameInputs(request, *m_lastAppliedRequest)) {
-        if (m_afterApplyCallback && !m_inFlight) {
+        // A queued request has not been applied yet; it fires the callback when it lands.
+        if (m_afterApplyCallback && !m_inFlight && !m_pendingRequest.has_value()) {
           afterApplyCallback = m_afterApplyCallback;
         }
         if (!afterApplyCallback) {
@@ -263,6 +280,15 @@ namespace noctalia::theme {
   }
 
   void TemplateApplyService::applyRequest(const ApplyRequest& request) const {
+    HookRunner& hookRunner = *m_hookRunner;
+
+    // Hooks from superseded generations must not outlive them: drop the queued ones and
+    // wait out the ones already running. A started hook cannot be cancelled safely, so
+    // without this wait a slow hook from an older generation could finish last and win
+    // the final state (and undo hooks below could be reverted by it).
+    hookRunner.invalidateBefore(request.generation);
+    hookRunner.waitIdle();
+
     TemplateEngine::Options options;
     options.defaultMode = request.defaultMode;
     options.imagePath = request.imagePath;
@@ -270,6 +296,8 @@ namespace noctalia::theme {
     options.verbose = true;
     options.cancelRequested = [this, generation = request.generation]() { return requestSuperseded(generation); };
     options.configTable = request.configTable;
+    options.hookRunner = &hookRunner;
+    options.generation = request.generation;
 
     TemplateEngine engine(TemplateEngine::makeThemeData(request.palette), options);
 
@@ -396,16 +424,51 @@ namespace noctalia::theme {
       ApplyRequest request;
       {
         std::unique_lock lock(m_mutex);
+
+        // Wait for initial request
         m_cv.wait(lock, [this]() { return m_shutdown || m_pendingRequest.has_value(); });
+
         if (m_shutdown) {
           return;
         }
+
+        // Coalesce bursts of requests (theme scrubbing, wallpaper cycling) into one
+        // application: wait for a quiet window, but never defer past kMaxRequestDeferral
+        // from the first request of the burst, so a steady request stream still applies.
+        const auto burstStart = std::chrono::steady_clock::now();
+        const auto deferralLimit = burstStart + kMaxRequestDeferral;
+        auto quietUntil = burstStart + kRequestQuietWindow;
+        auto lastGeneration = m_nextGeneration;
+
+        while (!m_shutdown) {
+          const auto wakeAt = std::min(quietUntil, deferralLimit);
+          if (std::chrono::steady_clock::now() >= wakeAt) {
+            break;
+          }
+          m_cv.wait_until(lock, wakeAt);
+          if (m_nextGeneration != lastGeneration) {
+            lastGeneration = m_nextGeneration;
+            quietUntil = std::chrono::steady_clock::now() + kRequestQuietWindow;
+          }
+        }
+
+        if (m_shutdown) {
+          return;
+        }
+
         request = std::move(*m_pendingRequest);
         m_pendingRequest.reset();
         m_inFlight = true;
       }
 
       applyRequest(request);
+
+      // Hooks of the current generation must finish before the after-apply callback
+      // reports the theme as applied. A superseded generation skips the drain; the next
+      // applyRequest() waits its hooks out before touching anything.
+      if (!requestSuperseded(request.generation)) {
+        m_hookRunner->waitIdle();
+      }
 
       std::function<void()> afterApplyCallback;
       {

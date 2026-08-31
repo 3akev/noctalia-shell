@@ -20,6 +20,8 @@ class IpcService;
 
 namespace noctalia::theme {
 
+  class HookRunner;
+
   class TemplateApplyService {
   public:
     explicit TemplateApplyService(const ConfigService& config);
@@ -63,6 +65,7 @@ namespace noctalia::theme {
     mutable bool m_shutdown = false;
     mutable bool m_inFlight = false;
     mutable std::function<void()> m_afterApplyCallback;
+    mutable std::unique_ptr<HookRunner> m_hookRunner;
   };
 
 } // namespace noctalia::theme
