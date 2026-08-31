@@ -30,10 +30,23 @@ int main() {
   }
 
   const fs::path root(tempDir);
-  const fs::path iconDir = root / "icons/hicolor/scalable/apps";
+  const fs::path iconThemeRoot = root / "icons/hicolor";
+  const fs::path iconDir = iconThemeRoot / "scalable/apps";
+  const fs::path bitmapIconDir = iconThemeRoot / "48x48/apps";
   const fs::path deniedDataHome = root / "denied";
   const fs::path deniedIcon = deniedDataHome / "private-icon.svg";
   fs::create_directories(iconDir);
+  fs::create_directories(bitmapIconDir);
+  std::ofstream(iconThemeRoot / "index.theme") << "[Icon Theme]\n"
+                                                  "Directories = 48x48/apps, scalable/apps\n"
+                                                  "Inherits = Adwaita\n"
+                                                  "[48x48/apps]\n"
+                                                  "Size = 48\n"
+                                                  "Type = Fixed\n"
+                                                  "[scalable/apps]\n"
+                                                  "Size = 64\n"
+                                                  "Type = Scalable\n"
+                                                  "MaxSize = 128\n";
   fs::create_directories(deniedDataHome);
   std::ofstream(deniedIcon) << "<svg/>";
   fs::permissions(deniedDataHome, fs::perms::none);
