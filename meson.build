@@ -1158,6 +1158,7 @@ if build_tests
     'fcitx_status',
     'freedesktop_key_file',
     'google_client_calendar_list',
+    'grid_item_cursor',
     'hook_manager',
     'hyprland_workspace_backend',
     'i18n_language_tag',
