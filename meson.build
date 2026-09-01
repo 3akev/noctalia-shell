@@ -195,8 +195,9 @@ if not cc.has_header('stb/stb_image_write.h')
   error('stb/stb_image_write.h not found')
 endif
 
-# ── System: libwebp (WebP decode and thumbnail encode) ───────────────────────
-libwebp_dep = dependency('libwebp', required: true)
+# ── System: libwebp (WebP decode and thumbnail encode; demux for animations) ─
+libwebp_dep       = dependency('libwebp', required: true)
+libwebpdemux_dep  = dependency('libwebpdemux', required: true)
 
 # ── System: libjxl (JPEG XL decode) ───────────────────────────────────────────
 libjxl_dep          = dependency('libjxl', required: true)
@@ -1052,6 +1053,7 @@ _noctalia_system_dependencies = [
   tomlplusplus_dep,
   md4c_dep,
   libwebp_dep,
+  libwebpdemux_dep,
   libjxl_dep,
   libjxl_threads_dep,
   sndfile_dep,
@@ -1216,6 +1218,7 @@ if build_tests
     'upower_charge_limit',
     'upower_device_catalog',
     'virtual_grid_view_gesture',
+    'webp_decoder',
     'wayland_output_scale',
     'wayland_toplevels_identity',
     'widget_action',
