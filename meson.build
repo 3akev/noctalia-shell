@@ -1155,6 +1155,7 @@ if build_tests
     'desktop_entry_launch',
     'desktop_entry_localization',
     'disk_mounts',
+    'dock_edge_overlap',
     'dock_pinned_apps',
     'event_link',
     'fcitx_status',
