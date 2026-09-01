@@ -406,6 +406,9 @@ namespace shell::dock {
   }
 
   void startHideFadeOut(DockInstance& inst, ConfigService& config) {
+    // xdg tooltips are not parent-transformed with the slide; destroy immediately
+    // so they cannot remain pinned after auto-hide starts (#4177).
+    TooltipManager::instance().forceDestroy();
     if (inst.hideAnimId != 0) {
       inst.animations.cancel(inst.hideAnimId);
       inst.hideAnimId = 0;
