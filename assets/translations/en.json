@@ -3236,7 +3236,457 @@
         "default": "Default",
         "disabled": "Disabled",
         "run-command": "Run a command…",
-        "unset": "Not set"
+        "unset": "Not set",
+        "commands": {
+          "bar-auto-hide-set": {
+            "label": "Set bar auto-hide",
+            "description": "Set auto-hide state for a bar"
+          },
+          "bar-hide": {
+            "label": "Hide bar",
+            "description": "Hide one or all bars and release their layout gaps"
+          },
+          "bar-layer-set": {
+            "label": "Set bar layer",
+            "description": "Set one or all bar layers"
+          },
+          "bar-reserve-toggle": {
+            "label": "Toggle bar reserved space",
+            "description": "Toggle reserve space for one or all bars"
+          },
+          "bar-show": {
+            "label": "Show bar",
+            "description": "Show one or all bars"
+          },
+          "bar-toggle": {
+            "label": "Toggle bar",
+            "description": "Toggle visibility for one or all bars"
+          },
+          "bluetooth-disable": {
+            "label": "Disable Bluetooth",
+            "description": "Disable Bluetooth"
+          },
+          "bluetooth-enable": {
+            "label": "Enable Bluetooth",
+            "description": "Enable Bluetooth"
+          },
+          "bluetooth-status": {
+            "label": "Bluetooth status",
+            "description": "Print Bluetooth state"
+          },
+          "bluetooth-toggle": {
+            "label": "Toggle Bluetooth",
+            "description": "Toggle Bluetooth"
+          },
+          "brightness-down": {
+            "label": "Decrease brightness",
+            "description": "Decrease brightness (defaults to current monitor)"
+          },
+          "brightness-list-backlight-devices": {
+            "label": "List backlight devices",
+            "description": "List available sysfs backlight device names"
+          },
+          "brightness-osd": {
+            "label": "Show brightness OSD",
+            "description": "Show brightness OSD without changing brightness"
+          },
+          "brightness-set": {
+            "label": "Set brightness",
+            "description": "Set brightness (defaults to current monitor)"
+          },
+          "brightness-up": {
+            "label": "Increase brightness",
+            "description": "Increase brightness (defaults to current monitor)"
+          },
+          "caffeine-disable": {
+            "label": "Disable caffeine",
+            "description": "Disable caffeine (idle inhibitor)"
+          },
+          "caffeine-enable": {
+            "label": "Enable caffeine",
+            "description": "Enable caffeine (idle inhibitor)"
+          },
+          "caffeine-toggle": {
+            "label": "Toggle caffeine",
+            "description": "Toggle caffeine (idle inhibitor)"
+          },
+          "clipboard-clear": {
+            "label": "Clear clipboard history",
+            "description": "Clear clipboard history"
+          },
+          "clipboard-copy": {
+            "label": "Copy to clipboard",
+            "description": "Copy text to the clipboard"
+          },
+          "clipboard-text": {
+            "label": "Print clipboard text",
+            "description": "Print the most recent clipboard text (empty when the selection holds no text)"
+          },
+          "color-scheme-get": {
+            "label": "Get color scheme",
+            "description": "Print active color scheme: <source> <name> (source is builtin, wallpaper, community, or custom)"
+          },
+          "color-scheme-set": {
+            "label": "Set color scheme",
+            "description": "Set palette source and selection in settings.toml (builtin name, wallpaper generator scheme, community id, or custom scheme folder name)"
+          },
+          "config-reload": {
+            "label": "Reload config",
+            "description": "Reload the config file"
+          },
+          "desktop-widgets-edit": {
+            "label": "Edit desktop widgets",
+            "description": "Open the desktop widgets editor"
+          },
+          "desktop-widgets-exit": {
+            "label": "Exit desktop widget editor",
+            "description": "Close the desktop widgets editor"
+          },
+          "desktop-widgets-hide": {
+            "label": "Hide desktop widgets",
+            "description": "Hide desktop widgets now (runtime only; does not change the saved setting)"
+          },
+          "desktop-widgets-show": {
+            "label": "Show desktop widgets",
+            "description": "Show desktop widgets now (runtime only; does not change the saved setting)"
+          },
+          "desktop-widgets-toggle": {
+            "label": "Toggle desktop widgets",
+            "description": "Toggle desktop widgets visibility (runtime only; does not change the saved setting)"
+          },
+          "desktop-widgets-toggle-edit": {
+            "label": "Toggle desktop widget editor",
+            "description": "Toggle desktop widgets edit mode"
+          },
+          "dock-hide": {
+            "label": "Hide dock",
+            "description": "Hide the dock (persists override)"
+          },
+          "dock-reload": {
+            "label": "Reload dock",
+            "description": "Reload dock configuration"
+          },
+          "dock-show": {
+            "label": "Show dock",
+            "description": "Show the dock (persists override)"
+          },
+          "dock-toggle": {
+            "label": "Toggle dock",
+            "description": "Toggle dock visibility (persists override)"
+          },
+          "dpms-off": {
+            "label": "Turn monitors off",
+            "description": "Turn monitors off"
+          },
+          "dpms-on": {
+            "label": "Turn monitors on",
+            "description": "Turn monitors on"
+          },
+          "effects-profile-set": {
+            "label": "Set EasyEffects profile",
+            "description": "Set the EasyEffects output or input profile"
+          },
+          "greeter-sync": {
+            "label": "Sync greeter appearance",
+            "description": "Sync wallpaper, colors, and monitor layout to Noctalia Greeter"
+          },
+          "keyboard-backlight-down": {
+            "label": "Decrease keyboard backlight",
+            "description": "Decrease all keyboard backlights by one level"
+          },
+          "keyboard-backlight-osd": {
+            "label": "Show keyboard backlight OSD",
+            "description": "Show keyboard backlight OSD without changing brightness"
+          },
+          "keyboard-backlight-set": {
+            "label": "Set keyboard backlight",
+            "description": "Set all keyboard backlights (0-100 percentage)"
+          },
+          "keyboard-backlight-toggle": {
+            "label": "Toggle keyboard backlight",
+            "description": "Toggle all keyboard backlights on/off"
+          },
+          "keyboard-backlight-up": {
+            "label": "Increase keyboard backlight",
+            "description": "Increase all keyboard backlights by one level"
+          },
+          "keyboard-layout-cycle": {
+            "label": "Cycle keyboard layout",
+            "description": "Switch to the next keyboard layout"
+          },
+          "lockscreen-widgets-edit": {
+            "label": "Edit lockscreen widgets",
+            "description": "Open the lockscreen widgets editor"
+          },
+          "lockscreen-widgets-exit": {
+            "label": "Exit lockscreen widget editor",
+            "description": "Close the lockscreen widgets editor"
+          },
+          "lockscreen-widgets-toggle-edit": {
+            "label": "Toggle lockscreen widget editor",
+            "description": "Toggle lockscreen widgets edit mode"
+          },
+          "log-level-set": {
+            "label": "Set log level",
+            "description": "Set the console log level"
+          },
+          "log-level-status": {
+            "label": "Print log level",
+            "description": "Print the current console log level"
+          },
+          "media": {
+            "label": "Media control",
+            "description": "Control active media playback"
+          },
+          "mic-mute": {
+            "label": "Toggle microphone mute",
+            "description": "Toggle microphone mute"
+          },
+          "mic-volume-down": {
+            "label": "Decrease microphone volume",
+            "description": "Decrease microphone volume"
+          },
+          "mic-volume-osd": {
+            "label": "Show microphone OSD",
+            "description": "Show the microphone volume OSD without changing volume (defaults to the current volume)"
+          },
+          "mic-volume-set": {
+            "label": "Set microphone volume",
+            "description": "Set microphone volume"
+          },
+          "mic-volume-up": {
+            "label": "Increase microphone volume",
+            "description": "Increase microphone volume"
+          },
+          "network-toggle": {
+            "label": "Toggle network connection",
+            "description": "Disconnect the active network, or reconnect when nothing is connected"
+          },
+          "nightlight-disable": {
+            "label": "Disable night light",
+            "description": "Disable night light schedule"
+          },
+          "nightlight-enable": {
+            "label": "Enable night light",
+            "description": "Enable night light schedule"
+          },
+          "nightlight-force-toggle": {
+            "label": "Toggle forced night light",
+            "description": "Toggle forced night light mode"
+          },
+          "nightlight-toggle": {
+            "label": "Toggle night light",
+            "description": "Toggle night light schedule"
+          },
+          "notification-clear-active": {
+            "label": "Dismiss active notifications",
+            "description": "Dismiss all currently active notifications"
+          },
+          "notification-clear-history": {
+            "label": "Clear notification history",
+            "description": "Clear notification history"
+          },
+          "notification-dnd-set": {
+            "label": "Set Do Not Disturb",
+            "description": "Set notification Do Not Disturb state"
+          },
+          "notification-dnd-status": {
+            "label": "Do Not Disturb status",
+            "description": "Print notification Do Not Disturb state"
+          },
+          "notification-dnd-toggle": {
+            "label": "Toggle Do Not Disturb",
+            "description": "Toggle notification Do Not Disturb state"
+          },
+          "notification-invoke-latest": {
+            "label": "Invoke latest notification action",
+            "description": "Invoke the default action of the most recent active notification"
+          },
+          "notification-show": {
+            "label": "Show a notification",
+            "description": "Show an internal Noctalia notification"
+          },
+          "osd-disable": {
+            "label": "Disable OSD",
+            "description": "Disable OSD popups"
+          },
+          "osd-enable": {
+            "label": "Enable OSD",
+            "description": "Enable OSD popups"
+          },
+          "osd-toggle": {
+            "label": "Toggle OSD",
+            "description": "Toggle OSD popups"
+          },
+          "panel-close": {
+            "label": "Close panel",
+            "description": "Close the active panel, or close the named panel if it is active"
+          },
+          "panel-open": {
+            "label": "Open panel",
+            "description": "Open a panel by id, optionally with context (e.g. launcher /emo, control-center audio)"
+          },
+          "panel-toggle": {
+            "label": "Toggle panel",
+            "description": "Toggle a panel by id, optionally with context (e.g. launcher /emo, control-center audio)"
+          },
+          "plugin": {
+            "label": "Send plugin event",
+            "description": "Dispatch an event to a plugin entry"
+          },
+          "plugins": {
+            "label": "Manage plugins",
+            "description": "Manage plugins and sources (list/enable/disable/update, source list/add/remove)"
+          },
+          "power-cycle": {
+            "label": "Cycle power profile",
+            "description": "Step through UPower's ordered profile list, forward by default (wraps)"
+          },
+          "power-set": {
+            "label": "Set power profile",
+            "description": "Set the UPower power profile (e.g. performance, balanced, power-saver)"
+          },
+          "screenshot-fullscreen": {
+            "label": "Fullscreen screenshot",
+            "description": "Capture the focused monitor by default, pick interactively with pick, or all outputs with all"
+          },
+          "screenshot-region": {
+            "label": "Region screenshot",
+            "description": "Start an interactive region screenshot"
+          },
+          "session": {
+            "label": "Session action",
+            "description": "Run a built-in session action"
+          },
+          "settings-close": {
+            "label": "Close settings",
+            "description": "Close the settings window"
+          },
+          "settings-open": {
+            "label": "Open settings",
+            "description": "Open the settings window, or focus it if already open, optionally at a specific section"
+          },
+          "settings-open-plugin": {
+            "label": "Open plugin settings",
+            "description": "Open the settings window at a plugin's settings (e.g. noctalia/notes)"
+          },
+          "settings-open-widget": {
+            "label": "Open widget settings",
+            "description": "Open the settings window at a bar widget; from a widget gesture, targets that widget"
+          },
+          "settings-toggle": {
+            "label": "Toggle settings",
+            "description": "Toggle the settings window, optionally at a specific section"
+          },
+          "status": {
+            "label": "Print status",
+            "description": "Print current state as JSON"
+          },
+          "taskbar-cycle": {
+            "label": "Cycle taskbar",
+            "description": "Step to the adjacent task or workspace group in the invoking taskbar"
+          },
+          "templates-apply": {
+            "label": "Apply theme templates",
+            "description": "Apply configured theme templates for the current palette"
+          },
+          "theme-mode-get": {
+            "label": "Get theme mode",
+            "description": "Print the current resolved theme mode"
+          },
+          "theme-mode-set": {
+            "label": "Set theme mode",
+            "description": "Set theme mode and persist to settings.toml"
+          },
+          "theme-mode-toggle": {
+            "label": "Toggle theme mode",
+            "description": "Toggle theme mode between dark and light"
+          },
+          "volume-down": {
+            "label": "Decrease volume",
+            "description": "Decrease speaker volume"
+          },
+          "volume-mute": {
+            "label": "Toggle mute",
+            "description": "Toggle speaker mute"
+          },
+          "volume-osd": {
+            "label": "Show volume OSD",
+            "description": "Show the volume OSD without changing volume (defaults to the current volume)"
+          },
+          "volume-set": {
+            "label": "Set volume",
+            "description": "Set speaker volume"
+          },
+          "volume-up": {
+            "label": "Increase volume",
+            "description": "Increase speaker volume"
+          },
+          "wallpaper-get": {
+            "label": "Get wallpaper",
+            "description": "Print default wallpaper path, or effective path for an output"
+          },
+          "wallpaper-next": {
+            "label": "Next wallpaper",
+            "description": "Switch to the next wallpaper immediately"
+          },
+          "wallpaper-previous": {
+            "label": "Previous wallpaper",
+            "description": "Switch to the previous wallpaper immediately"
+          },
+          "wallpaper-random": {
+            "label": "Random wallpaper",
+            "description": "Switch to a random wallpaper immediately"
+          },
+          "wallpaper-set": {
+            "label": "Set wallpaper",
+            "description": "Set wallpaper for all or a specific output (persisted)"
+          },
+          "wifi-disable": {
+            "label": "Disable Wi-Fi",
+            "description": "Disable Wi-Fi"
+          },
+          "wifi-enable": {
+            "label": "Enable Wi-Fi",
+            "description": "Enable Wi-Fi"
+          },
+          "wifi-status": {
+            "label": "Wi-Fi status",
+            "description": "Print Wi-Fi state"
+          },
+          "wifi-toggle": {
+            "label": "Toggle Wi-Fi",
+            "description": "Toggle Wi-Fi"
+          },
+          "window-switcher": {
+            "label": "Window switcher",
+            "description": "Open or close the window switcher overlay"
+          },
+          "workspace-alert-add": {
+            "label": "Add workspace alert",
+            "description": "Add a workspace alert (by number, name, or id)"
+          },
+          "workspace-alert-add-window": {
+            "label": "Add window workspace alert",
+            "description": "Add a workspace alert for a window"
+          },
+          "workspace-alert-clear": {
+            "label": "Clear workspace alert",
+            "description": "Clear a workspace alert"
+          },
+          "workspace-alert-clear-all": {
+            "label": "Clear all workspace alerts",
+            "description": "Clear all workspace alerts"
+          },
+          "workspace-alert-status": {
+            "label": "Workspace alert status",
+            "description": "Print workspace alerts"
+          },
+          "workspace-switch": {
+            "label": "Switch workspace",
+            "description": "Switch to the adjacent workspace on the target monitor (stops at both ends)"
+          }
+        }
       },
       "gestures": {
         "back": "Back Button",
