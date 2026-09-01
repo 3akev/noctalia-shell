@@ -468,8 +468,7 @@ void BatteryWidget::syncState(Renderer& renderer) {
       m_overlayGlyph->setVisible(stateGlyph != nullptr);
     }
   } else if (m_displayMode == BatteryDisplayMode::Glyph) {
-    const ColorSpec iconColor =
-        isWarning ? m_warningColor : widgetIconColorOr(colorSpecFromRole(ColorRole::OnSurface));
+    const ColorSpec iconColor = isWarning ? m_warningColor : widgetIconColorOr(colorSpecFromRole(ColorRole::OnSurface));
     const ColorSpec labelColor =
         isWarning ? m_warningColor : widgetForegroundOr(colorSpecFromRole(ColorRole::OnSurface));
 

@@ -243,9 +243,7 @@ void PluginPanel::onOpen(std::string_view context) {
   }
 }
 
-bool PluginPanel::isContextActive(std::string_view context) const {
-  return m_open && m_openContext == context;
-}
+bool PluginPanel::isContextActive(std::string_view context) const { return m_open && m_openContext == context; }
 
 void PluginPanel::onClose() {
   ++m_openGeneration;

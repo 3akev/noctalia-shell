@@ -1206,6 +1206,7 @@ if build_tests
     'string_utils',
     'system_monitor_service',
     'taskbar_widget',
+    'template_apply_notify',
     'template_hook_async',
     'template_hook_runner',
     'time_format',
