@@ -63,6 +63,8 @@ namespace {
 
 namespace {
 
+  bool isBlankClockFormat(std::string_view fmt) noexcept { return fmt.empty(); }
+
   std::string normalizeFormatEscapes(std::string_view fmt) {
     std::string out;
     out.reserve(fmt.size());
@@ -194,6 +196,9 @@ namespace {
 
 std::string formatLocalTime(const char* fmt) {
   using namespace std::chrono;
+  if (fmt == nullptr || isBlankClockFormat(fmt)) {
+    return {};
+  }
   const std::string normalizedFmt = normalizeFormatEscapes(fmt);
   const auto now = floor<seconds>(system_clock::now());
   const auto unixSeconds = duration_cast<seconds>(now.time_since_epoch()).count();
@@ -204,8 +209,8 @@ std::string formatLocalTime(const char* fmt) {
     return *compat;
   }
 
-  const auto local = current_zone()->to_local(now);
   try {
+    const auto local = current_zone()->to_local(now);
     return std::vformat(std::locale(""), normalizedFmt, std::make_format_args(local));
   } catch (...) {
     return normalizedFmt;
@@ -241,6 +246,9 @@ std::string formatTimezoneUnixTime(std::int64_t unixSeconds, std::string_view fm
   }
 
   const std::string normalizedFmt = normalizeFormatEscapes(fmt);
+  if (isBlankClockFormat(normalizedFmt)) {
+    return {};
+  }
   const auto tp = sys_seconds{seconds{unixSeconds}};
   const auto local = tz->to_local(tp);
   const auto zoneInfo = tz->get_info(tp);
@@ -276,6 +284,9 @@ std::string formatTimezoneUnixTime(std::int64_t unixSeconds, std::string_view fm
 
 std::string formatTimezoneTime(const char* fmt, std::string_view tzName) {
   using namespace std::chrono;
+  if (fmt == nullptr || isBlankClockFormat(fmt)) {
+    return {};
+  }
   const auto now = floor<seconds>(system_clock::now());
   const auto unixSeconds = duration_cast<seconds>(now.time_since_epoch()).count();
   return formatTimezoneUnixTime(unixSeconds, fmt, tzName);
@@ -283,6 +294,9 @@ std::string formatTimezoneTime(const char* fmt, std::string_view tzName) {
 
 std::string formatLocalUnixTime(std::int64_t unixSeconds, std::string_view fmt) {
   using namespace std::chrono;
+  if (isBlankClockFormat(fmt)) {
+    return {};
+  }
   const std::string normalizedFmt = normalizeFormatEscapes(fmt);
   const auto tp = sys_seconds{seconds{unixSeconds}};
   const std::time_t raw = system_clock::to_time_t(tp);
@@ -292,8 +306,8 @@ std::string formatLocalUnixTime(std::int64_t unixSeconds, std::string_view fmt) 
     return *compat;
   }
 
-  const auto local = current_zone()->to_local(tp);
   try {
+    const auto local = current_zone()->to_local(tp);
     return std::vformat(std::locale(""), normalizedFmt, std::make_format_args(local));
   } catch (...) {
     return normalizedFmt;

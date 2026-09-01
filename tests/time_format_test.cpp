@@ -42,6 +42,10 @@ int main() {
   i18n::Service::instance().init("en");
 
   bool ok = true;
+  ok = expectEqual(formatLocalUnixTime(1700000000, ""), "", "empty unix format is safe") && ok;
+  ok = expectEqual(formatLocalTime(""), "", "empty local format is safe") && ok;
+  ok = expectEqual(formatLocalTime(nullptr), "", "null local format is safe") && ok;
+  ok = expectEqual(formatTimezoneTime("", "UTC"), "", "empty timezone format is safe") && ok;
   ok = expectEqual(formatLocalUnixTime(1700000000, "%s"), "1700000000", "formats unix epoch token") && ok;
   ok = expectEqual(
            formatLocalUnixTime(1700000000, "recording_%s"), "recording_1700000000",
