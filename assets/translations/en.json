@@ -1396,9 +1396,9 @@
       },
       "plugins": {
         "auto-update": {
-          "all": "All sources",
-          "none": "None",
-          "official": "Official only"
+          "all": "All",
+          "official": "Official",
+          "none": "None"
         }
       },
       "screen-position": {
