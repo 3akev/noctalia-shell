@@ -468,20 +468,22 @@ void BatteryWidget::syncState(Renderer& renderer) {
       m_overlayGlyph->setVisible(stateGlyph != nullptr);
     }
   } else if (m_displayMode == BatteryDisplayMode::Glyph) {
-    const ColorSpec normalFgColor = widgetIconColorOr(colorSpecFromRole(ColorRole::OnSurface));
-    const ColorSpec fgColor = isWarning ? m_warningColor : normalFgColor;
+    const ColorSpec iconColor =
+        isWarning ? m_warningColor : widgetIconColorOr(colorSpecFromRole(ColorRole::OnSurface));
+    const ColorSpec labelColor =
+        isWarning ? m_warningColor : widgetForegroundOr(colorSpecFromRole(ColorRole::OnSurface));
 
     if (m_glyph != nullptr) {
       m_glyph->setGlyph(batteryGlyphName(s.percentage, s.state));
       m_glyph->setGlyphSize(Style::baseGlyphSize * m_contentScale);
-      m_glyph->setColor(fgColor);
+      m_glyph->setColor(iconColor);
       m_glyph->measure(renderer);
     }
 
     if (m_label != nullptr && m_showLabel) {
       m_label->setFontSize((m_isVertical ? Style::fontSizeCaption : Style::fontSizeBody) * fontScale());
       m_label->setText(buildLabelText(pct, s));
-      m_label->setColor(fgColor);
+      m_label->setColor(labelColor);
       m_label->measure(renderer);
     }
   } else if (m_displayMode == BatteryDisplayMode::None) {
