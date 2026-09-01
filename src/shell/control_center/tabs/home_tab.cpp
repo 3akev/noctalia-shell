@@ -447,9 +447,9 @@ std::unique_ptr<Flex> HomeTab::create() {
               .text = " ",
               .fontSize = Style::fontSizeCaption * scale,
               .color = colorSpecFromRole(ColorRole::Secondary),
-              .visible = false,
               .maxLines = 1,
               .ellipsize = TextEllipsize::End,
+              .visible = false,
           })
       )
   );
