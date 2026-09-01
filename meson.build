@@ -27,7 +27,7 @@ sanitize = get_option('b_sanitize') != 'none'
 
 # Hardened standard-library assertions in debug builds only. A std::clamp(v, lo, hi)
 # with hi < lo aborts here (distro packagers enable this in release, so users see
-# the same abort) — surfacing inverted-bound bugs loudly during development so they
+# the same abort), surfacing inverted-bound bugs loudly during development so they
 # can be routed through util::clampOrdered. Release stays unhardened on purpose: a
 # not-yet-converted raw std::clamp there should degrade to a wrong-but-non-fatal
 # value rather than abort a user's session (converted sites log and return lo via
@@ -309,13 +309,13 @@ wayland_scanner    = find_program('wayland-scanner')
 wayland_protos_dir = wayland_protos_dep.get_variable('pkgdatadir')
 
 # Generates a (header, source) pair from a protocol XML path/target.
-# Returns [h_target, c_target] — add c_target to sources.
+# Returns [h_target, c_target]: add c_target to sources.
 # The c_target has an order-only dep on h_target so the header exists when
 # the generated .c is compiled (it does #include "foo-client-protocol.h").
 _protocol_sources = []
 _protocol_headers = []
 
-# Helper macro via foreach — each entry: [name, xml_input]
+# Helper macro via foreach; each entry: [name, xml_input]
 # xml_input can be a string (path) or a custom_target.
 
 foreach _p : [

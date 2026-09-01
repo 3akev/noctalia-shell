@@ -642,7 +642,7 @@ void PanelManager::openPanel(const std::string& panelId, PanelOpenRequest reques
   const bool fillHeight = m_activePanel->fillsHeight() && floatingPlacement;
   if (!floatingPlacement && (m_activePanel->fillsWidth() || m_activePanel->fillsHeight())) {
     kLog.warn(
-        "panel manager: \"{}\" uses fill sizing, which only applies to floating placement — opening at its preferred "
+        "panel manager: \"{}\" uses fill sizing, which only applies to floating placement; opening at its preferred "
         "size",
         panelId
     );
