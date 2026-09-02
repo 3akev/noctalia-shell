@@ -1698,7 +1698,8 @@ void Bar::reevaluateSmartAutoHide() {
         needsRedraw = true;
       }
     } else if (!instance->pointerInside && instance->attachedPopupCount == 0 && !suppressAutoHide) {
-      if ((instance->hideOpacity > 0.0F || pinnedChanged) && !isWorkspacePeekActive()) {
+      if ((instance->hideOpacity > 0.0F || pinnedChanged)
+          && (!instance->barConfig.showOnWorkspaceSwitch || !isWorkspacePeekActive())) {
         startHideFadeOut(*instance);
         needsRedraw = true;
       }
