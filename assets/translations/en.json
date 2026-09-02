@@ -4564,22 +4564,22 @@
   "wallpaper": {
     "panel": {
       "all-monitors": "ALL",
-      "color-title": "Wallpaper color",
-      "filter-placeholder": "Filter…",
-      "flatten": "Flatten",
-      "favorite-current": "Add current wallpaper to favorites",
-      "unfavorite-current": "Remove current wallpaper from favorites",
       "choose-color": "Choose wallpaper color",
       "close": "Close wallpaper panel",
+      "color-title": "Wallpaper color",
+      "favorite-current": "Add current wallpaper to favorites",
+      "filter-placeholder": "Filter…",
+      "flatten": "Flatten",
+      "loading": "Loading wallpapers…",
       "navigate-up": "Go to parent folder",
       "refresh": "Refresh wallpapers",
-      "loading": "Loading wallpapers…",
       "sort-date-asc": "Sort by date (oldest first)",
       "sort-date-desc": "Sort by date (newest first)",
       "sort-name-asc": "Sort by name (A-Z)",
       "sort-name-desc": "Sort by name (Z-A)",
       "sort-random": "Sort by random (shuffle)",
-      "title": "Wallpaper"
+      "title": "Wallpaper",
+      "unfavorite-current": "Remove current wallpaper from favorites"
     }
   },
   "weather": {

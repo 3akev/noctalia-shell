@@ -569,8 +569,286 @@
         "clock": "時鐘",
         "fancy-audio-visualizer": "進階音訊視覺化效果",
         "label": "標籤",
-        "login-box": "登入對話框"
+        "login-box": "登入對話框",
+        "media-player": "媒體播放器",
+        "sticker": "貼紙",
+        "system-monitor": "系統監視器",
+        "volume": "音量",
+        "weather": "天氣"
       }
+    },
+    "media": {
+      "nothing-playing": "目前無播放內容"
+    },
+    "volume": {
+      "mic": "麥克風",
+      "muted": "靜音",
+      "volume": "音量"
+    },
+    "weather": {
+      "error": "錯誤",
+      "loading": "正在擷取…",
+      "no-location": "無當前位置資料",
+      "off": "天氣服務已關閉"
+    }
+  },
+  "dock": {
+    "actions": {
+      "close": "關閉",
+      "close-all": "全部關閉"
+    },
+    "launcher": "啟動器"
+  },
+  "internal-apps": {
+    "settings": {
+      "display-name": "設定"
+    }
+  },
+  "launcher": {
+    "categories": {
+      "all": "全部",
+      "applications": {
+        "development": "開發",
+        "education": "教育",
+        "games": "遊戲",
+        "graphics": "圖形",
+        "internet": "網際網路",
+        "multimedia": "多媒體",
+        "office": "辦公",
+        "system": "系統",
+        "utilities": "實用工具"
+      },
+      "emoji": {
+        "activity": "活動",
+        "animals": "動物",
+        "flags": "旗幟",
+        "food": "食物",
+        "nature": "大自然",
+        "objects": "物品",
+        "people": "人物",
+        "symbols": "符號",
+        "travel": "旅行"
+      },
+      "recently-used": "最近使用"
+    },
+    "context-menu": {
+      "open": "開啟",
+      "pin": "釘選至啟動器",
+      "unpin": "從啟動器中取消釘選",
+      "unpin-from-dock": "從 Dock 中取消釘選"
+    },
+    "empty": {
+      "no-results": "未找到結果",
+      "type-to-search": "輸入以搜尋…"
+    },
+    "origins": {
+      "appimage": "AppImage",
+      "flatpak": "Flatpak",
+      "nix": "Nix",
+      "system": "系統",
+      "user": "使用者"
+    },
+    "providers": {
+      "applications": {
+        "title": "應用程式"
+      },
+      "calculator": {
+        "title": "計算機"
+      },
+      "emoji": {
+        "title": "表情符號"
+      },
+      "session": {
+        "action-subtitle": "執行會話操作",
+        "command-subtitle": "執行已配置命令",
+        "title": "會話"
+      },
+      "wallpaper": {
+        "title": "桌布"
+      },
+      "window": {
+        "title": "視窗"
+      }
+    },
+    "search-placeholder": "搜尋應用程式..."
+  },
+  "location": {
+    "errors": {
+      "address-lookup-failed": "地址查詢失敗",
+      "ip-geolocation-failed": "IP 地理定位失敗",
+      "parse-geocode": "無法解析地理編碼",
+      "parse-ip-geolocation": "無法解析 IP 地理定位"
+    },
+    "locations": {
+      "current": "當前位置"
+    },
+    "source": {
+      "address": "地址",
+      "auto": "自動",
+      "manual": "手動"
+    }
+  },
+  "lockscreen": {
+    "authenticating": "正在驗證身份...",
+    "authentication-failed": "身分驗證失敗",
+    "caps-lock-on": "大寫鍵鎖定",
+    "password-cleared": "密碼已清除",
+    "password-placeholder": "密碼",
+    "ready": "請輸入密碼並按下 Enter 鍵。",
+    "unlocked": "已解鎖",
+    "waiting": "正在等待鎖定確認..."
+  },
+  "notifications": {
+    "actions": {
+      "fallback": "操作",
+      "open": "開啟"
+    },
+    "inline-reply": {
+      "button": "回覆",
+      "placeholder": "輸入回覆..."
+    },
+    "internal": {
+      "battery": "電池",
+      "battery-critical-body": "{device}：{percent}% – 電腦即將關機",
+      "battery-critical-title": "電量嚴重不足",
+      "battery-device": "電池裝置",
+      "battery-low-body": "{device}：剩餘 {percent}%",
+      "battery-low-title": "電量不足",
+      "calendar": "行事曆",
+      "calendar-google-connect-browser-failed": "未找到可用於 Google 授權的瀏覽器。請檢查預設瀏覽器或 xdg-open 配置。",
+      "config-migration-title": "需要更新配置",
+      "dbus-disabled": "DBus 通知已停用",
+      "desktop-widgets-editor": "桌面小工具編輯器",
+      "desktop-widgets-editor-enabled": "桌面小工具編輯器已開啟。請切換至空閒桌面，避免開啟的視窗遮擋編輯器。",
+      "greeter-sync": "Noctalia 登入介面",
+      "greeter-sync-pending": "正在等待系統管理員授權寫入登入介面配置",
+      "greeter-sync-pending-console": "正在等待系統管理員授權。請在 Noctalia 的 Polkit 視窗、終端機或控制台中授權執行，或手動執行 pkexec。",
+      "greeter-sync-success": "外觀已同步。變更將在下次登入時生效。",
+      "greeter-sync-timeout": "登入介面仍在等待系統管理員授權。請檢查終端機或控制台中 Polkit 提示，在\"安全\"設定中啟用 Polkit 代理，或手動執行 pkexec。",
+      "greeter-sync-timeout-manual": "登入介面同步仍需要系統管理員授權。請在終端機中執行：pkexec noctalia-greeter-apply-appearance \"$XDG_RUNTIME_DIR/noctalia-greeter-sync\"",
+      "keybind-app": "Noctalia",
+      "keybind-invalid-modifier": "此快捷鍵僅接受單一按鍵，不可與修飾鍵(Ctrl, Alt或Super等)並用。",
+      "keybind-invalid-printable": "字母、數字及符號健需要配合修飾鍵 ( Ctrl 或是 Alt ) 使用。",
+      "keybind-invalid-super": "Super/Windows 鍵無法用於 Shell 快捷鍵。",
+      "keybind-invalid-title": "不允許的快捷鍵",
+      "launcher-usage-reset": "啟動器",
+      "launcher-usage-reset-success": "使用數據已清除。",
+      "lockscreen-widgets-editor": "螢幕鎖定小工具編輯器",
+      "lockscreen-widgets-editor-blocked-locked": "請在編輯螢幕鎖定小工具前解鎖會話。",
+      "lockscreen-widgets-editor-enabled": "螢幕鎖定小工具編輯器已開啟。請切換至空閒桌面，避免開啟的視窗遮擋編輯器。",
+      "mpris-disabled": "MPRIS 已禁用",
+      "polkit-agent": "Polkit 代理",
+      "polkit-no-session": "Polkit 代理需要 logind、elogind 或 XDG_SESSION_ID。在僅使用 seatd 的環境中無法註冊圖形化認證提示。請在終端機執行 pkexec 完成登入介面同步，或安裝 elogind 驗證身份。",
+      "screen-time-reset": "螢幕時間",
+      "screen-time-reset-success": "使用紀錄已清除。",
+      "session-bus-unavailable": "會話總線不可用",
+      "wallpaper-palette-export": "自訂調色盤",
+      "wallpaper-palette-export-success": "已保存“{name}”並將調色盤來源更改為自訂。"
+    }
+  },
+  "osd": {
+    "bluetooth": {
+      "off": "藍牙已關閉",
+      "on": "藍牙已開啟"
+    },
+    "caffeine": {
+      "off": "保持喚醒已關閉",
+      "on": "保持喚醒已開啟"
+    },
+    "dnd": {
+      "off": "勿擾模式已關閉",
+      "on": "勿擾模式已開啟"
+    },
+    "effects": {
+      "input": "輸入效果",
+      "output": "輸出效果"
+    },
+    "lock-keys": {
+      "caps-off": "大寫鍵鎖定已關閉",
+      "caps-on": "大寫鍵鎖定已開啟",
+      "num-off": "數字鍵鎖定已關閉",
+      "num-on": "數字鍵鎖定已開啟",
+      "scroll-off": "滾動鎖定鍵已關閉",
+      "scroll-on": "滾動鎖定鍵已開啟"
+    },
+    "nightlight": {
+      "forced": "始終開啟",
+      "off": "夜間模式已關閉",
+      "running": "夜間模式已開啟",
+      "scheduled": "夜間模式已開啟"
+    },
+    "privacy": {
+      "camera-off": "攝影機已關閉",
+      "camera-on": "攝影機已開啟",
+      "mic-off": "麥克風已關閉",
+      "mic-on": "麥克風已開啟",
+      "screen-off": "螢幕分享已關閉",
+      "screen-on": "螢幕分享已開啟"
+    },
+    "wifi": {
+      "off": "Wi-Fi 已關閉",
+      "on": "Wi-Fi 已開啟"
+    }
+  },
+  "plugins": {
+    "auto-disabled": {
+      "body-errors": "{plugin} 因錯誤過多已被停用。請修復問題後重新載入。",
+      "body-timeouts": "{plugin} 因停止回應已被停用。請修復問題後重新載入。",
+      "title": "擴充套件已停用"
+    },
+    "enable-failed": {
+      "body-error": "{plugin}：{error}",
+      "body-incompatible": "{plugin} 目標擴充套件 API {version}；當前 Noctalia 僅支援 API {oldest}-{current}。",
+      "body-timeout": "{plugin} 安裝耗時過長。",
+      "title": "擴充套件啟用失敗"
+    }
+  },
+  "power": {
+    "battery": {
+      "states": {
+        "battery": "電池",
+        "charging": "充電中",
+        "discharging": "放電中",
+        "empty": "電量耗盡",
+        "pending-discharge": "等待放電",
+        "plugged-in": "已連接電源"
+      },
+      "tooltip": {
+        "device": "電池",
+        "device-numbered": "電池裝置 {index}",
+        "health": "健康度",
+        "rate": "功率",
+        "status": "狀態",
+        "time-left": "剩餘電力",
+        "time-to-full": "充飽所需時間",
+        "unknown-device": "未知裝置"
+      }
+    },
+    "profiles": {
+      "balanced": "平衡",
+      "performance": "效能",
+      "power-saver": "省電"
+    }
+  },
+  "session": {
+    "actions": {
+      "custom": "自訂",
+      "lock": "鎖定",
+      "lock-and-suspend": "鎖定後休眠",
+      "logout": "登出",
+      "reboot": "重新啟動",
+      "shutdown": "關機",
+      "suspend": "休眠"
+    },
+    "errors": {
+      "lock-body": "會話鎖定協議不可用",
+      "lock-title": "鎖定不可用"
+    }
+  },
+  "settings": {
+    "actions": {
+      "confirm-reset": "確認恢復預設值",
+      "reset": "恢復預設值"
     }
   }
 }
