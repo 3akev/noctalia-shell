@@ -545,7 +545,31 @@
         "title": "標題",
         "track-color": "軌道顏色",
         "variant": "樣式",
-        "variant-default": "預設"
+        "variant-default": "預設",
+        "vertical": "垂直",
+        "visualization-mode": "模式",
+        "visualization-mode-all": "全部",
+        "visualization-mode-bars": "條狀",
+        "visualization-mode-bars-rings": "條狀 + 環狀",
+        "visualization-mode-rings": "環形",
+        "visualization-mode-wave": "波浪",
+        "visualization-mode-wave-rings": "波浪 + 環狀",
+        "wave-thickness": "波浪厚度",
+        "widget-section": "小工具"
+      },
+      "state": {
+        "grid": "網格"
+      },
+      "title": "桌面小工具",
+      "title-lockscreen": "螢幕鎖定小工具",
+      "types": {
+        "audio-visualizer": "音訊視覺化效果",
+        "button": "按鈕",
+        "calendar": "行事曆",
+        "clock": "時鐘",
+        "fancy-audio-visualizer": "進階音訊視覺化效果",
+        "label": "標籤",
+        "login-box": "登入對話框"
       }
     }
   }

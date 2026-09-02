@@ -1400,8 +1400,8 @@
       "plugins": {
         "auto-update": {
           "all": "All",
-          "official": "Official",
-          "none": "None"
+          "none": "None",
+          "official": "Official"
         }
       },
       "screen-position": {
