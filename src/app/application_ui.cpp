@@ -680,6 +680,7 @@ void Application::initPanelManagerAndPanels() {
   });
   m_panelManager.setPanelClosedCallback([this]() {
     m_overviewLauncherCapture.sync();
+    m_bar.rearmTooltipForHoveredWidget();
     m_bar.reevaluateAutoHide();
     // Widgets that stay visible while their panel is open re-evaluate on the next update.
     m_bar.refresh();
