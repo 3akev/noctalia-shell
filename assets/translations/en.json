@@ -1259,7 +1259,8 @@
         "wallpaper": "Wallpaper",
         "weather": "Weather",
         "widget-list": "Widget List",
-        "widgets": "Widgets"
+        "widgets": "Widgets",
+        "window-switcher": "Window Switcher"
       },
       "sections": {
         "accessibility": "Accessibility",
@@ -3068,6 +3069,10 @@
         "time-format": {
           "description": "Default time format for shell UI without its own setting",
           "label": "Time Format"
+        },
+        "window-switcher-mru": {
+          "description": "Order windows in the switcher by most recently used rather than workspace and screen layout",
+          "label": "Most Recently Used Order"
         }
       },
       "system": {
