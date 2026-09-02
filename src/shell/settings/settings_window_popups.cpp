@@ -2018,20 +2018,13 @@ void SettingsWindow::openPluginStore() {
 
       const float scale = uiScale();
 
-      std::unordered_set<std::string> onDiskIds;
-      for (const auto& p : m_pluginList) {
-        if (p.materialized) {
-          onDiskIds.insert(p.id);
-        }
-      }
-
       auto catalogLookup = std::make_shared<std::unordered_map<std::string, scripting::CatalogEntry>>();
       for (const auto& entry : catalog) {
         catalogLookup->emplace(entry.entry.id, entry.entry);
       }
 
       auto storeContent = std::make_shared<settings::PluginStoreContent>(
-          std::move(catalog), m_config, std::move(onDiskIds),
+          std::move(catalog), m_config,
           settings::PluginStoreCallbacks{
               .setEnabled =
                   [this, catalogLookup](std::string id, bool enable) {
@@ -2040,9 +2033,6 @@ void SettingsWindow::openPluginStore() {
                     }
                     if (enable) {
                       (void)m_pluginManager->enable(id);
-                      if (m_editorSheetModal != nullptr) {
-                        m_editorSheetModal->close();
-                      }
                       ++m_pluginListRefreshGeneration;
                       m_pluginListDirty = false;
                       auto existing = std::ranges::find_if(m_pluginList, [&](const auto& p) { return p.id == id; });
@@ -2062,11 +2052,17 @@ void SettingsWindow::openPluginStore() {
                       m_pluginManager->disable(id);
                       m_pluginListDirty = true;
                     }
-                    requestContentRebuild();
+                    // Keep the store open, rebuild the sheet body so Add swaps to the install spinner.
+                    requestContentRebuild(
+                        /*refreshRegistry=*/false, /*refreshFilterRow=*/false, /*rebuildEditorSheet=*/true
+                    );
                   },
               .isEnabling = [this](
                                 const std::string& id
                             ) { return m_pluginManager != nullptr && m_pluginManager->isEnabling(id); },
+              .isInstalled = [this](
+                                 const std::string& id
+                             ) { return m_pluginManager != nullptr && m_pluginManager->isMaterialized(id); },
               .scale = scale,
           },
           &m_pluginFileCache, &m_pluginStoreScrollState
@@ -2180,9 +2176,15 @@ void SettingsWindow::openPluginStore() {
                         event.sym, event.modifiers, event.pressed, event.preedit, focused
                     );
                   },
-              .onClosed = [storeContent]() { storeContent->detachGrid(); },
+              .onClosed =
+                  [storeContent, this]() {
+                    storeContent->detachGrid();
+                    m_pluginFileCache.setOnReady(nullptr);
+                    m_pluginStoreSheetOpen = false;
+                  },
           }
       );
+      m_pluginStoreSheetOpen = m_editorSheetModal->isOpen();
     });
   }).detach();
 }
