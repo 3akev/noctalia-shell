@@ -735,6 +735,7 @@ void WallpaperPanel::create() {
   root->addChild(
       ui::virtualGridView({
           .out = &m_grid,
+          .contentScale = scale,
           .minCellWidth = kMinTileWidth * scale,
           .squareCells = false,
           .columnGap = Style::spaceMd * scale,

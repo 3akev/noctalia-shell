@@ -575,6 +575,7 @@ namespace settings {
     auto grid = ui::virtualGridView({
         .out = &m_grid,
         .state = m_scrollState,
+        .contentScale = scale,
         .minCellWidth = 200.0F * scale,
         .cellHeight = 215.0F * scale,
         .squareCells = false,
@@ -623,6 +624,7 @@ namespace settings {
     // The sheet hosts the store without an outer ScrollView, so the detail view scrolls its own
     // content (header + README can exceed the sheet height).
     auto scroll = ui::scrollView({
+        .contentScale = scale,
         .scrollbarVisible = true,
         .viewportPaddingH = 0.0F,
         .viewportPaddingV = 0.0F,

@@ -155,6 +155,7 @@ void DesktopCalendarWidget::create() {
   eventsColumn->addChild(
       ui::scrollView({
           .out = &m_eventsScroll,
+          .contentScale = contentScale(),
           .fillWidth = true,
           .fillHeight = true,
           .flexGrow = 1.0F,

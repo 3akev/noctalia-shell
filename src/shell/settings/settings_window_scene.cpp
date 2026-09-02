@@ -1401,6 +1401,7 @@ std::unique_ptr<Flex> SettingsWindow::buildBody(
   auto scroll = ui::scrollView({
       .out = &m_contentScrollView,
       .state = &m_contentScrollState,
+      .contentScale = scale,
       .scrollbarVisible = true,
       .viewportPaddingH = 0.0F,
       .viewportPaddingV = Style::spaceSm * scale,

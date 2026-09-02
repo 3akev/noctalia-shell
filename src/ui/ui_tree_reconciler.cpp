@@ -720,6 +720,7 @@ namespace ui {
     }
     if (desired.type == "scroll") {
       auto scroll = std::make_unique<ScrollView>();
+      scroll->setContentScale(m_scale);
       scroll->content()->setAlign(FlexAlign::Stretch); // match the ui.* column/row default
       return scroll;
     }

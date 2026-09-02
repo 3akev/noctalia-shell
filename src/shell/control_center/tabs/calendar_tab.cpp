@@ -203,6 +203,7 @@ std::unique_ptr<Flex> CalendarTab::create() {
       }),
       ui::scrollView({
           .out = &m_eventsScroll,
+          .contentScale = scale,
           .fillWidth = true,
           .fillHeight = true,
           .flexGrow = 1.0F,

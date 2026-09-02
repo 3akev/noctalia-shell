@@ -1204,6 +1204,7 @@ if build_tests
     'plugin_source_paths',
     'process',
     'scheme',
+    'scrollbar_geometry',
     'secret_store',
     'security_primitives',
     'state_store',
