@@ -106,6 +106,15 @@ before commits and refreshes the git index for tracked formatting changes.
 Do not use em dashes (—) or double hyphens (--) as sentence punctuation, in code, comments, documentation, or commit
 messages. Use a comma, colon, semicolon, or parentheses instead.
 
+## Pull Request Template
+
+Pull request descriptions are checked automatically when they are opened, edited, reopened, or marked ready for
+review. Keep the required headings, fields, and checklist wording from [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md).
+
+Draft pull requests may leave checkboxes incomplete. Before marking a pull request ready for review, select at least one
+change type and check every item in the Checklist section. A pull request that loses required template structure is
+commented on and closed automatically; restore the required content and reopen it to run the check again.
+
 ### Naming Conventions
 
 | | Convention | Example |
