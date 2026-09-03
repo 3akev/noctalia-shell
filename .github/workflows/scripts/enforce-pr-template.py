@@ -30,6 +30,15 @@ TYPE_CHANGE_ITEMS = (
     "Refactoring",
     "Build / packaging",
 )
+MANUAL_COVERAGE_ITEMS = (
+    "Tested on Niri",
+    "Tested on Hyprland",
+    "Tested on Sway",
+    "Tested on another compositor:",
+    "Tested with different bar positions and density settings",
+    "Tested at different interface scaling values",
+    "Tested with multiple monitors",
+)
 MANDATORY_CHECKLIST_ITEMS = (
     "This PR is ready for review, or it is marked as Draft.",
     "I read and followed the relevant guidance in `CONTRIBUTING.md`.",
@@ -42,7 +51,7 @@ MANDATORY_CHECKLIST_ITEMS = (
     "I did not edit non-English translation files unless this PR is explicitly for translation tooling, an import/export sync, or a maintainer-requested locale change.",
     "I used the existing canonical names for config keys, IPC names, paths, and identifiers.",
 )
-REQUIRED_CHECKLIST_ITEMS = TYPE_CHANGE_ITEMS + MANDATORY_CHECKLIST_ITEMS
+REQUIRED_CHECKLIST_ITEMS = TYPE_CHANGE_ITEMS + MANUAL_COVERAGE_ITEMS + MANDATORY_CHECKLIST_ITEMS
 CLOSURE_INTRO = f"""{COMMENT_MARKER}
 This pull request was automatically closed because its description no longer contains
 every part of [the pull request template](https://github.com/noctalia-dev/noctalia/blob/main/.github/PULL_REQUEST_TEMPLATE.md)

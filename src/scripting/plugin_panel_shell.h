@@ -15,6 +15,11 @@ namespace scripting {
   // layer-shell keyboard interactivity mode by the panel host.
   inline constexpr std::array<std::string_view, 3> kPanelKeyboardFocusModes = {"on_demand", "exclusive", "none"};
 
+  // Manifest vocabulary for the `[[panel]]` layer key. Mapped to a layer-shell
+  // layer by the panel host; only meaningful for floating placement, since an
+  // attached panel sits at its host bar's layer.
+  inline constexpr std::array<std::string_view, 2> kPanelLayers = {"top", "overlay"};
+
   struct PluginPanelShellConfig {
     PanelPlacement placement = PanelPlacement::Floating;
     std::string position = "auto";
@@ -34,6 +39,7 @@ namespace scripting {
   [[nodiscard]] PanelPlacement panelPlacementFromString(std::string_view value, PanelPlacement fallback) noexcept;
   [[nodiscard]] bool isValidPanelPosition(std::string_view value) noexcept;
   [[nodiscard]] bool isValidPanelKeyboardFocus(std::string_view value) noexcept;
+  [[nodiscard]] bool isValidPanelLayer(std::string_view value) noexcept;
   [[nodiscard]] bool isPanelShellSettingKey(std::string_view entryId, std::string_view key) noexcept;
 
 } // namespace scripting
