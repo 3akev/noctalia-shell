@@ -467,6 +467,12 @@ namespace settings {
         asSegmented(enumSelect(kThemeModes, cfg.theme.mode)), "dark light auto colors"
     ));
     entries.push_back(makeEntry(
+        SettingsSection::Appearance, "theme", tr("settings.schema.appearance.shell-theme-mode.label"),
+        tr("settings.schema.appearance.shell-theme-mode.description"), {"theme", "shell_mode"},
+        asSegmented(enumSelect(kShellThemeModes, cfg.theme.shellMode)),
+        "dark light auto follow shell apps templates colors"
+    ));
+    entries.push_back(makeEntry(
         SettingsSection::Appearance, "theme", tr("settings.schema.appearance.palette-source.label"),
         tr("settings.schema.appearance.palette-source.description"), {"theme", "source"},
         asSegmented(enumSelect(kPaletteSources, cfg.theme.source)), "palette colors"
@@ -475,7 +481,7 @@ namespace settings {
       entries.push_back(makeEntry(
           SettingsSection::Appearance, "theme", tr("settings.schema.appearance.builtin-palette.label"),
           tr("settings.schema.appearance.builtin-palette.description"), {"theme", "builtin"},
-          builtinPaletteSelect(cfg.theme.builtinPalette, cfg.theme.mode), "builtin palette colors"
+          builtinPaletteSelect(cfg.theme.builtinPalette, shellThemeMode(cfg.theme)), "builtin palette colors"
       ));
     } else if (cfg.theme.source == PaletteSource::Wallpaper) {
       entries.push_back(makeEntry(
@@ -1612,7 +1618,10 @@ namespace settings {
               .browseMode = TextSettingBrowseMode::OpenFile,
               .browseFileExtensions = DirectoryScanner::imageExtensionFilter(true),
               .browseFallbackDirectory = wallpaper::resolveGlobalWallpaperDirectory(
-                  cfg.wallpaper, wallpaper::effectiveThemeMode(cfg.theme.mode, cfg.theme.mode == ThemeMode::Light)
+                  cfg.wallpaper,
+                  wallpaper::effectiveThemeMode(
+                      shellThemeMode(cfg.theme), shellThemeMode(cfg.theme) == ThemeMode::Light
+                  )
               ),
           },
           "lock screen background image custom"
