@@ -1876,13 +1876,13 @@ void SettingsWindow::refreshSettingsRegistry(const Config& cfg) {
                 .action = [this]() { openCalendarAccountEditor(std::nullopt); },
                 .glyph = "plus",
             },
-        .searchText = "calendar add account icloud caldav google ics ical subscription",
+        .searchText = "calendar add account icloud caldav google ics ical subscription vdir vdirsyncer local",
     };
     it = m_settingsRegistry.insert(it, std::move(addBtn));
     ++it;
 
     for (const CalendarConfig::Account& account : cfg.calendar.accounts) {
-      if (account.type != "google" && account.type != "caldav" && account.type != "ics") {
+      if (account.type != "google" && account.type != "caldav" && account.type != "ics" && account.type != "vdir") {
         continue;
       }
       const bool credentialLocked = account.type == "google"
@@ -1920,7 +1920,8 @@ void SettingsWindow::refreshSettingsRegistry(const Config& cfg) {
                                             : "edit",
                   .variant = credentialLocked ? ButtonVariant::Secondary : ButtonVariant::Default,
               },
-          .searchText = "calendar account edit connect authorize caldav icloud google password ics ical subscription "
+          .searchText =
+              "calendar account edit connect authorize caldav icloud google password ics ical subscription vdir local "
               + account.id,
           .visibleWhen = calendarOn,
       };

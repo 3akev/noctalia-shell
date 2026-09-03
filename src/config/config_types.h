@@ -1153,7 +1153,7 @@ struct CalendarConfig {
   // are not stored here. id must be [a-z0-9_] because it identifies durable credential records.
   struct Account {
     std::string id;
-    std::string type; // "google" | "caldav" | "ics"
+    std::string type; // "google" | "caldav" | "ics" | "vdir"
     std::string displayName;
     std::string color;                  // optional "#rrggbb" override
     std::string provider;               // "icloud" | "custom" (caldav only)
@@ -1162,6 +1162,7 @@ struct CalendarConfig {
     std::vector<std::string> calendars; // discovered collection ids; empty = all
     CalendarCredentialSource credentialSource = CalendarCredentialSource::SecretService; // CalDAV only
     std::string passwordFile; // required for file-backed CalDAV credentials
+    std::string path;         // directory path for vdir/local accounts
 
     bool operator==(const Account&) const = default;
   };
