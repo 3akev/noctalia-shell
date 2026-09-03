@@ -122,6 +122,10 @@ namespace scripting {
     std::string panelPlacementDefault = "floating";
     std::string panelPositionDefault = "auto";
     bool panelOpenNearClickDefault = false;
+    // Layer-shell layer for floating placement: "top" or "overlay" (see
+    // plugin_panel_shell.h). An attached panel follows its host bar's layer,
+    // so this is read only when the panel opens floating.
+    std::string panelLayer = "top";
     // false: keep open on outside click (auth prompts)
     bool panelDismissOnOutsideClick = true;
     // Keyboard focus policy: "on_demand" (focus on click), "exclusive" (focus on

@@ -1129,6 +1129,65 @@ int main() {
     ok = expect(noCapture->entries.front().panelCaptureKeys.empty(), "capture_keys should default to empty") && ok;
   }
 
+  const auto oldApiLayerPath = root / "old-api-layer/plugin.toml";
+  ok = writeManifest(
+           oldApiLayerPath,
+           "id = \"me/old-api-layer\"\n"
+           "name = \"Old API Layer\"\n"
+           "plugin_api = 29\n"
+           "[[panel]]\n"
+           "id = \"panel\"\n"
+           "entry = \"panel.luau\"\n"
+           "layer = \"overlay\"\n"
+       )
+      && ok;
+  error.clear();
+  ok = expect(
+           !scripting::parsePluginManifest(oldApiLayerPath, &error).has_value(),
+           "layer should require its plugin API level"
+       )
+      && ok;
+  ok = expectEq(error, "panel entry 'panel': layer requires plugin_api >= 30", "layer api gate error") && ok;
+
+  const auto badLayerPath = root / "bad-layer/plugin.toml";
+  ok = writeManifest(
+           badLayerPath,
+           "id = \"me/bad-layer\"\n"
+           "name = \"Bad Layer\"\n"
+           "plugin_api = 30\n"
+           "[[panel]]\n"
+           "id = \"panel\"\n"
+           "entry = \"panel.luau\"\n"
+           "layer = \"bottom\"\n"
+       )
+      && ok;
+  error.clear();
+  ok = expect(!scripting::parsePluginManifest(badLayerPath, &error).has_value(), "an unknown layer should be rejected")
+      && ok;
+  ok = expectEq(error, R"(panel entry 'panel': layer must be "top" or "overlay")", "layer vocabulary error") && ok;
+
+  const auto overlayLayerPath = root / "overlay-layer/plugin.toml";
+  ok = writeManifest(
+           overlayLayerPath,
+           "id = \"me/overlay-layer\"\n"
+           "name = \"Overlay Layer\"\n"
+           "plugin_api = 30\n"
+           "[[panel]]\n"
+           "id = \"panel\"\n"
+           "entry = \"panel.luau\"\n"
+           "layer = \"overlay\"\n"
+       )
+      && ok;
+  error.clear();
+  const auto overlayLayer = scripting::parsePluginManifest(overlayLayerPath, &error);
+  ok = expect(overlayLayer.has_value(), error.empty() ? "a valid layer should parse" : error.c_str()) && ok;
+  if (overlayLayer.has_value() && !overlayLayer->entries.empty()) {
+    ok = expectEq(overlayLayer->entries.front().panelLayer, "overlay", "layer should parse") && ok;
+  }
+  if (noCapture.has_value() && !noCapture->entries.empty()) {
+    ok = expectEq(noCapture->entries.front().panelLayer, "top", "layer should default to top") && ok;
+  }
+
   // A [[widget]] entry can declare bar gesture defaults, kept as raw strings: the gesture
   // vocabulary and the action grammar belong to the bar, not to the manifest parser.
   const auto actionsPath = root / "actions" / "plugin.toml";
