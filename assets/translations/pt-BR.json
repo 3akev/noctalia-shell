@@ -2569,11 +2569,11 @@
           "description-reconnect": "Autorização do Google está ausente; reconecte esta conta."
         },
         "calendar-event-date-format": {
-          "description": "O formato de hora mostrado no cartão do evento para a data selecionada",
+          "description": "O formato de date mostrado acima da lista de eventos nas visões do calendário",
           "label": "Formato de Data do Evento"
         },
         "calendar-event-time-format": {
-          "description": "O formato de hora mostrado em eventos do calendário",
+          "description": "O formato de hora mostrado para eventos de calendário nas visões do calendário",
           "label": "Formato de Hora do Evento"
         },
         "calendar-refresh-interval": {
@@ -4242,6 +4242,10 @@
         "show-glyph": {
           "description": "Mostrar o símbolo do widget ou imagem personalizada",
           "label": "Mostrar Símbolo"
+        },
+        "show-icons": {
+          "description": "Mostrar ícone do app focado na pílula ativa",
+          "label": "Mostrar Ícones"
         },
         "show-label": {
           "description": "Exibe texto do rótulo do widget",

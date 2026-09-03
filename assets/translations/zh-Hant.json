@@ -862,7 +862,243 @@
     "calendar-accounts": {
       "add-title": "新增行事曆帳號",
       "calendars-label": "行事曆",
-      "color-label": "顏色"
+      "color-label": "顏色",
+      "credential-source-file": "密碼檔案",
+      "credential-source-keyring": "密碼管理器",
+      "credential-source-label": "憑證存放區",
+      "delete-error": "無法刪除行事曆帳號。",
+      "edit-title": "編輯行事曆帳號",
+      "ics-url-label": "ICS 連結",
+      "id-label": "帳號 ID",
+      "name-label": "顯示名稱",
+      "name-placeholder": "個人行事曆",
+      "password-file-error": "無法讀取已配置的密碼檔案。請檢查該文件是否存在、是否為可讀取文件，以及是否包含密碼。",
+      "password-file-label": "密碼檔案",
+      "password-keep-placeholder": "如不改變目前密碼，請保持空白",
+      "password-label": "應用程式密碼",
+      "password-placeholder": "應用程式專用密碼",
+      "password-save-error": "無法儲存行事曆帳號密碼",
+      "provider": {
+        "custom": "CalDAV",
+        "google": "Google",
+        "icloud": "iCloud",
+        "ics": "ICS 連結"
+      },
+      "provider-label": "供應商",
+      "save": "儲存",
+      "save-connect": "儲存並連結",
+      "save-error": "無法儲存行事曆帳號",
+      "secret-cleanup-error": "此帳號資料無法儲存，且密碼管理器中憑證無法恢復或清除。請解鎖 Secret Service 後再試。",
+      "secret-service-cancelled": "此 Secret Service 解鎖提示已取消。請在準備好後解鎖重試。",
+      "secret-service-error": "無法存取 Secret Service 中的行事曆憑證。請重新操作。",
+      "secret-service-locked": "行事曆憑證已被上鎖或存取被拒。請解鎖 Secret Service 後再試。",
+      "secret-service-unavailable": "沒有可用的 Secret Service 程式。請執行相容的程式後重試。",
+      "server-url-label": "伺服器連結",
+      "username-label": "使用者名稱",
+      "username-placeholder": "name@example.com"
+    },
+    "controls": {
+      "keybind": {
+        "add": "點擊增加快捷鍵",
+        "recording-placeholder": "按下組合鍵...",
+        "unset-placeholder": "點擊綁定..."
+      },
+      "list": {
+        "add-entry-placeholder": "新增項目..."
+      },
+      "path-browse": {
+        "file-title": "選擇文件",
+        "folder-title": "選擇文件夾"
+      },
+      "select": {
+        "unknown-value": "未知：{value}"
+      }
+    },
+    "dialogs": {
+      "color-picker": {
+        "title": "選擇顏色"
+      }
+    },
+    "entities": {
+      "bar": {
+        "create": "新增",
+        "delete": "刪除",
+        "delete-confirm-desc": "此從圖形介面所創建的狀態列將由 settings.toml 中刪除。",
+        "delete-confirm-title": "確認刪除 \"{name}\"?",
+        "id-placeholder": "狀態列 ID",
+        "label": "狀態列：{name}",
+        "management": "狀態列",
+        "move-down": "下移",
+        "move-up": "上移",
+        "new": "新建狀態列",
+        "rename": "重新命名",
+        "rename-save": "儲存"
+      },
+      "monitor-override": {
+        "create": "新增",
+        "delete": "刪除",
+        "delete-confirm-desc": "此從圖形介面所創建的螢幕設定將由 settings.toml 中刪除。",
+        "delete-confirm-title": "確認刪除 \"{name}\"?",
+        "label": "螢幕：{name}",
+        "management": "螢幕設定",
+        "match-placeholder": "螢幕識別（如 \\\"DP-1\\\"）",
+        "new": "新建螢幕設定",
+        "rename": "重新命名",
+        "rename-save": "儲存"
+      },
+      "widget": {
+        "add": "新增小工具",
+        "detail": {
+          "custom": "自訂小工具"
+        },
+        "editor": {
+          "description": "在狀態列各區域中排列小工具",
+          "title": "狀態列小工具"
+        },
+        "group": {
+          "accordion": "摺疊",
+          "accordion-description": "僅顯示第一個小工具；游標停駐膠囊時展開其他小工具",
+          "accordion-direction": "展開方向",
+          "action": "群組",
+          "border": "邊框",
+          "clear": "清除",
+          "deselect": "取消選擇",
+          "drag": "重新排序"
+        }
+      }
+    },
+    "errors": {
+      "avatar-accounts": "無法更新系統帳戶頭像。",
+      "avatar-invalid-path": "無法讀取所選檔案路徑。",
+      "avatar-load": "無法使用所選取圖片。請使用 PNG、JPEG、WebP、GIF、BMP 或 SVG 格式。",
+      "avatar-write": "無法完成頭像圖片儲存。",
+      "bar": {
+        "create": "無法創建狀態列。",
+        "delete": "無法刪除狀態列。",
+        "move": "無法移動狀態列。",
+        "rename": "無法重新命名狀態列。"
+      },
+      "batch-write": "部分設定無法保存。",
+      "custom-schedule-times": "自訂時間表必須同時設定日出和日落時間，且格式為 HH:MM。",
+      "export-config": "配置輸出儲存失敗。",
+      "export-wallpaper-palette": "無法將桌布調色盤方案儲存為自訂調色盤方案。",
+      "monitor-override": {
+        "create": "無法新增螢幕設定。",
+        "delete": "無法刪除螢幕設定。",
+        "rename": "無法重新命名螢幕設定。"
+      },
+      "reset-page": "部分設定重置失敗。",
+      "support-report": "診斷報告儲存失敗。",
+      "sync-greeter": "無法將外觀同步至 Noctalia 登入介面。",
+      "sync-greeter-timeout": "登入介面仍在等待系統管理員授權。請檢查終端機或控制台中 Polkit 提示，在\"安全\"設定中啟用 Polkit 代理，或手動執行 pkexec。",
+      "sync-greeter-timeout-manual": "登入介面同步仍需要系統管理員授權。請在終端機中執行：pkexec noctalia-greeter-apply-appearance \"$XDG_RUNTIME_DIR/noctalia-greeter-sync\"",
+      "widget": {
+        "rename": "無法重新命名此小工具"
+      },
+      "write": "設定儲存失敗"
+    },
+    "export-config": {
+      "export": "匯出",
+      "full-effective-description": "匯出所有當前有效的設定值，包括內建預設值。適用於檢查設定值或分享目前快照，但會將目前預設值寫入設定。",
+      "full-effective-save-title": "儲存全部有效設定值",
+      "full-effective-title": "全部有效設定值",
+      "merged-user-description": "將設定檔案跟圖形介面設定值合併為單個 TOML 檔案。內建預設值保持不變。",
+      "merged-user-save-title": "儲存合併後的使用者設定",
+      "merged-user-title": "合併使用者設定 (建議選項)",
+      "title": "匯出設定"
+    },
+    "idle": {
+      "behavior": {
+        "command-label": "閒置命令",
+        "command-placeholder": "notify-send \\\"Idle\\\"",
+        "kind": {
+          "custom": "自訂",
+          "lock": "鎖定",
+          "lock-and-suspend": "鎖定後休眠",
+          "screen-off": "關閉螢幕",
+          "suspend": "休眠"
+        },
+        "kind-section-label": "動作",
+        "locked-timeout-label": "逾時上鎖 ( 秒數，0 = 關閉 )",
+        "name-label": "名稱",
+        "name-placeholder": "閒置行為",
+        "resume-command-label": "恢復命令",
+        "summary": "{name} · {seconds}s",
+        "summary-disabled-timeout": "{name} · 逾時已停用",
+        "timeout-label": "逾時秒數",
+        "unnamed": "未命名行為"
+      },
+      "live-status": {
+        "idle-for-one": "已閒置 1 秒",
+        "idle-for-seconds": "已閒置 {seconds} 秒"
+      }
+    },
+    "navigation": {
+      "groups": {
+        "accessibility": "輔助功能",
+        "audio": "音效",
+        "authentication": "身份驗證",
+        "automation": "自動",
+        "backdrop": "背景圖片",
+        "background": "背景",
+        "battery": "電池",
+        "behavior": "行為",
+        "borders": "邊框",
+        "brightness": "亮度",
+        "built-in": "內建",
+        "calendar": "行事曆",
+        "capsules": "膠囊",
+        "clipboard": "剪貼簿",
+        "community": "社區",
+        "control-center": "控制中心",
+        "dead-zone": "空白區域",
+        "directories": "目錄",
+        "display": "顯示",
+        "effects": "效果",
+        "filtering": "濾鏡",
+        "focus-styling": "焦點樣式",
+        "formats": "格式",
+        "general": "一般",
+        "greeter": "登入介面",
+        "history": "紀錄",
+        "home": "主頁",
+        "idle": "閒置",
+        "interface": "介面",
+        "keybinds": "快捷鍵",
+        "keyboard-layout": "鍵盤佈局",
+        "kinds": "類別",
+        "launcher": "啟動器",
+        "layout": "佈局",
+        "lifecycle": "生命週期",
+        "location": "位置",
+        "lock-screen": "鎖定螢幕",
+        "media": "媒體",
+        "monitor": "系統監視",
+        "monitor-polling": "輪詢間隔",
+        "monitor-thresholds": "突出顯示閾值",
+        "monitors": "螢幕",
+        "motion": "動畫",
+        "navigation": "導覽",
+        "network": "網路",
+        "night-light": "夜間模式",
+        "notifications": "通知",
+        "osd": "螢幕顯示",
+        "overview": "概覽",
+        "pinned-apps": "已釘選的應用程式",
+        "polkit": "Polkit",
+        "power": "電源",
+        "privacy": "隱私",
+        "profile": "個人資料",
+        "providers": "供應商",
+        "screen-corners": "螢幕圓角",
+        "screen-time": "螢幕時間",
+        "screenshot": "截圖",
+        "security": "安全性",
+        "session-panel": "會話面板",
+        "shape": "形狀",
+        "system": "系統",
+        "theme": "佈景主題"
+      }
     }
   }
 }
