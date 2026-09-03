@@ -19,6 +19,8 @@ def ready_template() -> str:
     body = TEMPLATE_PATH.read_text().replace("- [ ]", "- [x]")
     for item in enforce_pr_template.TYPE_CHANGE_ITEMS[1:]:
         body = body.replace(f"- [x] {item}", f"- [ ] {item}")
+    for item in enforce_pr_template.MANUAL_COVERAGE_ITEMS:
+        body = body.replace(f"- [x] {item}", f"- [ ] {item}")
     return body
 
 
@@ -66,6 +68,15 @@ class TemplateValidationTests(unittest.TestCase):
             ["at least one checked change type"],
         )
 
+    def test_ready_template_allows_unchecked_manual_coverage(self) -> None:
+        self.assertEqual(
+            enforce_pr_template.missing_requirements(
+                ready_template(),
+                require_completed=True,
+            ),
+            [],
+        )
+
     def test_accepts_template_line_wrapping(self) -> None:
         wrapped = self.template.replace(
             "I updated user-facing documentation in [`docs/user/`](../docs/user/) when this PR changes documented behavior",
@@ -95,6 +106,14 @@ class TemplateValidationTests(unittest.TestCase):
         self.assertEqual(
             enforce_pr_template.missing_requirements(body),
             ["the `## Testing` heading"],
+        )
+
+    def test_rejects_removed_manual_coverage_item(self) -> None:
+        item = enforce_pr_template.MANUAL_COVERAGE_ITEMS[0]
+        body = self.template.replace(f"- [ ] {item}\n", "")
+        self.assertEqual(
+            enforce_pr_template.missing_requirements(body),
+            [f"the checklist entry: {item}"],
         )
 
     def test_rejects_altered_checklist_item(self) -> None:
