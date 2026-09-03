@@ -746,7 +746,7 @@
     },
     "internal": {
       "battery": "البطارية",
-      "battery-critical-body": "{device}: {percent}% - سيتوقف جهازك عن العمل قريباً",
+      "battery-critical-body": "{device}: {percent}%; سيتوقف جهازك عن العمل قريباً",
       "battery-critical-title": "البطارية منخفضة جداً",
       "battery-device": "جهاز البطارية",
       "battery-low-body": "{device}: متبقي {percent}%",
@@ -1396,9 +1396,9 @@
       },
       "plugins": {
         "auto-update": {
-          "all": "جميع المصادر",
+          "all": "الكل",
           "none": "لا شيء",
-          "official": "الرسمية فقط"
+          "official": "الرسمية"
         }
       },
       "screen-position": {
@@ -1558,6 +1558,7 @@
         "held-back-hint": "يثبّت v{version} لواجهة API للإضافات {resolved}. يتطلب أحدث إصدار v{latest} واجهة API للإضافات {latestRequired}؛ ويدعم هذا الإصدار من Noctalia حتى {current}.",
         "incompatible": "غير متوافق",
         "incompatible-hint": "يتطلب واجهة API للإضافات {required}؛ ويدعم هذا الإصدار من Noctalia من {oldest} إلى {current}.",
+        "installed": "مثبت",
         "loading": "جاري تحميل الكتالوج...",
         "no-readme": "لا يوجد وصف متاح.",
         "open-page": "فتح صفحة الإضافة على noctalia.dev",
@@ -3233,6 +3234,12 @@
     "widgets": {
       "actions": {
         "command-placeholder": "أمر واجهة الأوامر",
+        "commands": {
+          "mic-mute": {
+            "description": "تبديل وضع كتم صوت الميكروفون",
+            "label": "تبديل وضع كتم صوت الميكروفون"
+          }
+        },
         "default": "افتراضي",
         "disabled": "معطل",
         "run-command": "تشغيل أمر…",

@@ -219,7 +219,7 @@
         "pin-code": "Digite o PIN exibido no dispositivo:"
       },
       "reject": "Rejeitar",
-      "rfkill-blocked": "O Bluetooth está bloqueado pelo sistema. Ative-o para remover o bloqueio.",
+      "rfkill-blocked": "O Bluetooth está bloqueado pelo sistema. Ligue-o para remover o bloqueio.",
       "sections": {
         "available": "Disponível",
         "connected": "Conectado",
@@ -291,7 +291,7 @@
     },
     "notifications": {
       "clear-all": "Apagar todas as notificações",
-      "dnd-off": "Desabilitar Não Perturbe",
+      "dnd-off": "Desligar Não Perturbe",
       "dnd-on": "Ligar Não Perturbe",
       "empty-body": "Notificações recentes aparecerão aqui",
       "empty-title": "Sem Notificações",
@@ -770,7 +770,7 @@
       "config-migration-title": "Atualiação de configuração necessária",
       "dbus-disabled": "Notificações DBus desabilitadas",
       "desktop-widgets-editor": "Editor de Widget",
-      "desktop-widgets-editor-enabled": "O editor de widgets da área de trabalho está ativo. Mude para um espaço de trabalho vazio para que as janelas abertas não cubram o editor.",
+      "desktop-widgets-editor-enabled": "O editor de widgets da área de trabalho está ligado. Mude para um espaço de trabalho vazio para que as janelas abertas não cubram o editor.",
       "greeter-sync": "Noctalia Greeter",
       "greeter-sync-pending": "Aguardando aprovação do administrador para gravar no greeter.",
       "greeter-sync-pending-console": "Aguardando aprovação do administrador. Aprove o prompt do polkit no Noctalia, em um TTY ou console, ou execute o pkexec manualmente.",
@@ -787,7 +787,7 @@
       "launcher-usage-reset-success": "Dados de uso limpos.",
       "lockscreen-widgets-editor": "Editor de widgets da tela de bloqueio",
       "lockscreen-widgets-editor-blocked-locked": "Desbloqueie a sessão antes de editar os widgets da tela de bloqueio.",
-      "lockscreen-widgets-editor-enabled": "O editor de widgets da tela de bloqueio está ativo. Mude para um espaço de trabalho vazio para que as janelas abertas não cubram o editor.",
+      "lockscreen-widgets-editor-enabled": "O editor de widgets da tela de bloqueio está ligado. Mude para um espaço de trabalho vazio para que as janelas abertas não cubram o editor.",
       "mpris-disabled": "MPRIS desabilitado",
       "polkit-agent": "Agente de Autenticação",
       "polkit-no-session": "Agente Polkit precisa de logind, elogind or XDG_SESSION_ID. Em configurações que utilizam apenas o seatd, ele não consegue se registrar para solicitações gráficas. Use o pkexec no terminal para sincronizar o greeter ou instale o elogind para autenticação durante a sessão.",
@@ -877,7 +877,7 @@
       }
     },
     "profiles": {
-      "balanced": "Balanceado",
+      "balanced": "Equilibrado",
       "performance": "Performance",
       "power-saver": "Economizador de Energia"
     }
@@ -1024,7 +1024,7 @@
           "drawer-detached": "Painel Destacado",
           "drawer-detached-description": "Abrir a gaveta como um painel flutuante com seu próprio fundo ao invés de mesclar com a barra",
           "drawer-enabled": "Gaveta",
-          "drawer-enabled-description": "Mover os widgets do grupo para um painel deslizante ativado por um botão",
+          "drawer-enabled-description": "Mover os widgets do grupo para um painel deslizante alternado por um botão",
           "drawer-glyph-closed": "Ícone de fechado",
           "drawer-glyph-closed-description": "Glifo exibido no botão de alternância da gaveta quando o painel está fechado",
           "drawer-glyph-opened": "Ícone de Aberto",
@@ -1170,7 +1170,7 @@
           "suspend": "Suspender"
         },
         "kind-section-label": "Ação",
-        "locked-timeout-label": "Tempo de espera enquanto bloqueado (segundos, 0 = desativado)",
+        "locked-timeout-label": "Tempo de espera enquanto bloqueado (segundos, 0 = desabilitado)",
         "name-label": "Nome",
         "name-placeholder": "idle-behavior",
         "resume-command-label": "Comando ao retomar",
@@ -1314,7 +1314,7 @@
         "show-toast": "Mostrar lâmina",
         "summary": "{match} · {flags}",
         "summary-blocked": "{match} · bloqueados",
-        "summary-disabled": "{match} · desativados",
+        "summary-disabled": "{match} · desabilitados",
         "unnamed": "Filtro Não Nomeado"
       }
     },
@@ -1508,7 +1508,7 @@
         "delete-confirm-desc": "Este plug-in será desinstalado e removido do disco.",
         "delete-confirm-title": "Apagar \"{name}\"?",
         "deprecated": "Obsoleto",
-        "empty": "Nenhum plugin ativado.",
+        "empty": "Nenhum plugin habilitado.",
         "held-back": "versão mais antiga",
         "held-back-hint": "v{version} requer a API de plugins {required}; este Noctalia suporta até {current}. Atualize o Noctalia para obtê-la.",
         "incompatible-plugin-api": "APi de plugin incoompatível",
@@ -1561,6 +1561,7 @@
         "held-back-hint": "Instala a v{version} para a API de plugins {resolved}. A versão mais recente v{latest} requer a API de plugins {latestRequired}; este Noctalia suporta até {current}.",
         "incompatible": "Incompatível",
         "incompatible-hint": "Requer a API de plugins {required}; este Noctalia suporta {oldest}–{current}.",
+        "installed": "Instalado",
         "loading": "Carregando catálogo...",
         "no-readme": "Nenhuma descrição disponível.",
         "open-page": "Abrir página de plugin em noctalia.dev",
@@ -2009,7 +2010,7 @@
           "label": "Ampliação"
         },
         "magnification-scale": {
-          "description": "Multiplicador máximo da escala do ícone no centro do ponteiro (1.0 desativa a ampliação)",
+          "description": "Multiplicador máximo da escala do ícone no centro do ponteiro (1.0 desabilita a ampliação)",
           "label": "Escala de Ampliação"
         },
         "main-axis-padding": {
@@ -2065,12 +2066,12 @@
             "label": "Ao Conectar o Carregador"
           },
           "bluetooth-disabled": {
-            "description": "Comando para executar quando o Bluetooth for ativado",
-            "label": "Ao Desativar o Bluetooth"
+            "description": "Comando para executar quando o Bluetooth for habilitado",
+            "label": "Ao Desabilitar o Bluetooth"
           },
           "bluetooth-enabled": {
-            "description": "Comando para executar quando o Bluetooth for ativado",
-            "label": "Ao Ativar o Bluetooth"
+            "description": "Comando para executar quando o Bluetooth for habilitado",
+            "label": "Ao Habilitar o Bluetooth"
           },
           "colors-changed": {
             "description": "Comando para executar quando a paleta de cores ativa mudar",
@@ -2113,12 +2114,12 @@
             "label": "Ao Mudar o Papel de Parede"
           },
           "wifi-disabled": {
-            "description": "Comando para executar o Wi-Fi for desativado",
-            "label": "Ao Desativar o Wi-Fi"
+            "description": "Comando para executar o Wi-Fi for desabilitado",
+            "label": "Ao Desabilitar o Wi-Fi"
           },
           "wifi-enabled": {
-            "description": "Comando para executar quando o Wi-Fi for ativado",
-            "label": "Ao Ativar o Wi-Fi"
+            "description": "Comando para executar quando o Wi-Fi for habilitado",
+            "label": "Ao Habilitar o Wi-Fi"
           }
         }
       },
@@ -2128,7 +2129,7 @@
           "label": "Comportamentos"
         },
         "pre-action-fade": {
-          "description": "Segundos de escurecimento da tela cheia antes do comando de inatividade (0 desativa)",
+          "description": "Segundos de escurecimento da tela cheia antes do comando de inatividade (0 desabilita)",
           "label": "Escurecimento de Tela"
         }
       },
@@ -2180,7 +2181,7 @@
       },
       "lockscreen": {
         "allow-empty-password": {
-          "description": "Permite que o Enter envie uma senha vazia (habilite para chaves de segurança ou outras pilhas PAM sem senha; mantenha desativado para evitar bloqueios acidentais da tecla de ativação)",
+          "description": "Permite que o Enter envie uma senha vazia (habilite para chaves de segurança ou outras pilhas PAM sem senha; mantenha desligado para evitar bloqueios acidentais da tecla de ativação)",
           "label": "Permitir Senha em Branco"
         },
         "blur-intensity": {
@@ -2192,7 +2193,7 @@
           "label": "Captura da Área de Trabalho"
         },
         "enabled": {
-          "description": "Ativar bloqueio de sessão, integração com logind e ações de bloqueio",
+          "description": "Habilitar bloqueio de sessão, integração com logind e ações de bloqueio",
           "label": "Tela de Bloqueio"
         },
         "fingerprint": {
@@ -2251,7 +2252,7 @@
           "label": "Daemon de Notificação"
         },
         "filters": {
-          "description": "Regras por remetente para lâminas de notificação, histórico e sons; o primeiro filtro compatível ativado prevalece",
+          "description": "Regras por remetente para lâminas de notificação, histórico e sons; o primeiro filtro compatível habilitado prevalece",
           "label": "Filtros de Notificações"
         },
         "history-retention-hours": {
@@ -2287,7 +2288,7 @@
           "label": "Escala"
         },
         "show-actions": {
-          "description": "Exibir botões de ação nas lâminas de notificação; quando desativados, clicar na lâmina aciona sua ação padrão",
+          "description": "Exibir botões de ação nas lâminas de notificação; quando desabilitados, clicar na lâmina aciona sua ação padrão",
           "label": "Exibir Botões de Ação"
         },
         "show-app-name": {
@@ -2353,7 +2354,7 @@
           "label": "Mostrar Indicadores de Origem da Aplicação"
         },
         "launcher-auto-paste": {
-          "description": "Após ativar a calculadora, os emojis e outras funções de cópia, cole na janela em foco (os mesmos atalhos da colagem automática da área de transferência)",
+          "description": "Após ativações de calculadora, emojis e outras funções de cópia, cole na janela em foco (os mesmos atalhos da colagem automática da área de transferência)",
           "label": "Colagem Automática"
         },
         "launcher-categories": {
@@ -2613,11 +2614,11 @@
           "label": "Forçar Luz Noturna"
         },
         "latitude": {
-          "description": "Latitude manual para a programação de nascer/pôr do sol, usada quando o auto-locate e o endereço estão desativados",
+          "description": "Latitude manual para a programação de nascer/pôr do sol, usada quando o auto-localizar e o endereço estão desabilitados",
           "label": "Latitude"
         },
         "location-address": {
-          "description": "Cidade ou endereço para localizar, usado quando auto-locate está desativado",
+          "description": "Cidade ou endereço para localizar, usado quando auto-localizar está desabilitado",
           "label": "Endereço",
           "placeholder": "Cidade, País"
         },
@@ -2626,7 +2627,7 @@
           "label": "Localização Automática (IP)"
         },
         "longitude": {
-          "description": "Longitude manual para a programação de nascer/pôr do sol, usada quando auto-locate e endereço estão desativados",
+          "description": "Longitude manual para a programação de nascer/pôr do sol, usada quando auto-localizar e endereço estão desabilitados",
           "label": "Longitude"
         },
         "minimum-brightness": {
@@ -2673,21 +2674,21 @@
         },
         "system-monitor": {
           "cpu-poll": {
-            "description": "Segundos entre as coletas de uso da CPU, temperatura da CPU e média de carga (0 desativa)",
+            "description": "Segundos entre as coletas de uso da CPU, temperatura da CPU e média de carga (0 desabilita)",
             "label": "Intervalo de Polling da CPU"
           },
           "description": "Coletar estatísticas de CPU, memória, rede, carga do sistema, temperatura e disco",
           "disk-poll": {
-            "description": "Segundos entre as coletas de uso do disco e uso da swap (0 desativa)",
+            "description": "Segundos entre as coletas de uso do disco e uso da swap (0 desabilita)",
             "label": "Intervalo de Polling do Disco"
           },
           "gpu-poll": {
-            "description": "Segundos entre as coletas de temperatura da GPU, uso  e amostras da VRAM; Amostra da GPU são coletadas somente quando algo mostra estatísticas da GPU, ou seja, uma máquina em modo de espera nunca é acordada (0 desativa completamente)",
+            "description": "Segundos entre as coletas de temperatura da GPU, uso  e amostras da VRAM; Amostra da GPU são coletadas somente quando algo mostra estatísticas da GPU, ou seja, uma máquina em modo de espera nunca é acordada (0 desabilita completamente)",
             "label": "Intervalo de Polling da GPU"
           },
           "label": "Monitor do Sistema",
           "memory-poll": {
-            "description": "Segundos entre as amostras de uso da RAM (0 desativa)",
+            "description": "Segundos entre as amostras de uso da RAM (0 desabilita)",
             "label": "Intervalo de Polling da Memória"
           },
           "network-poll": {
@@ -2722,7 +2723,7 @@
           "placeholder": "/path/to/sound.wav"
         },
         "weather": {
-          "description": "Ativar o serviço de clima via open-meteo.com",
+          "description": "Habilitar o serviço de clima via open-meteo.com",
           "label": "Clima"
         },
         "weather-effects": {
@@ -2770,7 +2771,7 @@
           "label": "Margem da Borda"
         },
         "enabled": {
-          "label": "Ativado"
+          "label": "Habilitado"
         },
         "ends-margin": {
           "label": "Margem das Extremidades"
@@ -2812,7 +2813,7 @@
           "label": "Confirmar Limpeza do Histórico"
         },
         "clipboard-enabled": {
-          "description": "Ative o histórico da área de transferência, o painel da área de transferência e a integração de copiar/colar",
+          "description": "Habilite o histórico da área de transferência, o painel da área de transferência e a integração de copiar/colar",
           "label": "Área de Transferência"
         },
         "clipboard-history-max-entries": {
@@ -2888,7 +2889,7 @@
         },
         "osd-enabled": {
           "description": "Interruptor principal para todos os OSDs; quando desabilitado, nenhum OSD é exibido",
-          "label": "Ativar OSD"
+          "label": "Habilitar OSD"
         },
         "osd-kinds-bluetooth": {
           "description": "Exibir um OSD quando o Bluetooth for habilitado/desabilitado",
@@ -2983,7 +2984,7 @@
           "label": "Estilo da Senha"
         },
         "polkit-agent": {
-          "description": "Ativar o agente de autenticação integrado",
+          "description": "Habilitar o agente de autenticação integrado",
           "label": "Agente Polkit"
         },
         "privacy-cam-filter-regex": {
@@ -3092,7 +3093,7 @@
           "label": "Modelos Integrados"
         },
         "community-ids": {
-          "description": "Navegar e ativar modelos de comunidade aplicados em cada mudança de tema",
+          "description": "Navegar e habilitar modelos de comunidade aplicados em cada mudança de tema",
           "empty": "Ainda não há modelos da comunidade disponíveis. Primeiro, habilite os modelos de comunidade e atualize o catálogo.",
           "label": "Modelos da Comunidade"
         },
@@ -3142,7 +3143,7 @@
           "label": "Suavidade da Extremidade"
         },
         "enabled": {
-          "description": "Ativar o serviço de papel de parede"
+          "description": "Habilitar o serviço de papel de parede"
         },
         "fill-color": {
           "description": "Cor sólida exibida atrás da imagem nas áreas descobertas",
@@ -3225,9 +3226,9 @@
         "categories": "Categorias",
         "category-all": "Todas",
         "empty": "Não há modelos semelhantes ao seu filtro",
-        "enabled-count": "{count} ativados",
+        "enabled-count": "{count} habilitados",
         "filter-all": "Todos",
-        "filter-enabled": "Ativado",
+        "filter-enabled": "Habilitado",
         "results-count": "{count} modelos",
         "search-placeholder": "Buscar modelos...",
         "sort-category-asc": "Ordenar por categoria (A-Z)",
@@ -3786,7 +3787,7 @@
       },
       "settings": {
         "actions": {
-          "description": "O que cada gesto do mouse faz neste widget; escolha um comando, execute um comando do shell ou desative",
+          "description": "O que cada gesto do mouse faz neste widget; escolha um comando, execute um comando do shell ou desabilite-o",
           "label": "Ações de Gesto"
         },
         "active-color": {
@@ -4185,7 +4186,7 @@
           "workspaces-description": "Ajuste a escala das pílulas do espaço de trabalho"
         },
         "pinned": {
-          "description": "IDs dos itens do tray que permanecem visíveis na barra com o modo drawer ativado",
+          "description": "IDs dos itens do tray que permanecem visíveis na barra com o modo drawer habilitado",
           "label": "Itens Fixados",
           "taskbar-description": "Apps de área de trabalho que permanecem na barra de tarefas quando não estão em execução; Ignorados quando Agrupar por Espaço de Trabalho está ativada",
           "taskbar-label": "Apps Fixados"
@@ -4287,7 +4288,7 @@
           "label": "Exibir Título da Janela"
         },
         "show-workspace-label": {
-          "description": "Mostrar a pequena etiqueta de espaço de trabalho nas cápsulas agrupadas da barra de tarefas; desative para grupos apenas com ícones",
+          "description": "Mostrar a pequena etiqueta de espaço de trabalho nas cápsulas agrupadas da barra de tarefas; desligue para grupos apenas com ícones",
           "label": "Rótulo da cápsula do espaço de trabalho"
         },
         "stat": {
@@ -4356,7 +4357,7 @@
           "label": "Largura Máxima do Título de Janela"
         },
         "workspace-group-capsule": {
-          "description": "Desenha o fundo e a borda ao redor de cada workspace agrupado; desative para manter apenas o agrupamento de ícones e os rótulos circulares dos workspaces",
+          "description": "Desenha o fundo e a borda ao redor de cada workspace agrupado. Desligue para manter apenas o agrupamento de ícones e os rótulos circulares dos workspaces",
           "label": "Cápsula do grupo de Espaço de Trabalho"
         },
         "workspace-group-content": {
@@ -4416,7 +4417,7 @@
       "offline-mode-notice": {
         "appearance": "O download de paletas da comunidade não funcionará.",
         "calendar-account": "A descoberta e sincronização do calendário não funcionarão.",
-        "disable-hint": "Desative o Modo Off-line na seção Segurança.",
+        "disable-hint": "Desabilite o Modo Off-line na seção Segurança.",
         "launcher": "A busca de taxas de câmbio não funcionará.",
         "location": "As consultas de clima e localização não funcionarão.",
         "plugin-store": "As solicitações de catálogo e download de plugins remotos não funcionarão.",
@@ -4563,16 +4564,22 @@
   "wallpaper": {
     "panel": {
       "all-monitors": "TODOS",
+      "choose-color": "Escolher cor de papel de parede",
+      "close": "Fechar painel de papel de parede",
       "color-title": "Cor do papel de parede",
+      "favorite-current": "Adicionar o papel de parede atual aos favoritos",
       "filter-placeholder": "Filtrar...",
       "flatten": "Achatar",
       "loading": "Carregando papéis de parede...",
+      "navigate-up": "Ir para a pasta superior",
+      "refresh": "Atualizar papéis de parede",
       "sort-date-asc": "Ordenar por data (mais antigos primeiro)",
       "sort-date-desc": "Ordenar por data (mais recentes primeiro)",
       "sort-name-asc": "Ordenar por nome (A-Z)",
       "sort-name-desc": "Ordenar por nome (Z-A)",
       "sort-random": "Ordenar aleatoriamente (embaralhar)",
-      "title": "Papel de Parede"
+      "title": "Papel de Parede",
+      "unfavorite-current": "Remover papel de parede atual de favoritos"
     }
   },
   "weather": {

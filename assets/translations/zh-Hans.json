@@ -1561,6 +1561,7 @@
         "held-back-hint": "当前兼容版本为 v{version}（插件 API {resolved}）。最新版本 v{latest} 需要插件 API {latestRequired}；当前 Noctalia 最高仅支持 API {current}。",
         "incompatible": "不兼容",
         "incompatible-hint": "需要插件 API {required}；当前 Noctalia 仅支持 API {oldest}–{current}。",
+        "installed": "已安装",
         "loading": "正在加载目录…",
         "no-readme": "没有可用的描述。",
         "open-page": "在 noctalia.dev 上打开插件页面",
@@ -3628,6 +3629,46 @@
           "wallpaper-get": {
             "description": "输出默认壁纸路径，或指定屏幕的壁纸路径",
             "label": "获取壁纸"
+          },
+          "wallpaper-next": {
+            "description": "立即切换到下一张壁纸",
+            "label": "下一张壁纸"
+          },
+          "wallpaper-previous": {
+            "description": "立即切换到上一张壁纸",
+            "label": "上一张壁纸"
+          },
+          "wallpaper-random": {
+            "description": "立即切换到随机壁纸",
+            "label": "随机壁纸"
+          },
+          "wallpaper-set": {
+            "description": "为所有或指定屏幕设置壁纸（持久保存）",
+            "label": "设置壁纸"
+          },
+          "wifi-disable": {
+            "description": "禁用 Wi-Fi",
+            "label": "禁用 Wi-Fi"
+          },
+          "wifi-enable": {
+            "description": "启用 Wi-Fi",
+            "label": "启用 Wi-Fi"
+          },
+          "wifi-status": {
+            "description": "输出 Wi-Fi 状态",
+            "label": "Wi-Fi 状态"
+          },
+          "wifi-toggle": {
+            "description": "切换 Wi-Fi",
+            "label": "切换 Wi-Fi"
+          },
+          "window-switcher": {
+            "description": "打开或关闭窗口切换器",
+            "label": "窗口切换器"
+          },
+          "workspace-switch": {
+            "description": "切换到指定屏幕上的相邻工作区（到达两端时停止）",
+            "label": "切换工作区"
           }
         },
         "default": "默认",
@@ -3941,6 +3982,10 @@
         "hide-passive": {
           "description": "隐藏 StatusNotifierItem 状态为 Passive 的托盘项",
           "label": "隐藏非活动项"
+        },
+        "hide-when-adapter-off": {
+          "description": "蓝牙适配器关闭时隐藏小组件",
+          "label": "适配器关闭时隐藏"
         },
         "hide-when-empty": {
           "description": "隐藏无窗口的工作区胶囊",
@@ -4499,16 +4544,22 @@
   "wallpaper": {
     "panel": {
       "all-monitors": "全部",
+      "choose-color": "选择壁纸颜色",
+      "close": "关闭壁纸面板",
       "color-title": "壁纸颜色",
+      "favorite-current": "将当前壁纸添加到收藏",
       "filter-placeholder": "筛选…",
       "flatten": "展开嵌套",
       "loading": "正在加载壁纸…",
+      "navigate-up": "返回上级文件夹",
+      "refresh": "刷新壁纸",
       "sort-date-asc": "按日期排序（最旧优先）",
       "sort-date-desc": "按日期排序（最新优先）",
       "sort-name-asc": "按名称排序（A-Z）",
       "sort-name-desc": "按名称排序（Z-A）",
       "sort-random": "随机排序",
-      "title": "壁纸"
+      "title": "壁纸",
+      "unfavorite-current": "将当前壁纸从收藏中移除"
     }
   },
   "weather": {
