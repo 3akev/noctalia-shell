@@ -67,7 +67,7 @@ PluginPanel::PluginPanel(scripting::PluginRuntimeContext context, PluginPanelOpt
       m_widthFill(options.widthFill), m_heightFill(options.heightFill),
       m_dismissOnOutsideClick(options.dismissOnOutsideClick),
       m_keyboardMode(keyboardModeFromManifest(options.keyboardFocus)),
-      m_layer(layerShellLayerFromConfig(options.layer)), m_persistent(options.persistent),
+      m_layer(layerShellLayerFromConfig(options.shellConfig.layer)), m_persistent(options.persistent),
       m_shellConfig(options.shellConfig) {
   // The manifest parser already validated every spec, so a parse failure here means the two
   // drifted apart. Skip the entry rather than capture a chord nobody can describe.

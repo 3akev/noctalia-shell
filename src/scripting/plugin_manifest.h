@@ -117,15 +117,15 @@ namespace scripting {
     double panelHeight = 0.0;
     bool panelWidthFill = false;
     bool panelHeightFill = false;
-    // Host-standard shell placement settings (see plugin_panel_shell.*). Parsed from
-    // optional [[panel]] keys; injected settings use "{id}_placement" etc.
+    // Host-standard shell settings (see plugin_panel_shell.*). Optional
+    // [[panel]] keys provide defaults; injected settings use "{id}_placement",
+    // "{id}_layer", and the corresponding canonical suffixes.
     std::string panelPlacementDefault = "floating";
     std::string panelPositionDefault = "auto";
     bool panelOpenNearClickDefault = false;
-    // Layer-shell layer for floating placement: "top" or "overlay" (see
-    // plugin_panel_shell.h). An attached panel follows its host bar's layer,
-    // so this is read only when the panel opens floating.
-    std::string panelLayer = "top";
+    // The floating layer setting defaults to Top to preserve existing plugin
+    // behavior. An attached panel always follows its host bar's layer.
+    std::string panelLayerDefault = "top";
     // false: keep open on outside click (auth prompts)
     bool panelDismissOnOutsideClick = true;
     // Keyboard focus policy: "on_demand" (focus on click), "exclusive" (focus on

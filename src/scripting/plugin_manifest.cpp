@@ -484,7 +484,7 @@ namespace scripting {
               error = "panel entry '" + entry.id + R"(': layer must be "top" or "overlay")";
               return false;
             }
-            entry.panelLayer = layer->get();
+            entry.panelLayerDefault = layer->get();
           }
           if ((*entryTable)["dismiss_on_outside_click"]) {
             if (manifest.pluginApiVersion < kPanelDismissOnOutsideClickPluginApiVersion) {

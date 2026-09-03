@@ -40,8 +40,6 @@ struct PluginPanelOptions {
   bool dismissOnOutsideClick = true;
   // One of scripting::kPanelKeyboardFocusModes.
   std::string keyboardFocus = "on_demand";
-  // One of scripting::kPanelLayers; applies to floating placement only.
-  std::string layer = "top";
   bool persistent = false;
   // Key chord specs the panel takes over while focused, verbatim from the manifest.
   std::vector<std::string> captureKeys;

@@ -1494,6 +1494,10 @@
     "plugins": {
       "browse-store": "Browse Plugins",
       "panels": {
+        "layer": {
+          "description": "Layer-shell layer used when the panel is floating",
+          "label": "Layer"
+        },
         "open-near-click": {
           "description": "Where the panel is positioned when opened by clicking on the bar widget",
           "label": "Along Bar"
