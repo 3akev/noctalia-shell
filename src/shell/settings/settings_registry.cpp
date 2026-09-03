@@ -115,8 +115,8 @@ namespace settings {
       return *it;
     }
 
-    // Builds a slider whose bounds come from the shared schema Range — the same
-    // constant the parser clamps with — so the UI range and the config clamp are
+    // Builds a slider whose bounds come from the shared schema Range, the same
+    // constant the parser clamps with. This keeps the UI range and the config clamp
     // one source. `integerValue` (write as int64) stays explicit: it is a UI/write
     // choice, not implied by the range's numeric type (e.g. transition_duration).
     template <typename V, typename T>
@@ -2358,7 +2358,7 @@ namespace settings {
       );
     }
 
-    // Location — single source of "where am I"; shared by weather, night light, and theme auto mode.
+    // Location: single source of "where am I"; shared by weather, night light, and theme auto mode.
     entries.push_back(makeEntry(
         SettingsSection::Location, "location", tr("settings.schema.services.location-auto-locate.label"),
         tr("settings.schema.services.location-auto-locate.description"), {"location", "auto_locate"},
@@ -2405,7 +2405,7 @@ namespace settings {
       entries.push_back(std::move(e));
     }
 
-    // Custom scheduling — explicit sunrise/sunset times for night light and theme auto mode.
+    // Custom scheduling: explicit sunrise/sunset times for night light and theme auto mode.
     {
       auto e = makeEntry(
           SettingsSection::Location, "location", tr("settings.schema.services.custom-schedule.label"),
@@ -2434,7 +2434,7 @@ namespace settings {
       entries.push_back(std::move(e));
     }
 
-    // Weather — consumes the resolved location.
+    // Weather: consumes the resolved location.
     entries.push_back(makeEntry(
         SettingsSection::Location, "weather", tr("settings.schema.services.weather.label"),
         tr("settings.schema.services.weather.description"), {"weather", "enabled"}, ToggleSetting{cfg.weather.enabled},
@@ -2589,13 +2589,8 @@ namespace settings {
     {
       auto e = makeEntry(
           SettingsSection::Services, "calendar", tr("settings.schema.services.calendar-event-date-format.label"),
-          tr("settings.schema.services.calendar-event-date-format.description"),
-          {"control_center", "calendar", "event_date_format"},
-          TextSetting{
-              .value = cfg.controlCenter.calendarTab.eventDateFormat,
-              .placeholder = "%A %e %B",
-              .browseFileExtensions = {}
-          },
+          tr("settings.schema.services.calendar-event-date-format.description"), {"calendar", "event_date_format"},
+          TextSetting{.value = cfg.calendar.eventDateFormat, .placeholder = "%A %e %B", .browseFileExtensions = {}},
           "calendar date format strftime chrono"
       );
       e.visibleWhen = calendarOn;
@@ -2604,11 +2599,8 @@ namespace settings {
     {
       auto e = makeEntry(
           SettingsSection::Services, "calendar", tr("settings.schema.services.calendar-event-time-format.label"),
-          tr("settings.schema.services.calendar-event-time-format.description"),
-          {"control_center", "calendar", "event_time_format"},
-          TextSetting{
-              .value = cfg.controlCenter.calendarTab.eventTimeFormat, .placeholder = "%H:%M", .browseFileExtensions = {}
-          },
+          tr("settings.schema.services.calendar-event-time-format.description"), {"calendar", "event_time_format"},
+          TextSetting{.value = cfg.calendar.eventTimeFormat, .placeholder = "%H:%M", .browseFileExtensions = {}},
           "calendar time format strftime chrono"
       );
       e.visibleWhen = calendarOn;
@@ -2951,7 +2943,7 @@ namespace settings {
         "urgency"
     ));
 
-    // Bar — register every configured bar so global search can surface settings from all of them.
+    // Bar: register every configured bar so global search can surface settings from all of them.
     for (const auto& bar : cfg.bars) {
       constexpr SettingsSection section = SettingsSection::Bar;
       const std::vector<std::string> root = {"bar", bar.name};

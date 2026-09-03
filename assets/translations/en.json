@@ -2569,11 +2569,11 @@
           "description-reconnect": "Google authorization is missing; reconnect this account"
         },
         "calendar-event-date-format": {
-          "description": "The date format shown in the event card for the selected date",
+          "description": "The date format shown above the event list in calendar views",
           "label": "Event Date Format"
         },
         "calendar-event-time-format": {
-          "description": "The time format shown for calendar events",
+          "description": "The time format shown for calendar events in calendar views",
           "label": "Event Time Format"
         },
         "calendar-refresh-interval": {

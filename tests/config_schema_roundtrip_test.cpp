@@ -3,12 +3,12 @@
 // The schema is now the single source for both serialize (config_export::serialize →
 // writeTable) and parse (parseConfigTable → readInto), so there is no legacy code
 // to compare against. What still earns its keep:
-//   - read inverse — readInto(writeTable(x)) == x for every section: the schema's
+//   - read inverse: readInto(writeTable(x)) == x for every section: the schema's
 //                    read and write are mutual inverses (catches a field whose read
 //                    key != write key, or a lossy codec).
-//   - bar golden   — config_export::serialize(probe)["bar"] stays byte-identical to a captured
+//   - bar golden: config_export::serialize(probe)["bar"] stays byte-identical to a captured
 //                    reference (locks the resolve-and-flatten monitor-override emit).
-//   - clamp goldens — pin parse-time range behavior.
+//   - clamp goldens: pin parse-time range behavior.
 
 #include "config/config_export.h"
 #include "config/config_types.h"
@@ -417,11 +417,11 @@ location = "https://example.invalid/bad"
     c.controlCenter.sidebarSectionMode = ControlCenterSidebarMode::None;
     c.controlCenter.calendarTab.showEventsCard = false;
     c.controlCenter.calendarTab.showWeekNumbers = true;
-    c.controlCenter.calendarTab.eventDateFormat = "%Y-%m-%d";
-    c.controlCenter.calendarTab.eventTimeFormat = "%I:%M %p";
     c.controlCenter.shortcuts = {{"wifi"}, {"bluetooth"}};
     c.calendar.enabled = true;
     c.calendar.refreshMinutes = 30;
+    c.calendar.eventDateFormat = "%Y-%m-%d";
+    c.calendar.eventTimeFormat = "%I:%M %p";
     c.calendar.accounts = {
         {"acc1", "google", "Work", "#ff0000", "", "", "", {}},
         {"acc2",
@@ -1176,7 +1176,7 @@ widget_spacing = 8
 
   // Every schema-backed section must round-trip, AND the probe must actually populate
   // it. Iterating the section registry rather than a hand-written list means a new
-  // section is covered the moment it is declared — and fails here until its probe
+  // section is covered the moment it is declared, and fails here until its probe
   // values are filled in.
   {
     const Config defaults;
