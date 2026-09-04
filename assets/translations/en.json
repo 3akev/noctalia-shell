@@ -24,6 +24,14 @@
       "invalid-password": "Invalid password",
       "password-placeholder": "Password",
       "title": "Authentication Required"
+    },
+    "systemd": {
+      "authenticate": "Authenticate",
+      "default-message": "A password is required",
+      "password-placeholder": "Password",
+      "request-from": "Request from {process} (PID {pid})",
+      "request-from-unknown": "Request from PID {pid}",
+      "title": "Systemd Password Request"
     }
   },
   "bar": {
@@ -1242,7 +1250,6 @@
         "osd": "OSD",
         "overview": "Overview",
         "pinned-apps": "Pinned Apps",
-        "polkit": "Polkit",
         "power": "Power",
         "privacy": "Privacy",
         "profile": "Profile",
@@ -1262,7 +1269,8 @@
         "weather": "Weather",
         "widget-list": "Widget List",
         "widgets": "Widgets",
-        "window-switcher": "Window Switcher"
+        "window-switcher": "Window Switcher",
+        "auth": "Auth"
       },
       "sections": {
         "accessibility": "Accessibility",
@@ -2487,10 +2495,6 @@
           "description": "Choose whether the launcher attaches to the bar or floats at a chosen screen position",
           "label": "Placement"
         },
-        "placement-polkit": {
-          "description": "Choose whether the polkit prompt attaches to the bar or floats at a chosen screen position",
-          "label": "Placement"
-        },
         "placement-session": {
           "description": "Choose whether the session panel attaches to the bar or floats at a chosen screen position",
           "label": "Placement"
@@ -2511,10 +2515,6 @@
           "description": "Where the launcher floats on screen; Follow Bar keeps it near the bar",
           "label": "Position"
         },
-        "position-polkit": {
-          "description": "Where the polkit prompt floats on screen; Follow Bar keeps it near the bar",
-          "label": "Position"
-        },
         "position-session": {
           "description": "Where the session panel floats on screen; Follow Bar keeps it near the bar",
           "label": "Position"
@@ -2529,6 +2529,14 @@
         "transparency-mode": {
           "description": "Panel glass style, including floating panel opacity and card translucency",
           "label": "Transparency"
+        },
+        "placement-auth": {
+          "description": "Choose whether the auth prompt attaches to the bar or floats at a chosen screen position",
+          "label": "Placement"
+        },
+        "position-auth": {
+          "description": "Where the auth prompt floats on screen; Follow Bar keeps it near the bar",
+          "label": "Position"
         }
       },
       "power": {
@@ -3075,6 +3083,10 @@
           "button": "Sync Now",
           "description": "Copy the current wallpaper and colors to Noctalia Greeter (requires administrator approval)",
           "label": "Noctalia Greeter"
+        },
+        "systemd-password-agent": {
+          "description": "Answer systemd password requests",
+          "label": "Systemd Password Agent"
         },
         "telemetry": {
           "description": "Sends a small anonymous startup ping with version, OS, compositor, monitor resolutions, RAM, and UI scale",
