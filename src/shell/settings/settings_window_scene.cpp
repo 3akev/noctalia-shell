@@ -2158,7 +2158,7 @@ void SettingsWindow::buildScene(std::uint32_t width, std::uint32_t height) {
     m_sceneRoot->setPopupContext(m_selectPopup.get());
   }
 
-  const float bgOpacity = cfg.shell.settingsWindowTranslucent ? 0.75F : 1.0F;
+  const float bgOpacity = cfg.shell.settingsWindowTranslucent ? 0.8F : 1.0F;
 
   auto bg = ui::box({
       .width = w,

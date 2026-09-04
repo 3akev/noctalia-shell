@@ -17,6 +17,13 @@
 
 namespace settings {
 
+  namespace {
+    // Cards sit on the Surface window background and hold controls that fill SurfaceVariant at full
+    // opacity, so a full-strength card fill would match them. Mixing the theme's own elevated tone
+    // partway toward Surface keeps the palette hue and still reads distinct from those controls.
+    constexpr float kCardFillOpacity = 0.4F;
+  } // namespace
+
   bool isMonitorOverrideSettingPath(const std::vector<std::string>& path) {
     return path.size() >= 5 && path[0] == "bar" && path[2] == "monitor";
   }
@@ -171,11 +178,33 @@ namespace settings {
     });
   }
 
+  Flex* addSettingsCard(Flex& parent, std::string_view title, float scale) {
+    Flex* bodyRaw = nullptr;
+    auto card = ui::column(
+        {
+            .align = FlexAlign::Stretch,
+            .gap = Style::spaceSm * scale,
+            .configure =
+                [scale](Flex& container) {
+                  container.setPadding(Style::spaceSm * scale, Style::spaceMd * scale);
+                  container.setCardStyle(scale, kCardFillOpacity);
+                },
+        },
+        makeLabel(title, Style::fontSizeTitle * scale, colorSpecFromRole(ColorRole::OnSurface), FontWeight::Bold),
+        ui::column({
+            .out = &bodyRaw,
+            .align = FlexAlign::Stretch,
+            .gap = Style::spaceSm * scale,
+        })
+    );
+    parent.addChild(std::move(card));
+    return bodyRaw;
+  }
+
   Flex* addSettingsGroupCard(SettingsGroupCardProps props) {
     auto card = ui::column({.align = FlexAlign::Stretch, .configure = [scale = props.scale](Flex& container) {
                               container.setPadding(Style::spaceSm * scale, Style::spaceMd * scale);
-                              container.setCardStyle(scale, 1.0F);
-                              container.setFill(colorSpecFromRole(ColorRole::Surface));
+                              container.setCardStyle(scale, kCardFillOpacity);
                             }});
     auto body = ui::column({
         .align = FlexAlign::Stretch,

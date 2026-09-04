@@ -1380,6 +1380,8 @@ namespace settings {
                     .scrollToTop = ctx.scrollContentToTop,
                 }
             );
+          } else if (!entry.group.empty()) {
+            activeGroupBody = addSettingsCard(*activeSection, groupLabel(entry.group), scale);
           } else {
             addGroupLabel(*activeSection, groupLabel(entry.group), isFirstGroup);
             activeGroupBody = activeSection;

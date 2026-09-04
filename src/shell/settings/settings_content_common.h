@@ -51,6 +51,9 @@ namespace settings {
   };
 
   [[nodiscard]] Flex* addSettingsGroupCard(SettingsGroupCardProps props);
+  // Same card as addSettingsGroupCard without the collapsible header, for transient groupings
+  // (search results) that must never start hidden and hold no expanded state.
+  [[nodiscard]] Flex* addSettingsCard(Flex& parent, std::string_view title, float scale);
 
   [[nodiscard]] std::optional<std::size_t>
   optionIndex(const std::vector<SelectOption>& options, std::string_view value);
